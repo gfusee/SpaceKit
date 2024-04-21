@@ -1,0 +1,8 @@
+.idea
+.vscode
+.build
+ignore_dir
+*.o
+*.wasm
+run.sh
+run-scenarios

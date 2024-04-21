@@ -1,0 +1,1 @@
+protocol ApiProtocol: BufferApiProtocol, BigIntApiProtocol {}
