@@ -1,5 +1,11 @@
-let BUFFER_API = BufferApiVmImpl()
-let BIGINT_API = BigIntApiVmImpl()
+#if WASM
+var API = VMApi()
+#else
+var API = DummyApi()
+#endif
+
+@attached(peer)
+public macro Contract() = #externalMacro(module: "ContractMacro", type: "Contract")
 
 var nextHandle: Int32 = -100
 func getNextHandle() -> Int32 {

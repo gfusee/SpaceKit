@@ -24,6 +24,7 @@
         {
             "step": "scDeploy",
             "id": "deploy",
+            "displayLogs": true,
             "tx": {
                 "from": "address:owner",
                 "contractCode": "file:../contract-opt.wasm",

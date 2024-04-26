@@ -1,8 +1,11 @@
 .idea
 .vscode
 .build
+.fleet
+.swiftpm
 ignore_dir
 *.o
 *.wasm
 run.sh
+test.sh
 run-scenarios
