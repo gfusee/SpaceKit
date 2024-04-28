@@ -10,6 +10,10 @@ public struct BigUint {
         API.bigIntSetInt64Value(destination: handle, value: value)
         self.handle = handle
     }
+    
+    init(handle: Int32) {
+        self.handle = handle
+    }
 
     public func toBuffer() -> MXBuffer {
         let destHandle = getNextHandle()
@@ -29,6 +33,61 @@ public struct BigUint {
 extension BigUint: Equatable {
     public static func == (lhs: BigUint, rhs: BigUint) -> Bool {
         return API.bigIntCompare(lhsHandle: lhs.handle, rhsHandle: rhs.handle) == 0
+    }
+}
+
+extension BigUint {
+    public static func + (left: BigUint, right: BigUint) -> BigUint {
+        let handle = getNextHandle()
+        API.bigIntAdd(destHandle: handle, lhsHandle: left.handle, rhsHandle: right.handle)
+        
+        return BigUint(handle: handle)
+    }
+    
+    public static func - (lhs: BigUint, rhs: BigUint) -> BigUint {
+        let handle = getNextHandle()
+        API.bigIntSub(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
+        
+        return BigUint(handle: handle)
+    }
+    
+    public static func * (lhs: BigUint, rhs: BigUint) -> BigUint {
+        let handle = getNextHandle()
+        API.bigIntMul(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
+        
+        return BigUint(handle: handle)
+    }
+    
+    public static func / (lhs: BigUint, rhs: BigUint) -> BigUint {
+        let handle = getNextHandle()
+        API.bigIntDiv(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
+        
+        return BigUint(handle: handle)
+    }
+    
+    public static func % (lhs: BigUint, rhs: BigUint) -> BigUint {
+        let handle = getNextHandle()
+        API.bigIntMod(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
+        
+        return BigUint(handle: handle)
+    }
+    
+    public static func > (lhs: BigUint, rhs: BigUint) -> Bool {
+        let compareResult = API.bigIntCompare(lhsHandle: lhs.handle, rhsHandle: rhs.handle)
+        
+        return compareResult == 1
+    }
+    
+    public static func <= (lhs: BigUint, rhs: BigUint) -> Bool {
+        !(lhs > rhs)
+    }
+    
+    public static func < (lhs: BigUint, rhs: BigUint) -> Bool {
+        lhs <= rhs && lhs != rhs
+    }
+    
+    public static func >= (lhs: BigUint, rhs: BigUint) -> Bool {
+        lhs > rhs || lhs == rhs
     }
 }
 

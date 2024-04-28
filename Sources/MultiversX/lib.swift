@@ -1,7 +1,7 @@
 #if WASM
 var API = VMApi()
 #else
-var API = DummyApi()
+public var API = DummyApi()
 #endif
 
 @attached(peer)

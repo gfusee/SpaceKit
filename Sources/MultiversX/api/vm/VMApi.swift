@@ -43,6 +43,26 @@ func bigIntToString(bigIntHandle: Int32, destHandle: Int32)
 @_extern(c)
 func bigIntCmp(x: Int32, y: Int32) -> Int32
 
+@_extern(wasm, module: "env", name: "bigIntAdd")
+@_extern(c)
+func bigIntAdd(dest: Int32, x: Int32, y: Int32)
+
+@_extern(wasm, module: "env", name: "bigIntSub")
+@_extern(c)
+func bigIntSub(dest: Int32, x: Int32, y: Int32)
+
+@_extern(wasm, module: "env", name: "bigIntMul")
+@_extern(c)
+func bigIntMul(dest: Int32, x: Int32, y: Int32)
+
+@_extern(wasm, module: "env", name: "bigIntDiv")
+@_extern(c)
+func bigIntDiv(dest: Int32, x: Int32, y: Int32)
+
+@_extern(wasm, module: "env", name: "bigIntMod")
+@_extern(c)
+func bigIntMod(dest: Int32, x: Int32, y: Int32)
+
 struct VMApi {}
 
 // MARK: BufferApi Implementation
@@ -90,6 +110,26 @@ extension VMApi: BigIntApiProtocol {
     
     mutating func bigIntCompare(lhsHandle: Int32, rhsHandle: Int32) -> Int32 {
         return bigIntCmp(x: lhsHandle, y: rhsHandle)
+    }
+    
+    mutating func bigIntAdd(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
+        bigIntAdd(dest: destHandle, x: lhsHandle, y: rhsHandle)
+    }
+    
+    mutating func bigIntSub(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
+        bigIntSub(dest: destHandle, x: lhsHandle, y: rhsHandle)
+    }
+    
+    mutating func bigIntMul(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
+        bigIntMul(dest: destHandle, x: lhsHandle, y: rhsHandle)
+    }
+    
+    mutating func bigIntDiv(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
+        bigIntDiv(dest: destHandle, x: lhsHandle, y: rhsHandle)
+    }
+    
+    mutating func bigIntMod(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
+        bigIntMod(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
 }
 
