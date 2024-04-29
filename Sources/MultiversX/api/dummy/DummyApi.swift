@@ -60,6 +60,11 @@ extension DummyApi: BufferApiProtocol {
     }
     
     public func bufferGetBytes(handle: Int32, resultPointer: UnsafeRawPointer) -> Int32 {
+        let data = self.getBufferData(handle: handle)
+        let unsafeBufferPointer = UnsafeMutableRawBufferPointer(start: UnsafeMutableRawPointer(mutating: resultPointer), count: data.count)
+        
+        data.copyBytes(to: unsafeBufferPointer)
+        
         return 0
     }
 
@@ -68,6 +73,21 @@ extension DummyApi: BufferApiProtocol {
     }
     
     public mutating func bufferFromBigIntUnsigned(bufferHandle: Int32, bigIntHandle: Int32) -> Int32 {
+        let bigInt = self.getBigIntData(handle: bigIntHandle)
+        let bigIntData = bigInt.serialize()
+        let bigIntDataWithoutSign = bigIntData.count > 0 ? bigIntData[1...] : Data()
+        
+        self.managedBuffersData[bufferHandle] = bigIntDataWithoutSign
+        
+        return 0
+    }
+    
+    public mutating func bufferToBigIntUnsigned(bufferHandle: Int32, bigIntHandle: Int32) -> Int32 {
+        let bufferData = self.getBufferData(handle: bufferHandle)
+        let signData = "00".hexadecimal
+        
+        self.managedBigIntData[bigIntHandle] = BigInt(signData + bufferData)
+        
         return 0
     }
     
@@ -76,6 +96,18 @@ extension DummyApi: BufferApiProtocol {
         let data2 = self.getBufferData(handle: handle2)
         
         return data1 == data2 ? 1 : 0
+    }
+    
+    public mutating func bufferToDebugString(handle: Int32) -> String {
+        let data = self.getBufferData(handle: handle)
+        
+        return data.hexEncodedString()
+    }
+    
+    public mutating func bufferToUTF8String(handle: Int32) -> String? {
+        let data = self.getBufferData(handle: handle)
+        
+        return String(data: data, encoding: .utf8)
     }
 }
 
@@ -160,6 +192,13 @@ extension DummyApi: BigIntApiProtocol {
         let result = lhs % rhs
         
         self.managedBigIntData[destHandle] = result
+    }
+    
+    public mutating func bigIntToString(bigIntHandle: Int32, destHandle: Int32) {
+        let bigInt = self.getBigIntData(handle: bigIntHandle)
+        let data = bigInt.description.data(using: .utf8)
+        
+        self.managedBuffersData[destHandle] = data
     }
 }
 #endif

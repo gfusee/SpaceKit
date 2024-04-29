@@ -11,6 +11,13 @@ public struct BigUint {
         self.handle = handle
     }
     
+    public init(bigEndianBuffer: MXBuffer) {
+        let handle = getNextHandle()
+        let _ = API.bufferToBigIntUnsigned(bufferHandle: bigEndianBuffer.handle, bigIntHandle: handle)
+        
+        self.handle = handle
+    }
+    
     init(handle: Int32) {
         self.handle = handle
     }
@@ -91,6 +98,12 @@ extension BigUint {
     }
 }
 
+extension BigUint: TopDecode {
+    public static func topDecode(input: MXBuffer) -> BigUint {
+        BigUint(bigEndianBuffer: input)
+    }
+}
+
 extension BigUint: TopEncode {
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         output.setBuffer(buffer: self.toBytesBigEndianBuffer())
@@ -103,3 +116,28 @@ extension BigUint: ExpressibleByIntegerLiteral {
     }
 }
 
+#if !WASM
+extension BigUint: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        self.stringDescription
+    }
+}
+
+extension BigUint {
+    public var stringDescription: String {
+        let handle = getNextHandle()
+        API.bigIntToString(bigIntHandle: self.handle, destHandle: handle)
+        let utf8Buffer = MXBuffer(handle: handle)
+        
+        guard let utf8Description = utf8Buffer.utf8Description else {
+            fatalError()
+        }
+        
+        return utf8Description
+    }
+    
+    public var hexDescription: String {
+        self.toBytesBigEndianBuffer().hexDescription
+    }
+}
+#endif

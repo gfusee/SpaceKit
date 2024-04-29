@@ -230,4 +230,43 @@ final class BigUintTests: XCTestCase {
         
         XCTAssertFalse(bigUint1 < bigUint2)
     }
+    
+    func testZeroBigUintTopEncode() throws {
+        let bigUint: BigUint = 0
+        var output = MXBuffer()
+        
+        bigUint.topEncode(output: &output)
+        
+        XCTAssertEqual(output.hexDescription, "")
+    }
+    
+    func testNonZeroBigUintTopEncode() throws {
+        let bigUint: BigUint = 10
+        var output = MXBuffer()
+        
+        bigUint.topEncode(output: &output)
+        
+        XCTAssertEqual(output.hexDescription, "0a")
+    }
+    
+    func testZeroBigUintTopDecodeFromEmptyInput() throws {
+        let input: MXBuffer = ""
+        let bigUint = BigUint.topDecode(input: input)
+        
+        XCTAssertEqual(bigUint, 0)
+    }
+    
+    func testZeroBigUintTopDecodeFromNonEmptyInput() throws {
+        let input = MXBuffer(data: Array("00".hexadecimal))
+        let bigUint = BigUint.topDecode(input: input)
+        
+        XCTAssertEqual(bigUint, 0)
+    }
+    
+    func testNonZeroBigUintTopDecode() throws {
+        let input = MXBuffer(data: Array("0a".hexadecimal))
+        let bigUint = BigUint.topDecode(input: input)
+        
+        XCTAssertEqual(bigUint, 10)
+    }
 }

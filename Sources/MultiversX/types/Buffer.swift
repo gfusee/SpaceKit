@@ -18,16 +18,20 @@ public struct MXBuffer {
     
     #if !WASM
     public init(_ string: String) {
+        self.init(data: Array(string.utf8))
+    }
+    
+    public init(data: [UInt8]) {
         let handle = getNextHandle()
         
-        [UInt8](string.utf8).withUnsafeBytes { pointer in
+        [UInt8](data).withUnsafeBytes { pointer in
             guard let baseAddress = pointer.baseAddress else {
                 fatalError()
             }
             
             let _ = API.bufferSetBytes(handle: handle, bytePtr: baseAddress, byteLen: Int32(pointer.count))
         }
-
+        
         self.handle = handle
     }
     #endif
@@ -52,7 +56,7 @@ public struct MXBuffer {
     }
     
     #if !WASM
-    func toBytes() -> [UInt8] {
+    public func toBytes() -> [UInt8] {
         let selfCount = self.count
         let result: [UInt8] = Array(repeating: 0, count: selfCount)
         
@@ -70,6 +74,12 @@ public struct MXBuffer {
 
     public func finish() {
         let _ = API.bufferFinish(handle: self.handle)
+    }
+}
+
+extension MXBuffer: TopDecode {
+    public static func topDecode(input: MXBuffer) -> MXBuffer {
+        input.clone()
     }
 }
 
@@ -132,3 +142,27 @@ public struct BufferInterpolationMatcher: StringInterpolationProtocol {
 }
 
 extension MXBuffer: ExpressibleByStringInterpolation {}
+
+#if !WASM
+extension MXBuffer: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        var result = "0x\(self.hexDescription)"
+        
+        if let utf8Description = self.utf8Description {
+            result = "\(result) (UTF8: \(utf8Description)"
+        }
+        
+        return result
+    }
+}
+
+extension MXBuffer {
+    public var utf8Description: String? {
+        API.bufferToUTF8String(handle: self.handle)
+    }
+    
+    public var hexDescription: String {
+        API.bufferToDebugString(handle: self.handle)
+    }
+}
+#endif

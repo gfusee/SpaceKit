@@ -5,6 +5,7 @@ public var API = DummyApi()
 #endif
 
 @attached(peer)
+@attached(member, names: arbitrary)
 public macro Contract() = #externalMacro(module: "ContractMacro", type: "Contract")
 
 var nextHandle: Int32 = -100

@@ -14,6 +14,18 @@ final class BufferTests: XCTestCase {
         XCTAssertEqual(buffer, "Hello World!")
     }
     
+    func testEmptyBufferFromHexadecimalData() throws {
+        let buffer = MXBuffer(data: Array("".hexadecimal))
+
+        XCTAssertEqual(buffer, "")
+    }
+    
+    func testNonEmptyBufferFromHexadecimalData() throws {
+        let buffer = MXBuffer(data: Array("48656c6c6f20576f726c6421".hexadecimal))
+        
+        XCTAssertEqual(buffer, "Hello World!")
+    }
+    
     func testEmptyBufferCount() throws {
         let buffer = MXBuffer()
 
@@ -36,6 +48,24 @@ final class BufferTests: XCTestCase {
         let buffer: MXBuffer = "Hello World!"
         
         XCTAssertEqual(buffer, "Hello World!")
+    }
+    
+    func testEmptyBufferToBytes() throws {
+        let buffer: MXBuffer = ""
+        let bytes = buffer.toBytes()
+        
+        let expected = [UInt8]()
+        
+        XCTAssertEqual(bytes, expected)
+    }
+    
+    func testNonEmptyBufferToBytes() throws {
+        let buffer: MXBuffer = "Hello World!"
+        let bytes = buffer.toBytes()
+        
+        let expected = Array("Hello World!".utf8)
+        
+        XCTAssertEqual(bytes, expected)
     }
     
     func testBufferAppend() throws {
@@ -64,5 +94,37 @@ final class BufferTests: XCTestCase {
         let buffer2 = "World!"
         
         XCTAssertNotEqual(buffer1, buffer2)
+    }
+    
+    func testEmptyBufferTopEncode() throws {
+        let buffer: MXBuffer = ""
+        var output = MXBuffer()
+        
+        buffer.topEncode(output: &output)
+        
+        XCTAssertEqual(output, "")
+    }
+    
+    func testNonEmptyBufferTopEncode() throws {
+        let buffer: MXBuffer = "Hello World!"
+        var output = MXBuffer()
+        
+        buffer.topEncode(output: &output)
+        
+        XCTAssertEqual(output, "Hello World!")
+    }
+    
+    func testEmptyBufferTopDecode() throws {
+        let input: MXBuffer = ""
+        let buffer = MXBuffer.topDecode(input: input)
+        
+        XCTAssertEqual(buffer, "")
+    }
+    
+    func testNonEmptyBufferTopDecode() throws {
+        let input: MXBuffer = "Hello World!"
+        let buffer = MXBuffer.topDecode(input: input)
+        
+        XCTAssertEqual(buffer, "Hello World!")
     }
 }

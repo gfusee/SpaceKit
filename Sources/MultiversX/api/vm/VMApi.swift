@@ -63,6 +63,10 @@ func bigIntDiv(dest: Int32, x: Int32, y: Int32)
 @_extern(c)
 func bigIntMod(dest: Int32, x: Int32, y: Int32)
 
+@_extern(wasm, module: "env", name: "mBufferToBigIntUnsigned")
+@_extern(c)
+func mBufferToBigIntUnsigned(mBufferHandle: Int32, bigIntHandle: Int32) -> Int32
+
 struct VMApi {}
 
 // MARK: BufferApi Implementation
@@ -86,6 +90,10 @@ extension VMApi: BufferApiProtocol {
     
     mutating func bufferFromBigIntUnsigned(bufferHandle: Int32, bigIntHandle: Int32) -> Int32 {
         return mBufferFromBigIntUnsigned(mBufferHandle: bufferHandle, bigIntHandle: bigIntHandle)
+    }
+    
+    mutating func bufferToBigIntUnsigned(bufferHandle: Int32, bigIntHandle: Int32) -> Int32 {
+        return mBufferToBigIntUnsigned(mBufferHandle: bufferHandle, bigIntHandle: bigIntHandle)
     }
 
     mutating func bufferFinish(handle: Int32) -> Int32 {
@@ -130,6 +138,10 @@ extension VMApi: BigIntApiProtocol {
     
     mutating func bigIntMod(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
         MultiversX.bigIntMod(dest: destHandle, x: lhsHandle, y: rhsHandle)
+    }
+    
+    public mutating func bigIntToString(bigIntHandle: Int32, destHandle: Int32) {
+        MultiversX.bigIntToString(bigIntHandle: bigIntHandle, destHandle: destHandle)
     }
 }
 

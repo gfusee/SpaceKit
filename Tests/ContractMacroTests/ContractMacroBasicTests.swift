@@ -27,6 +27,11 @@ final class ContractMacroBasicTests: XCTestCase {
                     message: "@Contract can only be applied to a structure.",
                     line: 1,
                     column: 1
+                ),
+                DiagnosticSpec(
+                    message: "@Contract can only be applied to a structure.",
+                    line: 1,
+                    column: 1
                 )
             ],
             macros: testMacros
@@ -40,7 +45,17 @@ final class ContractMacroBasicTests: XCTestCase {
         """
 
         let expected = """
-        struct Contract {}
+        struct Contract {
+        
+            #if !WASM
+            public static func testable(address: String) -> Testable {
+                Testable(address: address)
+            }
+
+            public struct Testable {
+                let address: String
+            }
+            #endif}
         
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
@@ -66,6 +81,16 @@ final class ContractMacroBasicTests: XCTestCase {
         let expected = """
         struct Contract {
             init() {}
+
+            #if !WASM
+            public static func testable(address: String) -> Testable {
+                Testable(address: address)
+            }
+
+            public struct Testable {
+                let address: String
+            }
+            #endif
         }
         """
 
@@ -96,6 +121,16 @@ final class ContractMacroBasicTests: XCTestCase {
         struct Contract {
             convenience init(arg: Int) {}
             convenience init(arg: String) {}
+
+            #if !WASM
+            public static func testable(address: String) -> Testable {
+                Testable(address: address)
+            }
+
+            public struct Testable {
+                let address: String
+            }
+            #endif
         }
         """
 
@@ -124,8 +159,18 @@ final class ContractMacroBasicTests: XCTestCase {
         let expected = """
         struct Contract {
             func notAnEndpoint() {}
+
+            #if !WASM
+            public static func testable(address: String) -> Testable {
+                Testable(address: address)
+            }
+
+            public struct Testable {
+                let address: String
+            }
+            #endif
         }
-        
+
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
             let _ = Contract.init()
@@ -150,8 +195,18 @@ final class ContractMacroBasicTests: XCTestCase {
         let expected = """
         struct Contract {
             convenience init() {}
+
+            #if !WASM
+            public static func testable(address: String) -> Testable {
+                Testable(address: address)
+            }
+
+            public struct Testable {
+                let address: String
+            }
+            #endif
         }
-        
+
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
             let _ = Contract.init()
@@ -180,6 +235,25 @@ final class ContractMacroBasicTests: XCTestCase {
             public func singleFunction() {
         
             }
+        
+            #if !WASM
+            public static func testable(address: String) -> Testable {
+                Testable(address: address)
+            }
+
+            public struct Testable {
+                let address: String
+                    public func singleFunction() {
+                    return runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "singleFunction",
+                        hexEncodedArgs: []
+                    ) {
+                        return Contract .init().singleFunction()
+                    }
+                }
+            }
+            #endif
         }
         
         @_expose(wasm, "init")
@@ -215,6 +289,25 @@ final class ContractMacroBasicTests: XCTestCase {
             public func singleFunction() -> MXBuffer {
                 return "Hello World!"
             }
+
+            #if !WASM
+            public static func testable(address: String) -> Testable {
+                Testable(address: address)
+            }
+
+            public struct Testable {
+                let address: String
+                    public func singleFunction() -> MXBuffer {
+                    return runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "singleFunction",
+                        hexEncodedArgs: []
+                    ) {
+                        return Contract .init().singleFunction()
+                    }
+                }
+            }
+            #endif
         }
         
         @_expose(wasm, "init")
@@ -256,12 +349,41 @@ final class ContractMacroBasicTests: XCTestCase {
         let expected = """
         struct Contract {
             public func firstFunction() {
-        
+
             }
-        
+
             public func secondFunction() {
             
             }
+
+            #if !WASM
+            public static func testable(address: String) -> Testable {
+                Testable(address: address)
+            }
+
+            public struct Testable {
+                let address: String
+                    public func firstFunction() {
+                    return runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "firstFunction",
+                        hexEncodedArgs: []
+                    ) {
+                        return Contract .init().firstFunction()
+                    }
+                }
+
+                    public func secondFunction() {
+                    return runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "secondFunction",
+                        hexEncodedArgs: []
+                    ) {
+                        return Contract .init().secondFunction()
+                    }
+                }
+            }
+            #endif
         }
         
         @_expose(wasm, "init")
