@@ -22,6 +22,18 @@ public struct DummyApi {
         
         return data
     }
+    
+    mutating func throwUserError(message: String) {
+        withUnsafeCurrentTask(body: { task in
+            if let task = task, !task.isCancelled {
+                self.errorMessage = message
+                task.cancel()
+                while (true) {} // Wait for the task to be canceled, we don't want any instruction to be executed
+            } else {
+                fatalError(message)
+            }
+        })
+    }
 }
 
 extension DummyApi: BufferApiProtocol {
@@ -104,7 +116,7 @@ extension DummyApi: BigIntApiProtocol {
         let rhs = self.getBigIntData(handle: rhsHandle)
         
         if rhs > lhs {
-            self.errorMessage = "Cannot substract because the result would be negative."
+            self.throwUserError(message: "Cannot substract because the result would be negative.")
             return
         }
         
@@ -127,7 +139,7 @@ extension DummyApi: BigIntApiProtocol {
         let rhs = self.getBigIntData(handle: rhsHandle)
         
         if rhs == 0 {
-            self.errorMessage = "Cannot divide by zero."
+            self.throwUserError(message: "Cannot divide by zero.")
             return
         }
         
@@ -141,7 +153,7 @@ extension DummyApi: BigIntApiProtocol {
         let rhs = self.getBigIntData(handle: rhsHandle)
         
         if rhs == 0 {
-            self.errorMessage = "Cannot divide by zero (modulo)."
+            self.throwUserError(message: "Cannot divide by zero (modulo).")
             return
         }
         

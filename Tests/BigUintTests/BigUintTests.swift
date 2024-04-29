@@ -64,9 +64,15 @@ final class BigUintTests: XCTestCase {
         let bigUint1: BigUint = 1
         let bigUint2: BigUint = 2
         
-        let _ = bigUint1 - bigUint2
-        
-        XCTAssertEqual(MultiversX.API.errorMessage, "Cannot substract because the result would be negative.")
+        do {
+            try runFailableTransactions {
+                let _ = bigUint1 - bigUint2
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Cannot substract because the result would be negative."))
+        }
     }
     
     func testMultiplyTwoBigUint() throws {
@@ -109,9 +115,15 @@ final class BigUintTests: XCTestCase {
         let bigUint1: BigUint = 1
         let bigUint2: BigUint = 0
         
-        let _ = bigUint1 / bigUint2
-        
-        XCTAssertEqual(MultiversX.API.errorMessage, "Cannot divide by zero.")
+        do {
+            try runFailableTransactions {
+                let _ = bigUint1 / bigUint2
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Cannot divide by zero."))
+        }
     }
     
     func testModuloTwoBigUint() throws {
@@ -145,9 +157,15 @@ final class BigUintTests: XCTestCase {
         let bigUint1: BigUint = 1
         let bigUint2: BigUint = 0
         
-        let _ = bigUint1 % bigUint2
-        
-        XCTAssertEqual(MultiversX.API.errorMessage, "Cannot divide by zero (modulo).")
+        do {
+            try runFailableTransactions {
+                let _ = bigUint1 % bigUint2
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Cannot divide by zero (modulo)."))
+        }
     }
     
     func testCompareGreaterTrue() throws {

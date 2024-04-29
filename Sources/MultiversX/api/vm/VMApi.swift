@@ -113,23 +113,23 @@ extension VMApi: BigIntApiProtocol {
     }
     
     mutating func bigIntAdd(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        bigIntAdd(dest: destHandle, x: lhsHandle, y: rhsHandle)
+        MultiversX.bigIntAdd(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
     mutating func bigIntSub(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        bigIntSub(dest: destHandle, x: lhsHandle, y: rhsHandle)
+        MultiversX.bigIntSub(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
     mutating func bigIntMul(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        bigIntMul(dest: destHandle, x: lhsHandle, y: rhsHandle)
+        MultiversX.bigIntMul(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
     mutating func bigIntDiv(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        bigIntDiv(dest: destHandle, x: lhsHandle, y: rhsHandle)
+        MultiversX.bigIntDiv(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
     mutating func bigIntMod(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        bigIntMod(dest: destHandle, x: lhsHandle, y: rhsHandle)
+        MultiversX.bigIntMod(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
 }
 
