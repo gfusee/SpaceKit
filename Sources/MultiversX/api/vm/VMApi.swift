@@ -67,6 +67,16 @@ func bigIntMod(dest: Int32, x: Int32, y: Int32)
 @_extern(c)
 func mBufferToBigIntUnsigned(mBufferHandle: Int32, bigIntHandle: Int32) -> Int32
 
+// MARK: Storage-related OPCODES
+
+@_extern(wasm, module: "env", name: "mBufferStorageStore")
+@_extern(c)
+func mBufferStorageStore(keyHandle: Int32, mBufferHandle: Int32) -> Int32
+
+@_extern(wasm, module: "env", name: "mBufferStorageLoad")
+@_extern(c)
+func mBufferStorageLoad(keyHandle: Int32, mBufferHandle: Int32) -> Int32
+
 struct VMApi {}
 
 // MARK: BufferApi Implementation
@@ -142,6 +152,16 @@ extension VMApi: BigIntApiProtocol {
     
     public mutating func bigIntToString(bigIntHandle: Int32, destHandle: Int32) {
         MultiversX.bigIntToString(bigIntHandle: bigIntHandle, destHandle: destHandle)
+    }
+}
+
+extension VMApi: StorageApiProtocol {
+    mutating func bufferStorageLoad(keyHandle: Int32, bufferHandle: Int32) -> Int32 {
+        return mBufferStorageLoad(keyHandle: keyHandle, mBufferHandle: bufferHandle)
+    }
+    
+    mutating func bufferStorageStore(keyHandle: Int32, bufferHandle: Int32) -> Int32 {
+        return mBufferStorageStore(keyHandle: keyHandle, mBufferHandle: bufferHandle)
     }
 }
 

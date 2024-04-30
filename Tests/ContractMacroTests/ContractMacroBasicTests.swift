@@ -249,7 +249,8 @@ final class ContractMacroBasicTests: XCTestCase {
                         endpointName: "singleFunction",
                         hexEncodedArgs: []
                     ) {
-                        return Contract .init().singleFunction()
+                        var contract = Contract .init()
+                        return contract.singleFunction()
                     }
                 }
             }
@@ -260,10 +261,11 @@ final class ContractMacroBasicTests: XCTestCase {
         @_cdecl("init") func __macro_local_4initfMu_() {
             let _ = Contract.init()
         }
-        
+
         @_expose(wasm, "singleFunction")
         @_cdecl("singleFunction") func __macro_local_14singleFunctionfMu_() {
-            Contract().singleFunction()
+            var contract = Contract()
+            contract.singleFunction()
         }
         """
 
@@ -303,7 +305,8 @@ final class ContractMacroBasicTests: XCTestCase {
                         endpointName: "singleFunction",
                         hexEncodedArgs: []
                     ) {
-                        return Contract .init().singleFunction()
+                        var contract = Contract .init()
+                        return contract.singleFunction()
                     }
                 }
             }
@@ -318,7 +321,10 @@ final class ContractMacroBasicTests: XCTestCase {
         @_expose(wasm, "singleFunction")
         @_cdecl("singleFunction") func __macro_local_14singleFunctionfMu_() {
             var result = MXBuffer()
-            let endpointOutput = Contract().singleFunction()
+        
+            var contract = Contract()
+            let endpointOutput = contract.singleFunction()
+        
             endpointOutput.topEncode(output: &result)
         
             result.finish()
@@ -369,7 +375,8 @@ final class ContractMacroBasicTests: XCTestCase {
                         endpointName: "firstFunction",
                         hexEncodedArgs: []
                     ) {
-                        return Contract .init().firstFunction()
+                        var contract = Contract .init()
+                        return contract.firstFunction()
                     }
                 }
 
@@ -379,7 +386,8 @@ final class ContractMacroBasicTests: XCTestCase {
                         endpointName: "secondFunction",
                         hexEncodedArgs: []
                     ) {
-                        return Contract .init().secondFunction()
+                        var contract = Contract .init()
+                        return contract.secondFunction()
                     }
                 }
             }
@@ -390,15 +398,17 @@ final class ContractMacroBasicTests: XCTestCase {
         @_cdecl("init") func __macro_local_4initfMu_() {
             let _ = Contract.init()
         }
-        
+
         @_expose(wasm, "firstFunction")
         @_cdecl("firstFunction") func __macro_local_13firstFunctionfMu_() {
-            Contract().firstFunction()
+            var contract = Contract()
+            contract.firstFunction()
         }
-        
+
         @_expose(wasm, "secondFunction")
         @_cdecl("secondFunction") func __macro_local_14secondFunctionfMu_() {
-            Contract().secondFunction()
+            var contract = Contract()
+            contract.secondFunction()
         }
         """
 

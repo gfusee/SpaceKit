@@ -51,6 +51,10 @@ extension BigUint {
         return BigUint(handle: handle)
     }
     
+    public static func += (left: inout BigUint, right: BigUint) {
+        left = left + right
+    }
+    
     public static func - (lhs: BigUint, rhs: BigUint) -> BigUint {
         let handle = getNextHandle()
         API.bigIntSub(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)

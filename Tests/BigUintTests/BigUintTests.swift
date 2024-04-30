@@ -43,6 +43,23 @@ final class BigUintTests: XCTestCase {
         XCTAssertEqual(result, 3)
     }
     
+    func testAddAssignBigUint() throws {
+        var result: BigUint = 1
+        let bigUint: BigUint = 2
+        
+        result += bigUint
+        
+        XCTAssertEqual(result, 3)
+    }
+    
+    func testAddAssignBigUintLiteral() throws {
+        var result: BigUint = 1
+        
+        result += 2
+        
+        XCTAssertEqual(result, 3)
+    }
+    
     func testAddBigUintAndLiteral() throws {
         let bigUint1: BigUint = 1
         

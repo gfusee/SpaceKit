@@ -90,14 +90,18 @@ fileprivate func getEndpointExportDeclaration(structName: TokenSyntax, function:
     if function.signature.returnClause != nil {
         body = CodeBlockSyntax(statements: """
         var result = MXBuffer()
-        let endpointOutput = \(structName.trimmed)().\(function.name)()
+        
+        var contract = \(structName.trimmed)()
+        let endpointOutput = contract.\(function.name)()
+        
         endpointOutput.topEncode(output: &result)
         
         result.finish()
         """)
     } else {
         body = CodeBlockSyntax(statements: """
-        \(structName.trimmed)().\(function.name)()
+        var contract = \(structName.trimmed)()
+        contract.\(function.name)()
         """)
     }
     

@@ -3,11 +3,14 @@ import Foundation
 import BigInt
 
 public struct DummyApi {
+    package var lock: NSLock = NSLock()
     private var managedBuffersData: [Int32 : Data] = [:]
     private var managedBigIntData: [Int32 : BigInt] = [:]
+    private var storageForContractAddress: [String : [Data : Data]] = [:]
+    package var currentContractAddress: String? = nil
     public private(set) var errorMessage: String? = nil
     
-    func getBufferData(handle: Int32) -> Data {
+    private func getBufferData(handle: Int32) -> Data {
         guard let data = self.managedBuffersData[handle] else {
             fatalError("Buffer handle not found")
         }
@@ -15,12 +18,36 @@ public struct DummyApi {
         return data
     }
     
-    func getBigIntData(handle: Int32) -> BigInt {
+    private func getBigIntData(handle: Int32) -> BigInt {
         guard let data = self.managedBigIntData[handle] else {
             fatalError("Big integer handle not found")
         }
         
         return data
+    }
+    
+    package mutating func resetData() {
+        self.managedBuffersData = [:]
+        self.managedBigIntData = [:]
+        self.storageForContractAddress = [:]
+        self.currentContractAddress = nil
+        self.errorMessage = nil
+    }
+    
+    private func getStorageForCurrentContractAddress() -> [Data : Data] {
+        guard let currentContractAddress = self.currentContractAddress else {
+            fatalError("No current contract address. Are you in a transaction context?")
+        }
+        
+        return self.storageForContractAddress[currentContractAddress] ?? [:]
+    }
+    
+    private mutating func setStorageForCurrentContractAddress(storage: [Data : Data]) {
+        guard let currentContractAddress = self.currentContractAddress else {
+            fatalError("No current contract address. Are you in a transaction context?")
+        }
+        
+        self.storageForContractAddress[currentContractAddress] = storage
     }
     
     mutating func throwUserError(message: String) {
@@ -199,6 +226,31 @@ extension DummyApi: BigIntApiProtocol {
         let data = bigInt.description.data(using: .utf8)
         
         self.managedBuffersData[destHandle] = data
+    }
+}
+
+extension DummyApi: StorageApiProtocol {
+    public mutating func bufferStorageLoad(keyHandle: Int32, bufferHandle: Int32) -> Int32 {
+        let keyData = self.getBufferData(handle: keyHandle)
+        let currentStorage = self.getStorageForCurrentContractAddress()
+        
+        let valueData = currentStorage[keyData] ?? Data()
+        
+        self.managedBuffersData[bufferHandle] = valueData
+        
+        return 0
+    }
+    
+    public mutating func bufferStorageStore(keyHandle: Int32, bufferHandle: Int32) -> Int32 {
+        let keyData = self.getBufferData(handle: keyHandle)
+        let bufferData = self.getBufferData(handle: bufferHandle)
+        
+        var currentStorage = self.getStorageForCurrentContractAddress()
+        currentStorage[keyData] = bufferData
+        
+        self.setStorageForCurrentContractAddress(storage: currentStorage)
+        
+        return 0
     }
 }
 #endif

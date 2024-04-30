@@ -61,7 +61,8 @@ func getTestableStructDeclaration(
                 endpointName: "\(function.name)",
                 hexEncodedArgs: []
             ) {
-                return \(structName).init().\(function.name)(\(raw: args))
+                var contract = \(structName).init()
+                return contract.\(function.name)(\(raw: args))
             }
             """
         )

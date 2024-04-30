@@ -24,7 +24,6 @@
         {
             "step": "scDeploy",
             "id": "deploy",
-            "displayLogs": true,
             "tx": {
                 "from": "address:owner",
                 "contractCode": "file:../contract-opt.wasm",
@@ -52,7 +51,39 @@
                 "gasPrice": "0"
             },
             "expect": {
-                "out": "str:Hello World!",
+                "out": "*",
+                "message": "",
+                "status": "",
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "sc:swift": {
+                    "owner": "address:owner",
+                    "storage": {
+                        "str:testStorage": "10"
+                    },
+                    "code": "*"
+                },
+                "+": "*"
+            }
+        },
+        {
+            "step": "scCall",
+            "txId": "echo",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:swift",
+                "function": "getTestStorageValue",
+                "arguments": [],
+                "gasLimit": "300,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": "10",
                 "message": "",
                 "status": "",
                 "gas": "*",

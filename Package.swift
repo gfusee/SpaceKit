@@ -57,6 +57,12 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "ContractStorageTests",
+            dependencies: [
+                "MultiversX"
+            ]
+        ),
+        .testTarget(
             name: "TestEngineTests",
             dependencies: [
                 "MultiversX"

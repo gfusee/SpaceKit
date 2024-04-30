@@ -7,7 +7,15 @@ public func runTestCall<T>(
     hexEncodedArgs: [String],
     operation: () -> T
 ) -> T {
-    return operation()
+    API.lock.lock()
+    
+    API.currentContractAddress = contractAddress
+    let result = operation()
+    API.currentContractAddress = nil
+    
+    API.lock.unlock()
+    
+    return result
 }
 
 #endif
