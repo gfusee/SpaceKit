@@ -17,7 +17,7 @@ struct CounterContract {
 final class ContractStorageTests: ContractTestCase {
     
     func testGetCounterBeforeAnyIncrease() throws {
-        let contract = CounterContract.testable(address: "counter")
+        let contract = CounterContract.testable("counter")
         
         let counterValue = contract.getCounterValue()
         
@@ -25,7 +25,7 @@ final class ContractStorageTests: ContractTestCase {
     }
     
     func testIncreaseCounterOnce() throws {
-        var contract = CounterContract.testable(address: "counter")
+        var contract = CounterContract.testable("counter")
         
         contract.increaseByOne()
         
@@ -35,7 +35,7 @@ final class ContractStorageTests: ContractTestCase {
     }
     
     func testIncreaseCounterTwice() throws {
-        var contract = CounterContract.testable(address: "counter")
+        var contract = CounterContract.testable("counter")
         
         contract.increaseByOne()
         contract.increaseByOne()
@@ -46,10 +46,10 @@ final class ContractStorageTests: ContractTestCase {
     }
     
     func testIncreaseCounterTwoContracts() throws {
-        var contract1 = CounterContract.testable(address: "counter1")
+        var contract1 = CounterContract.testable("counter1")
         contract1.increaseByOne()
         
-        var contract2 = CounterContract.testable(address: "counter2")
+        var contract2 = CounterContract.testable("counter2")
         contract2.increaseByOne()
         contract2.increaseByOne()
         

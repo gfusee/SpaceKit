@@ -9,12 +9,12 @@ import Foundation
 
 enum ContractMacroError: CustomStringConvertible, Error {
     case onlyApplicableToStruct
-    case onlyOneConvenienceInitAllowed
+    case onlyOneInitAllowed
     
     var description: String {
         switch self {
         case .onlyApplicableToStruct: return "@Contract can only be applied to a structure."
-        case .onlyOneConvenienceInitAllowed: return "Only one or zero convenience initializer is allowed in a structure marked @Contract."
+        case .onlyOneInitAllowed: return "Only one or zero initializer is allowed in a structure marked @Contract."
         }
     }
 }

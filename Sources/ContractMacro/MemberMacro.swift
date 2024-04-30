@@ -11,10 +11,12 @@ extension Contract: MemberMacro {
             throw ContractMacroError.onlyApplicableToStruct
         }
         
+        try structDecl.isValidStruct()
+        
         let functionDecls = structDecl.memberBlock.members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         
         let testableStructDecl = getTestableStructDeclaration(
-            structName: structDecl.name,
+            structDecl: structDecl,
             functions: functionDecls
         )
         
@@ -26,14 +28,35 @@ extension Contract: MemberMacro {
         #endif
         """
         
-        return [
+        var results: [DeclSyntax] = [
+            DeclSyntax(getNoDeployInit()),
             DeclSyntax(stringLiteral: testableDeclSyntax)
         ]
+        
+        if !structDecl.hasClassicInit() {
+            results.insert(
+                DeclSyntax(
+                    InitializerDeclSyntax(
+                        signature: FunctionSignatureSyntax(
+                            parameterClause: FunctionParameterClauseSyntax(
+                                parameters: []
+                            )
+                        ),
+                        body: CodeBlockSyntax(
+                            statements: ""
+                        )
+                    )
+                ),
+                at: 0
+            )
+        }
+        
+        return results
     }
 }
 
 func getTestableStructDeclaration(
-    structName: TokenSyntax,
+    structDecl: StructDeclSyntax,
     functions: [FunctionDeclSyntax]
 ) -> (staticInitializer: FunctionDeclSyntax, struct: StructDeclSyntax) {
     var memberBlock = MemberBlockSyntax(membersBuilder: {
@@ -61,7 +84,7 @@ func getTestableStructDeclaration(
                 endpointName: "\(function.name)",
                 hexEncodedArgs: []
             ) {
-                var contract = \(structName).init()
+                var contract = \(structDecl.name.trimmed)(_noDeploy: ())
                 return contract.\(function.name)(\(raw: args))
             }
             """
@@ -78,6 +101,26 @@ func getTestableStructDeclaration(
         memberBlock: memberBlock
     )
     
+    let optionalInitDecl = structDecl.memberBlock.members.first(where: { $0.decl.as(InitializerDeclSyntax.self) != nil } )
+    
+    let initDecl = optionalInitDecl?.decl.as(InitializerDeclSyntax.self) ?? InitializerDeclSyntax(
+        signature: FunctionSignatureSyntax(
+            parameterClause: FunctionParameterClauseSyntax(
+                parameters: []
+            )
+        ),
+        body: CodeBlockSyntax(
+            statements: ""
+        )
+    )
+    
+    var testableAddressParameter = "_ _testableAddress: String"
+    if initDecl.signature.parameterClause.parameters.count > 0 {
+        testableAddressParameter += ", "
+    }
+    
+    let testableStaticInitializerParameters = [FunctionParameterSyntax(stringLiteral: testableAddressParameter)] + initDecl.signature.parameterClause.parameters
+    
     let testableStaticInitializer: FunctionDeclSyntax = FunctionDeclSyntax.init(
         modifiers: [
             DeclModifierSyntax.init(name: .keyword(.public)),
@@ -86,18 +129,31 @@ func getTestableStructDeclaration(
         name: "testable",
         signature: FunctionSignatureSyntax(
             parameterClause: FunctionParameterClauseSyntax(
-                parameters: [
-                    "address: String"
-                ]
+                parameters: testableStaticInitializerParameters
             ),
             returnClause: ReturnClauseSyntax(
                 type: TypeSyntax(stringLiteral: "Testable")
             )
         ),
         bodyBuilder: {
-            "Testable(address: address)"
+            "Testable(address: _testableAddress)"
         }
     )
     
     return (staticInitializer: testableStaticInitializer, struct: testableStruct)
+}
+
+func getNoDeployInit() -> InitializerDeclSyntax {
+    return InitializerDeclSyntax(
+        signature: FunctionSignatureSyntax(
+            parameterClause: FunctionParameterClauseSyntax(
+                parameters: [
+                    "_noDeploy: ()"
+                ]
+            )
+        ),
+        body: CodeBlockSyntax(
+            statements: ""
+        )
+    )
 }

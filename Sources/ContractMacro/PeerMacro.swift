@@ -11,37 +11,17 @@ extension Contract: PeerMacro {
             throw ContractMacroError.onlyApplicableToStruct
         }
         
-        let members = structDecl.memberBlock.members
+        try structDecl.isValidStruct()
         
-        guard members.filter({ $0.decl.is(InitializerDeclSyntax.self) }).count < 2 else {
-            throw ContractMacroError.onlyOneConvenienceInitAllowed
-        }
-        
-        let hasClassicInit = members.contains { member in
+        let optionalInitDecl = structDecl.memberBlock.members.first(where: { member in
             guard let initDecl = member.decl.as(InitializerDeclSyntax.self) else {
-                return false
-            }
-            
-            if initDecl.modifiers.contains(where: { $0.name.tokenKind == .keyword(.convenience) }) {
                 return false
             }
             
             return true
-        }
-        
-        guard !hasClassicInit else {
-            throw ContractMacroError.onlyOneConvenienceInitAllowed
-        }
-        
-        let optionalConvenienceInitDecl = members.first (where: { member in
-            guard let initDecl = member.decl.as(InitializerDeclSyntax.self) else {
-                return false
-            }
-            
-            return initDecl.modifiers.contains(where: { $0.name.tokenKind == .keyword(.convenience) })
         })
         
-        let initDecl = optionalConvenienceInitDecl?.decl.as(InitializerDeclSyntax.self) ?? InitializerDeclSyntax(
+        let initDecl = optionalInitDecl?.decl.as(InitializerDeclSyntax.self) ?? InitializerDeclSyntax(
             signature: FunctionSignatureSyntax(
                 parameterClause: FunctionParameterClauseSyntax(
                     parameters: []
@@ -53,10 +33,10 @@ extension Contract: PeerMacro {
         )
         
         var results: [FunctionDeclSyntax] = [
-            getInitExportDeclaration(structName: structDecl.name, init: initDecl, context: context)
+            getInitExportDeclaration(structName: structDecl.name, initDecl: initDecl, context: context)
         ]
         
-        let functionDecls = members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
+        let functionDecls = structDecl.memberBlock.members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         for function in functionDecls {
             if let decl = getEndpointExportDeclaration(structName: structDecl.name, function: function, context: context) {
                 results.append(decl)
@@ -86,31 +66,41 @@ fileprivate func getEndpointExportDeclaration(structName: TokenSyntax, function:
     @_cdecl("\(function.name)")
     """
     
-    let body: CodeBlockSyntax
+    let endpointParams = getEndpointVariablesDeclarations(
+        functionParameters: function.signature.parameterClause.parameters
+    )
+    
+    let contractVariableDeclaration: ExprSyntax = "var contract = \(structName.trimmed)(_noDeploy: ())"
+    
+    let body: String
     if function.signature.returnClause != nil {
-        body = CodeBlockSyntax(statements: """
+        body = """
         var result = MXBuffer()
         
-        var contract = \(structName.trimmed)()
+        \(contractVariableDeclaration)
         let endpointOutput = contract.\(function.name)()
         
         endpointOutput.topEncode(output: &result)
         
         result.finish()
-        """)
+        """
     } else {
-        body = CodeBlockSyntax(statements: """
-        var contract = \(structName.trimmed)()
-        contract.\(function.name)()
-        """)
+        body = """
+        \(contractVariableDeclaration)
+        contract.\(function.name)(\(endpointParams.contractFunctionCallArguments))
+        """
     }
     
-    exportedFunction.body = body
+    exportedFunction.body = CodeBlockSyntax(statements: """
+    withTransactionArguments { (\(raw: endpointParams.withTransactionArgumentsParams)) in
+        \(raw: body)
+    }
+    """)
     
     return exportedFunction
 }
 
-fileprivate func getInitExportDeclaration(structName: TokenSyntax, init: InitializerDeclSyntax, context: some MacroExpansionContext) -> FunctionDeclSyntax {
+fileprivate func getInitExportDeclaration(structName: TokenSyntax, initDecl: InitializerDeclSyntax, context: some MacroExpansionContext) -> FunctionDeclSyntax {
     var exportedFunction = FunctionDeclSyntax(
         name: context.makeUniqueName("init"),
         signature: FunctionSignatureSyntax(
@@ -125,9 +115,36 @@ fileprivate func getInitExportDeclaration(structName: TokenSyntax, init: Initial
     @_cdecl("init")
     """
     
+    let endpointParams = getEndpointVariablesDeclarations(
+        functionParameters: initDecl.signature.parameterClause.parameters
+    )
+    
     exportedFunction.body = CodeBlockSyntax(statements: """
-    let _ = \(structName.trimmed).init()
+    withTransactionArguments { (\(raw: endpointParams.withTransactionArgumentsParams)) in
+        let _ = \(structName.trimmed)(\(raw: endpointParams.contractFunctionCallArguments))
+    }
     """)
     
     return exportedFunction
+}
+
+fileprivate func getEndpointVariablesDeclarations(
+    functionParameters: FunctionParameterListSyntax
+) -> (withTransactionArgumentsParams: String, contractFunctionCallArguments: String) {
+    var withTransactionArgumentsParamList: [String] = []
+    var contractFunctionCallArgumentsList: [String] = []
+    
+    for parameter in functionParameters {
+        let variableName = parameter.secondName ?? parameter.firstName
+        withTransactionArgumentsParamList.append("\(variableName): \(parameter.type)")
+        contractFunctionCallArgumentsList.append("\(variableName): \(variableName)")
+    }
+    
+    let withTransactionArgumentsParams = withTransactionArgumentsParamList.joined(separator: ", ")
+    let contractFunctionCallArguments = contractFunctionCallArgumentsList.joined(separator: ", ")
+    
+    return (
+        withTransactionArgumentsParams: withTransactionArgumentsParams,
+        contractFunctionCallArguments: contractFunctionCallArguments
+    )
 }
