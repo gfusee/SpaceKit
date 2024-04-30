@@ -57,25 +57,19 @@ final class ContractStorageTests: ContractTestCase {
         XCTAssertEqual(counterValue, "The counter is: 2")
     }
     
+    func testIncreaseCounterTwoContracts() throws {
+        var contract1 = CounterContract.testable(address: "counter1")
+        contract1.increaseByOne()
+        
+        var contract2 = CounterContract.testable(address: "counter2")
+        contract2.increaseByOne()
+        contract2.increaseByOne()
+        
+        let contract1StoredValue = contract1.getCounterValue()
+        let contract2StoredValue = contract2.getCounterValue()
+        
+        XCTAssertEqual(contract1StoredValue, "The counter is: 1")
+        XCTAssertEqual(contract2StoredValue, "The counter is: 2")
+    }
+    
 }
-
-
-
-/*
- func testIncreaseCounterTwoContracts() throws {
-     let dummyAddress1 = "counter1"
-     var contract1 = CounterContract.testable(address: dummyAddress1)
-     contract1.increaseByOne()
-     
-     let dummyAddress2 = "counter2"
-     var contract2 = CounterContract.testable(address: dummyAddress2)
-     contract2.increaseByOne()
-     contract2.increaseByOne()
-     
-     let contract1StoredValue = contract1.getStoredValue()
-     let contract2StoredValue = contract2.getStoredValue()
-     
-     XCTAssertEqual(contract1StoredValue, "The counter is: 1")
-     XCTAssertEqual(contract2StoredValue, "The counter is: 2")
- }
- */
