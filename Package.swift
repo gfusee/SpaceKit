@@ -76,7 +76,19 @@ if !isWasm {
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
             ]
-        )
+        ),
+        .testTarget(
+            name: "AdderTests",
+            dependencies: [
+                "MultiversX"
+            ]
+        ),
+        .testTarget(
+            name: "FactorialTests",
+            dependencies: [
+                "MultiversX"
+            ]
+        ),
     ])
 }
 

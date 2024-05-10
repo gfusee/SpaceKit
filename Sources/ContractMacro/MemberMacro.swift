@@ -59,9 +59,80 @@ func getTestableStructDeclaration(
     structDecl: StructDeclSyntax,
     functions: [FunctionDeclSyntax]
 ) -> (staticInitializer: FunctionDeclSyntax, struct: StructDeclSyntax) {
+    let optionalInitDecl = structDecl.memberBlock.members.first(where: { $0.decl.as(InitializerDeclSyntax.self) != nil } )
+    
+    let initDecl = optionalInitDecl?.decl.as(InitializerDeclSyntax.self) ?? InitializerDeclSyntax(
+        signature: FunctionSignatureSyntax(
+            parameterClause: FunctionParameterClauseSyntax(
+                parameters: []
+            )
+        ),
+        body: CodeBlockSyntax(
+            statements: ""
+        )
+    )
+    
+    var testableAddressParameter = "_ _testableAddress: String"
+    if initDecl.signature.parameterClause.parameters.count > 0 {
+        testableAddressParameter += ", "
+    }
+    
+    let testableStaticInitializerParameters = [FunctionParameterSyntax(stringLiteral: testableAddressParameter)] + initDecl.signature.parameterClause.parameters
+    
+    var initCallParametersList: [String] = []
+    
+    for parameter in initDecl.signature.parameterClause.parameters {
+        let parameterName = parameter.secondName ?? parameter.firstName
+        initCallParametersList.append("\(parameterName): \(parameterName)")
+    }
+    
+    let initCallParameters = initCallParametersList.joined(separator: ", ")
+    let testableStaticInitializerCallParameters = initCallParameters.count > 0 ? ", \(initCallParameters)" : ""
+    
+    let testableStaticInitializer: FunctionDeclSyntax = FunctionDeclSyntax.init(
+        modifiers: [
+            DeclModifierSyntax.init(name: .keyword(.public)),
+            DeclModifierSyntax.init(name: .keyword(.static))
+        ],
+        name: "testable",
+        signature: FunctionSignatureSyntax(
+            parameterClause: FunctionParameterClauseSyntax(
+                parameters: testableStaticInitializerParameters
+            ),
+            returnClause: ReturnClauseSyntax(
+                type: TypeSyntax(stringLiteral: "Testable")
+            )
+        ),
+        bodyBuilder: {
+            "Testable(_testableAddress\(raw: testableStaticInitializerCallParameters))"
+        }
+    )
+    
+    let testableInitDecl = InitializerDeclSyntax(
+        signature: FunctionSignatureSyntax(
+            parameterClause: FunctionParameterClauseSyntax(
+                parameters: testableStaticInitializerParameters // Same as the static func testable
+            )
+        ),
+        body: CodeBlockSyntax(
+            statements: """
+            self.address = _testableAddress
+            runTestCall(
+                contractAddress: self.address,
+                endpointName: "init",
+                hexEncodedArgs: []
+            ) {
+                let _ = \(structDecl.name.trimmed)(\(raw: initCallParameters))
+            }
+            """
+        )
+    )
+    
     var memberBlock = MemberBlockSyntax(membersBuilder: {
         "let address: String"
     })
+    
+    memberBlock.members.append(MemberBlockItemSyntax(decl: testableInitDecl))
     
     for function in functions {
         guard function.isEndpoint() else {
@@ -99,45 +170,6 @@ func getTestableStructDeclaration(
         ],
         name: "Testable",
         memberBlock: memberBlock
-    )
-    
-    let optionalInitDecl = structDecl.memberBlock.members.first(where: { $0.decl.as(InitializerDeclSyntax.self) != nil } )
-    
-    let initDecl = optionalInitDecl?.decl.as(InitializerDeclSyntax.self) ?? InitializerDeclSyntax(
-        signature: FunctionSignatureSyntax(
-            parameterClause: FunctionParameterClauseSyntax(
-                parameters: []
-            )
-        ),
-        body: CodeBlockSyntax(
-            statements: ""
-        )
-    )
-    
-    var testableAddressParameter = "_ _testableAddress: String"
-    if initDecl.signature.parameterClause.parameters.count > 0 {
-        testableAddressParameter += ", "
-    }
-    
-    let testableStaticInitializerParameters = [FunctionParameterSyntax(stringLiteral: testableAddressParameter)] + initDecl.signature.parameterClause.parameters
-    
-    let testableStaticInitializer: FunctionDeclSyntax = FunctionDeclSyntax.init(
-        modifiers: [
-            DeclModifierSyntax.init(name: .keyword(.public)),
-            DeclModifierSyntax.init(name: .keyword(.static))
-        ],
-        name: "testable",
-        signature: FunctionSignatureSyntax(
-            parameterClause: FunctionParameterClauseSyntax(
-                parameters: testableStaticInitializerParameters
-            ),
-            returnClause: ReturnClauseSyntax(
-                type: TypeSyntax(stringLiteral: "Testable")
-            )
-        ),
-        bodyBuilder: {
-            "Testable(address: _testableAddress)"
-        }
     )
     
     return (staticInitializer: testableStaticInitializer, struct: testableStruct)

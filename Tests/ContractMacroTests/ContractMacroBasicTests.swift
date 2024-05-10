@@ -55,19 +55,27 @@ final class ContractMacroBasicTests: XCTestCase {
         
             #if !WASM
             public static func testable(_ _testableAddress: String) -> Testable {
-                Testable(address: _testableAddress)
+                Testable(_testableAddress)
             }
 
             public struct Testable {
                 let address: String
+                init(_ _testableAddress: String) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract()
+                    }
+                }
             }
             #endif}
         
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
-            withTransactionArguments { () in
-                let _ = Contract()
-            }
+            let _ = Contract()
         }
         """
 
@@ -133,20 +141,28 @@ final class ContractMacroBasicTests: XCTestCase {
 
             #if !WASM
             public static func testable(_ _testableAddress: String) -> Testable {
-                Testable(address: _testableAddress)
+                Testable(_testableAddress)
             }
 
             public struct Testable {
                 let address: String
+                init(_ _testableAddress: String) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract()
+                    }
+                }
             }
             #endif
         }
 
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
-            withTransactionArguments { () in
-                let _ = Contract()
-            }
+            let _ = Contract()
         }
         """
 
@@ -178,20 +194,28 @@ final class ContractMacroBasicTests: XCTestCase {
 
             #if !WASM
             public static func testable(_ _testableAddress: String) -> Testable {
-                Testable(address: _testableAddress)
+                Testable(_testableAddress)
             }
 
             public struct Testable {
                 let address: String
+                init(_ _testableAddress: String) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract()
+                    }
+                }
             }
             #endif
         }
 
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
-            withTransactionArguments { () in
-                let _ = Contract()
-            }
+            let _ = Contract()
         }
         """
 
@@ -223,20 +247,30 @@ final class ContractMacroBasicTests: XCTestCase {
 
             #if !WASM
             public static func testable(_ _testableAddress: String, buffer: MXBuffer) -> Testable {
-                Testable(address: _testableAddress)
+                Testable(_testableAddress, buffer: buffer)
             }
 
             public struct Testable {
                 let address: String
+                init(_ _testableAddress: String, buffer: MXBuffer) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract(buffer: buffer)
+                    }
+                }
             }
             #endif
         }
 
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
-            withTransactionArguments { (buffer: MXBuffer) in
-                let _ = Contract(buffer: buffer)
-            }
+            var _argsLoader = EndpointArgumentsLoader()
+            let buffer = MXBuffer.topDecodeMulti(input: &_argsLoader)
+            let _ = Contract(buffer: buffer)
         }
         """
 
@@ -268,20 +302,31 @@ final class ContractMacroBasicTests: XCTestCase {
 
             #if !WASM
             public static func testable(_ _testableAddress: String, buffer: MXBuffer, number: BigUint) -> Testable {
-                Testable(address: _testableAddress)
+                Testable(_testableAddress, buffer: buffer, number: number)
             }
 
             public struct Testable {
                 let address: String
+                init(_ _testableAddress: String, buffer: MXBuffer, number: BigUint) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract(buffer: buffer, number: number)
+                    }
+                }
             }
             #endif
         }
 
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
-            withTransactionArguments { (buffer: MXBuffer, number: BigUint) in
-                let _ = Contract(buffer: buffer, number: number)
-            }
+            var _argsLoader = EndpointArgumentsLoader()
+            let buffer = MXBuffer.topDecodeMulti(input: &_argsLoader)
+            let number = BigUint.topDecodeMulti(input: &_argsLoader)
+            let _ = Contract(buffer: buffer, number: number)
         }
         """
 
@@ -316,11 +361,21 @@ final class ContractMacroBasicTests: XCTestCase {
         
             #if !WASM
             public static func testable(_ _testableAddress: String) -> Testable {
-                Testable(address: _testableAddress)
+                Testable(_testableAddress)
             }
 
             public struct Testable {
                 let address: String
+                init(_ _testableAddress: String) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract()
+                    }
+                }
                     public func singleFunction() {
                     return runTestCall(
                         contractAddress: self.address,
@@ -337,17 +392,14 @@ final class ContractMacroBasicTests: XCTestCase {
         
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
-            withTransactionArguments { () in
-                let _ = Contract()
-            }
+            let _ = Contract()
         }
 
         @_expose(wasm, "singleFunction")
         @_cdecl("singleFunction") func __macro_local_14singleFunctionfMu_() {
-            withTransactionArguments { () in
-                var contract = Contract(_noDeploy: ())
-                contract.singleFunction()
-            }
+            var _contract = Contract(_noDeploy: ())
+
+            _contract.singleFunction()
         }
         """
 
@@ -382,11 +434,21 @@ final class ContractMacroBasicTests: XCTestCase {
         
             #if !WASM
             public static func testable(_ _testableAddress: String) -> Testable {
-                Testable(address: _testableAddress)
+                Testable(_testableAddress)
             }
 
             public struct Testable {
                 let address: String
+                init(_ _testableAddress: String) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract()
+                    }
+                }
                     public func singleFunction(buffer: MXBuffer) {
                     return runTestCall(
                         contractAddress: self.address,
@@ -403,17 +465,15 @@ final class ContractMacroBasicTests: XCTestCase {
         
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
-            withTransactionArguments { () in
-                let _ = Contract()
-            }
+            let _ = Contract()
         }
 
         @_expose(wasm, "singleFunction")
         @_cdecl("singleFunction") func __macro_local_14singleFunctionfMu_() {
-            withTransactionArguments { (buffer: MXBuffer) in
-                var contract = Contract(_noDeploy: ())
-                contract.singleFunction(buffer: buffer)
-            }
+            var _contract = Contract(_noDeploy: ())
+            var _argsLoader = EndpointArgumentsLoader()
+            let buffer = MXBuffer.topDecodeMulti(input: &_argsLoader)
+            _contract.singleFunction(buffer: buffer)
         }
         """
 
@@ -448,11 +508,21 @@ final class ContractMacroBasicTests: XCTestCase {
         
             #if !WASM
             public static func testable(_ _testableAddress: String) -> Testable {
-                Testable(address: _testableAddress)
+                Testable(_testableAddress)
             }
 
             public struct Testable {
                 let address: String
+                init(_ _testableAddress: String) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract()
+                    }
+                }
                     public func singleFunction(buffer: MXBuffer, number: BigUint) {
                     return runTestCall(
                         contractAddress: self.address,
@@ -469,17 +539,16 @@ final class ContractMacroBasicTests: XCTestCase {
         
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
-            withTransactionArguments { () in
-                let _ = Contract()
-            }
+            let _ = Contract()
         }
 
         @_expose(wasm, "singleFunction")
         @_cdecl("singleFunction") func __macro_local_14singleFunctionfMu_() {
-            withTransactionArguments { (buffer: MXBuffer, number: BigUint) in
-                var contract = Contract(_noDeploy: ())
-                contract.singleFunction(buffer: buffer, number: number)
-            }
+            var _contract = Contract(_noDeploy: ())
+            var _argsLoader = EndpointArgumentsLoader()
+            let buffer = MXBuffer.topDecodeMulti(input: &_argsLoader)
+            let number = BigUint.topDecodeMulti(input: &_argsLoader)
+            _contract.singleFunction(buffer: buffer, number: number)
         }
         """
 
@@ -514,11 +583,21 @@ final class ContractMacroBasicTests: XCTestCase {
 
             #if !WASM
             public static func testable(_ _testableAddress: String) -> Testable {
-                Testable(address: _testableAddress)
+                Testable(_testableAddress)
             }
 
             public struct Testable {
                 let address: String
+                init(_ _testableAddress: String) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract()
+                    }
+                }
                     public func singleFunction() -> MXBuffer {
                     return runTestCall(
                         contractAddress: self.address,
@@ -535,23 +614,98 @@ final class ContractMacroBasicTests: XCTestCase {
         
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
-            withTransactionArguments { () in
-                let _ = Contract()
-            }
+            let _ = Contract()
         }
-        
+
         @_expose(wasm, "singleFunction")
         @_cdecl("singleFunction") func __macro_local_14singleFunctionfMu_() {
-            withTransactionArguments { () in
-                var result = MXBuffer()
+            var _contract = Contract(_noDeploy: ())
 
-                var contract = Contract(_noDeploy: ())
-                let endpointOutput = contract.singleFunction()
+            let endpointOutput = _contract.singleFunction()
 
-                endpointOutput.topEncode(output: &result)
+            var _result = MXBuffer()
+            endpointOutput.topEncode(output: &_result)
 
-                result.finish()
+            _result.finish()
+        }
+        """
+
+        assertMacroExpansion(
+            source,
+            expandedSource: expected,
+            macros: testMacros
+        )
+    }
+    
+    func testExpandSingleFunctionWithOneParamAndReturnStruct() throws {
+        let source = """
+        @Contract
+        struct Contract {
+            public func singleFunction(buffer: MXBuffer) -> BigUint {
+                return BigUint.topDecode(input: buffer)
             }
+        }
+        """
+
+        let expected = """
+        struct Contract {
+            public func singleFunction(buffer: MXBuffer) -> BigUint {
+                return BigUint.topDecode(input: buffer)
+            }
+        
+            init() {
+            }
+
+            init(_noDeploy: ()) {
+            }
+
+            #if !WASM
+            public static func testable(_ _testableAddress: String) -> Testable {
+                Testable(_testableAddress)
+            }
+
+            public struct Testable {
+                let address: String
+                init(_ _testableAddress: String) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract()
+                    }
+                }
+                    public func singleFunction(buffer: MXBuffer) -> BigUint {
+                    return runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "singleFunction",
+                        hexEncodedArgs: []
+                    ) {
+                        var contract = Contract(_noDeploy: ())
+                        return contract.singleFunction(buffer: buffer)
+                    }
+                }
+            }
+            #endif
+        }
+        
+        @_expose(wasm, "init")
+        @_cdecl("init") func __macro_local_4initfMu_() {
+            let _ = Contract()
+        }
+
+        @_expose(wasm, "singleFunction")
+        @_cdecl("singleFunction") func __macro_local_14singleFunctionfMu_() {
+            var _contract = Contract(_noDeploy: ())
+            var _argsLoader = EndpointArgumentsLoader()
+            let buffer = MXBuffer.topDecodeMulti(input: &_argsLoader)
+            let endpointOutput = _contract.singleFunction(buffer: buffer)
+
+            var _result = MXBuffer()
+            endpointOutput.topEncode(output: &_result)
+
+            _result.finish()
         }
         """
 
@@ -594,11 +748,21 @@ final class ContractMacroBasicTests: XCTestCase {
 
             #if !WASM
             public static func testable(_ _testableAddress: String) -> Testable {
-                Testable(address: _testableAddress)
+                Testable(_testableAddress)
             }
 
             public struct Testable {
                 let address: String
+                init(_ _testableAddress: String) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract()
+                    }
+                }
                     public func firstFunction() {
                     return runTestCall(
                         contractAddress: self.address,
@@ -626,25 +790,21 @@ final class ContractMacroBasicTests: XCTestCase {
         
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
-            withTransactionArguments { () in
-                let _ = Contract()
-            }
+            let _ = Contract()
         }
 
         @_expose(wasm, "firstFunction")
         @_cdecl("firstFunction") func __macro_local_13firstFunctionfMu_() {
-            withTransactionArguments { () in
-                var contract = Contract(_noDeploy: ())
-                contract.firstFunction()
-            }
+            var _contract = Contract(_noDeploy: ())
+
+            _contract.firstFunction()
         }
 
         @_expose(wasm, "secondFunction")
         @_cdecl("secondFunction") func __macro_local_14secondFunctionfMu_() {
-            withTransactionArguments { () in
-                var contract = Contract(_noDeploy: ())
-                contract.secondFunction()
-            }
+            var _contract = Contract(_noDeploy: ())
+
+            _contract.secondFunction()
         }
         """
 

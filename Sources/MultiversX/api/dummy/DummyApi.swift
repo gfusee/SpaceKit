@@ -253,4 +253,14 @@ extension DummyApi: StorageApiProtocol {
         return 0
     }
 }
+
+extension DummyApi: EndpointApiProtocol {
+    public mutating func getNumArguments() -> Int32 {
+        return 0
+    }
+    
+    mutating func bufferGetArgument(argId: Int32, bufferHandle: Int32) -> Int32 {
+        return 0
+    }
+}
 #endif

@@ -1,93 +1,34 @@
 {
-    "name": "",
+    "name": "factorial",
     "steps": [
         {
             "step": "setState",
             "accounts": {
                 "address:owner": {
                     "nonce": "1",
-                    "balance": "1,000,000",
-                    "esdt": {
-                        "str:WEGLD-abcdef": "1,000,000",
-                        "str:USDC-abcdef": "1,000,000"
-                    }
-                }
-            },
-            "newAddresses": [
-                {
-                    "creatorAddress": "address:owner",
-                    "creatorNonce": "1",
-                    "newAddress": "sc:swift"
-                }
-            ]
-        },
-        {
-            "step": "scDeploy",
-            "id": "deploy",
-            "tx": {
-                "from": "address:owner",
-                "contractCode": "file:../contract-opt.wasm",
-                "arguments": [],
-                "gasLimit": "5,000,000",
-                "gasPrice": "0"
-            },
-            "expect": {
-                "out": [],
-                "status": "",
-                "logs": [],
-                "gas": "*",
-                "refund": "*"
-            }
-        },
-        {
-            "step": "scCall",
-            "txId": "echo",
-            "tx": {
-                "from": "address:owner",
-                "to": "sc:swift",
-                "function": "echoHelloWorld",
-                "arguments": [],
-                "gasLimit": "300,000,000",
-                "gasPrice": "0"
-            },
-            "expect": {
-                "out": "*",
-                "message": "",
-                "status": "",
-                "gas": "*",
-                "refund": "*"
-            }
-        },
-        {
-            "step": "checkState",
-            "accounts": {
-                "sc:swift": {
-                    "owner": "address:owner",
-                    "storage": {
-                        "str:testStorage": "10"
-                    },
-                    "code": "*"
+                    "balance": "0"
                 },
-                "+": "*"
+                "sc:factorial": {
+                    "code": "file:../.build/lib.wasm"
+                }
             }
         },
         {
-            "step": "scCall",
-            "txId": "echo",
+            "step": "scQuery",
+            "id": "factorial(3)",
             "tx": {
-                "from": "address:owner",
-                "to": "sc:swift",
-                "function": "getTestStorageValue",
-                "arguments": [],
-                "gasLimit": "300,000,000",
-                "gasPrice": "0"
+                "to": "sc:factorial",
+                "function": "factorial",
+                "arguments": [
+                    "3"
+                ]
             },
             "expect": {
-                "out": "10",
-                "message": "",
+                "out": [
+                    "6"
+                ],
                 "status": "",
-                "gas": "*",
-                "refund": "*"
+                "logs": []
             }
         }
     ]

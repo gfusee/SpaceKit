@@ -108,6 +108,8 @@ extension BigUint: TopDecode {
     }
 }
 
+extension BigUint: TopDecodeMulti {}
+
 extension BigUint: TopEncode {
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         output.setBuffer(buffer: self.toBytesBigEndianBuffer())

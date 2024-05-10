@@ -77,6 +77,16 @@ func mBufferStorageStore(keyHandle: Int32, mBufferHandle: Int32) -> Int32
 @_extern(c)
 func mBufferStorageLoad(keyHandle: Int32, mBufferHandle: Int32) -> Int32
 
+// MARK: Endpoint arguments-related OPCODES
+
+@_extern(wasm, module: "env", name: "getNumArguments")
+@_extern(c)
+func getNumArguments() -> Int32
+
+@_extern(wasm, module: "env", name: "mBufferGetArgument")
+@_extern(c)
+func mBufferGetArgument(argId: Int32, mBufferHandle: Int32) -> Int32;
+
 struct VMApi {}
 
 // MARK: BufferApi Implementation
@@ -162,6 +172,16 @@ extension VMApi: StorageApiProtocol {
     
     mutating func bufferStorageStore(keyHandle: Int32, bufferHandle: Int32) -> Int32 {
         return mBufferStorageStore(keyHandle: keyHandle, mBufferHandle: bufferHandle)
+    }
+}
+
+extension VMApi: EndpointApiProtocol {
+    mutating func getNumArguments() -> Int32 {
+        return MultiversX.getNumArguments()
+    }
+    
+    mutating func bufferGetArgument(argId: Int32, bufferHandle: Int32) -> Int32 {
+        return MultiversX.mBufferGetArgument(argId: argId, mBufferHandle: bufferHandle)
     }
 }
 
