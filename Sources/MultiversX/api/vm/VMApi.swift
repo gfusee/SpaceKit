@@ -5,6 +5,15 @@
 @_extern(c)
 func mBufferSetBytes(mBufferHandle: Int32, byte_ptr: UnsafeRawPointer, byte_len: Int32) -> Int32
 
+@_extern(wasm, module: "env", name: "mBufferCopyByteSlice")
+@_extern(c)
+func mBufferCopyByteSlice(
+        sourceHandle: Int32,
+        startingPosition: Int32,
+        sliceLength: Int32,
+        destinationHandle: Int32
+) -> Int32;
+
 @_extern(wasm, module: "env", name: "mBufferAppend")
 @_extern(c)
 func mBufferAppend(accumulatorHandle: Int32, dataHandle: Int32) -> Int32
@@ -34,6 +43,14 @@ func mBufferEq(handle1: Int32, handle2: Int32) -> Int32
 @_extern(wasm, module: "env", name: "bigIntSetInt64")
 @_extern(c)
 func bigIntSetInt64(destination: Int32, value: Int64)
+
+@_extern(wasm, module: "env", name: "bigIntIsInt64")
+@_extern(c)
+func bigIntIsInt64(reference: Int32) -> Int32
+
+@_extern(wasm, module: "env", name: "bigIntGetInt64")
+@_extern(c)
+func bigIntGetInt64(reference: Int32) -> Int64
 
 @_extern(wasm, module: "env", name: "bigIntToString")
 @_extern(c)
@@ -87,6 +104,12 @@ func getNumArguments() -> Int32
 @_extern(c)
 func mBufferGetArgument(argId: Int32, mBufferHandle: Int32) -> Int32;
 
+// MARK: Blockchain-related OPCODES
+
+@_extern(wasm, module: "env", name: "managedSCAddress")
+@_extern(c)
+func managedSCAddress(resultHandle: Int32)
+
 struct VMApi {}
 
 // MARK: BufferApi Implementation
@@ -94,6 +117,20 @@ struct VMApi {}
 extension VMApi: BufferApiProtocol {
     mutating func bufferSetBytes(handle: Int32, bytePtr: UnsafeRawPointer, byteLen: Int32) -> Int32 {
         return mBufferSetBytes(mBufferHandle: handle, byte_ptr: bytePtr, byte_len: byteLen)
+    }
+    
+    mutating func bufferCopyByteSlice(
+        sourceHandle: Int32,
+        startingPosition: Int32,
+        sliceLength: Int32,
+        destinationHandle: Int32
+    ) -> Int32 {
+        return mBufferCopyByteSlice(
+            sourceHandle: sourceHandle,
+            startingPosition: startingPosition,
+            sliceLength: sliceLength,
+            destinationHandle: destinationHandle
+        )
     }
 
     mutating func bufferAppend(accumulatorHandle: Int32, dataHandle: Int32) -> Int32 {
@@ -128,8 +165,16 @@ extension VMApi: BufferApiProtocol {
 // MARK: BigIntApi Implementation
 
 extension VMApi: BigIntApiProtocol {
-    mutating func bigIntSetInt64Value(destination: Int32, value: Int64) {
-        bigIntSetInt64(destination: destination, value: value)
+    mutating func bigIntSetInt64(destination: Int32, value: Int64) {
+        MultiversX.bigIntSetInt64(destination: destination, value: value)
+    }
+    
+    mutating func bigIntIsInt64(reference: Int32) -> Int32 {
+        MultiversX.bigIntIsInt64(reference: reference)
+    }
+    
+    mutating func bigIntGetInt64Unsafe(reference: Int32) -> Int64 {
+        MultiversX.bigIntGetInt64(reference: reference)
     }
 
     mutating func bigIntToBuffer(bigIntHandle: Int32, destHandle: Int32) {
@@ -182,6 +227,14 @@ extension VMApi: EndpointApiProtocol {
     
     mutating func bufferGetArgument(argId: Int32, bufferHandle: Int32) -> Int32 {
         return MultiversX.mBufferGetArgument(argId: argId, mBufferHandle: bufferHandle)
+    }
+}
+
+// MARK: BlockchainApiProtocol implementation
+
+extension VMApi: BlockchainApiProtocol {
+    mutating func managedSCAddress(resultHandle: Int32) {
+        return MultiversX.managedSCAddress(resultHandle: resultHandle)
     }
 }
 

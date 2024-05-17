@@ -1,5 +1,7 @@
 {
-    "name": "factorial",
+    "name": "adder",
+    "comment": "add then check",
+    "gasSchedule": "v3",
     "steps": [
         {
             "step": "setState",
@@ -7,28 +9,91 @@
                 "address:owner": {
                     "nonce": "1",
                     "balance": "0"
-                },
-                "sc:factorial": {
-                    "code": "file:../.build/lib.wasm"
                 }
+            },
+            "newAddresses": [
+                {
+                    "creatorAddress": "address:owner",
+                    "creatorNonce": "1",
+                    "newAddress": "sc:adder"
+                }
+            ]
+        },
+        {
+            "step": "scDeploy",
+            "id": "1",
+            "displayLogs": true,
+            "tx": {
+                "from": "address:owner",
+                "contractCode": "file:../.build/lib.wasm",
+                "arguments": [
+                    "5"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": "*",
+                "gas": "*",
+                "refund": "*"
             }
         },
         {
             "step": "scQuery",
-            "id": "factorial(3)",
+            "id": "2",
             "tx": {
-                "to": "sc:factorial",
-                "function": "factorial",
-                "arguments": [
-                    "3"
-                ]
+                "to": "sc:adder",
+                "function": "getSelfAddress",
+                "arguments": []
             },
             "expect": {
                 "out": [
-                    "6"
+                    "5"
                 ],
                 "status": "",
                 "logs": []
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "3",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:adder",
+                "function": "add",
+                "arguments": [
+                    "3"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": "*",
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "storage": {},
+                    "code": ""
+                },
+                "sc:adder": {
+                    "nonce": "0",
+                    "balance": "0",
+                    "storage": {
+                        "str:sum": "8"
+                    },
+                    "code": "file:../.build/lib.wasm"
+                }
             }
         }
     ]

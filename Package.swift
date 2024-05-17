@@ -29,7 +29,8 @@ var packageDependencies: [Package.Dependency] = [
 ]
 
 var libraryDependencies: [Target.Dependency] = [
-    "ContractMacro"
+    "ContractMacro",
+    "CodableMacro"
 ]
 
 var testTargets: [Target] = []
@@ -57,6 +58,12 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "IntTests",
+            dependencies: [
+                "MultiversX"
+            ]
+        ),
+        .testTarget(
             name: "ContractStorageTests",
             dependencies: [
                 "MultiversX"
@@ -78,6 +85,15 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "CodableMacroTests",
+            dependencies: [
+                "CodableMacro",
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
+            ]
+        ),
+        .testTarget(
             name: "AdderTests",
             dependencies: [
                 "MultiversX"
@@ -85,6 +101,12 @@ if !isWasm {
         ),
         .testTarget(
             name: "FactorialTests",
+            dependencies: [
+                "MultiversX"
+            ]
+        ),
+        .testTarget(
+            name: "BlockchainTests",
             dependencies: [
                 "MultiversX"
             ]
@@ -123,6 +145,14 @@ let package = Package(
         ),
         .macro(
             name: "ContractMacro",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+            ]
+        ),
+        .macro(
+            name: "CodableMacro",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),

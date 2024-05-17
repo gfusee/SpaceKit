@@ -3,14 +3,14 @@ import XCTest
 
 @Contract
 struct CounterContract {
-    @Storage(key: "counter") var counter: BigUint
+    @Storage(key: "globalCounter") var globalCounter: BigUint
     
     public mutating func increaseByOne() {
-        self.counter += 1
+        self.globalCounter += 1
     }
     
-    public func getCounterValue() -> MXString {
-        "The counter is: \(self.counter)"
+    public func getGlobalCounterValue() -> MXString {
+        "The global counter is: \(self.globalCounter)"
     }
 }
 
@@ -19,9 +19,9 @@ final class ContractStorageTests: ContractTestCase {
     func testGetCounterBeforeAnyIncrease() throws {
         let contract = CounterContract.testable("counter")
         
-        let counterValue = contract.getCounterValue()
+        let globalCounterValue = contract.getGlobalCounterValue()
         
-        XCTAssertEqual(counterValue, "The counter is: 0")
+        XCTAssertEqual(globalCounterValue, "The global counter is: 0")
     }
     
     func testIncreaseCounterOnce() throws {
@@ -29,9 +29,9 @@ final class ContractStorageTests: ContractTestCase {
         
         contract.increaseByOne()
         
-        let counterValue = contract.getCounterValue()
+        let globalCounterValue = contract.getGlobalCounterValue()
         
-        XCTAssertEqual(counterValue, "The counter is: 1")
+        XCTAssertEqual(globalCounterValue, "The global counter is: 1")
     }
     
     func testIncreaseCounterTwice() throws {
@@ -40,9 +40,9 @@ final class ContractStorageTests: ContractTestCase {
         contract.increaseByOne()
         contract.increaseByOne()
         
-        let counterValue = contract.getCounterValue()
+        let globalCounterValue = contract.getGlobalCounterValue()
         
-        XCTAssertEqual(counterValue, "The counter is: 2")
+        XCTAssertEqual(globalCounterValue, "The global counter is: 2")
     }
     
     func testIncreaseCounterTwoContracts() throws {
@@ -53,11 +53,11 @@ final class ContractStorageTests: ContractTestCase {
         contract2.increaseByOne()
         contract2.increaseByOne()
         
-        let contract1StoredValue = contract1.getCounterValue()
-        let contract2StoredValue = contract2.getCounterValue()
+        let contract1GlobalCounterValue = contract1.getGlobalCounterValue()
+        let contract2GlobalCounterValue = contract2.getGlobalCounterValue()
         
-        XCTAssertEqual(contract1StoredValue, "The counter is: 1")
-        XCTAssertEqual(contract2StoredValue, "The counter is: 2")
+        XCTAssertEqual(contract1GlobalCounterValue, "The global counter is: 1")
+        XCTAssertEqual(contract2GlobalCounterValue, "The global counter is: 2")
     }
     
 }

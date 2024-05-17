@@ -20,5 +20,10 @@ extension String {
         
         return data
     }
+    
+    public var hexadecimalString: String {
+        let data = Data(self.utf8)
+        return data.map{ String(format:"%02x", $0) }.joined()
+    }
 }
 #endif

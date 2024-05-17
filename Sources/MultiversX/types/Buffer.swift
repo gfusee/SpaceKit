@@ -20,8 +20,9 @@ public struct MXBuffer {
     public init(_ string: String) {
         self.init(data: Array(string.utf8))
     }
+    #endif
     
-    public init(data: [UInt8]) {
+    package init(data: [UInt8]) {
         let handle = getNextHandle()
         
         [UInt8](data).withUnsafeBytes { pointer in
@@ -34,7 +35,6 @@ public struct MXBuffer {
         
         self.handle = handle
     }
-    #endif
 
     public init() {
         self.init("")
@@ -44,15 +44,22 @@ public struct MXBuffer {
         self.handle = handle
     }
 
-    public mutating func append(_ other: Self) {
+    public func appended(_ other: Self) -> MXBuffer {
+        var cloned = self.clone()
+        cloned.appendUnsafe(other)
+        
+        return cloned
+    }
+    
+    private mutating func appendUnsafe(_ other: Self) {
         let _ = API.bufferAppend(accumulatorHandle: self.handle, dataHandle: other.handle)
     }
     
     public func clone() -> MXBuffer {
-        var result = MXBuffer()
-        result.append(self)
+        let cloned = MXBuffer()
+        let _ = API.bufferAppend(accumulatorHandle: cloned.handle, dataHandle: self.handle)
         
-        return result
+        return cloned
     }
     
     #if !WASM
@@ -75,6 +82,19 @@ public struct MXBuffer {
     public func finish() {
         let _ = API.bufferFinish(handle: self.handle)
     }
+    
+    public func getSubBuffer(startIndex: Int, length: Int) -> MXBuffer {
+        let resultHandle = getNextHandle()
+        
+        let _ = API.bufferCopyByteSlice(
+            sourceHandle: self.handle,
+            startingPosition: Int32(startIndex),
+            sliceLength: Int32(length),
+            destinationHandle: resultHandle
+        )
+        
+        return MXBuffer(handle: resultHandle)
+    }
 }
 
 extension MXBuffer: TopDecode {
@@ -83,6 +103,8 @@ extension MXBuffer: TopDecode {
     }
 }
 
+extension MXBuffer: TopDecodeMulti {}
+
 extension MXBuffer: TopEncodeOutput {
     public mutating func setBuffer(buffer: MXBuffer) {
         self = buffer
@@ -90,14 +112,35 @@ extension MXBuffer: TopEncodeOutput {
 }
 
 extension MXBuffer: TopEncode {
-    public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
+    public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
         output.setBuffer(buffer: self)
+    }
+}
+
+extension MXBuffer: NestedEncode {
+    public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
+        self.count.depEncode(dest: &dest)
+        dest.write(buffer: self)
+    }
+}
+
+extension MXBuffer: NestedEncodeOutput {
+    public mutating func write(buffer: MXBuffer) {
+        self.appendUnsafe(buffer)
     }
 }
 
 extension MXBuffer: Equatable {
     public static func == (lhs: MXBuffer, rhs: MXBuffer) -> Bool {
         return API.bufferEqual(handle1: lhs.handle, handle2: rhs.handle) > 0
+    }
+}
+
+extension MXBuffer {
+    public static func + (lhs: MXBuffer, rhs: MXBuffer) -> MXBuffer {
+        let cloned = lhs.clone()
+        
+        return cloned.appended(rhs)
     }
 }
 
@@ -119,25 +162,25 @@ public struct BufferInterpolationMatcher: StringInterpolationProtocol {
     }
 
     public mutating func appendLiteral(_ literal: StaticString) {
-        self.buffer.append(MXBuffer(literal))
+        self.buffer = self.buffer + MXBuffer(literal)
     }
 
     public mutating func appendInterpolation(_ value: MXBuffer) {
-        self.buffer.append(value)
+        self.buffer = self.buffer + value
     }
     
     #if !WASM
     public mutating func appendInterpolation(_ value: String) {
-        self.buffer.append(MXBuffer(value))
+        self.buffer = self.buffer + MXBuffer(value)
     }
     #endif
     
     public mutating func appendInterpolation(_ value: StaticString) {
-        self.buffer.append(MXBuffer(value))
+        self.buffer = self.buffer + MXBuffer(value)
     }
 
     public mutating func appendInterpolation(_ value: BigUint) {
-        self.buffer.append(value.toBuffer())
+        self.buffer = self.buffer + value.toBuffer()
     }
 }
 

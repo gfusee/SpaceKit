@@ -7,7 +7,7 @@ public struct BigUint {
 
     public init(value: Int64) {
         let handle = getNextHandle()
-        API.bigIntSetInt64Value(destination: handle, value: value)
+        API.bigIntSetInt64(destination: handle, value: value)
         self.handle = handle
     }
     
@@ -27,6 +27,10 @@ public struct BigUint {
         API.bigIntToBuffer(bigIntHandle: self.handle, destHandle: destHandle)
 
         return MXBuffer(handle: destHandle)
+    }
+    
+    public func toInt64() -> Int64? {
+        return API.bigIntGetInt64(reference: self.handle)
     }
     
     func toBytesBigEndianBuffer() -> MXBuffer {
@@ -111,7 +115,7 @@ extension BigUint: TopDecode {
 extension BigUint: TopDecodeMulti {}
 
 extension BigUint: TopEncode {
-    public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
+    public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
         output.setBuffer(buffer: self.toBytesBigEndianBuffer())
     }
 }

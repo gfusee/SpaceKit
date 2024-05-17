@@ -1,1 +1,1 @@
-public protocol ApiProtocol: BufferApiProtocol, BigIntApiProtocol {}
+public protocol ApiProtocol: BufferApiProtocol, BigIntApiProtocol, BlockchainApiProtocol {}

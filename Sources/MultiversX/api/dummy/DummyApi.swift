@@ -34,18 +34,22 @@ public struct DummyApi {
         self.errorMessage = nil
     }
     
-    private func getStorageForCurrentContractAddress() -> [Data : Data] {
+    private func getCurrentContractAddress() -> String {
         guard let currentContractAddress = self.currentContractAddress else {
             fatalError("No current contract address. Are you in a transaction context?")
         }
+        
+        return currentContractAddress
+    }
+    
+    private func getStorageForCurrentContractAddress() -> [Data : Data] {
+        let currentContractAddress = self.getCurrentContractAddress()
         
         return self.storageForContractAddress[currentContractAddress] ?? [:]
     }
     
     private mutating func setStorageForCurrentContractAddress(storage: [Data : Data]) {
-        guard let currentContractAddress = self.currentContractAddress else {
-            fatalError("No current contract address. Are you in a transaction context?")
-        }
+        let currentContractAddress = self.getCurrentContractAddress()
         
         self.storageForContractAddress[currentContractAddress] = storage
     }
@@ -67,6 +71,37 @@ extension DummyApi: BufferApiProtocol {
     public mutating func bufferSetBytes(handle: Int32, bytePtr: UnsafeRawPointer, byteLen: Int32) -> Int32 {
         let data = Data(bytes: bytePtr, count: Int(byteLen))
         self.managedBuffersData[handle] = data
+        
+        return 0
+    }
+    
+    public mutating func bufferCopyByteSlice(
+        sourceHandle: Int32,
+        startingPosition: Int32,
+        sliceLength: Int32,
+        destinationHandle: Int32
+    ) -> Int32 {
+        let sourceData = self.getBufferData(handle: sourceHandle)
+        let endIndex = startingPosition + sliceLength
+        
+        guard sliceLength >= 0 else {
+            throwUserError(message: "Negative slice length.")
+            return -1
+        }
+        
+        guard startingPosition >= 0 else {
+            throwUserError(message: "Negative start position.")
+            return -1
+        }
+        
+        guard endIndex <= sourceData.count else {
+            throwUserError(message: "Index out of range.")
+            return -1
+        }
+        
+        let slice = sourceData[startingPosition..<endIndex]
+        
+        self.managedBuffersData[destinationHandle] = slice
         
         return 0
     }
@@ -139,8 +174,20 @@ extension DummyApi: BufferApiProtocol {
 }
 
 extension DummyApi: BigIntApiProtocol {
-    public mutating func bigIntSetInt64Value(destination: Int32, value: Int64) {
+    public mutating func bigIntSetInt64(destination: Int32, value: Int64) {
         self.managedBigIntData[destination] = BigInt(integerLiteral: value)
+    }
+    
+    public mutating func bigIntIsInt64(reference: Int32) -> Int32 {
+        let value = self.getBigIntData(handle: reference)
+        
+        return value <= BigInt(INT64_MAX) ? 1 : 0
+    }
+    
+    public mutating func bigIntGetInt64Unsafe(reference: Int32) -> Int64 {
+        let value = self.getBigIntData(handle: reference)
+        
+        return Int64(value.formatted())!
     }
 
     public mutating func bigIntToBuffer(bigIntHandle: Int32, destHandle: Int32) {
@@ -261,6 +308,33 @@ extension DummyApi: EndpointApiProtocol {
     
     mutating func bufferGetArgument(argId: Int32, bufferHandle: Int32) -> Int32 {
         return 0
+    }
+}
+
+extension DummyApi: BlockchainApiProtocol {
+    public mutating func managedSCAddress(resultHandle: Int32) {
+        let currentContractAddressHexString = self.getCurrentContractAddress().hexadecimalString
+        let data = currentContractAddressHexString.hexadecimal
+        
+        let leadingZeros = Data([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        
+        let remainingLength = 32 - leadingZeros.count - data.count
+        
+        guard remainingLength >= 0 else {
+            fatalError()
+        }
+        
+        let underscoreHex = "_".hexadecimalString
+        let underscoreHexByte = underscoreHex.hexadecimal
+        var underscoreHexBytes = Data()
+        
+        while underscoreHexBytes.count < remainingLength {
+            underscoreHexBytes += underscoreHexByte
+        }
+        
+        let filledData = leadingZeros + data + underscoreHexBytes
+        
+        self.managedBuffersData[resultHandle] = filledData
     }
 }
 #endif
