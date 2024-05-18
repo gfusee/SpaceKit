@@ -286,4 +286,47 @@ final class BigUintTests: XCTestCase {
         
         XCTAssertEqual(bigUint, 10)
     }
+    
+    func testZeroBigUintToInt64() throws {
+        let value: BigUint = 0
+        let result = value.toInt64()
+        
+        let expected: Int64 = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testNonZeroBigUintToInt64() throws {
+        let value: BigUint = 1
+        let result = value.toInt64()
+        
+        let expected: Int64 = 1
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testMaxInt32BigUintToInt64() throws {
+        let value = BigUint(value: Int64(Int32.max))
+        let result = value.toInt64()
+        
+        let expected = Int64(Int32.max)
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testMaxInt64BigUintToInt64() throws {
+        let value = BigUint(value: Int64.max)
+        let result = value.toInt64()
+        
+        let expected = Int64.max
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testMoreThanInt64BigUintToInt64() throws {
+        let value = BigUint(value: Int64.max) + 1
+        let result = value.toInt64()
+        
+        XCTAssertEqual(result, nil)
+    }
 }

@@ -186,8 +186,9 @@ extension DummyApi: BigIntApiProtocol {
     
     public mutating func bigIntGetInt64Unsafe(reference: Int32) -> Int64 {
         let value = self.getBigIntData(handle: reference)
+        let formatted = value.formatted().replacingOccurrences(of: " ", with: "")
         
-        return Int64(value.formatted())!
+        return Int64(formatted)!
     }
 
     public mutating func bigIntToBuffer(bigIntHandle: Int32, destHandle: Int32) {
