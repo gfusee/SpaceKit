@@ -9,7 +9,7 @@ extension Int: TopEncode {
 }
 
 extension Int: NestedEncode {
-    public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput { // TODO: check if tests exist
+    public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         var bigEndianBuffer = MXBuffer()
         self.topEncode(output: &bigEndianBuffer)
         
