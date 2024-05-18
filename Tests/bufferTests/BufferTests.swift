@@ -254,4 +254,79 @@ final class BufferTests: XCTestCase {
         
         XCTAssertEqual(output.hexDescription, expected)
     }
+    
+    func testNestedDecodeEmptyBuffer() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
+        let result = MXBuffer.depDecode(input: &input)
+        
+        let expected: MXBuffer = ""
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testNestedDecodeSmallBuffer() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000161".hexadecimal)))
+        let result = MXBuffer.depDecode(input: &input)
+        
+        let expected: MXBuffer = "a"
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testNestedDecodeLongBuffer() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
+        let result = MXBuffer.depDecode(input: &input)
+        
+        let expected: MXBuffer = "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testNestedDecodeLongBufferSmallerSize() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000004048656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
+        let result = MXBuffer.depDecode(input: &input)
+        
+        let expected: MXBuffer = "Hello World! How's it going? I hope you're enjoying the SwiftSDK"
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testNestedDecodeBufferEmptyInputShouldFail() throws {
+        do {
+            try runFailableTransactions {
+                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
+                let result = MXBuffer.depDecode(input: &input)
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Index out of range."))
+        }
+    }
+    
+    func testNestedDecodeBufferBadLengthInputShouldFail() throws {
+        do {
+            try runFailableTransactions {
+                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000".hexadecimal)))
+                let result = MXBuffer.depDecode(input: &input)
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Index out of range."))
+        }
+    }
+    
+    func testNestedDecodeBufferTooLargeLengthInputShouldFail() throws {
+        do {
+            try runFailableTransactions {
+                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000004248656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
+                let result = MXBuffer.depDecode(input: &input)
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Index out of range."))
+        }
+    }
 }

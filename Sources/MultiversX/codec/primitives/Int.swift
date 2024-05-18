@@ -1,5 +1,7 @@
 // TODO: use signed managed type instead of unsigned BigUint
 
+private let intSize = 4
+
 extension Int: TopEncode {
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         BigUint(value: Int64(self)).topEncode(output: &output)
@@ -7,13 +9,12 @@ extension Int: TopEncode {
 }
 
 extension Int: NestedEncode {
-    public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
+    public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput { // TODO: check if tests exist
         var bigEndianBuffer = MXBuffer()
         self.topEncode(output: &bigEndianBuffer)
         
         let bigEndianBufferCount = bigEndianBuffer.count
         
-        let intSize = 4
         let leadingZerosBuffer = MXBuffer(data: [0, 0, 0, 0])
             .getSubBuffer(startIndex: 0, length: intSize - bigEndianBufferCount)
         
@@ -36,3 +37,11 @@ extension Int: TopDecode {
 }
 
 extension Int: TopDecodeMulti {}
+
+extension Int: NestedDecode {
+    public static func depDecode<I>(input: inout I) -> Int where I : NestedDecodeInput {
+        let buffer = input.readNextBuffer(length: intSize)
+        
+        return Int.topDecode(input: buffer)
+    }
+}

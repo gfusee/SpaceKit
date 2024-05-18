@@ -266,6 +266,24 @@ final class BigUintTests: XCTestCase {
         XCTAssertEqual(output.hexDescription, "0a")
     }
     
+    func testZeroBigUintNestedEncode() throws {
+        let bigUint: BigUint = 0
+        var output = MXBuffer()
+        
+        bigUint.depEncode(dest: &output)
+        
+        XCTAssertEqual(output.hexDescription, "00000000")
+    }
+    
+    func testNonZeroBigUintNestedEncode() throws {
+        let bigUint: BigUint = 1000
+        var output = MXBuffer()
+        
+        bigUint.depEncode(dest: &output)
+        
+        XCTAssertEqual(output.hexDescription, "0000000203e8")
+    }
+    
     func testZeroBigUintTopDecodeFromEmptyInput() throws {
         let input: MXBuffer = ""
         let bigUint = BigUint.topDecode(input: input)
@@ -285,6 +303,42 @@ final class BigUintTests: XCTestCase {
         let bigUint = BigUint.topDecode(input: input)
         
         XCTAssertEqual(bigUint, 10)
+    }
+    
+    func testZeroBigUintNestedDecodeFromNonEmptyInput() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
+        let bigUint = BigUint.depDecode(input: &input)
+        
+        let expected: BigUint = 0
+        
+        XCTAssertEqual(bigUint, expected)
+    }
+    
+    func testOneBigUintNestedDecodeFromNonEmptyInput() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000101".hexadecimal)))
+        let bigUint = BigUint.depDecode(input: &input)
+        
+        let expected: BigUint = 1
+        
+        XCTAssertEqual(bigUint, expected)
+    }
+    
+    func testTenBigUintNestedDecodeFromNonEmptyInput() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000010a".hexadecimal)))
+        let bigUint = BigUint.depDecode(input: &input)
+        
+        let expected: BigUint = 10
+        
+        XCTAssertEqual(bigUint, expected)
+    }
+    
+    func testThousandBigUintNestedDecodeFromNonEmptyInput() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000203e8".hexadecimal)))
+        let bigUint = BigUint.depDecode(input: &input)
+        
+        let expected: BigUint = 1000
+        
+        XCTAssertEqual(bigUint, expected)
     }
     
     func testZeroBigUintToInt64() throws {

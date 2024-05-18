@@ -113,4 +113,100 @@ final class IntTests: XCTestCase {
         XCTAssertEqual(output.hexDescription, expected)
     }
     
+    func testNestedDecodeIntZero() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
+        let result = Int.depDecode(input: &input)
+        
+        let expected = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testNestedDecodeIntOne() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000001".hexadecimal)))
+        let result = Int.depDecode(input: &input)
+        
+        let expected = 1
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testNestedDecodeIntThousand() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000003e8".hexadecimal)))
+        let result = Int.depDecode(input: &input)
+        
+        let expected = 1000
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testNestedDecodeIntMax() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("7fffffff".hexadecimal)))
+        let result = Int.depDecode(input: &input)
+        
+        let expected = Int(Int32.max)
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testNestedDecodeIntEmptyBufferShouldFail() throws {
+        do {
+            try runFailableTransactions {
+                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
+                let result = Int.depDecode(input: &input)
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Index out of range."))
+        }
+    }
+    
+    func testNestedDecodeIntTooSmallBufferShouldFail() throws {
+        do {
+            try runFailableTransactions {
+                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000".hexadecimal)))
+                let result = Int.depDecode(input: &input)
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Index out of range."))
+        }
+    }
+    
+    func testNestedDecodeIntThousandTooLargeBuffer() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000003e800000064".hexadecimal)))
+        let result = Int.depDecode(input: &input)
+        
+        let expected = 1000
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testNestedDecodeTwoInts() throws {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000003e800000064".hexadecimal)))
+        let result1 = Int.depDecode(input: &input)
+        let result2 = Int.depDecode(input: &input)
+        
+        let expected1 = 1000
+        let expected2 = 100
+        
+        XCTAssertEqual(result1, expected1)
+        XCTAssertEqual(result2, expected2)
+    }
+    
+    func testNestedDecodeTwoIntsTooSmallBufferShouldFail() throws {
+        do {
+            try runFailableTransactions {
+                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000003e8000000".hexadecimal)))
+                let result1 = Int.depDecode(input: &input)
+                let result2 = Int.depDecode(input: &input)
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Index out of range."))
+        }
+    }
 }

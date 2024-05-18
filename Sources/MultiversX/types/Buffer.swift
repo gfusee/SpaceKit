@@ -105,6 +105,12 @@ extension MXBuffer: TopDecode {
 
 extension MXBuffer: TopDecodeMulti {}
 
+extension MXBuffer: NestedDecode {
+    public static func depDecode<I>(input: inout I) -> MXBuffer where I : NestedDecodeInput {
+        return input.readNextBufferOfDynamicLength()
+    }
+}
+
 extension MXBuffer: TopEncodeOutput {
     public mutating func setBuffer(buffer: MXBuffer) {
         self = buffer
