@@ -8,7 +8,7 @@ public var API = DummyApi()
 @attached(member, names: arbitrary)
 public macro Contract() = #externalMacro(module: "ContractMacro", type: "Contract")
 
-@attached(extension, conformances: TopEncode)
+@attached(extension, conformances: TopEncode & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode, names: arbitrary)
 public macro Codable() = #externalMacro(module: "CodableMacro", type: "Codable")
 
 var nextHandle: Int32 = -100

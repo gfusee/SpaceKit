@@ -100,21 +100,37 @@ final class ContractMacroBasicTests: XCTestCase {
             let tokenIdentifier: TokenIdentifier
         }
         
-        extension TokenPayment : TopEncode {
+        extension TokenPayment: TopEncode {
             public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
-                self.tokenIdentifier.topEncode(output: &output)
+                var nestedEncoded = MXBuffer()
+                self.depEncode(dest: &nestedEncoded)
+                nestedEncoded.topEncode(output: &output)
+            }
+        }
+        
+        extension TokenPayment: NestedEncode {
+            func depEncode<O: NestedEncodeOutput>(dest: inout O) {
+                self.tokenIdentifier.depEncode(dest: &dest)
             }
         }
 
-        extension TokenPayment : TopDecode {
-            public static func topDecode(input: MXBuffer) -> Address {
-                return TokenPayment (
+        extension TokenPayment: TopDecode {
+            public static func topDecode(input: MXBuffer) -> TokenPayment {
+                return TokenPayment(
                     tokenIdentifier : TokenIdentifier.topDecode(input: input)
                 )
             }
         }
 
-        extension TokenPayment : TopDecodeMulti {
+        extension TokenPayment: TopDecodeMulti {
+        }
+        
+        extension TokenPayment: NestedDecode {
+            static func depDecode<I: NestedDecodeInput>(input: inout I) -> TokenPayment {
+                return TokenPayment(
+                    tokenIdentifier : TokenIdentifier.depDecode(input: &input)
+                )
+            }
         }
         """
         

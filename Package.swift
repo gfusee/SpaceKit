@@ -94,6 +94,12 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "CodableMacroImplTests",
+            dependencies: [
+                "MultiversX"
+            ]
+        ),
+        .testTarget(
             name: "AdderTests",
             dependencies: [
                 "MultiversX"

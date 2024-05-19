@@ -12,6 +12,10 @@ public struct BufferNestedDecodeInput {
 }
 
 extension BufferNestedDecodeInput: NestedDecodeInput {
+    public func getEntireBuffer() -> MXBuffer {
+        return self.buffer.clone()
+    }
+    
     public mutating func readNextBuffer(length: Int) -> MXBuffer {
         let subBuffer = self.buffer.getSubBuffer(startIndex: self.decodeIndex, length: length)
         self.decodeIndex += length
