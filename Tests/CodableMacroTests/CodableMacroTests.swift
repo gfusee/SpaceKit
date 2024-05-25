@@ -116,9 +116,8 @@ final class ContractMacroBasicTests: XCTestCase {
 
         extension TokenPayment: TopDecode {
             public static func topDecode(input: MXBuffer) -> TokenPayment {
-                return TokenPayment(
-                    tokenIdentifier : TokenIdentifier.topDecode(input: input)
-                )
+                var input = BufferNestedDecodeInput(buffer: input)
+                return TokenPayment.depDecode(input: &input)
             }
         }
 
@@ -129,6 +128,64 @@ final class ContractMacroBasicTests: XCTestCase {
             static func depDecode<I: NestedDecodeInput>(input: inout I) -> TokenPayment {
                 return TokenPayment(
                     tokenIdentifier : TokenIdentifier.depDecode(input: &input)
+                )
+            }
+        }
+        """
+        
+        assertMacroExpansion(
+            source,
+            expandedSource: expected,
+            diagnostics: [],
+            macros: testMacros
+        )
+    }
+    
+    func testExpandStructWithTwoFields() throws {
+        let source = """
+        @Codable
+        struct TokenPayment {
+            let tokenIdentifier: TokenIdentifier
+            let nonce: UInt64
+        }
+        """
+        
+        let expected = """
+        struct TokenPayment {
+            let tokenIdentifier: TokenIdentifier
+            let nonce: UInt64
+        }
+        
+        extension TokenPayment: TopEncode {
+            public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
+                var nestedEncoded = MXBuffer()
+                self.depEncode(dest: &nestedEncoded)
+                nestedEncoded.topEncode(output: &output)
+            }
+        }
+        
+        extension TokenPayment: NestedEncode {
+            func depEncode<O: NestedEncodeOutput>(dest: inout O) {
+                self.tokenIdentifier.depEncode(dest: &dest)
+                self.nonce.depEncode(dest: &dest)
+            }
+        }
+
+        extension TokenPayment: TopDecode {
+            public static func topDecode(input: MXBuffer) -> TokenPayment {
+                var input = BufferNestedDecodeInput(buffer: input)
+                return TokenPayment.depDecode(input: &input)
+            }
+        }
+
+        extension TokenPayment: TopDecodeMulti {
+        }
+        
+        extension TokenPayment: NestedDecode {
+            static func depDecode<I: NestedDecodeInput>(input: inout I) -> TokenPayment {
+                return TokenPayment(
+                    tokenIdentifier : TokenIdentifier.depDecode(input: &input),
+                    nonce : UInt64.depDecode(input: &input)
                 )
             }
         }

@@ -3,23 +3,41 @@
 
 private let intSize = 8
 
+extension UInt64 {
+    func asBigEndianBytes() -> [UInt8] {
+        return [
+            UInt8((self >> 56) & 0xFF),
+            UInt8((self >> 48) & 0xFF),
+            UInt8((self >> 40) & 0xFF),
+            UInt8((self >> 32) & 0xFF),
+            UInt8((self >> 24) & 0xFF),
+            UInt8((self >> 16) & 0xFF),
+            UInt8((self >> 8) & 0xFF),
+            UInt8(self & 0xFF),
+        ]
+    }
+}
+
 extension UInt64: TopEncode {
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
-        BigUint(value: Int64(self)).topEncode(output: &output) // TODO: overflow!!! See root todo
+        let bigEndianBytes = self.asBigEndianBytes()
+        
+        /*
+        var startEncodingIndex = 0
+        while startEncodingIndex < intSize && bigEndianBytes[startEncodingIndex] == 0 {
+            startEncodingIndex += 1
+        }
+        
+        MXBuffer(data: bigEndianBytes)
+            .getSubBuffer(startIndex: startEncodingIndex, length: intSize - startEncodingIndex)
+            .topEncode(output: &output)
+         */
     }
 }
 
 extension UInt64: NestedEncode {
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        var bigEndianBuffer = MXBuffer()
-        self.topEncode(output: &bigEndianBuffer)
-        
-        let bigEndianBufferCount = bigEndianBuffer.count
-        
-        let leadingZerosBuffer = MXBuffer(data: [0, 0, 0, 0, 0, 0, 0, 0])
-            .getSubBuffer(startIndex: 0, length: intSize - bigEndianBufferCount)
-        
-        dest.write(buffer: leadingZerosBuffer + bigEndianBuffer)
+        dest.write(buffer: MXBuffer(data: self.asBigEndianBytes()))
     }
 }
 

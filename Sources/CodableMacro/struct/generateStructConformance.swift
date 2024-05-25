@@ -72,9 +72,8 @@ fileprivate func generateTopDecodeExtension(structName: TokenSyntax, fields: [Va
         memberBlock: """
         : TopDecode {
             public static func topDecode(input: MXBuffer) -> \(structName) {
-                return \(raw: structName)(
-                    \(raw: topDecodeInitArgs)
-                )
+                var input = BufferNestedDecodeInput(buffer: input)
+                return \(raw: structName).depDecode(input: &input)
             }
         }
         """
