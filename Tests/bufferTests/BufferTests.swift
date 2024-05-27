@@ -329,4 +329,24 @@ final class BufferTests: XCTestCase {
             XCTAssertEqual(error, .userError(message: "Index out of range."))
         }
     }
+    
+    func testGetFixedBytesWithCorrectBuffer() throws {
+        let buffer = MXBuffer(data: Array("0001020304050607".hexadecimal))
+        let bytes: FixedArray8<UInt8> = buffer.toFixedSizeBytes()
+        
+        let array = [
+            bytes[0],
+            bytes[1],
+            bytes[2],
+            bytes[3],
+            bytes[4],
+            bytes[5],
+            bytes[6],
+            bytes[7]
+        ]
+        
+        let expected: [UInt8] = [0, 1, 2, 3, 4, 5, 6, 7]
+        
+        XCTAssertEqual(array, expected)
+    }
 }

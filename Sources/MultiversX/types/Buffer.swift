@@ -75,6 +75,16 @@ public struct MXBuffer {
     }
     #endif
     
+    public func toFixedSizeBytes<T: FixedArrayProtocol>() -> T {
+        var result: T = T(count: self.count)
+        
+        let _ = result.withUnsafeMutableBufferPointer { pointer in
+            API.bufferGetBytes(handle: self.handle, resultPointer: pointer.baseAddress!)
+        }
+        
+        return result
+    }
+    
     func getCountSized() -> Int32 {
         return API.bufferGetLength(handle: self.handle)
     }

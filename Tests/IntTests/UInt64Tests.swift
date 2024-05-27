@@ -93,7 +93,7 @@ final class UInt64Tests: XCTestCase {
     
     func testNestedEncodeUInt64Thousand() throws {
         var output = MXBuffer()
-        let value: Int = 1000
+        let value: UInt64 = 1000
         
         value.depEncode(dest: &output)
         
@@ -104,13 +104,71 @@ final class UInt64Tests: XCTestCase {
     
     func testNestedEncodeUInt64Max() throws {
         var output = MXBuffer()
-        let value: Int = Int(Int32.max)
+        let value = UInt64.max
         
         value.depEncode(dest: &output)
         
         let expected = "ffffffffffffffff"
         
         XCTAssertEqual(output.hexDescription, expected)
+    }
+    
+    func testTopDecodeUInt64EmptyBuffer() throws {
+        let input = MXBuffer(data: Array("00".hexadecimal))
+        let result = UInt64.topDecode(input: input)
+        
+        let expected: UInt64 = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testTopDecodeUInt64Zero() throws {
+        let input = MXBuffer(data: Array("00".hexadecimal))
+        let result = UInt64.topDecode(input: input)
+        
+        let expected: UInt64 = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testTopDecodeUInt64One() throws {
+        let input = MXBuffer(data: Array("01".hexadecimal))
+        let result = UInt64.topDecode(input: input)
+        
+        let expected: UInt64 = 1
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testTopDecodeUInt64Thousand() throws {
+        let input = MXBuffer(data: Array("03e8".hexadecimal))
+        let result = UInt64.topDecode(input: input)
+        
+        let expected: UInt64 = 1000
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testTopDecodeUInt64Max() throws {
+        let input = MXBuffer(data: Array("ffffffffffffffff".hexadecimal))
+        let result = UInt64.topDecode(input: input)
+        
+        let expected = UInt64.max
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testTopDecodeUInt64TooLargeBufferShouldFail() throws {
+        do {
+            try runFailableTransactions {
+                let input = MXBuffer(data: Array("0000000000000000".hexadecimal))
+                let _ = UInt64.topDecode(input: input)
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Index out of range."))
+        }
     }
     
     func testNestedDecodeUInt64Zero() throws {
@@ -153,7 +211,7 @@ final class UInt64Tests: XCTestCase {
         do {
             try runFailableTransactions {
                 var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
-                let result = UInt64.depDecode(input: &input)
+                let _ = UInt64.depDecode(input: &input)
             }
             
             XCTFail()
@@ -166,7 +224,7 @@ final class UInt64Tests: XCTestCase {
         do {
             try runFailableTransactions {
                 var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000000".hexadecimal)))
-                let result = UInt64.depDecode(input: &input)
+                let _ = UInt64.depDecode(input: &input)
             }
             
             XCTFail()
@@ -200,13 +258,89 @@ final class UInt64Tests: XCTestCase {
         do {
             try runFailableTransactions {
                 var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000003e800000000000000".hexadecimal)))
-                let result1 = UInt64.depDecode(input: &input)
-                let result2 = UInt64.depDecode(input: &input)
+                let _ = UInt64.depDecode(input: &input)
+                let _ = UInt64.depDecode(input: &input)
             }
             
             XCTFail()
         } catch {
             XCTAssertEqual(error, .userError(message: "Index out of range."))
         }
+    }
+    
+    func testFixedArrayToUInt64WithZero() throws {
+        let array: FixedArray8<UInt8> = FixedArray8(count: 0)
+        let result = array.toBigEndianUInt64()
+        
+        let expected: UInt64 = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testFixedArrayToUInt64WithOne() throws {
+        var array: FixedArray8<UInt8> = FixedArray8(count: 1)
+        array[0] = 1
+        let result = array.toBigEndianUInt64()
+        
+        let expected: UInt64 = 1
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testFixedArrayToUInt64WithTen() throws {
+        var array: FixedArray8<UInt8> = FixedArray8(count: 1)
+        array[0] = 10
+        let result = array.toBigEndianUInt64()
+        
+        let expected: UInt64 = 10
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testFixedArrayToUInt64WithThousand() throws {
+        var array: FixedArray8<UInt8> = FixedArray8(count: 2)
+        
+        array[0] = 3
+        array[1] = 232
+        
+        let result = array.toBigEndianUInt64()
+        
+        let expected: UInt64 = 1000
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testFixedArrayToUInt64WithUInt32() throws {
+        var array: FixedArray8<UInt8> = FixedArray8(allZeros: ())
+        
+        array[4] = 255
+        array[5] = 255
+        array[6] = 255
+        array[7] = 255
+        
+        let result = array.toBigEndianUInt64()
+        
+        let expected: UInt64 = UInt64(UInt32.max)
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testFixedArrayToUInt64WithUInt64Max() throws {
+        var array: FixedArray8<UInt8> = FixedArray8(allZeros: ())
+        
+        array[0] = 255
+        array[1] = 255
+        array[2] = 255
+        array[3] = 255
+        array[4] = 255
+        array[5] = 255
+        array[6] = 255
+        array[7] = 255
+        
+        let result = array.toBigEndianUInt64()
+        
+        let expected = UInt64.max
+        
+        XCTAssertEqual(result, expected)
     }
 }
