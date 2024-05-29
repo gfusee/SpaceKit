@@ -8,7 +8,7 @@ let testMacros: [String: Macro.Type] = [
     "Codable": Codable.self,
 ]
 
-final class ContractMacroBasicTests: XCTestCase {
+final class ContractMacroStructTests: XCTestCase {
     func testExpandClassShouldFail() throws {
         let source = """
         @Codable
