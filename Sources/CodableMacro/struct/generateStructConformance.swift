@@ -55,17 +55,7 @@ fileprivate func generateNestedEncodeExtension(structName: TokenSyntax, fields: 
 }
 
 fileprivate func generateTopDecodeExtension(structName: TokenSyntax, fields: [VariableDeclSyntax]) throws -> ExtensionDeclSyntax {
-    var topDecodeInitArgsList: [String] = []
-    for field in fields {
-        let fieldName = field.bindings.first!.pattern
-        guard let fieldType = field.bindings.first!.typeAnnotation else {
-            throw CodableMacroError.allFieldsShouldHaveAType
-        }
-        
-        topDecodeInitArgsList.append("\(fieldName) \(fieldType).topDecode(input: input)")
-    }
-    
-    let topDecodeInitArgs = topDecodeInitArgsList.joined(separator: ",\n")
+    // TODO: Add tests that ensures we cannot provide a larger buffer than needed (cf. defer scope)
     
     return ExtensionDeclSyntax(
         extendedType: IdentifierTypeSyntax(name: structName),
@@ -73,6 +63,13 @@ fileprivate func generateTopDecodeExtension(structName: TokenSyntax, fields: [Va
         : TopDecode {
             public static func topDecode(input: MXBuffer) -> \(structName) {
                 var input = BufferNestedDecodeInput(buffer: input)
+        
+                defer {
+                    guard !input.canDecodeMore() else {
+                        fatalError()
+                    }
+                }
+        
                 return \(raw: structName).depDecode(input: &input)
             }
         }

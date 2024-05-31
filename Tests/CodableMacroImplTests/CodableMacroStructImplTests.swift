@@ -7,7 +7,7 @@ import XCTest
     let amount: BigUint
 }
 
-final class CodableMacroImplTests: XCTestCase {
+final class CodableMacroStructImplTests: XCTestCase {
     
     func testTopEncodeForCustomStruct() throws {
         let tokenPayment = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)

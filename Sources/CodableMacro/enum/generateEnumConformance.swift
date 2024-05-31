@@ -42,7 +42,32 @@ fileprivate func generateNestedEncodeExtension(enumName: TokenSyntax, discrimina
     var nestedEncodeFieldsCallsList: [String] = []
     for discriminantAndCase in discriminantsAndCases {
         let caseName = discriminantAndCase.1.name.trimmed
-        nestedEncodeFieldsCallsList.append("case .\(caseName): UInt8(\(discriminantAndCase.0)).depEncode(dest: &dest)")
+        var associatedValuesInstantiationsList: [String] = []
+        var associatedValuesDepEncodeList: [String] = []
+        
+        if let associatedValues = discriminantAndCase.1.parameterClause?.parameters {
+            for associatedValue in associatedValues.enumerated() {
+                let valueName = "value\(associatedValue.offset)"
+                
+                associatedValuesInstantiationsList.append("let \(valueName)")
+                associatedValuesDepEncodeList.append("\(valueName).depEncode(dest: &dest)")
+            }
+        }
+        
+        let associatedValuesInstantiations = if associatedValuesInstantiationsList.isEmpty {
+            ""
+        } else {
+            "(\(associatedValuesInstantiationsList.joined(separator: ", ")))"
+        }
+        
+        let associatedValuesDepEncode = associatedValuesDepEncodeList.joined(separator: "\n")
+        
+        nestedEncodeFieldsCallsList.append("""
+            case .\(caseName)\(associatedValuesInstantiations):
+            UInt8(\(discriminantAndCase.0)).depEncode(dest: &dest)
+            \(associatedValuesDepEncode)
+            """.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
     }
     
     let nestedEncodeFieldsCalls = nestedEncodeFieldsCallsList.joined(separator: "\n")
@@ -62,14 +87,7 @@ fileprivate func generateNestedEncodeExtension(enumName: TokenSyntax, discrimina
 }
 
 fileprivate func generateTopDecodeExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> ExtensionDeclSyntax {
-    var topDecodeInitArgsList: [String] = []
-    
-    for discriminantAndCase in discriminantsAndCases {
-        let caseName = discriminantAndCase.1.name.trimmed
-        topDecodeInitArgsList.append("case \(discriminantAndCase.0): return .\(caseName)")
-    }
-    
-    let topDecodeInitArgs = topDecodeInitArgsList.joined(separator: "\n")
+    // TODO: Add tests that ensures we cannot provide a larger buffer than needed (cf. defer scope)
     
     return ExtensionDeclSyntax(
         extendedType: IdentifierTypeSyntax(name: enumName),
@@ -77,11 +95,14 @@ fileprivate func generateTopDecodeExtension(enumName: TokenSyntax, discriminants
         : TopDecode {
             public static func topDecode(input: MXBuffer) -> \(enumName) {
                 var input = BufferNestedDecodeInput(buffer: input)
-                let _discriminant = UInt8.depDecode(input: &input)
         
-                switch _discriminant {
-                    \(raw: topDecodeInitArgs)
+                defer {
+                    guard !input.canDecodeMore() else {
+                        fatalError()
+                    }
                 }
+        
+                return \(raw: enumName).depDecode(input: &input)
             }
         }
         """
@@ -101,11 +122,40 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
     var nestedDecodeInitArgsList: [String] = []
     
     for discriminantAndCase in discriminantsAndCases {
+        var nestedDecodeAssociatedValuesList: [String] = []
         let caseName = discriminantAndCase.1.name.trimmed
-        nestedDecodeInitArgsList.append("case \(discriminantAndCase.0): return .\(caseName)")
+        
+        if let associatedValues = discriminantAndCase.1.parameterClause?.parameters {
+            for associatedValue in associatedValues {
+                guard associatedValue.firstName == nil && associatedValue.secondName == nil else {
+                    throw CodableMacroError.enumAssociatedValuesShouldNotBeNamed
+                }
+                
+                let typeName = associatedValue.type.trimmed
+                
+                nestedDecodeAssociatedValuesList.append("\(typeName).depDecode(input: &input)")
+            }
+        }
+        
+        let nestedDecodeAssociatedValues = if nestedDecodeAssociatedValuesList.isEmpty {
+            ""
+        } else {
+            """
+            (
+                \(nestedDecodeAssociatedValuesList.joined(separator: ",\n"))
+            )
+            """
+        }
+        
+        nestedDecodeInitArgsList.append("""
+            case \(discriminantAndCase.0): return .\(caseName)\(nestedDecodeAssociatedValues)
+            """
+        )
     }
     
     let nestedDecodeInitArgs = nestedDecodeInitArgsList.joined(separator: "\n")
+    
+    // TODO: Add tests that ensures we cannot provide a larger buffer than needed (cf. defer scope)
     
     return ExtensionDeclSyntax(
         extendedType: IdentifierTypeSyntax(name: enumName),
@@ -116,6 +166,7 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
         
                 switch _discriminant {
                     \(raw: nestedDecodeInitArgs)
+                    default: fatalError()
                 }
             }
         }

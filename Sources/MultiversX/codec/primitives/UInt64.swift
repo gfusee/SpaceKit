@@ -1,4 +1,3 @@
-// TODO: use signed managed type instead of unsigned BigUint
 // TODO: add tests for the below extensions
 
 private let intSize = 8

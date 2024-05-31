@@ -29,4 +29,8 @@ extension BufferNestedDecodeInput: NestedDecodeInput {
         
         return buffer
     }
+    
+    public func canDecodeMore() -> Bool {
+        self.decodeIndex + 1 < self.bufferCount
+    }
 }

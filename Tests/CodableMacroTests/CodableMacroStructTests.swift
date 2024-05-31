@@ -117,6 +117,13 @@ final class ContractMacroStructTests: XCTestCase {
         extension TokenPayment: TopDecode {
             public static func topDecode(input: MXBuffer) -> TokenPayment {
                 var input = BufferNestedDecodeInput(buffer: input)
+        
+                defer {
+                    guard !input.canDecodeMore() else {
+                        fatalError()
+                    }
+                }
+        
                 return TokenPayment.depDecode(input: &input)
             }
         }
@@ -174,6 +181,13 @@ final class ContractMacroStructTests: XCTestCase {
         extension TokenPayment: TopDecode {
             public static func topDecode(input: MXBuffer) -> TokenPayment {
                 var input = BufferNestedDecodeInput(buffer: input)
+        
+                defer {
+                    guard !input.canDecodeMore() else {
+                        fatalError()
+                    }
+                }
+        
                 return TokenPayment.depDecode(input: &input)
             }
         }

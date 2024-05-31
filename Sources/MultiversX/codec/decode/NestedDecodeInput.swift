@@ -9,4 +9,6 @@ public protocol NestedDecodeInput {
     /// Used for types with dynamic length, that have their size encoded along with their data.
     /// Example: MXBuffer, BigUint, etc.
     mutating func readNextBufferOfDynamicLength() -> MXBuffer
+    
+    func canDecodeMore() -> Bool
 }

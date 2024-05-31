@@ -2,8 +2,13 @@ import SwiftSyntax
 
 extension EnumDeclSyntax {
     func isValidEnum() throws(CodableMacroError) {
-        guard self.inheritanceClause == nil else {
-            throw CodableMacroError.noEnumInheritenceOrRawValueAllowed
+        if let inheritenceClause = self.inheritanceClause {
+            let allowedTypes = ["Equatable"]
+            for type in inheritenceClause.inheritedTypes {
+                if !allowedTypes.contains(String(describing: type.type.trimmed)) {
+                    throw CodableMacroError.noEnumInheritenceOrRawValueAllowed
+                }
+            }
         }
         
         let members = self.memberBlock.members
