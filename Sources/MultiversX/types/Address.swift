@@ -41,13 +41,13 @@ extension Address: Equatable {
     }
 }
 
-extension Address: TopEncode {
+extension Address: TopEncode { // TODO: add tests
     public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
         self.buffer.topEncode(output: &output)
     }
 }
 
-extension Address: TopDecode {
+extension Address: TopDecode { // TODO: add tests
     public static func topDecode(input: MXBuffer) -> Address {
         let buffer = MXBuffer.topDecode(input: input)
         
@@ -56,3 +56,17 @@ extension Address: TopDecode {
 }
 
 extension Address: TopDecodeMulti {}
+
+extension Address: NestedEncode { // TODO: add tests
+    public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
+        dest.write(buffer: self.buffer)
+    }
+}
+
+extension Address: NestedDecode { // TODO: add tests
+    public static func depDecode<I>(input: inout I) -> Address where I : NestedDecodeInput {
+        let buffer = input.getEntireBuffer()
+        
+        return Address(buffer: buffer)
+    }
+}

@@ -79,14 +79,24 @@ func getTestableStructDeclaration(
     
     let testableStaticInitializerParameters = [FunctionParameterSyntax(stringLiteral: testableAddressParameter)] + initDecl.signature.parameterClause.parameters
     
+    var parameterNamesList: [String] = []
     var initCallParametersList: [String] = []
     
     for parameter in initDecl.signature.parameterClause.parameters {
         let parameterName = parameter.secondName ?? parameter.firstName
         initCallParametersList.append("\(parameterName): \(parameterName)")
+        parameterNamesList.append("\(parameterName)")
     }
     
     let initCallParameters = initCallParametersList.joined(separator: ", ")
+    let parameterNames = parameterNamesList.joined(separator: ", ")
+    
+    let closureParameterInstantiations = if parameterNames.isEmpty {
+        ""
+    } else {
+        "\(parameterNames) in"
+    }
+    
     let testableStaticInitializerCallParameters = initCallParameters.count > 0 ? ", \(initCallParameters)" : ""
     
     let testableStaticInitializer: FunctionDeclSyntax = FunctionDeclSyntax.init(
@@ -120,8 +130,8 @@ func getTestableStructDeclaration(
             runTestCall(
                 contractAddress: self.address,
                 endpointName: "init",
-                hexEncodedArgs: []
-            ) {
+                args: (\(raw: parameterNames))
+            ) { \(raw: closureParameterInstantiations)
                 let _ = \(structDecl.name.trimmed)(\(raw: initCallParameters))
             }
             """
@@ -139,13 +149,22 @@ func getTestableStructDeclaration(
             continue
         }
         
+        var variableNamesList: [String] = []
         var argsList: [String] = []
         for parameter in function.signature.parameterClause.parameters {
             let paramName = parameter.firstName == "_" ? "" : "\(parameter.firstName):"
             let variableName = parameter.secondName ?? parameter.firstName
             argsList.append("\(paramName) \(variableName)")
+            variableNamesList.append("\(variableName)")
         }
+        let variableNames = variableNamesList.joined(separator: ", ")
         let args = argsList.joined(separator: ", ")
+        
+        let closureVariableInstantiations = if variableNames.isEmpty {
+            ""
+        } else {
+            "\(variableNames) in"
+        }
         
         var testableFunction = function
         testableFunction.body = CodeBlockSyntax(
@@ -153,8 +172,8 @@ func getTestableStructDeclaration(
             return runTestCall(
                 contractAddress: self.address,
                 endpointName: "\(function.name)",
-                hexEncodedArgs: []
-            ) {
+                args: (\(raw: variableNames))
+            ) { \(raw: closureVariableInstantiations)
                 var contract = \(structDecl.name.trimmed)(_noDeploy: ())
                 return contract.\(function.name)(\(raw: args))
             }

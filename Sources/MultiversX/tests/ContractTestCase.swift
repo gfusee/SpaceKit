@@ -6,7 +6,7 @@ open class ContractTestCase: XCTestCase {
     open override func setUp() {
         super.setUp()
         
-        API.resetData()
+        API.resetWorld()
     }
     
 }

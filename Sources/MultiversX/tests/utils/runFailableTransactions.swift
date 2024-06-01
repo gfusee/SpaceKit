@@ -16,7 +16,7 @@ public func runFailableTransactions(transactions: @escaping () -> Void) throws(T
     
     semaphore.wait()
     
-    if let errorMessage = API.errorMessage {
+    if let errorMessage = API.getCurrentContainer().errorMessage {
         throw TransactionError.userError(message: errorMessage)
     }
 }
