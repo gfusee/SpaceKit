@@ -1,3 +1,5 @@
+private let ADDRESS_LENGTH = 32
+
 public struct Address {
     let buffer: MXBuffer
     
@@ -23,7 +25,7 @@ public struct Address {
     }
     
     public init(buffer: MXBuffer) {
-        if buffer.count != 32 {
+        if buffer.count != ADDRESS_LENGTH {
             fatalError()
         }
         
@@ -32,6 +34,18 @@ public struct Address {
     
     public func isZero() -> Bool {
         self == Address()
+    }
+    
+    public func send(egldValue: BigUint) {
+        let emptyBuffer = MXBuffer()
+        
+        let _ = API.managedTransferValueExecute(
+            dstHandle: self.buffer.handle,
+            valueHandle: egldValue.handle,
+            gasLimit: 0,
+            functionHandle: emptyBuffer.handle,
+            argumentsHandle: emptyBuffer.handle
+        )
     }
 }
 
@@ -65,7 +79,7 @@ extension Address: NestedEncode { // TODO: add tests
 
 extension Address: NestedDecode { // TODO: add tests
     public static func depDecode<I>(input: inout I) -> Address where I : NestedDecodeInput {
-        let buffer = input.getEntireBuffer()
+        let buffer = input.readNextBuffer(length: ADDRESS_LENGTH)
         
         return Address(buffer: buffer)
     }

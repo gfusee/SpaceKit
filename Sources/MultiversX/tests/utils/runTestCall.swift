@@ -7,12 +7,6 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     args: (repeat each InputArg),
     operation: (repeat each InputArg) -> ReturnType
 ) -> ReturnType {
-    defer {
-        API.lock.unlock()
-    }
-    
-    API.lock.lock()
-    
     // Pushing a container makes the previous handles invalid.
     // Thus, we have to inject the data into the new container.
     var concatenatedInputArgsBuffer = MXBuffer()
@@ -47,12 +41,6 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     args: (repeat each InputArg),
     operation: (repeat each InputArg) -> Void
 ) {
-    defer {
-        API.lock.unlock()
-    }
-    
-    API.lock.lock()
-    
     // Pushing a container makes the previous handles invalid.
     // Thus, we have to inject the data into the new container.
     var concatenatedInputArgsBuffer = MXBuffer()

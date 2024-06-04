@@ -9,7 +9,13 @@ import MultiversX
     
 }
 
-final class BlockchainTests: XCTestCase {
+final class BlockchainTests: ContractTestCase {
+    
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "adder")
+        ]
+    }
     
     func testGetSCAddress() throws {
         let contract = BlockchainContract.testable("adder")

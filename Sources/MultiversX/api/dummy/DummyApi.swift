@@ -21,7 +21,7 @@ public struct DummyApi {
            container.errorMessage == nil {
             // TODO: add tests that ensure an execution error "reverts" the state
             // Commit the container into the state
-            worldState.storageForContractAddress.merge(container.storageForContractAddress) { (_, new) in new }
+            self.worldState = container.state
         }
     }
     
@@ -33,8 +33,12 @@ public struct DummyApi {
         return container
     }
     
-    package mutating func resetWorld() {
-        self.worldState = WorldState()
+    package func getAccount(addressData: Data) -> WorldAccount? {
+        return self.worldState.getAccount(addressData: addressData)
+    }
+    
+    package mutating func setWorld(world: WorldState) {
+        self.worldState = world
     }
     
     mutating func throwUserError(message: String) {
@@ -119,10 +123,8 @@ extension DummyApi: BufferApiProtocol {
     
     public mutating func bufferFromBigIntUnsigned(bufferHandle: Int32, bigIntHandle: Int32) -> Int32 {
         let bigInt = self.getCurrentContainer().getBigIntData(handle: bigIntHandle)
-        let bigIntData = bigInt.serialize()
-        let bigIntDataWithoutSign = bigIntData.count > 0 ? bigIntData[1...] : Data()
         
-        self.getCurrentContainer().managedBuffersData[bufferHandle] = bigIntDataWithoutSign
+        self.getCurrentContainer().managedBuffersData[bufferHandle] = bigInt.toBigEndianUnsignedData()
         
         return 0
     }
@@ -297,28 +299,36 @@ extension DummyApi: EndpointApiProtocol {
 
 extension DummyApi: BlockchainApiProtocol {
     public mutating func managedSCAddress(resultHandle: Int32) {
-        let currentContractAddressHexString = self.getCurrentContainer().getCurrentContractAddress().hexadecimalString
-        let data = currentContractAddressHexString.hexadecimal
+        let currentContractAddress = self.getCurrentContainer().getCurrentSCAccount()
         
-        let leadingZeros = Data([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        self.getCurrentContainer().managedBuffersData[resultHandle] = currentContractAddress.addressData
+    }
+}
+
+extension DummyApi: SendApiProtocol {
+    public mutating func managedTransferValueExecute(
+        dstHandle: Int32,
+        valueHandle: Int32,
+        gasLimit: Int64,
+        functionHandle: Int32,
+        argumentsHandle: Int32
+    ) -> Int32 {
+        // TODO: the current implementation doesn't care about sc-to-sc execution
+        let sender = self.getCurrentContainer().getCurrentSCAccount()
+        let value = self.getCurrentContainer().getBigIntData(handle: valueHandle)
         
-        let remainingLength = 32 - leadingZeros.count - data.count
-        
-        guard remainingLength >= 0 else {
-            fatalError()
+        if value > sender.balance {
+            // TODO: throw execution failed instead of user error
+            // TODO: set the same error message than the SpaceVM
+            self.throwUserError(message: "Not enough balance.")
         }
         
-        let underscoreHex = "_".hexadecimalString
-        let underscoreHexByte = underscoreHex.hexadecimal
-        var underscoreHexBytes = Data()
+        let receiver = self.getCurrentContainer().getBufferData(handle: dstHandle)
         
-        while underscoreHexBytes.count < remainingLength {
-            underscoreHexBytes += underscoreHexByte
-        }
+        self.getCurrentContainer().addEgldToAddressBalance(address: sender.addressData, value: -value)
+        self.getCurrentContainer().addEgldToAddressBalance(address: receiver, value: value)
         
-        let filledData = leadingZeros + data + underscoreHexBytes
-        
-        self.getCurrentContainer().managedBuffersData[resultHandle] = filledData
+        return 0
     }
 }
 #endif

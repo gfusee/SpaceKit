@@ -5,23 +5,30 @@ import BigInt
 package class TransactionContainer {
     package var managedBuffersData: [Int32 : Data] = [:]
     package var managedBigIntData: [Int32 : BigInt] = [:]
-    package var storageForContractAddress: [String : [Data : Data]] = [:]
+    package var state: WorldState
     public package(set) var errorMessage: String? = nil
     
-    package var currentContractAddress: String? = nil
+    private var currentContractAddress: Data? = nil
     
     package init(
-        worldState: WorldState?,
+        worldState: WorldState,
         currentContractAddress: String
     ) {
-        if let worldState = worldState {
-            self.storageForContractAddress = worldState.storageForContractAddress
-        }
-        
-        self.currentContractAddress = currentContractAddress
+        self.currentContractAddress = currentContractAddress.toAddressData()
+        self.state = worldState
     }
     
-    package init() {}
+    package init() {
+        self.state = WorldState()
+    }
+    
+    private func getAccount(address: Data) -> WorldAccount {
+        guard let account = self.state.getAccount(addressData: address) else {
+            fatalError() // TODO: handle errors in the container
+        }
+        
+        return account
+    }
     
     package func getBufferData(handle: Int32) -> Data {
         guard let data = self.managedBuffersData[handle] else {
@@ -39,7 +46,7 @@ package class TransactionContainer {
         return data
     }
     
-    package func getCurrentContractAddress() -> String {
+    private func getCurrentContractAddress() -> Data {
         guard let currentContractAddress = self.currentContractAddress else {
             fatalError("No current contract address. Are you in a transaction context?")
         }
@@ -47,16 +54,35 @@ package class TransactionContainer {
         return currentContractAddress
     }
     
+    package func getCurrentSCAccount() -> WorldAccount {
+        let address = self.getCurrentContractAddress()
+        
+        return self.getAccount(address: address)
+    }
+    
     package func getStorageForCurrentContractAddress() -> [Data : Data] {
         let currentContractAddress = self.getCurrentContractAddress()
         
-        return self.storageForContractAddress[currentContractAddress] ?? [:]
+        return self.state.storageForContractAddress[currentContractAddress] ?? [:]
     }
     
     package func setStorageForCurrentContractAddress(storage: [Data : Data]) {
         let currentContractAddress = self.getCurrentContractAddress()
         
-        self.storageForContractAddress[currentContractAddress] = storage
+        self.state.storageForContractAddress[currentContractAddress] = storage
+    }
+    
+    public func addEgldToAddressBalance(address: Data, value: BigInt) {
+        var account = self.getAccount(address: address)
+        let newBalance = account.balance + value
+        
+        guard newBalance >= 0 else {
+            fatalError()
+        }
+        
+        account.balance = newBalance
+        
+        self.state.setAccount(account: account)
     }
 }
 

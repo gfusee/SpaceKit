@@ -110,6 +110,17 @@ func mBufferGetArgument(argId: Int32, mBufferHandle: Int32) -> Int32;
 @_extern(c)
 func managedSCAddress(resultHandle: Int32)
 
+// MARK: Send-related OPCODES
+@_extern(wasm, module: "env", name: "managedTransferValueExecute")
+@_extern(c)
+func managedTransferValueExecute(
+    dstHandle: Int32,
+    valueHandle: Int32,
+    gasLimit: Int64,
+    functionHandle: Int32,
+    argumentsHandle: Int32
+) -> Int32
+
 struct VMApi {}
 
 // MARK: BufferApi Implementation
@@ -235,6 +246,26 @@ extension VMApi: EndpointApiProtocol {
 extension VMApi: BlockchainApiProtocol {
     mutating func managedSCAddress(resultHandle: Int32) {
         return MultiversX.managedSCAddress(resultHandle: resultHandle)
+    }
+}
+
+// MARK: SendApiProtocolImplementation
+
+extension VMApi: SendApiProtocol {
+    mutating func managedTransferValueExecute(
+        dstHandle: Int32,
+        valueHandle: Int32,
+        gasLimit: Int64,
+        functionHandle: Int32,
+        argumentsHandle: Int32
+    ) -> Int32 {
+        return MultiversX.managedTransferValueExecute(
+            dstHandle: dstHandle,
+            valueHandle: valueHandle,
+            gasLimit: gasLimit,
+            functionHandle: functionHandle,
+            argumentsHandle: argumentsHandle
+        )
     }
 }
 

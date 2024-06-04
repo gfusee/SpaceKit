@@ -117,6 +117,13 @@ if !isWasm {
                 "MultiversX"
             ]
         ),
+        .testTarget(
+            name: "SendTests",
+            dependencies: [
+                "MultiversX",
+                "BigInt"
+            ]
+        ),
     ])
 }
 
