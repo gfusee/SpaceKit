@@ -41,7 +41,7 @@ public struct DummyApi {
         self.worldState = world
     }
     
-    mutating func throwUserError(message: String) {
+    mutating func throwUserError(message: String) -> Never {
         withUnsafeCurrentTask(body: { task in
             if let task = task, !task.isCancelled {
                 self.getCurrentContainer().errorMessage = message
@@ -329,6 +329,13 @@ extension DummyApi: SendApiProtocol {
         self.getCurrentContainer().addEgldToAddressBalance(address: receiver, value: value)
         
         return 0
+    }
+}
+
+extension DummyApi: ErrorApiProtocol {
+    public mutating func managedSignalError(messageHandle: Int32) -> Never {
+        let errorMessageData = self.getCurrentContainer().getBufferData(handle: messageHandle)
+        self.throwUserError(message: String(data: errorMessageData, encoding: .utf8) ?? errorMessageData.hexEncodedString())
     }
 }
 #endif

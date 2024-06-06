@@ -124,6 +124,13 @@ if !isWasm {
                 "BigInt"
             ]
         ),
+        .testTarget(
+            name: "ErrorTests",
+            dependencies: [
+                "MultiversX",
+                "BigInt"
+            ]
+        ),
     ])
 }
 

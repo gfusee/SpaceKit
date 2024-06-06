@@ -78,5 +78,24 @@ final class TransferAndExecuteTests: ContractTestCase {
         XCTAssertEqual(contractBalance, 100)
     }
     
-    // TODO: add a test in the case where the sender doesn't have enough balance
+    func testSendEgldNotEnoughBalanceShouldRevert() throws {
+        let contract = EgldTransferContract.testable("contract")
+        let user = self.getAccount(address: "user")!
+        
+        do {
+            try runFailableTransactions {
+                contract.transferEgld(to: user.toAddress(), value: 101)
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Not enough balance."))
+        }
+        
+        let userBalance = self.getAccount(address: "user")!.getBalance()
+        let contractBalance = self.getAccount(address: "contract")!.getBalance()
+        
+        XCTAssertEqual(userBalance, 100)
+        XCTAssertEqual(contractBalance, 100)
+    }
 }

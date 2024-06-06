@@ -121,6 +121,12 @@ func managedTransferValueExecute(
     argumentsHandle: Int32
 ) -> Int32
 
+// MARK: Error-related OPCODES
+
+@_extern(wasm, module: "env", name: "managedSignalError")
+@_extern(c)
+func managedSignalError(messageHandle: Int32) -> Never
+
 struct VMApi {}
 
 // MARK: BufferApi Implementation
@@ -266,6 +272,14 @@ extension VMApi: SendApiProtocol {
             functionHandle: functionHandle,
             argumentsHandle: argumentsHandle
         )
+    }
+}
+
+// MARK: ErrorApiProtocol implementation
+
+extension VMApi: ErrorApiProtocol {
+    mutating func managedSignalError(messageHandle: Int32) -> Never {
+        return MultiversX.managedSignalError(messageHandle: messageHandle)
     }
 }
 
