@@ -18,7 +18,7 @@ public struct DummyApi {
     
     package mutating func popContainer() {
         if let container = self.containers.popLast(),
-           container.errorMessage == nil {
+           container.error == nil {
             // TODO: add tests that ensure an execution error "reverts" the state
             // Commit the container into the state
             self.worldState = container.state
@@ -44,7 +44,7 @@ public struct DummyApi {
     mutating func throwUserError(message: String) -> Never {
         withUnsafeCurrentTask(body: { task in
             if let task = task, !task.isCancelled {
-                self.getCurrentContainer().errorMessage = message
+                self.getCurrentContainer().error = .userError(message: message)
                 task.cancel()
                 while (true) {} // Wait for the task to be canceled, we don't want any instruction to be executed
             } else {

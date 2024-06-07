@@ -6,7 +6,7 @@ package class TransactionContainer {
     package var managedBuffersData: [Int32 : Data] = [:]
     package var managedBigIntData: [Int32 : BigInt] = [:]
     package var state: WorldState
-    public package(set) var errorMessage: String? = nil
+    public package(set) var error: TransactionError? = nil
     
     private var currentContractAddress: Data? = nil
     
