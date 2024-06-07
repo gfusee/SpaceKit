@@ -55,8 +55,6 @@ fileprivate func generateNestedEncodeExtension(structName: TokenSyntax, fields: 
 }
 
 fileprivate func generateTopDecodeExtension(structName: TokenSyntax, fields: [VariableDeclSyntax]) throws -> ExtensionDeclSyntax {
-    // TODO: Add tests that ensures we cannot provide a larger buffer than needed (cf. defer scope)
-    
     return ExtensionDeclSyntax(
         extendedType: IdentifierTypeSyntax(name: structName),
         memberBlock: """
@@ -65,9 +63,10 @@ fileprivate func generateTopDecodeExtension(structName: TokenSyntax, fields: [Va
                 var input = BufferNestedDecodeInput(buffer: input)
         
                 defer {
-                    guard !input.canDecodeMore() else {
-                        fatalError()
-                    }
+                    require(
+                        !input.canDecodeMore(),
+                        "Top decode error for \(structName): input too large."
+                     )
                 }
         
                 return \(raw: structName).depDecode(input: &input)

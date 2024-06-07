@@ -87,8 +87,6 @@ fileprivate func generateNestedEncodeExtension(enumName: TokenSyntax, discrimina
 }
 
 fileprivate func generateTopDecodeExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> ExtensionDeclSyntax {
-    // TODO: Add tests that ensures we cannot provide a larger buffer than needed (cf. defer scope)
-    
     return ExtensionDeclSyntax(
         extendedType: IdentifierTypeSyntax(name: enumName),
         memberBlock: """
@@ -97,9 +95,10 @@ fileprivate func generateTopDecodeExtension(enumName: TokenSyntax, discriminants
                 var input = BufferNestedDecodeInput(buffer: input)
         
                 defer {
-                    guard !input.canDecodeMore() else {
-                        fatalError()
-                    }
+                     require(
+                        !input.canDecodeMore(),
+                        "Top decode error for \(enumName): input too large."
+                     )
                 }
         
                 return \(raw: enumName).depDecode(input: &input)
@@ -154,8 +153,6 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
     }
     
     let nestedDecodeInitArgs = nestedDecodeInitArgsList.joined(separator: "\n")
-    
-    // TODO: Add tests that ensures we cannot provide a larger buffer than needed (cf. defer scope)
     
     return ExtensionDeclSyntax(
         extendedType: IdentifierTypeSyntax(name: enumName),

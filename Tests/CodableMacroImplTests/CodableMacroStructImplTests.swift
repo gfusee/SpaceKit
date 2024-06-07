@@ -38,6 +38,19 @@ final class CodableMacroStructImplTests: XCTestCase {
         XCTAssertEqual(result, expected)
     }
     
+    func testTopDecodeForCustomInputTooLargeError() throws {
+        do {
+            try runFailableTransactions {
+                let input = MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a000000016400".hexadecimal))
+                let _ = TokenPayment.topDecode(input: input)
+            }
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Top decode error for TokenPayment: input too large."))
+        }
+    }
+    
     func testNestedDecodeForCustomStruct() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a0000000164".hexadecimal)))
         let result = TokenPayment.depDecode(input: &input)
