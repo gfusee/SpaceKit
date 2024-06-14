@@ -25,25 +25,25 @@ struct Factorial {
 final class FactorialTests: ContractTestCase {
     
     func testZero() throws {
-        let contract = Factorial.testable("factorial")
+        let contract = try Factorial.testable("factorial")
         
-        let result = contract.factorial(value: 0)
+        let result = try contract.factorial(value: 0)
         
         XCTAssertEqual(result, 1)
     }
     
     func testOne() throws {
-        let contract = Factorial.testable("factorial")
+        let contract = try Factorial.testable("factorial")
         
-        let result = contract.factorial(value: 1)
+        let result = try contract.factorial(value: 1)
         
         XCTAssertEqual(result, 1)
     }
     
     func testTen() throws {
-        let contract = Factorial.testable("factorial")
+        let contract = try Factorial.testable("factorial")
         
-        let result = contract.factorial(value: 10)
+        let result = try contract.factorial(value: 10)
         
         XCTAssertEqual(result, 3628800)
     }

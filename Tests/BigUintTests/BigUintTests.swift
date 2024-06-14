@@ -1,7 +1,27 @@
 import XCTest
 import MultiversX
 
-final class BigUintTests: XCTestCase {
+@Contract struct BigUintTestsContract {
+    public func testSubstractTwoBigUintNegativeShouldFail() {
+        let bigUint1: BigUint = 1
+        let bigUint2: BigUint = 2
+        let _ = bigUint1 - bigUint2
+    }
+    
+    public func testModuloTwoBigUintZeroRightSideShouldFail() {
+        let bigUint1: BigUint = 1
+        let bigUint2: BigUint = 0
+        let _ = bigUint1 % bigUint2
+    }
+    
+    public func testDivideTwoBigUintZeroRightSideShouldFail() {
+        let bigUint1: BigUint = 1
+        let bigUint2: BigUint = 0
+        let _ = bigUint1 / bigUint2
+    }
+}
+
+final class BigUintTests: ContractTestCase {
     
     func testZeroBigUint() throws {
         let bigUint = BigUint()
@@ -78,13 +98,8 @@ final class BigUintTests: XCTestCase {
     }
     
     func testSubstractTwoBigUintNegativeShouldFail() throws {
-        let bigUint1: BigUint = 1
-        let bigUint2: BigUint = 2
-        
         do {
-            try runFailableTransactions {
-                let _ = bigUint1 - bigUint2
-            }
+            try BigUintTestsContract.testable("").testSubstractTwoBigUintNegativeShouldFail()
             
             XCTFail()
         } catch {
@@ -129,13 +144,8 @@ final class BigUintTests: XCTestCase {
     }
     
     func testDivideTwoBigUintZeroRightSideShouldFail() throws {
-        let bigUint1: BigUint = 1
-        let bigUint2: BigUint = 0
-        
         do {
-            try runFailableTransactions {
-                let _ = bigUint1 / bigUint2
-            }
+            try BigUintTestsContract.testable("").testDivideTwoBigUintZeroRightSideShouldFail()
             
             XCTFail()
         } catch {
@@ -171,13 +181,8 @@ final class BigUintTests: XCTestCase {
     }
     
     func testModuloTwoBigUintZeroRightSideShouldFail() throws {
-        let bigUint1: BigUint = 1
-        let bigUint2: BigUint = 0
-        
         do {
-            try runFailableTransactions {
-                let _ = bigUint1 % bigUint2
-            }
+            try BigUintTestsContract.testable("").testModuloTwoBigUintZeroRightSideShouldFail()
             
             XCTFail()
         } catch {

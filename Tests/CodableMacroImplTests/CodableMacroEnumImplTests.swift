@@ -11,7 +11,14 @@ import XCTest
     case esdt(MXBuffer, UInt64, BigUint), none
 }
 
-final class CodableMacroEnumImplTests: XCTestCase {
+@Contract struct CodableMacroEnumImplTestsContract {
+    public func testTopDecodeForEnumInputTooLargeError() {
+        let input = MXBuffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e800".hexadecimal))
+        let _ = PaymentType.topDecode(input: input)
+    }
+}
+
+final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopEncodeForEnumWithoutAssociatedValue() throws {
         let tokenType = PaymentType.multiEsdts
@@ -102,10 +109,7 @@ final class CodableMacroEnumImplTests: XCTestCase {
     
     func testTopDecodeForEnumInputTooLargeError() throws {
         do {
-            try runFailableTransactions {
-                let input = MXBuffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e800".hexadecimal))
-                let _ = PaymentType.topDecode(input: input)
-            }
+            try CodableMacroEnumImplTestsContract.testable("").testTopDecodeForEnumInputTooLargeError()
             
             XCTFail()
         } catch {

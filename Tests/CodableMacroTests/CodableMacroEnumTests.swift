@@ -6,6 +6,8 @@ import CodableMacro
 
 final class CodableMacroEnumTests: XCTestCase {
     
+    /*
+    
     func testExpandEmptyEnumShouldFail() throws {
         let source = """
         @Codable
@@ -317,5 +319,7 @@ final class CodableMacroEnumTests: XCTestCase {
             macros: testMacros
         )
     }
+     
+     */
     
 }

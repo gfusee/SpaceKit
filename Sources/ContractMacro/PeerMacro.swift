@@ -56,8 +56,10 @@ fileprivate func getEndpointExportDeclaration(structName: TokenSyntax, function:
     )
     
     exportedFunction.attributes = """
+    #if WASM
     @_expose(wasm, "\(function.name)")
     @_cdecl("\(function.name)")
+    #endif
     """
     
     let endpointParams = getEndpointVariablesDeclarations(
@@ -104,8 +106,10 @@ fileprivate func getInitExportDeclaration(structName: TokenSyntax, initDecl: Ini
     )
     
     exportedFunction.attributes = """
+    #if WASM
     @_expose(wasm, "init")
     @_cdecl("init")
+    #endif
     """
     
     let endpointParams = getEndpointVariablesDeclarations(

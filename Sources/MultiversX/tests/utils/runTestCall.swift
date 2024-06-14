@@ -5,8 +5,8 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     contractAddress: String,
     endpointName: String,
     args: (repeat each InputArg),
-    operation: (repeat each InputArg) -> ReturnType
-) -> ReturnType {
+    operation: @escaping (repeat each InputArg) -> ReturnType
+) throws(TransactionError) -> ReturnType {
     // Pushing a container makes the previous handles invalid.
     // Thus, we have to inject the data into the new container.
     var concatenatedInputArgsBuffer = MXBuffer()
@@ -15,21 +15,18 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     }
     let concatenatedInputArgsBufferBytes = concatenatedInputArgsBuffer.toBytes()
     
-    API.pushNewContainer(contractAddress: contractAddress)
+    var bytesData: [UInt8] = []
+    try API.runTransactions(contractAddress: contractAddress) {
+        var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
+        
+        let result = operation(repeat (each InputArg).depDecode(input: &injectedInputBuffer))
+        
+        var bytesDataBuffer = MXBuffer()
+        result.topEncode(output: &bytesDataBuffer)
+        bytesData = bytesDataBuffer.toBytes() // We have to extract the bytes from the transaction context...
+    }
     
-    var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
-    
-    let result = operation(repeat (each InputArg).depDecode(input: &injectedInputBuffer))
-    
-    // Popping the container makes the handles invalid.
-    // Thus, we have to extract the data out of the container before popping it.
-    var bytesDataBuffer = MXBuffer()
-    result.topEncode(output: &bytesDataBuffer)
-    let bytesData = bytesDataBuffer.toBytes()
-    
-    API.popContainer()
-    
-    let extractedResultBuffer = MXBuffer(data: bytesData)
+    let extractedResultBuffer = MXBuffer(data: bytesData) // ...and reinject it in the root context
     let extractedResult = ReturnType.topDecode(input: extractedResultBuffer)
     
     return extractedResult
@@ -39,8 +36,8 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     contractAddress: String,
     endpointName: String,
     args: (repeat each InputArg),
-    operation: (repeat each InputArg) -> Void
-) {
+    operation: @escaping (repeat each InputArg) -> Void
+) throws(TransactionError) {
     // Pushing a container makes the previous handles invalid.
     // Thus, we have to inject the data into the new container.
     var concatenatedInputArgsBuffer = MXBuffer()
@@ -49,13 +46,11 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     }
     let concatenatedInputArgsBufferBytes = concatenatedInputArgsBuffer.toBytes()
     
-    API.pushNewContainer(contractAddress: contractAddress)
-    
-    var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
-    
-    operation(repeat (each InputArg).depDecode(input: &injectedInputBuffer))
-    
-    API.popContainer()
+    try API.runTransactions(contractAddress: contractAddress) {
+        var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
+        
+        operation(repeat (each InputArg).depDecode(input: &injectedInputBuffer))
+    }
 }
 
 #endif

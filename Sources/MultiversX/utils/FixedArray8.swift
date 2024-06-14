@@ -59,7 +59,6 @@ extension FixedArray8: RandomAccessCollection, MutableCollection {
       //_internalInvariant(i >= 0 && i < count)
       let res: T = withUnsafeBytes(of: storage) {
         (rawPtr: UnsafeRawBufferPointer) -> T in
-        let stride = MemoryLayout<T>.stride
         //_internalInvariant(rawPtr.count == 8*stride, "layout mismatch?")
         let bufPtr = UnsafeBufferPointer(
           start: rawPtr.baseAddress!.assumingMemoryBound(to: T.self),
@@ -159,6 +158,34 @@ extension FixedArray8 where T == UInt8 {
             }
             
             result |= UInt64(valueToShift) << (8 * (7 - i))
+        }
+        
+        return result
+    }
+    
+    public func toBigEndianInt() -> Int {
+        if self.count == 0 {
+            return 0
+        }
+        
+        var result: Int = 0
+        
+        let isNegative = self[0] & 0x80 != 0
+        
+        let numOfLeadingZerosToAppend = 4 - self.count
+        for i in 0..<4 {
+            let valueToShift: UInt8
+            if i < numOfLeadingZerosToAppend {
+                valueToShift = isNegative ? 0xFF : 0
+            } else {
+                valueToShift = self[i - numOfLeadingZerosToAppend]
+            }
+            
+            result |= Int(Int32(valueToShift) << (8 * (3 - i)))
+        }
+        
+        if isNegative {
+            result |= ~0xFFFFFFFF
         }
         
         return result

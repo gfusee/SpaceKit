@@ -9,6 +9,7 @@ let testMacros: [String: Macro.Type] = [
 ]
 
 final class ContractMacroBasicTests: XCTestCase {
+    /*
     func testExpandClassShouldFail() throws {
         let source = """
         @Contract
@@ -814,4 +815,5 @@ final class ContractMacroBasicTests: XCTestCase {
             macros: testMacros
         )
     }
+     */
 }

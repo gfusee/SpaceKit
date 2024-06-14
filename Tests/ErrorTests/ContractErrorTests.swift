@@ -25,13 +25,11 @@ final class ContractErrorTests: ContractTestCase {
         ]
     }
     
-    func testUserError() {
-        let contract = ErrorContract.testable("contract")
+    func testUserError() throws {
+        let contract = try ErrorContract.testable("contract")
         
         do {
-            try runFailableTransactions {
-                contract.throwError(errorMessage: "This is an user error message")
-            }
+            try contract.throwError(errorMessage: "This is an user error message")
             
             XCTFail()
         } catch {
@@ -39,13 +37,11 @@ final class ContractErrorTests: ContractTestCase {
         }
     }
     
-    func testUserErrorThroughRequire() {
-        let contract = ErrorContract.testable("contract")
+    func testUserErrorThroughRequire() throws {
+        let contract = try ErrorContract.testable("contract")
         
         do {
-            try runFailableTransactions {
-                contract.throwErrorThroughRequire()
-            }
+            try contract.throwErrorThroughRequire()
             
             XCTFail()
         } catch {
@@ -53,10 +49,10 @@ final class ContractErrorTests: ContractTestCase {
         }
     }
     
-    func testRequireNoError() {
-        let contract = ErrorContract.testable("contract")
+    func testRequireNoError() throws {
+        let contract = try ErrorContract.testable("contract")
         
-        contract.dontThrowErrorThroughRequire()
+        try contract.dontThrowErrorThroughRequire()
     }
     
 }

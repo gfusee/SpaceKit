@@ -1,7 +1,39 @@
 import XCTest
 import MultiversX
 
-final class BufferTests: XCTestCase {
+@Contract struct BufferTestsContract {
+    public func testNonEmptyBufferGetTooLongSubBufferShouldFail() {
+        let buffer: MXBuffer = "Hello World!"
+        let _ = buffer.getSubBuffer(startIndex: 2, length: 100)
+    }
+    
+    public func testNonEmptyBufferSubBufferNegativeStartIndexShouldFail() {
+        let buffer: MXBuffer = "Hello World!"
+        let _ = buffer.getSubBuffer(startIndex: -1, length: 2)
+    }
+    
+    public func testNonEmptyBufferSubBufferNegativeSliceLengthShouldFail() {
+        let buffer: MXBuffer = "Hello World!"
+        let _ = buffer.getSubBuffer(startIndex: 0, length: -4)
+    }
+    
+    public func testNestedDecodeBufferEmptyInputShouldFail() {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
+        let result = MXBuffer.depDecode(input: &input)
+    }
+    
+    public func testNestedDecodeBufferBadLengthInputShouldFail() {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000".hexadecimal)))
+        let result = MXBuffer.depDecode(input: &input)
+    }
+    
+    public func testNestedDecodeBufferTooLargeLengthInputShouldFail() {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000004248656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
+        let result = MXBuffer.depDecode(input: &input)
+    }
+}
+
+final class BufferTests: ContractTestCase {
     func testEmptyBuffer() throws {
         let buffer = MXBuffer()
 
@@ -97,10 +129,7 @@ final class BufferTests: XCTestCase {
     
     func testNonEmptyBufferGetTooLongSubBufferShouldFail() throws {
         do {
-            try runFailableTransactions {
-                let buffer: MXBuffer = "Hello World!"
-                let _ = buffer.getSubBuffer(startIndex: 2, length: 100)
-            }
+            try BufferTestsContract.testable("").testNonEmptyBufferGetTooLongSubBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -110,10 +139,7 @@ final class BufferTests: XCTestCase {
     
     func testNonEmptyBufferSubBufferNegativeStartIndexShouldFail() throws {
         do {
-            try runFailableTransactions {
-                let buffer: MXBuffer = "Hello World!"
-                let _ = buffer.getSubBuffer(startIndex: -1, length: 2)
-            }
+            try BufferTestsContract.testable("").testNonEmptyBufferSubBufferNegativeStartIndexShouldFail()
             
             XCTFail()
         } catch {
@@ -123,10 +149,7 @@ final class BufferTests: XCTestCase {
     
     func testNonEmptyBufferSubBufferNegativeSliceLengthShouldFail() throws {
         do {
-            try runFailableTransactions {
-                let buffer: MXBuffer = "Hello World!"
-                let _ = buffer.getSubBuffer(startIndex: 0, length: -4)
-            }
+            try BufferTestsContract.testable("").testNonEmptyBufferSubBufferNegativeSliceLengthShouldFail()
             
             XCTFail()
         } catch {
@@ -293,10 +316,7 @@ final class BufferTests: XCTestCase {
     
     func testNestedDecodeBufferEmptyInputShouldFail() throws {
         do {
-            try runFailableTransactions {
-                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
-                let result = MXBuffer.depDecode(input: &input)
-            }
+            try BufferTestsContract.testable("").testNestedDecodeBufferEmptyInputShouldFail()
             
             XCTFail()
         } catch {
@@ -306,10 +326,7 @@ final class BufferTests: XCTestCase {
     
     func testNestedDecodeBufferBadLengthInputShouldFail() throws {
         do {
-            try runFailableTransactions {
-                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000".hexadecimal)))
-                let result = MXBuffer.depDecode(input: &input)
-            }
+            try BufferTestsContract.testable("").testNestedDecodeBufferBadLengthInputShouldFail()
             
             XCTFail()
         } catch {
@@ -319,10 +336,7 @@ final class BufferTests: XCTestCase {
     
     func testNestedDecodeBufferTooLargeLengthInputShouldFail() throws {
         do {
-            try runFailableTransactions {
-                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000004248656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
-                let result = MXBuffer.depDecode(input: &input)
-            }
+            try BufferTestsContract.testable("").testNestedDecodeBufferTooLargeLengthInputShouldFail()
             
             XCTFail()
         } catch {

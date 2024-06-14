@@ -7,7 +7,14 @@ import XCTest
     let amount: BigUint
 }
 
-final class CodableMacroStructImplTests: XCTestCase {
+@Contract struct CodableMacroStructImplTestsContract {
+    public func testTopDecodeForCustomInputTooLargeError() {
+        let input = MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a000000016400".hexadecimal))
+        let _ = TokenPayment.topDecode(input: input)
+    }
+}
+
+final class CodableMacroStructImplTests: ContractTestCase {
     
     func testTopEncodeForCustomStruct() throws {
         let tokenPayment = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
@@ -40,10 +47,7 @@ final class CodableMacroStructImplTests: XCTestCase {
     
     func testTopDecodeForCustomInputTooLargeError() throws {
         do {
-            try runFailableTransactions {
-                let input = MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a000000016400".hexadecimal))
-                let _ = TokenPayment.topDecode(input: input)
-            }
+            try CodableMacroStructImplTestsContract.testable("").testTopDecodeForCustomInputTooLargeError()
             
             XCTFail()
         } catch {

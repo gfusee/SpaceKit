@@ -19,7 +19,10 @@ extension UInt8: NestedEncode {
 
 extension UInt8: TopDecode {
     public static func topDecode(input: MXBuffer) -> UInt8 {
-        let bytes: FixedArray8<UInt8> = input.toFixedSizeBytes() // TODO: do the same for Int
+        let bytes: FixedArray8<UInt8> = input.toFixedSizeBytes()
+        if bytes.count > intSize {
+            smartContractError(message: "Cannot decode UInt8: input too large.")
+        }
         
         return UInt8(bytes.toBigEndianUInt64())
     }

@@ -1,7 +1,30 @@
 import XCTest
 import MultiversX
 
-final class UInt64Tests: XCTestCase {
+@Contract struct UInt64TestsContract {
+    public func testTopDecodeUInt64TooLargeBufferShouldFail() {
+        let input = MXBuffer(data: Array("000000000000000000".hexadecimal))
+        let _ = UInt64.topDecode(input: input)
+    }
+    
+    public func testNestedDecodeUInt64EmptyBufferShouldFail() {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
+        let _ = UInt64.depDecode(input: &input)
+    }
+    
+    public func testNestedDecodeUInt64TooSmallBufferShouldFail() {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000000".hexadecimal)))
+        let _ = UInt64.depDecode(input: &input)
+    }
+    
+    public func testNestedDecodeTwoUInt64sTooSmallBufferShouldFail() {
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000003e800000000000000".hexadecimal)))
+        let _ = UInt64.depDecode(input: &input)
+        let _ = UInt64.depDecode(input: &input)
+    }
+}
+
+final class UInt64Tests: ContractTestCase {
     
     func testTopEncodeUInt64Zero() throws {
         var output = MXBuffer()
@@ -160,14 +183,11 @@ final class UInt64Tests: XCTestCase {
     
     func testTopDecodeUInt64TooLargeBufferShouldFail() throws {
         do {
-            try runFailableTransactions {
-                let input = MXBuffer(data: Array("0000000000000000".hexadecimal))
-                let _ = UInt64.topDecode(input: input)
-            }
+            try UInt64TestsContract.testable("").testTopDecodeUInt64TooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
-            XCTAssertEqual(error, .userError(message: "Index out of range."))
+            XCTAssertEqual(error, .userError(message: "Cannot decode UInt64: input too large."))
         }
     }
     
@@ -209,10 +229,7 @@ final class UInt64Tests: XCTestCase {
     
     func testNestedDecodeUInt64EmptyBufferShouldFail() throws {
         do {
-            try runFailableTransactions {
-                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
-                let _ = UInt64.depDecode(input: &input)
-            }
+            try UInt64TestsContract.testable("").testNestedDecodeUInt64EmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -222,10 +239,7 @@ final class UInt64Tests: XCTestCase {
     
     func testNestedDecodeUInt64TooSmallBufferShouldFail() throws {
         do {
-            try runFailableTransactions {
-                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000000".hexadecimal)))
-                let _ = UInt64.depDecode(input: &input)
-            }
+            try UInt64TestsContract.testable("").testNestedDecodeUInt64TooSmallBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -256,11 +270,7 @@ final class UInt64Tests: XCTestCase {
     
     func testNestedDecodeTwoUInt64sTooSmallBufferShouldFail() throws {
         do {
-            try runFailableTransactions {
-                var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000003e800000000000000".hexadecimal)))
-                let _ = UInt64.depDecode(input: &input)
-                let _ = UInt64.depDecode(input: &input)
-            }
+            try UInt64TestsContract.testable("").testNestedDecodeTwoUInt64sTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {

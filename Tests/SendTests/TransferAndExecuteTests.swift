@@ -32,7 +32,7 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendEgld() throws {
-        let contract = EgldTransferContract.testable("contract")
+        let contract = try EgldTransferContract.testable("contract")
         let user = self.getAccount(address: "user")!
         
         let contractBalanceBefore = self.getAccount(address: "contract")!.getBalance()
@@ -41,7 +41,7 @@ final class TransferAndExecuteTests: ContractTestCase {
         XCTAssertEqual(contractBalanceBefore, 100)
         XCTAssertEqual(userBalanceBefore, 100)
         
-        contract.transferEgld(to: user.toAddress(), value: 10)
+        try contract.transferEgld(to: user.toAddress(), value: 10)
         
         let userBalanceAfter = self.getAccount(address: "user")!.getBalance()
         let contractBalanceAfter = self.getAccount(address: "contract")!.getBalance()
@@ -51,10 +51,10 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendAllEgldBalance() throws {
-        let contract = EgldTransferContract.testable("contract")
+        let contract = try EgldTransferContract.testable("contract")
         let user = self.getAccount(address: "user")!
         
-        contract.transferEgld(to: user.toAddress(), value: 100)
+        try contract.transferEgld(to: user.toAddress(), value: 100)
         
         let userBalance = self.getAccount(address: "user")!.getBalance()
         let contractBalance = self.getAccount(address: "contract")!.getBalance()
@@ -64,12 +64,10 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendEgldTransactionFailedShouldRevert() throws {
-        let contract = EgldTransferContract.testable("contract")
+        let contract = try EgldTransferContract.testable("contract")
         let user = self.getAccount(address: "user")!
         
-        try? runFailableTransactions {
-            contract.transferEgldThenFail(to: user.toAddress(), value: 10)
-        }
+        try? contract.transferEgldThenFail(to: user.toAddress(), value: 10)
         
         let userBalance = self.getAccount(address: "user")!.getBalance()
         let contractBalance = self.getAccount(address: "contract")!.getBalance()
@@ -79,17 +77,15 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendEgldNotEnoughBalanceShouldRevert() throws {
-        let contract = EgldTransferContract.testable("contract")
+        let contract = try EgldTransferContract.testable("contract")
         let user = self.getAccount(address: "user")!
         
         do {
-            try runFailableTransactions {
-                contract.transferEgld(to: user.toAddress(), value: 101)
-            }
+            try contract.transferEgld(to: user.toAddress(), value: 101)
             
             XCTFail()
         } catch {
-            XCTAssertEqual(error, .userError(message: "Not enough balance."))
+            XCTAssertEqual(error, .executionFailed(reason: "insufficient funds"))
         }
         
         let userBalance = self.getAccount(address: "user")!.getBalance()

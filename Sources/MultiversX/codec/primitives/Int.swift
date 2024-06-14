@@ -1,38 +1,48 @@
-// TODO: use signed managed type instead of unsigned BigUint
-
 private let intSize = 4
+
+extension Int {
+    // This function should be inlined top avoid heap allocation
+    @inline(__always) func asBigEndianBytes() -> [UInt8] {
+        return [
+            UInt8((self >> 24) & 0xFF),
+            UInt8((self >> 16) & 0xFF),
+            UInt8((self >> 8) & 0xFF),
+            UInt8(self & 0xFF),
+        ]
+    }
+}
 
 extension Int: TopEncode {
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
-        BigUint(value: Int64(self)).topEncode(output: &output)
+        let bigEndianBytes = self.asBigEndianBytes()
+        
+        let leftBytesToRemove = self >= 0 ? 0x00 : 0xFF
+        
+        var startEncodingIndex = 0
+        while startEncodingIndex < intSize && bigEndianBytes[startEncodingIndex] == leftBytesToRemove {
+            startEncodingIndex += 1
+        }
+        
+        MXBuffer(data: bigEndianBytes)
+            .getSubBuffer(startIndex: startEncodingIndex, length: intSize - startEncodingIndex)
+            .topEncode(output: &output)
     }
 }
 
 extension Int: NestedEncode {
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        var bigEndianBuffer = MXBuffer()
-        self.topEncode(output: &bigEndianBuffer)
-        
-        let bigEndianBufferCount = bigEndianBuffer.count
-        
-        let leadingZerosBuffer = MXBuffer(data: [0, 0, 0, 0])
-            .getSubBuffer(startIndex: 0, length: intSize - bigEndianBufferCount)
-        
-        dest.write(buffer: leadingZerosBuffer + bigEndianBuffer)
+        dest.write(buffer: MXBuffer(data: self.asBigEndianBytes()))
     }
 }
 
 extension Int: TopDecode {
     public static func topDecode(input: MXBuffer) -> Int {
-        guard let value = BigUint.topDecode(input: input).toInt64() else {
-            fatalError()
+        let bytes: FixedArray8<UInt8> = input.toFixedSizeBytes()
+        if bytes.count > intSize {
+            smartContractError(message: "Cannot decode Int: input too large.")
         }
         
-        guard value <= Int.max else {
-            fatalError()
-        }
-        
-        return Int(value)
+        return bytes.toBigEndianInt()
     }
 }
 

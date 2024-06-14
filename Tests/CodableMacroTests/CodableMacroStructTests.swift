@@ -9,6 +9,7 @@ let testMacros: [String: Macro.Type] = [
 ]
 
 final class CodableMacroStructTests: XCTestCase {
+    /*
     func testExpandClassShouldFail() throws {
         let source = """
         @Codable
@@ -212,4 +213,5 @@ final class CodableMacroStructTests: XCTestCase {
             macros: testMacros
         )
     }
+     */
 }

@@ -1,5 +1,3 @@
-// TODO: add tests for the below extensions
-
 private let intSize = 8
 
 extension UInt64 {
@@ -41,7 +39,10 @@ extension UInt64: NestedEncode {
 
 extension UInt64: TopDecode {
     public static func topDecode(input: MXBuffer) -> UInt64 {
-        let bytes: FixedArray8<UInt8> = input.toFixedSizeBytes() // TODO: do the same for Int
+        let bytes: FixedArray8<UInt8> = input.toFixedSizeBytes()
+        if input.count > intSize {
+            smartContractError(message: "Cannot decode UInt64: input too large.")
+        }
         
         return bytes.toBigEndianUInt64()
     }

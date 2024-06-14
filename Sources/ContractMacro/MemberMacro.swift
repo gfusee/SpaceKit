@@ -99,22 +99,26 @@ func getTestableStructDeclaration(
     
     let testableStaticInitializerCallParameters = initCallParameters.count > 0 ? ", \(initCallParameters)" : ""
     
+    var throwsEffectSpecifiers = FunctionEffectSpecifiersSyntax()
+    throwsEffectSpecifiers.throwsSpecifier = TokenSyntax.init(stringLiteral: "throws(TransactionError)")
+    
     let testableStaticInitializer: FunctionDeclSyntax = FunctionDeclSyntax.init(
         modifiers: [
             DeclModifierSyntax.init(name: .keyword(.public)),
-            DeclModifierSyntax.init(name: .keyword(.static))
+            DeclModifierSyntax.init(name: .keyword(.static)),
         ],
         name: "testable",
         signature: FunctionSignatureSyntax(
             parameterClause: FunctionParameterClauseSyntax(
                 parameters: testableStaticInitializerParameters
             ),
+            effectSpecifiers: throwsEffectSpecifiers,
             returnClause: ReturnClauseSyntax(
                 type: TypeSyntax(stringLiteral: "Testable")
             )
         ),
         bodyBuilder: {
-            "Testable(_testableAddress\(raw: testableStaticInitializerCallParameters))"
+            "try Testable(_testableAddress\(raw: testableStaticInitializerCallParameters))"
         }
     )
     
@@ -122,12 +126,13 @@ func getTestableStructDeclaration(
         signature: FunctionSignatureSyntax(
             parameterClause: FunctionParameterClauseSyntax(
                 parameters: testableStaticInitializerParameters // Same as the static func testable
-            )
+            ),
+            effectSpecifiers: throwsEffectSpecifiers
         ),
         body: CodeBlockSyntax(
             statements: """
             self.address = _testableAddress
-            runTestCall(
+            try runTestCall(
                 contractAddress: self.address,
                 endpointName: "init",
                 args: (\(raw: parameterNames))
@@ -167,9 +172,12 @@ func getTestableStructDeclaration(
         }
         
         var testableFunction = function
+        
+        testableFunction.signature.effectSpecifiers = throwsEffectSpecifiers
+        
         testableFunction.body = CodeBlockSyntax(
             statements: """
-            return runTestCall(
+            return try runTestCall(
                 contractAddress: self.address,
                 endpointName: "\(function.name)",
                 args: (\(raw: variableNames))

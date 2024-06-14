@@ -11,7 +11,7 @@ open class ContractTestCase: XCTestCase {
     open override func setUp() {
         super.setUp()
         
-        API.lock.lock()
+        API.globalLock.lock()
         
         var world = WorldState()
         world.setAccounts(accounts: self.initialAccounts)
@@ -22,7 +22,7 @@ open class ContractTestCase: XCTestCase {
     open override func tearDown() {
         super.tearDown()
         
-        API.lock.unlock()
+        API.globalLock.unlock()
     }
     
     final public func getAccount(address: String) -> WorldAccount? {

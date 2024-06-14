@@ -18,9 +18,9 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetSCAddress() throws {
-        let contract = BlockchainContract.testable("adder")
+        let contract = try BlockchainContract.testable("adder")
         
-        let contractAddress = contract.getSelfAddress()
+        let contractAddress = try contract.getSelfAddress()
         var encodedAddress = MXBuffer()
         contractAddress.topEncode(output: &encodedAddress)
         
