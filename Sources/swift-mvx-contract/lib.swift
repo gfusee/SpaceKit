@@ -9,6 +9,10 @@ struct BalanceKeeperContract {
         self.balanceForUser[userAddress] += value
         self.totalBalance += value
         
+        var testArray: MXArray<MXBuffer> = MXArray()
+        testArray = testArray.appended("Hey!")
+        _ = testArray[0]
+        
         return MXBuffer()
     }
     

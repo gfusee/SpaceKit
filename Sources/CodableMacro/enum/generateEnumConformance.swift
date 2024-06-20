@@ -76,7 +76,7 @@ fileprivate func generateNestedEncodeExtension(enumName: TokenSyntax, discrimina
         extendedType: IdentifierTypeSyntax(name: enumName),
         memberBlock: """
         : NestedEncode {
-            func depEncode<O: NestedEncodeOutput>(dest: inout O) {
+            public func depEncode<O: NestedEncodeOutput>(dest: inout O) {
                 switch self {
                     \(raw: nestedEncodeFieldsCalls)
                 }
@@ -158,7 +158,7 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
         extendedType: IdentifierTypeSyntax(name: enumName),
         memberBlock: """
         : NestedDecode {
-            static func depDecode<I: NestedDecodeInput>(input: inout I) -> \(enumName) {
+            public static func depDecode<I: NestedDecodeInput>(input: inout I) -> \(enumName) {
                 let _discriminant = UInt8.depDecode(input: &input)
         
                 switch _discriminant {

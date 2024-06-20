@@ -1,6 +1,9 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
+// TODO: Remove user comments on fields
+// TODO: check if the above TODO applies for enums too
+
 func generateStructConformance(
     structDecl: StructDeclSyntax
 ) throws -> [ExtensionDeclSyntax] {
@@ -46,7 +49,7 @@ fileprivate func generateNestedEncodeExtension(structName: TokenSyntax, fields: 
         extendedType: IdentifierTypeSyntax(name: structName),
         memberBlock: """
         : NestedEncode {
-            func depEncode<O: NestedEncodeOutput>(dest: inout O) {
+            public func depEncode<O: NestedEncodeOutput>(dest: inout O) {
                 \(raw: nestedEncodeFieldsCalls)
             }
         }
@@ -102,7 +105,7 @@ fileprivate func generateNestedDecodeExtension(structName: TokenSyntax, fields: 
         extendedType: IdentifierTypeSyntax(name: structName),
         memberBlock: """
         : NestedDecode {
-            static func depDecode<I: NestedDecodeInput>(input: inout I) -> \(structName) {
+            public static func depDecode<I: NestedDecodeInput>(input: inout I) -> \(structName) {
                 return \(raw: structName)(
                     \(raw: nestedDecodeInitArgs)
                 )

@@ -329,6 +329,34 @@ extension DummyApi: BlockchainApiProtocol {
 }
 
 extension DummyApi: SendApiProtocol {
+    public func managedMultiTransferESDTNFTExecute(
+        dstHandle: Int32,
+        tokenTransfersHandle: Int32,
+        gasLimit: Int64,
+        functionHandle: Int32,
+        argumentsHandle: Int32
+    ) -> Int32 {
+        // TODO: the current implementation doesn't care about sc-to-sc execution
+        let sender = self.getCurrentContainer().getCurrentSCAccount()
+        let receiver = self.getCurrentContainer().getBufferData(handle: dstHandle)
+        
+        var tokenTransfersBufferInput = BufferNestedDecodeInput(buffer: MXBuffer(handle: tokenTransfersHandle).clone())
+        while tokenTransfersBufferInput.canDecodeMore() { // TODO: use managed vec once implemented
+            let tokenPayment = TokenPayment.depDecode(input: &tokenTransfersBufferInput)
+            let tokenIdentifier = self.getCurrentContainer().getBufferData(handle: tokenPayment.tokenIdentifier.handle)
+            let value = self.getCurrentContainer().getBigIntData(handle: tokenPayment.amount.handle)
+            
+            if value > sender.balance {
+                self.throwExecutionFailed(reason: "insufficient funds")
+            }
+            
+            self.getCurrentContainer().addEsdtToAddressBalance(address: sender.addressData, token: tokenIdentifier, nonce: tokenPayment.nonce, value: -value)
+            self.getCurrentContainer().addEsdtToAddressBalance(address: receiver, token: tokenIdentifier, nonce: tokenPayment.nonce, value: value)
+        }
+        
+        return 0
+    }
+    
     public func managedTransferValueExecute(
         dstHandle: Int32,
         valueHandle: Int32,

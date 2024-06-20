@@ -106,6 +106,12 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "ArrayTests",
+            dependencies: [
+                "MultiversX"
+            ]
+        ),
+        .testTarget(
             name: "FactorialTests",
             dependencies: [
                 "MultiversX"

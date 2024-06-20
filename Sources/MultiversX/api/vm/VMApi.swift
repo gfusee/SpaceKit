@@ -111,6 +111,16 @@ func mBufferGetArgument(argId: Int32, mBufferHandle: Int32) -> Int32;
 func managedSCAddress(resultHandle: Int32)
 
 // MARK: Send-related OPCODES
+@_extern(wasm, module: "env", name: "managedMultiTransferESDTNFTExecute")
+@_extern(c)
+func managedMultiTransferESDTNFTExecute(
+    dstHandle: Int32,
+    tokenTransfersHandle: Int32,
+    gasLimit: Int64,
+    functionHandle: Int32,
+    argumentsHandle: Int32
+) -> Int32
+
 @_extern(wasm, module: "env", name: "managedTransferValueExecute")
 @_extern(c)
 func managedTransferValueExecute(
@@ -125,7 +135,7 @@ func managedTransferValueExecute(
 
 @_extern(wasm, module: "env", name: "managedSignalError")
 @_extern(c)
-func managedSignalError(messageHandle: Int32) -> Never
+func managedSignalError(messageHandle: Int32)
 
 struct VMApi {}
 
@@ -258,6 +268,22 @@ extension VMApi: BlockchainApiProtocol {
 // MARK: SendApiProtocolImplementation
 
 extension VMApi: SendApiProtocol {
+    mutating func managedMultiTransferESDTNFTExecute(
+        dstHandle: Int32,
+        tokenTransfersHandle: Int32,
+        gasLimit: Int64,
+        functionHandle: Int32,
+        argumentsHandle: Int32
+    ) -> Int32 {
+        return MultiversX.managedMultiTransferESDTNFTExecute(
+            dstHandle: dstHandle,
+            tokenTransfersHandle: tokenTransfersHandle,
+            gasLimit: gasLimit,
+            functionHandle: functionHandle,
+            argumentsHandle: argumentsHandle
+        )
+    }
+    
     mutating func managedTransferValueExecute(
         dstHandle: Int32,
         valueHandle: Int32,
@@ -279,7 +305,8 @@ extension VMApi: SendApiProtocol {
 
 extension VMApi: ErrorApiProtocol {
     mutating func managedSignalError(messageHandle: Int32) -> Never {
-        return MultiversX.managedSignalError(messageHandle: messageHandle)
+        MultiversX.managedSignalError(messageHandle: messageHandle)
+        fatalError()
     }
 }
 

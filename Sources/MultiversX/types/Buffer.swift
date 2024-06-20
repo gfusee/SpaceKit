@@ -146,6 +146,35 @@ extension MXBuffer: NestedEncodeOutput {
     }
 }
 
+extension MXBuffer: ArrayItem {
+    public static var shouldSkipReserialization: Bool {
+        false
+    }
+    
+    public static var payloadSize: UInt32 {
+        return 4
+    }
+    
+    public static func decodeArrayPayload(payload: MXBuffer) -> MXBuffer {
+        var payloadInput = BufferNestedDecodeInput(buffer: payload)
+        
+        let handle = Int32(Int.depDecode(input: &payloadInput))
+        
+        guard !payloadInput.canDecodeMore() else {
+            fatalError()
+        }
+        
+        return MXBuffer(handle: handle)
+    }
+    
+    public func intoArrayPayload() -> MXBuffer {
+        var buffer = MXBuffer()
+        Int(self.handle).depEncode(dest: &buffer)
+        
+        return buffer
+    }
+}
+
 extension MXBuffer: Equatable {
     public static func == (lhs: MXBuffer, rhs: MXBuffer) -> Bool {
         return API.bufferEqual(handle1: lhs.handle, handle2: rhs.handle) > 0

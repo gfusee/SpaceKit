@@ -111,6 +111,32 @@ package class TransactionContainer {
         
         self.state.setAccount(account: account)
     }
+    
+    public func addEsdtToAddressBalance(address: Data, token: Data, nonce: UInt64, value: BigInt) {
+        var account = self.getAccount(address: address)
+        var allBalances = account.esdtBalances[token] ?? []
+        var tokenBalance = EsdtBalance(nonce: nonce, balance: 0)
+        
+        for (balanceIndex, balance) in allBalances.enumerated() {
+            if balance.nonce == nonce {
+                tokenBalance = balance
+                allBalances.remove(at: balanceIndex)
+                
+                break
+            }
+        }
+        
+        tokenBalance.balance += value
+        
+        guard tokenBalance.balance >= 0 else {
+            fatalError()
+        }
+        
+        allBalances.append(tokenBalance)
+        account.esdtBalances[token] = allBalances
+        
+        self.state.setAccount(account: account)
+    }
 }
 
 #endif

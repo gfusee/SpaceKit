@@ -168,7 +168,7 @@ extension FixedArray8 where T == UInt8 {
             return 0
         }
         
-        var result: Int = 0
+        var result: Int32 = 0
         
         let isNegative = self[0] & 0x80 != 0
         
@@ -181,13 +181,9 @@ extension FixedArray8 where T == UInt8 {
                 valueToShift = self[i - numOfLeadingZerosToAppend]
             }
             
-            result |= Int(Int32(valueToShift) << (8 * (3 - i)))
+            result |= Int32(valueToShift) << (8 * (3 - i))
         }
         
-        if isNegative {
-            result |= ~0xFFFFFFFF
-        }
-        
-        return result
+        return Int(result)
     }
 }
