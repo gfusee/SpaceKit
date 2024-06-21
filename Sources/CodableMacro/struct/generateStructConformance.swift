@@ -18,6 +18,7 @@ func generateStructConformance(
         try generateTopDecodeExtension(structName: structName, fields: fields),
         try generateTopDecodeMultiExtension(structName: structName),
         try generateNestedDecodeExtension(structName: structName, fields: fields),
+        try generateArrayItemExtension(structName: structName, fields: fields)
     ]
 }
 
@@ -109,6 +110,61 @@ fileprivate func generateNestedDecodeExtension(structName: TokenSyntax, fields: 
                 return \(raw: structName)(
                     \(raw: nestedDecodeInitArgs)
                 )
+            }
+        }
+        """
+    )
+}
+
+fileprivate func generateArrayItemExtension(structName: TokenSyntax, fields: [VariableDeclSyntax]) throws -> ExtensionDeclSyntax {
+    var payloadSizeOperandsList: [String] = []
+    var payloadInputsDeclarationsList: [String] = []
+    var decodeArrayPayloadInitArgsList: [String] = []
+    for field in fields {
+        guard let fieldType = field.bindings.first!.typeAnnotation?.type else {
+            throw CodableMacroError.allFieldsShouldHaveAType
+        }
+        
+        let fieldTypePayloadSizeExpression = "\(fieldType).payloadSize"
+        
+        let fieldName = field.bindings.first!.pattern
+        let fieldPayloadName = "\(fieldName)PayloadInput"
+        let fieldNamePayloadInputDeclaration = "let \(fieldPayloadName) = payloadInput.readNextBuffer(length: \(fieldTypePayloadSizeExpression))"
+        
+        payloadSizeOperandsList.append(fieldTypePayloadSizeExpression)
+        payloadInputsDeclarationsList.append(fieldNamePayloadInputDeclaration)
+        decodeArrayPayloadInitArgsList.append("\(fieldName): \(fieldType).decodeArrayPayload(payload: \(fieldPayloadName))")
+    }
+    
+    let payloadSizeSum = payloadSizeOperandsList.joined(separator: " + ")
+    
+    let payloadInputsDeclarations = payloadInputsDeclarationsList.joined(separator: "\n")
+    let decodeArrayPayloadInitArgs = decodeArrayPayloadInitArgsList.joined(separator: ",\n")
+    
+    return ExtensionDeclSyntax(
+        extendedType: IdentifierTypeSyntax(name: structName),
+        memberBlock: """
+        : ArrayItem {
+            public static var payloadSize: Int32 {
+                return \(raw: payloadSizeSum)
+            }
+            
+            public static func decodeArrayPayload(payload: MXBuffer) -> \(structName) {
+                var payloadInput = BufferNestedDecodeInput(buffer: payload)
+                
+                \(raw: payloadInputsDeclarations)
+        
+                guard !payloadInput.canDecodeMore() else {
+                    fatalError()
+                }
+                
+                return \(raw: structName)(
+                    \(raw: decodeArrayPayloadInitArgs)
+                )
+            }
+              
+            public func intoArrayPayload() -> MXBuffer {
+                fatalError()
             }
         }
         """

@@ -1,4 +1,4 @@
-private let intSize = 8
+private let intSize: Int32 = 8
 
 extension UInt64 {
     // This function should be inlined top avoid heap allocation
@@ -20,8 +20,8 @@ extension UInt64: TopEncode {
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         let bigEndianBytes = self.asBigEndianBytes()
         
-        var startEncodingIndex = 0
-        while startEncodingIndex < intSize && bigEndianBytes[startEncodingIndex] == 0 {
+        var startEncodingIndex: Int32 = 0
+        while startEncodingIndex < intSize && bigEndianBytes[Int(startEncodingIndex)] == 0 {
             startEncodingIndex += 1
         }
         
@@ -56,4 +56,27 @@ extension UInt64: NestedDecode {
         
         return UInt64.topDecode(input: buffer)
     }
+}
+
+extension UInt64: ArrayItem {
+    public static var payloadSize: Int32 {
+        intSize
+    }
+    
+    public static func decodeArrayPayload(payload: MXBuffer) -> UInt64 {
+        var payloadInput = BufferNestedDecodeInput(buffer: payload)
+        
+        let result = UInt64.depDecode(input: &payloadInput)
+        
+        guard !payloadInput.canDecodeMore() else {
+            fatalError()
+        }
+        
+        return result
+    }
+    
+    public func intoArrayPayload() -> MXBuffer {
+        MXBuffer(data: self.asBigEndianBytes())
+    }
+    
 }

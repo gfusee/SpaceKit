@@ -134,6 +134,28 @@ extension BigUint: NestedEncode {
     }
 }
 
+extension BigUint: ArrayItem {
+    public static var payloadSize: Int32 {
+        return 4
+    }
+    
+    public static func decodeArrayPayload(payload: MXBuffer) -> BigUint {
+        var payloadInput = BufferNestedDecodeInput(buffer: payload)
+        
+        let handle = Int32(Int.depDecode(input: &payloadInput))
+        
+        guard !payloadInput.canDecodeMore() else {
+            fatalError()
+        }
+        
+        return BigUint(handle: handle)
+    }
+    
+    public func intoArrayPayload() -> MXBuffer {
+        return MXBuffer(data: Int(self.handle).asBigEndianBytes())
+    }
+}
+
 extension BigUint: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: IntegerLiteralType) {
         self.init(value: Int64(value))

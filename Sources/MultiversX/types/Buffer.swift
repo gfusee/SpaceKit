@@ -3,9 +3,9 @@ public typealias MXString = MXBuffer
 public struct MXBuffer {
     let handle: Int32
     
-    public var count: Int {
+    public var count: Int32 {
         get {
-            return Int(self.getCountSized())
+            return self.getCountSized()
         }
     }
 
@@ -22,6 +22,7 @@ public struct MXBuffer {
     }
     #endif
     
+    @inline(__always)
     package init(data: [UInt8]) {
         let handle = getNextHandle()
         
@@ -65,7 +66,7 @@ public struct MXBuffer {
     #if !WASM
     public func toBytes() -> [UInt8] {
         let selfCount = self.count
-        let result: [UInt8] = Array(repeating: 0, count: selfCount)
+        let result: [UInt8] = Array(repeating: 0, count: Int(selfCount))
         
         let _ = result.withUnsafeBytes { pointer in
             API.bufferGetBytes(handle: self.handle, resultPointer: pointer.baseAddress!)
@@ -76,7 +77,7 @@ public struct MXBuffer {
     #endif
     
     public func toFixedSizeBytes<T: FixedArrayProtocol>() -> T {
-        var result: T = T(count: self.count)
+        var result: T = T(count: Int(self.count))
         
         let _ = result.withUnsafeMutableBufferPointer { pointer in
             API.bufferGetBytes(handle: self.handle, resultPointer: pointer.baseAddress!)
@@ -93,13 +94,30 @@ public struct MXBuffer {
         let _ = API.bufferFinish(handle: self.handle)
     }
     
-    public func getSubBuffer(startIndex: Int, length: Int) -> MXBuffer {
+    package func withReplaced(startingPosition: Int32, with buffer: MXBuffer) -> MXBuffer {
+        let bufferCount = buffer.count
+        
+        let sliceBeforeCount = startingPosition
+        let sliceBefore = sliceBeforeCount == 0 ? MXBuffer() : self.getSubBuffer(startIndex: 0, length: sliceBeforeCount)
+        
+        let endPosition = startingPosition + bufferCount
+        let sliceAfterCount = self.count - bufferCount - sliceBeforeCount
+        let sliceAfter = sliceAfterCount == 0 ? MXBuffer() :  self.getSubBuffer(startIndex: endPosition, length: sliceAfterCount)
+        
+        return sliceBefore + buffer + sliceAfter
+    }
+    
+    public func getSubBuffer(startIndex: Int32, length: Int32) -> MXBuffer {
+        guard length > 0 else {
+            smartContractError(message: "Negative slice length.")
+        }
+        
         let resultHandle = getNextHandle()
         
         let _ = API.bufferCopyByteSlice(
             sourceHandle: self.handle,
-            startingPosition: Int32(startIndex),
-            sliceLength: Int32(length),
+            startingPosition: startIndex,
+            sliceLength: length,
             destinationHandle: resultHandle
         )
         
@@ -135,7 +153,7 @@ extension MXBuffer: TopEncode {
 
 extension MXBuffer: NestedEncode {
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        self.count.depEncode(dest: &dest)
+        Int(self.count).depEncode(dest: &dest)
         dest.write(buffer: self)
     }
 }
@@ -147,11 +165,7 @@ extension MXBuffer: NestedEncodeOutput {
 }
 
 extension MXBuffer: ArrayItem {
-    public static var shouldSkipReserialization: Bool {
-        false
-    }
-    
-    public static var payloadSize: UInt32 {
+    public static var payloadSize: Int32 {
         return 4
     }
     
@@ -168,10 +182,7 @@ extension MXBuffer: ArrayItem {
     }
     
     public func intoArrayPayload() -> MXBuffer {
-        var buffer = MXBuffer()
-        Int(self.handle).depEncode(dest: &buffer)
-        
-        return buffer
+        return MXBuffer(data: Int(self.handle).asBigEndianBytes())
     }
 }
 
@@ -183,9 +194,7 @@ extension MXBuffer: Equatable {
 
 extension MXBuffer {
     public static func + (lhs: MXBuffer, rhs: MXBuffer) -> MXBuffer {
-        let cloned = lhs.clone()
-        
-        return cloned.appended(rhs)
+        return lhs.appended(rhs)
     }
 }
 
@@ -237,7 +246,7 @@ extension MXBuffer: CustomDebugStringConvertible {
         var result = "0x\(self.hexDescription)"
         
         if let utf8Description = self.utf8Description {
-            result = "\(result) (UTF8: \(utf8Description)"
+            result = "\(result) (UTF8: \(utf8Description))"
         }
         
         return result

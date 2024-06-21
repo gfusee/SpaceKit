@@ -1,10 +1,26 @@
 @testable import MultiversX
 import XCTest
 
-@Contract struct ArrayOfBuffersTestsContract {
+/*
+
+@Codable struct CustomCodableStruct {
+    let firstElement: MXBuffer
+    let secondElement: UInt64
+    let thirdElement: UInt64
+    let fourthElement: MXBuffer
+}
+
+@Contract struct ArrayOfCustomStructsTestsContract {
     
     public func testGetOutOfRangeShouldFail() {
-        let array: MXArray<MXBuffer> = ["Hey!"]
+        let array: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        ]
         
         _ = array[1]
     }
@@ -12,21 +28,21 @@ import XCTest
     public func testTopDecodeInputTooLarge() {
         let input = MXBuffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal))
         
-        _ = MXArray<MXBuffer>.topDecode(input: input)
+        _ = MXArray<CustomCodableStruct>.topDecode(input: input)
     }
     
     public func testReplacedOutOfRangeShouldFail() {
-        let array: MXArray<MXBuffer> = ["Hey!"]
+        let array: MXArray<CustomCodableStruct> = ["Hey!"]
         
         _ = array.replaced(at: 1, value: "test")
     }
     
 }
 
-final class ArrayOfBuffersTests: ContractTestCase {
+final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testEmptyArray() throws {
-        let array: MXArray<MXBuffer> = MXArray()
+        let array: MXArray<CustomCodableStruct> = MXArray()
         
         let count = array.count
         
@@ -35,7 +51,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testAppendedOneElementArray() throws {
-        var array: MXArray<MXBuffer> = MXArray()
+        var array: MXArray<CustomCodableStruct> = MXArray()
         array = array.appended("Hey!")
         
         let count = array.count
@@ -47,7 +63,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testAppendedTwoElementsArray() throws {
-        var array: MXArray<MXBuffer> = MXArray()
+        var array: MXArray<CustomCodableStruct> = MXArray()
         array = array.appended("Hey!")
         array = array.appended("How's it going?")
         
@@ -62,7 +78,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testTwoElementsArrayThroughLiteralAssign() throws {
-        let array: MXArray<MXBuffer> = ["Hey!", "How's it going?"]
+        let array: MXArray<CustomCodableStruct> = ["Hey!", "How's it going?"]
         
         let count = array.count
         let firstElement = array.get(0)
@@ -75,11 +91,11 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testAppendedContentsOf() throws {
-        var array1: MXArray<MXBuffer> = MXArray()
+        var array1: MXArray<CustomCodableStruct> = MXArray()
         array1 = array1.appended("Hey!")
         array1 = array1.appended("How's it going?")
         
-        var array2: MXArray<MXBuffer> = MXArray()
+        var array2: MXArray<CustomCodableStruct> = MXArray()
         array2 = array2.appended("I hope")
         array2 = array2.appended("you're enjoying")
         array2 = array2.appended("the SwiftSDK!")
@@ -97,32 +113,32 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testEquatableWhenEqual() throws {
-        let array1: MXArray<MXBuffer> = ["Hey!", "How's it going?"]
-        let array2: MXArray<MXBuffer> = ["Hey!", "How's it going?"]
+        let array1: MXArray<CustomCodableStruct> = ["Hey!", "How's it going?"]
+        let array2: MXArray<CustomCodableStruct> = ["Hey!", "How's it going?"]
         
         XCTAssertEqual(array1, array2)
     }
     
     func testEquatableWhenDifferentCount() throws {
-        let array1: MXArray<MXBuffer> = ["Hey!", "How's it going?"]
-        let array2: MXArray<MXBuffer> = ["Hey!"]
+        let array1: MXArray<CustomCodableStruct> = ["Hey!", "How's it going?"]
+        let array2: MXArray<CustomCodableStruct> = ["Hey!"]
         
         XCTAssertNotEqual(array1, array2)
     }
     
     func testEquatableWhenDifferentValues() throws {
-        let array1: MXArray<MXBuffer> = ["Hey!", "How's it going?"]
-        let array2: MXArray<MXBuffer> = ["Hey!", "???"]
+        let array1: MXArray<CustomCodableStruct> = ["Hey!", "How's it going?"]
+        let array2: MXArray<CustomCodableStruct> = ["Hey!", "???"]
         
         XCTAssertNotEqual(array1, array2)
     }
     
     func testPlusOperator() throws {
-        var array1: MXArray<MXBuffer> = MXArray()
+        var array1: MXArray<CustomCodableStruct> = MXArray()
         array1 = array1.appended("Hey!")
         array1 = array1.appended("How's it going?")
         
-        var array2: MXArray<MXBuffer> = MXArray()
+        var array2: MXArray<CustomCodableStruct> = MXArray()
         array2 = array2.appended("I hope")
         array2 = array2.appended("you're enjoying")
         array2 = array2.appended("the SwiftSDK!")
@@ -140,7 +156,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testAppendedTwoElementsArrayUsingSubscript() throws {
-        var array: MXArray<MXBuffer> = MXArray()
+        var array: MXArray<CustomCodableStruct> = MXArray()
         array = array.appended("Hey!")
         array = array.appended("How's it going?")
         
@@ -164,7 +180,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testForLoopZeroElement() throws {
-        let array: MXArray<MXBuffer> = MXArray()
+        let array: MXArray<CustomCodableStruct> = MXArray()
         
         for _ in array {
             XCTFail()
@@ -172,7 +188,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testForLoopOneElement() throws {
-        var array: MXArray<MXBuffer> = MXArray()
+        var array: MXArray<CustomCodableStruct> = MXArray()
         array = array.appended("Hey!")
         
         for item in array {
@@ -181,7 +197,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testForLoopTwoElements() throws {
-        var array: MXArray<MXBuffer> = MXArray()
+        var array: MXArray<CustomCodableStruct> = MXArray()
         array = array.appended("Hey!")
         array = array.appended("How's it going?")
         
@@ -197,7 +213,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testTopEncodeZeroElement() throws {
-        let array: MXArray<MXBuffer> = MXArray()
+        let array: MXArray<CustomCodableStruct> = MXArray()
         
         var output = MXBuffer()
         array.topEncode(output: &output)
@@ -208,7 +224,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testTopEncodeOneElement() throws {
-        var array: MXArray<MXBuffer> = MXArray()
+        var array: MXArray<CustomCodableStruct> = MXArray()
         array = array.appended("a")
         
         var output = MXBuffer()
@@ -220,7 +236,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testTopEncodeTwoElements() throws {
-        var array: MXArray<MXBuffer> = MXArray()
+        var array: MXArray<CustomCodableStruct> = MXArray()
         array = array.appended("a")
         array = array.appended("Hello World! How's it going? I hope you're enjoying the SwiftSDK!")
         
@@ -233,7 +249,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testNestedEncodeZeroElement() throws {
-        let array: MXArray<MXBuffer> = MXArray()
+        let array: MXArray<CustomCodableStruct> = MXArray()
         
         var output = MXBuffer()
         array.depEncode(dest: &output)
@@ -244,7 +260,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testNestedEncodeOneElement() throws {
-        var array: MXArray<MXBuffer> = MXArray()
+        var array: MXArray<CustomCodableStruct> = MXArray()
         array = array.appended("a")
         
         var output = MXBuffer()
@@ -256,7 +272,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testNestedEncodeTwoElements() throws {
-        var array: MXArray<MXBuffer> = MXArray()
+        var array: MXArray<CustomCodableStruct> = MXArray()
         array = array.appended("a")
         array = array.appended("Hello World! How's it going? I hope you're enjoying the SwiftSDK!")
         
@@ -271,7 +287,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testTopDecodeZeroElement() throws {
         let input = MXBuffer(data: Array("".hexadecimal))
         
-        let array = MXArray<MXBuffer>.topDecode(input: input).toArray()
+        let array = MXArray<CustomCodableStruct>.topDecode(input: input).toArray()
         let expected: [MXBuffer] = []
         
         XCTAssertEqual(array, expected)
@@ -280,7 +296,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testTopDecodeOneElement() throws {
         let input = MXBuffer(data: Array("0000000161".hexadecimal))
         
-        let array = MXArray<MXBuffer>.topDecode(input: input).toArray()
+        let array = MXArray<CustomCodableStruct>.topDecode(input: input).toArray()
         let expected: [MXBuffer] = ["a"]
         
         XCTAssertEqual(array, expected)
@@ -289,7 +305,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testTopDecodeTwoElements() throws {
         let input = MXBuffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal))
         
-        let array = MXArray<MXBuffer>.topDecode(input: input).toArray()
+        let array = MXArray<CustomCodableStruct>.topDecode(input: input).toArray()
         let expected: [MXBuffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
         
         XCTAssertEqual(array, expected)
@@ -298,7 +314,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeZeroElement() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
         
-        let array = MXArray<MXBuffer>.depDecode(input: &input).toArray()
+        let array = MXArray<CustomCodableStruct>.depDecode(input: &input).toArray()
         let expected: [MXBuffer] = []
         
         XCTAssertEqual(array, expected)
@@ -307,7 +323,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeOneElement() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000010000000161".hexadecimal)))
         
-        let array = MXArray<MXBuffer>.depDecode(input: &input).toArray()
+        let array = MXArray<CustomCodableStruct>.depDecode(input: &input).toArray()
         let expected: [MXBuffer] = ["a"]
         
         XCTAssertEqual(array, expected)
@@ -316,7 +332,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeTwoElements() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000200000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
         
-        let array = MXArray<MXBuffer>.depDecode(input: &input).toArray()
+        let array = MXArray<CustomCodableStruct>.depDecode(input: &input).toArray()
         let expected: [MXBuffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
         
         XCTAssertEqual(array, expected)
@@ -325,7 +341,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeTwoElementsAndInputLarger() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000200000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal)))
         
-        let array = MXArray<MXBuffer>.depDecode(input: &input).toArray()
+        let array = MXArray<CustomCodableStruct>.depDecode(input: &input).toArray()
         let expected: [MXBuffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
         
         XCTAssertEqual(array, expected)
@@ -333,7 +349,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testReplaceFirstElement() throws {
-        let array: MXArray<MXBuffer> = [
+        let array: MXArray<CustomCodableStruct> = [
             "first",
             "second",
             "third"
@@ -341,7 +357,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
         
         let replaced = array.replaced(at: 0, value: "replaced value")
         
-        let expected: MXArray<MXBuffer> = [
+        let expected: MXArray<CustomCodableStruct> = [
             "replaced value",
             "second",
             "third"
@@ -351,7 +367,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testReplaceSecondElement() throws {
-        let array: MXArray<MXBuffer> = [
+        let array: MXArray<CustomCodableStruct> = [
             "first",
             "second",
             "third"
@@ -359,7 +375,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
         
         let replaced = array.replaced(at: 1, value: "replaced value")
         
-        let expected: MXArray<MXBuffer> = [
+        let expected: MXArray<CustomCodableStruct> = [
             "first",
             "replaced value",
             "third"
@@ -369,7 +385,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testReplaceThirdElement() throws {
-        let array: MXArray<MXBuffer> = [
+        let array: MXArray<CustomCodableStruct> = [
             "first",
             "second",
             "third"
@@ -377,7 +393,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
         
         let replaced = array.replaced(at: 2, value: "replaced value")
         
-        let expected: MXArray<MXBuffer> = [
+        let expected: MXArray<CustomCodableStruct> = [
             "first",
             "second",
             "replaced value"
@@ -397,3 +413,5 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
 }
+
+*/

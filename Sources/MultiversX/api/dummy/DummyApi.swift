@@ -91,6 +91,34 @@ extension DummyApi: BufferApiProtocol {
         return 0
     }
     
+    public func mBufferSetByteSlice(
+        mBufferHandle: Int32,
+        startingPosition: Int32,
+        dataLength: Int32,
+        dataOffset: UnsafeRawPointer
+    ) -> Int32 {
+        var bufferData = self.getCurrentContainer().getBufferData(handle: mBufferHandle)
+        let bufferDataCountBefore = bufferData.count
+        
+        let sliceData = Data(bytes: dataOffset, count: Int(dataLength))
+        
+        bufferData[Int(startingPosition)..<Int(startingPosition + dataLength)] = sliceData
+        
+        let bufferDataCountAfter = bufferData.count
+        
+        guard bufferDataCountBefore == bufferDataCountAfter else {
+            self.throwExecutionFailed(reason: "Data's size after slice replacement is different than before it.")
+        }
+        
+        self.getCurrentContainer().managedBuffersData[mBufferHandle] = bufferData
+        
+        return 0
+    }
+    
+    public func mBufferAppendBytes(accumulatorHandle: Int32, byte_ptr: UnsafeRawPointer, byte_len: Int32) -> Int32 {
+        fatalError()
+    }
+    
     public func bufferCopyByteSlice(
         sourceHandle: Int32,
         startingPosition: Int32,

@@ -1,6 +1,6 @@
 // TODO: add tests for the below extensions
 
-private let intSize = 1
+private let intSize: Int32 = 1
 
 extension UInt8: TopEncode {
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {

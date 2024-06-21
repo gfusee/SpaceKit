@@ -1,4 +1,4 @@
-private let ADDRESS_LENGTH = 32
+private let ADDRESS_LENGTH: Int32 = 32
 
 public struct Address {
     let buffer: MXBuffer

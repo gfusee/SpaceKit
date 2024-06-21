@@ -1,6 +1,15 @@
 public protocol BufferApiProtocol {
     mutating func bufferSetBytes(handle: Int32, bytePtr: UnsafeRawPointer, byteLen: Int32) -> Int32
     
+    mutating func mBufferSetByteSlice(
+        mBufferHandle: Int32,
+        startingPosition: Int32,
+        dataLength: Int32,
+        dataOffset: UnsafeRawPointer
+    ) -> Int32
+    
+    mutating func mBufferAppendBytes(accumulatorHandle: Int32, byte_ptr: UnsafeRawPointer, byte_len: Int32) -> Int32
+    
     mutating func bufferCopyByteSlice(
         sourceHandle: Int32,
         startingPosition: Int32,

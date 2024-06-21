@@ -5,6 +5,19 @@
 @_extern(c)
 func mBufferSetBytes(mBufferHandle: Int32, byte_ptr: UnsafeRawPointer, byte_len: Int32) -> Int32
 
+@_extern(wasm, module: "env", name: "mBufferSetByteSlice")
+@_extern(c)
+func mBufferSetByteSlice(
+    mBufferHandle: Int32,
+    startingPosition: Int32,
+    dataLength: Int32,
+    dataOffset: UnsafeRawPointer
+) -> Int32
+
+@_extern(wasm, module: "env", name: "mBufferAppendBytes")
+@_extern(c)
+func mBufferAppendBytes(accumulatorHandle: Int32, byte_ptr: UnsafeRawPointer, byte_len: Int32) -> Int32
+
 @_extern(wasm, module: "env", name: "mBufferCopyByteSlice")
 @_extern(c)
 func mBufferCopyByteSlice(
@@ -144,6 +157,28 @@ struct VMApi {}
 extension VMApi: BufferApiProtocol {
     mutating func bufferSetBytes(handle: Int32, bytePtr: UnsafeRawPointer, byteLen: Int32) -> Int32 {
         return mBufferSetBytes(mBufferHandle: handle, byte_ptr: bytePtr, byte_len: byteLen)
+    }
+    
+    mutating func mBufferSetByteSlice(
+        mBufferHandle: Int32,
+        startingPosition: Int32,
+        dataLength: Int32,
+        dataOffset: UnsafeRawPointer
+    ) -> Int32 {
+        return MultiversX.mBufferSetByteSlice(
+            mBufferHandle: mBufferHandle,
+            startingPosition: startingPosition,
+            dataLength: dataLength,
+            dataOffset: dataOffset
+        )
+    }
+    
+    mutating func mBufferAppendBytes(accumulatorHandle: Int32, byte_ptr: UnsafeRawPointer, byte_len: Int32) -> Int32 {
+        return MultiversX.mBufferAppendBytes(
+            accumulatorHandle: accumulatorHandle,
+            byte_ptr: byte_ptr,
+            byte_len: byte_len
+        )
     }
     
     mutating func bufferCopyByteSlice(
