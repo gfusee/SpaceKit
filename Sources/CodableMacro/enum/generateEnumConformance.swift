@@ -19,7 +19,8 @@ func generateEnumConformance(
         try generateNestedEncodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
         try generateTopDecodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
         try generateTopDecodeMultiExtension(enumName: enumName),
-        try generateNestedDecodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases)
+        try generateNestedDecodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
+        try generateArrayItemExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases)
     ]
 }
 
@@ -165,6 +166,122 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
                     \(raw: nestedDecodeInitArgs)
                     default: fatalError()
                 }
+            }
+        }
+        """
+    )
+}
+
+fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> ExtensionDeclSyntax {
+    var payloadSizeSumList: [String] = []
+    var payloadInputsDeclarationsList: [String] = []
+    var decodeArrayPayloadInitArgsList: [String] = []
+    var intoArrayPayloadCasesList: [String] = []
+    for discriminantAndCase in discriminantsAndCases {
+        var decodeArrayPayloadValuesDeclarationList: [String] = []
+        var decodeArrayPayloadInitArgsValuesList: [String] = []
+        var payloadSizeOperandsList: [String] = ["1"]
+        var associatedValuesInstantiationsList: [String] = []
+        var associatedValuesIntoArrayPayloadList: [String] = []
+        let caseName = discriminantAndCase.1.name.trimmed
+        
+        if let associatedValues = discriminantAndCase.1.parameterClause?.parameters {
+            for associatedValue in associatedValues.enumerated() {
+                let typeName = associatedValue.element.type.trimmed
+                
+                let valueName = "value\(associatedValue.offset)"
+                decodeArrayPayloadValuesDeclarationList.append("let \(valueName)Payload = payloadInput.readNextBuffer(length: \(typeName).payloadSize)")
+                
+                decodeArrayPayloadInitArgsValuesList.append("\(typeName).decodeArrayPayload(payload: \(valueName)Payload)")
+                payloadSizeOperandsList.append("\(typeName).payloadSize")
+                
+                associatedValuesInstantiationsList.append("let \(valueName)")
+                associatedValuesIntoArrayPayloadList.append("""
+                totalPayload = totalPayload + \(valueName).intoArrayPayload()
+                """)
+            }
+        }
+        
+        let currentCasePayloadSize = payloadSizeOperandsList.joined(separator: " + ")
+        payloadSizeSumList.append(currentCasePayloadSize)
+        
+        let decodeArrayPayloadValuesDeclaration = decodeArrayPayloadValuesDeclarationList.joined(separator: "\n")
+        
+        let decodeArrayPayloadInitArgsValues = if decodeArrayPayloadInitArgsValuesList.isEmpty {
+            ""
+        } else {
+            """
+            (
+                \(decodeArrayPayloadInitArgsValuesList.joined(separator: ",\n"))
+            )
+            """
+        }
+        
+        decodeArrayPayloadInitArgsList.append("""
+            case \(discriminantAndCase.0):
+            \(decodeArrayPayloadValuesDeclaration)
+            return .\(caseName)\(decodeArrayPayloadInitArgsValues)
+            """
+        )
+        
+        let associatedValuesInstantiations = if associatedValuesInstantiationsList.isEmpty {
+            ""
+        } else {
+            "(\(associatedValuesInstantiationsList.joined(separator: ", ")))"
+        }
+        
+        let associatedValuesIntoArrayPayload = associatedValuesIntoArrayPayloadList.joined(separator: "\n")
+        
+        intoArrayPayloadCasesList.append("""
+            case .\(caseName)\(associatedValuesInstantiations):
+            currentCasePayloadSize = \(currentCasePayloadSize)
+            totalPayload.write(buffer: UInt8(\(discriminantAndCase.0)).intoArrayPayload())
+            \(associatedValuesIntoArrayPayload)
+            """.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+    }
+    
+    let payloadSizeSum = payloadSizeSumList.joined(separator: ", ")
+    
+    let payloadInputsDeclarations = payloadInputsDeclarationsList.joined(separator: "\n")
+    let decodeArrayPayloadInitArgs = decodeArrayPayloadInitArgsList.joined(separator: "\n")
+    let intoArrayPayloadCases = intoArrayPayloadCasesList.joined(separator: "\n")
+    
+    return ExtensionDeclSyntax(
+        extendedType: IdentifierTypeSyntax(name: enumName),
+        memberBlock: """
+        : ArrayItem {
+            public static var payloadSize: Int32 {
+                return max(\(raw: payloadSizeSum))
+            }
+            
+            public static func decodeArrayPayload(payload: MXBuffer) -> \(enumName) {
+                var payloadInput = BufferNestedDecodeInput(buffer: payload)
+                
+                let _discriminantPayload = payloadInput.readNextBuffer(length: 1)
+                let _discriminant = UInt8.decodeArrayPayload(payload: _discriminantPayload)
+                        
+                switch _discriminant {
+                    \(raw: decodeArrayPayloadInitArgs)
+                    default: fatalError()
+                }
+            }
+              
+            public func intoArrayPayload() -> MXBuffer {
+                var totalPayload = MXBuffer()
+        
+                let currentCasePayloadSize: Int32
+                switch self {
+                    \(raw: intoArrayPayloadCases)
+                }
+        
+                let trailingZerosCount = \(enumName).payloadSize - currentCasePayloadSize
+        
+                if trailingZerosCount > 0 {
+                    totalPayload = totalPayload + MultiversX.getZeroedBuffer(count: trailingZerosCount)
+                }
+        
+                return totalPayload
             }
         }
         """

@@ -109,6 +109,10 @@ public struct MXBuffer {
     
     public func getSubBuffer(startIndex: Int32, length: Int32) -> MXBuffer {
         guard length > 0 else {
+            if length == 0 {
+                return MXBuffer()
+            }
+            
             smartContractError(message: "Negative slice length.")
         }
         

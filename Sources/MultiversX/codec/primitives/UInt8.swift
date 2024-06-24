@@ -37,3 +37,23 @@ extension UInt8: NestedDecode {
         return UInt8.topDecode(input: buffer)
     }
 }
+
+extension UInt8: ArrayItem {
+    public static var payloadSize: Int32 {
+        return 4
+    }
+    
+    public static func decodeArrayPayload(payload: MXBuffer) -> UInt8 {
+        UInt8.topDecode(input: payload)
+    }
+    
+    public func intoArrayPayload() -> MXBuffer {
+        var payload = MXBuffer()
+        
+        self.depEncode(dest: &payload)
+        
+        return payload
+    }
+    
+    
+}

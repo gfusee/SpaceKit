@@ -120,6 +120,7 @@ fileprivate func generateArrayItemExtension(structName: TokenSyntax, fields: [Va
     var payloadSizeOperandsList: [String] = []
     var payloadInputsDeclarationsList: [String] = []
     var decodeArrayPayloadInitArgsList: [String] = []
+    var intoArrayPayloadInitArgsList: [String] = []
     for field in fields {
         guard let fieldType = field.bindings.first!.typeAnnotation?.type else {
             throw CodableMacroError.allFieldsShouldHaveAType
@@ -134,12 +135,14 @@ fileprivate func generateArrayItemExtension(structName: TokenSyntax, fields: [Va
         payloadSizeOperandsList.append(fieldTypePayloadSizeExpression)
         payloadInputsDeclarationsList.append(fieldNamePayloadInputDeclaration)
         decodeArrayPayloadInitArgsList.append("\(fieldName): \(fieldType).decodeArrayPayload(payload: \(fieldPayloadName))")
+        intoArrayPayloadInitArgsList.append("totalPayload = totalPayload + \(fieldName).intoArrayPayload()")
     }
     
     let payloadSizeSum = payloadSizeOperandsList.joined(separator: " + ")
     
     let payloadInputsDeclarations = payloadInputsDeclarationsList.joined(separator: "\n")
     let decodeArrayPayloadInitArgs = decodeArrayPayloadInitArgsList.joined(separator: ",\n")
+    let intoArrayPayloadInitArgs = intoArrayPayloadInitArgsList.joined(separator: "\n")
     
     return ExtensionDeclSyntax(
         extendedType: IdentifierTypeSyntax(name: structName),
@@ -164,7 +167,11 @@ fileprivate func generateArrayItemExtension(structName: TokenSyntax, fields: [Va
             }
               
             public func intoArrayPayload() -> MXBuffer {
-                fatalError()
+                var totalPayload = MXBuffer()
+        
+                \(raw: intoArrayPayloadInitArgs)
+        
+                return totalPayload
             }
         }
         """

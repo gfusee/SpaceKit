@@ -1,7 +1,7 @@
 public struct BufferNestedDecodeInput {
     let buffer: MXBuffer
     var decodeIndex: Int32
-    let bufferCount: Int32
+    public let bufferCount: Int32
     
     public init(buffer: MXBuffer) {
         let cloned = buffer.clone()

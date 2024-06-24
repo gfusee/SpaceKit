@@ -1,9 +1,7 @@
 @testable import MultiversX
 import XCTest
 
-/*
-
-@Codable struct CustomCodableStruct {
+@Codable struct CustomCodableStruct: Equatable {
     let firstElement: MXBuffer
     let secondElement: UInt64
     let thirdElement: UInt64
@@ -13,7 +11,9 @@ import XCTest
 @Contract struct ArrayOfCustomStructsTestsContract {
     
     public func testGetOutOfRangeShouldFail() {
-        let array: MXArray<CustomCodableStruct> = [
+        let array: MXArray<MXString> = ["Hello!", "Bonjour!", "¡Hola!"]
+        
+        let array2: MXArray<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -32,9 +32,24 @@ import XCTest
     }
     
     public func testReplacedOutOfRangeShouldFail() {
-        let array: MXArray<CustomCodableStruct> = ["Hey!"]
+        let array: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        ]
         
-        _ = array.replaced(at: 1, value: "test")
+        _ = array.replaced(
+            at: 1,
+            value: CustomCodableStruct(
+                firstElement: "test1",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "test2"
+            )
+        )
     }
     
 }
@@ -52,121 +67,374 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testAppendedOneElementArray() throws {
         var array: MXArray<CustomCodableStruct> = MXArray()
-        array = array.appended("Hey!")
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        )
         
         let count = array.count
         let element = array.get(0)
+        let expected = CustomCodableStruct(
+            firstElement: "Hey!",
+            secondElement: 10,
+            thirdElement: 100,
+            fourthElement: "How's it going?"
+        )
         
         XCTAssertEqual(count, 1)
-        XCTAssertEqual(element, "Hey!")
-        XCTAssertEqual(array.buffer.count, 4)
+        XCTAssertEqual(element, expected)
+        XCTAssertEqual(array.buffer.count, 24)
     }
     
     func testAppendedTwoElementsArray() throws {
         var array: MXArray<CustomCodableStruct> = MXArray()
-        array = array.appended("Hey!")
-        array = array.appended("How's it going?")
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        )
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        )
         
         let count = array.count
         let firstElement = array.get(0)
         let secondElement = array.get(1)
         
+        let firstExpectedElement = CustomCodableStruct(
+            firstElement: "Hey!",
+            secondElement: 10,
+            thirdElement: 100,
+            fourthElement: "How's it going?"
+        )
+        
+        let secondExpectedElement = CustomCodableStruct(
+            firstElement: "test",
+            secondElement: 30,
+            thirdElement: 5,
+            fourthElement: "test2"
+        )
+        
         XCTAssertEqual(count, 2)
-        XCTAssertEqual(firstElement, "Hey!")
-        XCTAssertEqual(secondElement, "How's it going?")
-        XCTAssertEqual(array.buffer.count, 8)
+        XCTAssertEqual(firstElement, firstExpectedElement)
+        XCTAssertEqual(secondElement, secondExpectedElement)
+        XCTAssertEqual(array.buffer.count, 48)
     }
     
     func testTwoElementsArrayThroughLiteralAssign() throws {
-        let array: MXArray<CustomCodableStruct> = ["Hey!", "How's it going?"]
+        var array: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
         
         let count = array.count
         let firstElement = array.get(0)
         let secondElement = array.get(1)
         
+        let firstExpectedElement = CustomCodableStruct(
+            firstElement: "Hey!",
+            secondElement: 10,
+            thirdElement: 100,
+            fourthElement: "How's it going?"
+        )
+        
+        let secondExpectedElement = CustomCodableStruct(
+            firstElement: "test",
+            secondElement: 30,
+            thirdElement: 5,
+            fourthElement: "test2"
+        )
+        
         XCTAssertEqual(count, 2)
-        XCTAssertEqual(firstElement, "Hey!")
-        XCTAssertEqual(secondElement, "How's it going?")
-        XCTAssertEqual(array.buffer.count, 8)
+        XCTAssertEqual(firstElement, firstExpectedElement)
+        XCTAssertEqual(secondElement, secondExpectedElement)
+        XCTAssertEqual(array.buffer.count, 48)
     }
     
     func testAppendedContentsOf() throws {
-        var array1: MXArray<CustomCodableStruct> = MXArray()
-        array1 = array1.appended("Hey!")
-        array1 = array1.appended("How's it going?")
+        var array1: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
         
-        var array2: MXArray<CustomCodableStruct> = MXArray()
-        array2 = array2.appended("I hope")
-        array2 = array2.appended("you're enjoying")
-        array2 = array2.appended("the SwiftSDK!")
+        var array2: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "test3",
+                secondElement: 1,
+                thirdElement: 76,
+                fourthElement: "test4"
+            ),
+            CustomCodableStruct(
+                firstElement: "test5",
+                secondElement: 80,
+                thirdElement: 0,
+                fourthElement: "test6"
+            )
+        ]
         
-        let array = array1.appended(contentsOf: array2).toArray()
-        let expected: [MXBuffer] = [
-            "Hey!",
-            "How's it going?",
-            "I hope",
-            "you're enjoying",
-            "the SwiftSDK!"
+        let array = array1.appended(contentsOf: array2)
+        let expected: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            ),
+            CustomCodableStruct(
+                firstElement: "test3",
+                secondElement: 1,
+                thirdElement: 76,
+                fourthElement: "test4"
+            ),
+            CustomCodableStruct(
+                firstElement: "test5",
+                secondElement: 80,
+                thirdElement: 0,
+                fourthElement: "test6"
+            )
         ]
         
         XCTAssertEqual(array, expected)
     }
     
     func testEquatableWhenEqual() throws {
-        let array1: MXArray<CustomCodableStruct> = ["Hey!", "How's it going?"]
-        let array2: MXArray<CustomCodableStruct> = ["Hey!", "How's it going?"]
+        let array1: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
+        
+        let array2: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
         
         XCTAssertEqual(array1, array2)
     }
     
     func testEquatableWhenDifferentCount() throws {
-        let array1: MXArray<CustomCodableStruct> = ["Hey!", "How's it going?"]
-        let array2: MXArray<CustomCodableStruct> = ["Hey!"]
+        let array1: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
+        let array2: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        ]
         
         XCTAssertNotEqual(array1, array2)
     }
     
     func testEquatableWhenDifferentValues() throws {
-        let array1: MXArray<CustomCodableStruct> = ["Hey!", "How's it going?"]
-        let array2: MXArray<CustomCodableStruct> = ["Hey!", "???"]
+        let array1: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
+        
+        let array2: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 99,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
         
         XCTAssertNotEqual(array1, array2)
     }
     
     func testPlusOperator() throws {
-        var array1: MXArray<CustomCodableStruct> = MXArray()
-        array1 = array1.appended("Hey!")
-        array1 = array1.appended("How's it going?")
-        
-        var array2: MXArray<CustomCodableStruct> = MXArray()
-        array2 = array2.appended("I hope")
-        array2 = array2.appended("you're enjoying")
-        array2 = array2.appended("the SwiftSDK!")
-        
-        let array = (array1 + array2).toArray()
-        let expected: [MXBuffer] = [
-            "Hey!",
-            "How's it going?",
-            "I hope",
-            "you're enjoying",
-            "the SwiftSDK!"
-        ]
-        
-        XCTAssertEqual(array, expected)
+        func testAppendedContentsOf() throws {
+            let array1: MXArray<CustomCodableStruct> = [
+                CustomCodableStruct(
+                    firstElement: "Hey!",
+                    secondElement: 10,
+                    thirdElement: 100,
+                    fourthElement: "How's it going?"
+                ),
+                CustomCodableStruct(
+                    firstElement: "test",
+                    secondElement: 30,
+                    thirdElement: 5,
+                    fourthElement: "test2"
+                )
+            ]
+            
+            let array2: MXArray<CustomCodableStruct> = [
+                CustomCodableStruct(
+                    firstElement: "test3",
+                    secondElement: 1,
+                    thirdElement: 76,
+                    fourthElement: "test4"
+                ),
+                CustomCodableStruct(
+                    firstElement: "test5",
+                    secondElement: 80,
+                    thirdElement: 0,
+                    fourthElement: "test6"
+                )
+            ]
+            
+            let array = array1 + array2
+            let expected: MXArray<CustomCodableStruct> = [
+                CustomCodableStruct(
+                    firstElement: "Hey!",
+                    secondElement: 10,
+                    thirdElement: 100,
+                    fourthElement: "How's it going?"
+                ),
+                CustomCodableStruct(
+                    firstElement: "test",
+                    secondElement: 30,
+                    thirdElement: 5,
+                    fourthElement: "test2"
+                ),
+                CustomCodableStruct(
+                    firstElement: "test3",
+                    secondElement: 1,
+                    thirdElement: 76,
+                    fourthElement: "test4"
+                ),
+                CustomCodableStruct(
+                    firstElement: "test5",
+                    secondElement: 80,
+                    thirdElement: 0,
+                    fourthElement: "test6"
+                )
+            ]
+            
+            XCTAssertEqual(array, expected)
+        }
     }
     
-    func testAppendedTwoElementsArrayUsingSubscript() throws {
+    func testAppendedTwoElementsArrayThroughSubscript() throws {
         var array: MXArray<CustomCodableStruct> = MXArray()
-        array = array.appended("Hey!")
-        array = array.appended("How's it going?")
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        )
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        )
         
         let count = array.count
         let firstElement = array[0]
         let secondElement = array[1]
         
+        let firstExpectedElement = CustomCodableStruct(
+            firstElement: "Hey!",
+            secondElement: 10,
+            thirdElement: 100,
+            fourthElement: "How's it going?"
+        )
+        
+        let secondExpectedElement = CustomCodableStruct(
+            firstElement: "test",
+            secondElement: 30,
+            thirdElement: 5,
+            fourthElement: "test2"
+        )
+        
         XCTAssertEqual(count, 2)
-        XCTAssertEqual(firstElement, "Hey!")
-        XCTAssertEqual(secondElement, "How's it going?")
+        XCTAssertEqual(firstElement, firstExpectedElement)
+        XCTAssertEqual(secondElement, secondExpectedElement)
+        XCTAssertEqual(array.buffer.count, 48)
     }
     
     func testGetOutOfRangeShouldFail() throws {
@@ -189,25 +457,67 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testForLoopOneElement() throws {
         var array: MXArray<CustomCodableStruct> = MXArray()
-        array = array.appended("Hey!")
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        )
         
         for item in array {
-            XCTAssertEqual(item, "Hey!")
+            XCTAssertEqual(
+                item,
+                CustomCodableStruct(
+                    firstElement: "Hey!",
+                    secondElement: 10,
+                    thirdElement: 100,
+                    fourthElement: "How's it going?"
+                )
+            )
         }
     }
     
     func testForLoopTwoElements() throws {
         var array: MXArray<CustomCodableStruct> = MXArray()
-        array = array.appended("Hey!")
-        array = array.appended("How's it going?")
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        )
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        )
         
-        var heapArray: [MXBuffer] = []
+        var heapArray: [CustomCodableStruct] = []
         
         for item in array {
             heapArray.append(item)
         }
         
-        let expected: [MXBuffer] = ["Hey!", "How's it going?"]
+        let expected: [CustomCodableStruct] = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
         
         XCTAssertEqual(heapArray, expected)
     }
@@ -225,25 +535,46 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testTopEncodeOneElement() throws {
         var array: MXArray<CustomCodableStruct> = MXArray()
-        array = array.appended("a")
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        )
         
         var output = MXBuffer()
         array.topEncode(output: &output)
         
-        let expected = MXBuffer(data: Array("0000000161".hexadecimal))
+        let expected = MXBuffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
     
     func testTopEncodeTwoElements() throws {
         var array: MXArray<CustomCodableStruct> = MXArray()
-        array = array.appended("a")
-        array = array.appended("Hello World! How's it going? I hope you're enjoying the SwiftSDK!")
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        )
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        )
         
         var output = MXBuffer()
         array.topEncode(output: &output)
         
-        let expected = MXBuffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal))
+        let expected = MXBuffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -261,25 +592,46 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testNestedEncodeOneElement() throws {
         var array: MXArray<CustomCodableStruct> = MXArray()
-        array = array.appended("a")
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        )
         
         var output = MXBuffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("000000010000000161".hexadecimal))
+        let expected = MXBuffer(data: Array("000000010000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
     
     func testNestedEncodeTwoElements() throws {
         var array: MXArray<CustomCodableStruct> = MXArray()
-        array = array.appended("a")
-        array = array.appended("Hello World! How's it going? I hope you're enjoying the SwiftSDK!")
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        )
+        array = array.appended(
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        )
         
         var output = MXBuffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("0000000200000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal))
+        let expected = MXBuffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -287,26 +639,46 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testTopDecodeZeroElement() throws {
         let input = MXBuffer(data: Array("".hexadecimal))
         
-        let array = MXArray<CustomCodableStruct>.topDecode(input: input).toArray()
-        let expected: [MXBuffer] = []
+        let array = MXArray<CustomCodableStruct>.topDecode(input: input)
+        let expected: MXArray<CustomCodableStruct> = []
         
         XCTAssertEqual(array, expected)
     }
     
     func testTopDecodeOneElement() throws {
-        let input = MXBuffer(data: Array("0000000161".hexadecimal))
+        let input = MXBuffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
-        let array = MXArray<CustomCodableStruct>.topDecode(input: input).toArray()
-        let expected: [MXBuffer] = ["a"]
+        let array = MXArray<CustomCodableStruct>.topDecode(input: input)
+        let expected: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        ]
         
         XCTAssertEqual(array, expected)
     }
     
     func testTopDecodeTwoElements() throws {
-        let input = MXBuffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal))
+        let input = MXBuffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
-        let array = MXArray<CustomCodableStruct>.topDecode(input: input).toArray()
-        let expected: [MXBuffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
+        let array = MXArray<CustomCodableStruct>.topDecode(input: input)
+        let expected: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
         
         XCTAssertEqual(array, expected)
     }
@@ -314,35 +686,68 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testNestedDecodeZeroElement() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
         
-        let array = MXArray<CustomCodableStruct>.depDecode(input: &input).toArray()
-        let expected: [MXBuffer] = []
+        let array = MXArray<CustomCodableStruct>.depDecode(input: &input)
+        let expected: MXArray<CustomCodableStruct> = []
         
         XCTAssertEqual(array, expected)
     }
     
     func testNestedDecodeOneElement() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000010000000161".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000010000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal)))
         
-        let array = MXArray<CustomCodableStruct>.depDecode(input: &input).toArray()
-        let expected: [MXBuffer] = ["a"]
+        let array = MXArray<CustomCodableStruct>.depDecode(input: &input)
+        let expected: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            )
+        ]
         
         XCTAssertEqual(array, expected)
     }
     
     func testNestedDecodeTwoElements() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000200000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal)))
         
-        let array = MXArray<CustomCodableStruct>.depDecode(input: &input).toArray()
-        let expected: [MXBuffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
+        let array = MXArray<CustomCodableStruct>.depDecode(input: &input)
+        let expected: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
         
         XCTAssertEqual(array, expected)
     }
     
     func testNestedDecodeTwoElementsAndInputLarger() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000200000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e000000000000000500000005746573743201".hexadecimal)))
         
-        let array = MXArray<CustomCodableStruct>.depDecode(input: &input).toArray()
-        let expected: [MXBuffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
+        let array = MXArray<CustomCodableStruct>.depDecode(input: &input)
+        let expected: MXArray<CustomCodableStruct> = [
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            )
+        ]
         
         XCTAssertEqual(array, expected)
         XCTAssertEqual(input.canDecodeMore(), true)
@@ -350,17 +755,55 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testReplaceFirstElement() throws {
         let array: MXArray<CustomCodableStruct> = [
-            "first",
-            "second",
-            "third"
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            ),
+            CustomCodableStruct(
+                firstElement: "test3",
+                secondElement: 1,
+                thirdElement: 76,
+                fourthElement: "test4"
+            )
         ]
         
-        let replaced = array.replaced(at: 0, value: "replaced value")
+        let replaced = array.replaced(
+            at: 0,
+            value: CustomCodableStruct(
+                firstElement: "replaced value 1",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "replaced value 2"
+            )
+        )
         
         let expected: MXArray<CustomCodableStruct> = [
-            "replaced value",
-            "second",
-            "third"
+            CustomCodableStruct(
+                firstElement: "replaced value 1",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "replaced value 2"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            ),
+            CustomCodableStruct(
+                firstElement: "test3",
+                secondElement: 1,
+                thirdElement: 76,
+                fourthElement: "test4"
+            )
         ]
         
         XCTAssertEqual(replaced, expected)
@@ -368,17 +811,55 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testReplaceSecondElement() throws {
         let array: MXArray<CustomCodableStruct> = [
-            "first",
-            "second",
-            "third"
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            ),
+            CustomCodableStruct(
+                firstElement: "test3",
+                secondElement: 1,
+                thirdElement: 76,
+                fourthElement: "test4"
+            )
         ]
         
-        let replaced = array.replaced(at: 1, value: "replaced value")
+        let replaced = array.replaced(
+            at: 1,
+            value: CustomCodableStruct(
+                firstElement: "replaced value 1",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "replaced value 2"
+            )
+        )
         
         let expected: MXArray<CustomCodableStruct> = [
-            "first",
-            "replaced value",
-            "third"
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "replaced value 1",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "replaced value 2"
+            ),
+            CustomCodableStruct(
+                firstElement: "test3",
+                secondElement: 1,
+                thirdElement: 76,
+                fourthElement: "test4"
+            )
         ]
         
         XCTAssertEqual(replaced, expected)
@@ -386,17 +867,55 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testReplaceThirdElement() throws {
         let array: MXArray<CustomCodableStruct> = [
-            "first",
-            "second",
-            "third"
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            ),
+            CustomCodableStruct(
+                firstElement: "test3",
+                secondElement: 1,
+                thirdElement: 76,
+                fourthElement: "test4"
+            )
         ]
         
-        let replaced = array.replaced(at: 2, value: "replaced value")
+        let replaced = array.replaced(
+            at: 2,
+            value: CustomCodableStruct(
+                firstElement: "replaced value 1",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "replaced value 2"
+            )
+        )
         
         let expected: MXArray<CustomCodableStruct> = [
-            "first",
-            "second",
-            "replaced value"
+            CustomCodableStruct(
+                firstElement: "Hey!",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "How's it going?"
+            ),
+            CustomCodableStruct(
+                firstElement: "test",
+                secondElement: 30,
+                thirdElement: 5,
+                fourthElement: "test2"
+            ),
+            CustomCodableStruct(
+                firstElement: "replaced value 1",
+                secondElement: 10,
+                thirdElement: 100,
+                fourthElement: "replaced value 2"
+            )
         ]
         
         XCTAssertEqual(replaced, expected)
@@ -411,7 +930,4 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             XCTAssertEqual(error, .userError(message: "Index out of range."))
         }
     }
-    
 }
-
-*/
