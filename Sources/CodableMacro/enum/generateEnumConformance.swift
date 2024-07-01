@@ -1,6 +1,8 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
+// TODO: check if optional fields works with "?"
+
 func generateEnumConformance(
     enumDecl: EnumDeclSyntax
 ) throws -> [ExtensionDeclSyntax] {

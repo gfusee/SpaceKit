@@ -4,6 +4,8 @@ import SwiftSyntaxMacros
 // TODO: Remove user comments on fields
 // TODO: check if the above TODO applies for enums too
 
+// TODO: check if optional fields works with "?"
+
 func generateStructConformance(
     structDecl: StructDeclSyntax
 ) throws -> [ExtensionDeclSyntax] {
