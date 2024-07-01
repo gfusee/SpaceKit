@@ -9,6 +9,10 @@ public class DummyApi {
     package var staticContainer = TransactionContainer(errorBehavior: .fatalError)
     package var transactionContainer: TransactionContainer? = nil
     
+    package var blockInfos = BlockInfos(
+        timestamp: 0
+    )
+    
     package var worldState = WorldState()
     
     package func runTransactions(contractAddress: String, operations: @escaping () -> Void) throws(TransactionError) {
@@ -353,6 +357,10 @@ extension DummyApi: BlockchainApiProtocol {
         let currentContractAddress = self.getCurrentContainer().getCurrentSCAccount()
         
         self.getCurrentContainer().managedBuffersData[resultHandle] = currentContractAddress.addressData
+    }
+    
+    public func getBlockTimestamp() -> Int64 {
+        return self.blockInfos.timestamp
     }
 }
 

@@ -163,6 +163,26 @@ let package = Package(
             ]
         ),
         .target(
+            name: "Adder",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/Adder",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
+            name: "PingPongEgld",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/PingPongEgld",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "MultiversX",
             dependencies: libraryDependencies,
             swiftSettings: [

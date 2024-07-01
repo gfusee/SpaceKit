@@ -123,6 +123,10 @@ func mBufferGetArgument(argId: Int32, mBufferHandle: Int32) -> Int32;
 @_extern(c)
 func managedSCAddress(resultHandle: Int32)
 
+@_extern(wasm, module: "env", name: "getBlockTimestamp")
+@_extern(c)
+func getBlockTimestamp() -> Int64
+
 // MARK: Send-related OPCODES
 @_extern(wasm, module: "env", name: "managedMultiTransferESDTNFTExecute")
 @_extern(c)
@@ -297,6 +301,10 @@ extension VMApi: EndpointApiProtocol {
 extension VMApi: BlockchainApiProtocol {
     mutating func managedSCAddress(resultHandle: Int32) {
         return MultiversX.managedSCAddress(resultHandle: resultHandle)
+    }
+    
+    mutating func getBlockTimestamp() -> Int64 {
+        return MultiversX.getBlockTimestamp()
     }
 }
 

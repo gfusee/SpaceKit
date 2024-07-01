@@ -22,10 +22,9 @@
         {
             "step": "scDeploy",
             "id": "1",
-            "displayLogs": true,
             "tx": {
                 "from": "address:owner",
-                "contractCode": "file:../.build/lib.wasm",
+                "contractCode": "file:../output/Adder.wasm",
                 "arguments": [
                     "5"
                 ],
@@ -45,7 +44,7 @@
             "id": "2",
             "tx": {
                 "to": "sc:adder",
-                "function": "getSelfAddress",
+                "function": "getSum",
                 "arguments": []
             },
             "expect": {
@@ -92,7 +91,7 @@
                     "storage": {
                         "str:sum": "8"
                     },
-                    "code": "file:../.build/lib.wasm"
+                    "code": "file:../output/Adder.wasm"
                 }
             }
         }
