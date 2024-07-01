@@ -103,7 +103,7 @@ fileprivate func generateTopDecodeExtension(enumName: TokenSyntax, discriminants
                      )
                 }
         
-                self = \(raw: enumName).depDecode(input: &input)
+                self = \(raw: enumName)(depDecode: &input)
             }
         }
         """
@@ -134,7 +134,7 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
                 
                 let typeName = associatedValue.type.trimmed
                 
-                nestedDecodeAssociatedValuesList.append("\(typeName).depDecode(input: &input)")
+                nestedDecodeAssociatedValuesList.append("\(typeName)(depDecode: &input)")
             }
         }
         
@@ -149,7 +149,7 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
         }
         
         nestedDecodeInitArgsList.append("""
-            case \(discriminantAndCase.0): return .\(caseName)\(nestedDecodeAssociatedValues)
+            case \(discriminantAndCase.0): self = .\(caseName)\(nestedDecodeAssociatedValues)
             """
         )
     }
@@ -160,8 +160,8 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
         extendedType: IdentifierTypeSyntax(name: enumName),
         memberBlock: """
         : NestedDecode {
-            public static func depDecode<I: NestedDecodeInput>(input: inout I) -> \(enumName) {
-                let _discriminant = UInt8.depDecode(input: &input)
+            public init(depDecode input: inout some NestedDecodeInput) {
+                let _discriminant = UInt8(depDecode: &input)
         
                 switch _discriminant {
                     \(raw: nestedDecodeInitArgs)

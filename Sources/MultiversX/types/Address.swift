@@ -79,11 +79,10 @@ extension Address: NestedEncode { // TODO: add tests
     }
 }
 
-extension Address: NestedDecode { // TODO: add tests
-    @inline(__always)
-    public static func depDecode<I>(input: inout I) -> Address where I : NestedDecodeInput {
+extension Address: NestedDecode {
+    public init(depDecode input: inout some NestedDecodeInput) {
         let buffer = input.readNextBuffer(length: ADDRESS_LENGTH)
         
-        return Address(buffer: buffer)
+        self = Self(buffer: buffer)
     }
 }

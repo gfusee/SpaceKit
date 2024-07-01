@@ -57,7 +57,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
     
     func testNestedDecodeForCustomStruct() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a0000000164".hexadecimal)))
-        let result = TokenPayment.depDecode(input: &input)
+        let result = TokenPayment(depDecode: &input)
         
         let expected = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
         
@@ -66,8 +66,8 @@ final class CodableMacroStructImplTests: ContractTestCase {
     
     func testNestedDecodeForTwoCustomStructs() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a00000001640000000a5346542d616263646566000000000000000a0000000203e8".hexadecimal)))
-        let result1 = TokenPayment.depDecode(input: &input)
-        let result2 = TokenPayment.depDecode(input: &input)
+        let result1 = TokenPayment(depDecode: &input)
+        let result2 = TokenPayment(depDecode: &input)
         
         let expected1 = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
         let expected2 = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 1000)

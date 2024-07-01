@@ -138,9 +138,8 @@ extension MXBuffer: TopDecode {
 extension MXBuffer: TopDecodeMulti {}
 
 extension MXBuffer: NestedDecode {
-    @inline(__always)
-    public static func depDecode<I>(input: inout I) -> MXBuffer where I : NestedDecodeInput {
-        return input.readNextBufferOfDynamicLength()
+    public init(depDecode input: inout some NestedDecodeInput) {
+        self = input.readNextBufferOfDynamicLength()
     }
 }
 
@@ -179,7 +178,7 @@ extension MXBuffer: ArrayItem {
     public static func decodeArrayPayload(payload: MXBuffer) -> MXBuffer {
         var payloadInput = BufferNestedDecodeInput(buffer: payload)
         
-        let handle = Int32(Int.depDecode(input: &payloadInput))
+        let handle = Int32(Int(depDecode: &payloadInput))
         
         guard !payloadInput.canDecodeMore() else {
             fatalError()

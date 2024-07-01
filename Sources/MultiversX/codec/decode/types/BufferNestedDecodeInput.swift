@@ -24,7 +24,7 @@ extension BufferNestedDecodeInput: NestedDecodeInput {
     }
     
     public mutating func readNextBufferOfDynamicLength() -> MXBuffer {
-        let length = Int.depDecode(input: &self)
+        let length = Int(depDecode: &self)
         let buffer = self.readNextBuffer(length: Int32(length)) // TODO: Use Int32.depDecode to make this cast safe
         
         return buffer

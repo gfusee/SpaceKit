@@ -58,8 +58,7 @@ extension Optional: TopDecodeMulti where Wrapped: MXCodable {
 }
 
 extension Optional: NestedDecode where Wrapped: MXCodable {
-    @inline(__always)
-    public static func depDecode<I>(input: inout I) -> Optional<Wrapped> where I : NestedDecodeInput {
-        return OptionalEnum<Wrapped>.depDecode(input: &input).intoOptional()
+    public init(depDecode input: inout some NestedDecodeInput) {
+        self = OptionalEnum<Wrapped>(depDecode: &input).intoOptional()
     }
 }

@@ -51,11 +51,10 @@ extension UInt32: TopDecode {
 extension UInt32: TopDecodeMulti {}
 
 extension UInt32: NestedDecode {
-    @inline(__always)
-    public static func depDecode<I>(input: inout I) -> UInt32 where I : NestedDecodeInput {
+    public init(depDecode input: inout some NestedDecodeInput) {
         let buffer = input.readNextBuffer(length: intSize)
         
-        return UInt32(topDecode: buffer)
+        self = UInt32(topDecode: buffer)
     }
 }
 
@@ -67,7 +66,7 @@ extension UInt32: ArrayItem {
     public static func decodeArrayPayload(payload: MXBuffer) -> UInt32 {
         var payloadInput = BufferNestedDecodeInput(buffer: payload)
         
-        let result = UInt32.depDecode(input: &payloadInput)
+        let result = UInt32(depDecode: &payloadInput)
         
         guard !payloadInput.canDecodeMore() else {
             fatalError()

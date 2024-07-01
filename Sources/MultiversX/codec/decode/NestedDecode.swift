@@ -1,3 +1,3 @@
 public protocol NestedDecode {
-    static func depDecode<I: NestedDecodeInput>(input: inout I) -> Self
+    init(depDecode input: inout some NestedDecodeInput)
 }

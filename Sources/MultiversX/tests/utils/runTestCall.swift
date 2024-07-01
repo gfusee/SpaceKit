@@ -19,7 +19,7 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     try API.runTransactions(contractAddress: contractAddress) {
         var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
         
-        let result = operation(repeat (each InputArg).depDecode(input: &injectedInputBuffer))
+        let result = operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
         
         var bytesDataBuffer = MXBuffer()
         result.topEncode(output: &bytesDataBuffer)
@@ -49,7 +49,7 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     try API.runTransactions(contractAddress: contractAddress) {
         var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
         
-        operation(repeat (each InputArg).depDecode(input: &injectedInputBuffer))
+        operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
     }
 }
 

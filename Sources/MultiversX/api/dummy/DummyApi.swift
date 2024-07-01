@@ -378,7 +378,7 @@ extension DummyApi: SendApiProtocol {
         
         var tokenTransfersBufferInput = BufferNestedDecodeInput(buffer: MXBuffer(handle: tokenTransfersHandle).clone())
         while tokenTransfersBufferInput.canDecodeMore() { // TODO: use managed vec once implemented
-            let tokenPayment = TokenPayment.depDecode(input: &tokenTransfersBufferInput)
+            let tokenPayment = TokenPayment(depDecode: &tokenTransfersBufferInput)
             let tokenIdentifier = self.getCurrentContainer().getBufferData(handle: tokenPayment.tokenIdentifier.handle)
             let value = self.getCurrentContainer().getBigIntData(handle: tokenPayment.amount.handle)
             

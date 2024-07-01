@@ -51,10 +51,9 @@ extension Int: TopDecode {
 extension Int: TopDecodeMulti {}
 
 extension Int: NestedDecode {
-    @inline(__always)
-    public static func depDecode<I>(input: inout I) -> Int where I : NestedDecodeInput {
+    public init(depDecode input: inout some NestedDecodeInput) {
         let buffer = input.readNextBuffer(length: intSize)
         
-        return Int(topDecode: buffer)
+        self = Int(topDecode: buffer)
     }
 }

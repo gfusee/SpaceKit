@@ -200,7 +200,7 @@ final class CodableMacroEnumTests: XCTestCase {
                     }
                 }
 
-                return PaymentType.depDecode(input: &input)
+                return PaymentType(depDecode: &input)
             }
         }
         
@@ -209,7 +209,7 @@ final class CodableMacroEnumTests: XCTestCase {
         
         extension PaymentType: NestedDecode {
             static func depDecode<I: NestedDecodeInput>(input: inout I) -> PaymentType {
-                let _discriminant = UInt8.depDecode(input: &input)
+                let _discriminant = UInt8(depDecode: &input)
 
                 switch _discriminant {
                     case 0:
@@ -285,7 +285,7 @@ final class CodableMacroEnumTests: XCTestCase {
                     }
                 }
 
-                return SinglePayment.depDecode(input: &input)
+                return SinglePayment(depDecode: &input)
             }
         }
         
@@ -294,18 +294,18 @@ final class CodableMacroEnumTests: XCTestCase {
         
         extension SinglePayment: NestedDecode {
             static func depDecode<I: NestedDecodeInput>(input: inout I) -> SinglePayment {
-                let _discriminant = UInt8.depDecode(input: &input)
+                let _discriminant = UInt8(depDecode: &input)
 
                 switch _discriminant {
                     case 0:
                     return .egld(
-                        BigUint.depDecode(input: &input)
+                        BigUint(depDecode: &input)
                     )
                 case 1:
                     return .esdt(
-                        MXBuffer.depDecode(input: &input),
-                        UInt64.depDecode(input: &input),
-                        BigUint.depDecode(input: &input)
+                        MXBuffer(depDecode: &input),
+                        UInt64(depDecode: &input),
+                        BigUint(depDecode: &input)
                     )
                 case 2:
                     return .none

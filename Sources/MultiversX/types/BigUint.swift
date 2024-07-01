@@ -115,11 +115,10 @@ extension BigUint: TopDecode {
 extension BigUint: TopDecodeMulti {}
 
 extension BigUint: NestedDecode {
-    @inline(__always)
-    public static func depDecode<I>(input: inout I) -> BigUint where I : NestedDecodeInput {
-        let buffer = MXBuffer.depDecode(input: &input)
+    public init(depDecode input: inout some NestedDecodeInput) {
+        let buffer = MXBuffer(depDecode: &input)
         
-        return BigUint(topDecode: buffer)
+        self = Self(topDecode: buffer)
     }
 }
 
@@ -145,7 +144,7 @@ extension BigUint: ArrayItem {
     public static func decodeArrayPayload(payload: MXBuffer) -> BigUint {
         var payloadInput = BufferNestedDecodeInput(buffer: payload)
         
-        let handle = Int32(Int.depDecode(input: &payloadInput))
+        let handle = Int32(Int(depDecode: &payloadInput))
         
         guard !payloadInput.canDecodeMore() else {
             fatalError()

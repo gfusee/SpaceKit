@@ -298,7 +298,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeZeroElement() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
         
-        let array = MXArray<MXBuffer>.depDecode(input: &input).toArray()
+        let array = MXArray<MXBuffer>(depDecode: &input).toArray()
         let expected: [MXBuffer] = []
         
         XCTAssertEqual(array, expected)
@@ -307,7 +307,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeOneElement() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000010000000161".hexadecimal)))
         
-        let array = MXArray<MXBuffer>.depDecode(input: &input).toArray()
+        let array = MXArray<MXBuffer>(depDecode: &input).toArray()
         let expected: [MXBuffer] = ["a"]
         
         XCTAssertEqual(array, expected)
@@ -316,7 +316,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeTwoElements() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000200000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
         
-        let array = MXArray<MXBuffer>.depDecode(input: &input).toArray()
+        let array = MXArray<MXBuffer>(depDecode: &input).toArray()
         let expected: [MXBuffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
         
         XCTAssertEqual(array, expected)
@@ -325,7 +325,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeTwoElementsAndInputLarger() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000200000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal)))
         
-        let array = MXArray<MXBuffer>.depDecode(input: &input).toArray()
+        let array = MXArray<MXBuffer>(depDecode: &input).toArray()
         let expected: [MXBuffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
         
         XCTAssertEqual(array, expected)

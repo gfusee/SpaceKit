@@ -9,18 +9,18 @@ import MultiversX
     
     public func testNestedDecodeUInt64EmptyBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
-        let _ = UInt64.depDecode(input: &input)
+        let _ = UInt64(depDecode: &input)
     }
     
     public func testNestedDecodeUInt64TooSmallBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000000".hexadecimal)))
-        let _ = UInt64.depDecode(input: &input)
+        let _ = UInt64(depDecode: &input)
     }
     
     public func testNestedDecodeTwoUInt64sTooSmallBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000003e800000000000000".hexadecimal)))
-        let _ = UInt64.depDecode(input: &input)
-        let _ = UInt64.depDecode(input: &input)
+        let _ = UInt64(depDecode: &input)
+        let _ = UInt64(depDecode: &input)
     }
 }
 
@@ -193,7 +193,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64Zero() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000000000000".hexadecimal)))
-        let result = UInt64.depDecode(input: &input)
+        let result = UInt64(depDecode: &input)
         
         let expected: UInt64 = 0
         
@@ -202,7 +202,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64One() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000000000001".hexadecimal)))
-        let result = UInt64.depDecode(input: &input)
+        let result = UInt64(depDecode: &input)
         
         let expected: UInt64 = 1
         
@@ -211,7 +211,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64Thousand() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000003e8".hexadecimal)))
-        let result = UInt64.depDecode(input: &input)
+        let result = UInt64(depDecode: &input)
         
         let expected: UInt64 = 1000
         
@@ -220,7 +220,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64Max() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("ffffffffffffffff".hexadecimal)))
-        let result = UInt64.depDecode(input: &input)
+        let result = UInt64(depDecode: &input)
         
         let expected = UInt64.max
         
@@ -249,7 +249,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64ThousandTooLargeBuffer() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000003e800000064".hexadecimal)))
-        let result = UInt64.depDecode(input: &input)
+        let result = UInt64(depDecode: &input)
         
         let expected: UInt64 = 1000
         
@@ -258,8 +258,8 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeTwoUInt64s() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000000003e80000000000000064".hexadecimal)))
-        let result1 = UInt64.depDecode(input: &input)
-        let result2 = UInt64.depDecode(input: &input)
+        let result1 = UInt64(depDecode: &input)
+        let result2 = UInt64(depDecode: &input)
         
         let expected1: UInt64 = 1000
         let expected2: UInt64 = 100

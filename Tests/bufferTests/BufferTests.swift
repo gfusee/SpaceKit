@@ -19,17 +19,17 @@ import MultiversX
     
     public func testNestedDecodeBufferEmptyInputShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
-        let result = MXBuffer.depDecode(input: &input)
+        let result = MXBuffer(depDecode: &input)
     }
     
     public func testNestedDecodeBufferBadLengthInputShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000".hexadecimal)))
-        let result = MXBuffer.depDecode(input: &input)
+        let result = MXBuffer(depDecode: &input)
     }
     
     public func testNestedDecodeBufferTooLargeLengthInputShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000004248656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
-        let result = MXBuffer.depDecode(input: &input)
+        let result = MXBuffer(depDecode: &input)
     }
 }
 
@@ -280,7 +280,7 @@ final class BufferTests: ContractTestCase {
     
     func testNestedDecodeEmptyBuffer() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
-        let result = MXBuffer.depDecode(input: &input)
+        let result = MXBuffer(depDecode: &input)
         
         let expected: MXBuffer = ""
         
@@ -289,7 +289,7 @@ final class BufferTests: ContractTestCase {
     
     func testNestedDecodeSmallBuffer() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000161".hexadecimal)))
-        let result = MXBuffer.depDecode(input: &input)
+        let result = MXBuffer(depDecode: &input)
         
         let expected: MXBuffer = "a"
         
@@ -298,7 +298,7 @@ final class BufferTests: ContractTestCase {
     
     func testNestedDecodeLongBuffer() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
-        let result = MXBuffer.depDecode(input: &input)
+        let result = MXBuffer(depDecode: &input)
         
         let expected: MXBuffer = "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"
         
@@ -307,7 +307,7 @@ final class BufferTests: ContractTestCase {
     
     func testNestedDecodeLongBufferSmallerSize() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000004048656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
-        let result = MXBuffer.depDecode(input: &input)
+        let result = MXBuffer(depDecode: &input)
         
         let expected: MXBuffer = "Hello World! How's it going? I hope you're enjoying the SwiftSDK"
         

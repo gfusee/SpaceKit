@@ -9,13 +9,13 @@ import MultiversX
     
     public func testNestedDecodeUInt8EmptyBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
-        let _ = UInt8.depDecode(input: &input)
+        let _ = UInt8(depDecode: &input)
     }
     
     public func testNestedDecodeTwoUInt8sTooSmallBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("03".hexadecimal)))
-        let _ = UInt8.depDecode(input: &input)
-        let _ = UInt8.depDecode(input: &input)
+        let _ = UInt8(depDecode: &input)
+        let _ = UInt8(depDecode: &input)
     }
 }
 
@@ -157,7 +157,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testNestedDecodeUInt8Zero() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00".hexadecimal)))
-        let result = UInt8.depDecode(input: &input)
+        let result = UInt8(depDecode: &input)
         
         let expected: UInt8 = 0
         
@@ -166,7 +166,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testNestedDecodeUInt8One() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("01".hexadecimal)))
-        let result = UInt8.depDecode(input: &input)
+        let result = UInt8(depDecode: &input)
         
         let expected: UInt8 = 1
         
@@ -175,7 +175,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testNestedDecodeUInt8Max() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("ff".hexadecimal)))
-        let result = UInt8.depDecode(input: &input)
+        let result = UInt8(depDecode: &input)
         
         let expected = UInt8.max
         
@@ -194,8 +194,8 @@ final class UInt8Tests: ContractTestCase {
     
     func testNestedDecodeTwoUInt8s() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0364".hexadecimal)))
-        let result1 = UInt8.depDecode(input: &input)
-        let result2 = UInt8.depDecode(input: &input)
+        let result1 = UInt8(depDecode: &input)
+        let result2 = UInt8(depDecode: &input)
         
         let expected1: UInt8 = 3
         let expected2: UInt8 = 100

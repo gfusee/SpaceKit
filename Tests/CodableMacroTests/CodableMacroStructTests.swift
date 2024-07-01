@@ -127,7 +127,7 @@ final class CodableMacroStructTests: XCTestCase {
                     }
                 }
         
-                return TokenPayment.depDecode(input: &input)
+                return TokenPayment(depDecode: &input)
             }
         }
 
@@ -137,7 +137,7 @@ final class CodableMacroStructTests: XCTestCase {
         extension TokenPayment: NestedDecode {
             static func depDecode<I: NestedDecodeInput>(input: inout I) -> TokenPayment {
                 return TokenPayment(
-                    tokenIdentifier : TokenIdentifier.depDecode(input: &input)
+                    tokenIdentifier : TokenIdentifier(depDecode: &input)
                 )
             }
         }
@@ -193,7 +193,7 @@ final class CodableMacroStructTests: XCTestCase {
                     }
                 }
         
-                return TokenPayment.depDecode(input: &input)
+                return TokenPayment(depDecode: &input)
             }
         }
 
@@ -203,8 +203,8 @@ final class CodableMacroStructTests: XCTestCase {
         extension TokenPayment: NestedDecode {
             static func depDecode<I: NestedDecodeInput>(input: inout I) -> TokenPayment {
                 return TokenPayment(
-                    tokenIdentifier : TokenIdentifier.depDecode(input: &input),
-                    nonce : UInt64.depDecode(input: &input)
+                    tokenIdentifier : TokenIdentifier(depDecode: &input),
+                    nonce : UInt64(depDecode: &input)
                 )
             }
         }

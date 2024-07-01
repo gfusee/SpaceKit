@@ -33,11 +33,10 @@ extension UInt8: TopDecode {
 extension UInt8: TopDecodeMulti {}
 
 extension UInt8: NestedDecode {
-    @inline(__always)
-    public static func depDecode<I>(input: inout I) -> UInt8 where I : NestedDecodeInput {
+    public init(depDecode input: inout some NestedDecodeInput) {
         let buffer = input.readNextBuffer(length: intSize)
         
-        return UInt8(topDecode: buffer)
+        self = Self(topDecode: buffer)
     }
 }
 

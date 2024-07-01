@@ -17,7 +17,6 @@ extension UInt64 {
 }
 
 extension UInt64: TopEncode {
-    @inline(__always)
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         let bigEndianBytes = self.asBigEndianBytes()
         
@@ -53,11 +52,10 @@ extension UInt64: TopDecode {
 extension UInt64: TopDecodeMulti {}
 
 extension UInt64: NestedDecode {
-    @inline(__always)
-    public static func depDecode<I>(input: inout I) -> UInt64 where I : NestedDecodeInput {
+    public init(depDecode input: inout some NestedDecodeInput) {
         let buffer = input.readNextBuffer(length: intSize)
         
-        return UInt64(topDecode: buffer)
+        self = UInt64(topDecode: buffer)
     }
 }
 
@@ -69,7 +67,7 @@ extension UInt64: ArrayItem {
     public static func decodeArrayPayload(payload: MXBuffer) -> UInt64 {
         var payloadInput = BufferNestedDecodeInput(buffer: payload)
         
-        let result = UInt64.depDecode(input: &payloadInput)
+        let result = UInt64(depDecode: &payloadInput)
         
         guard !payloadInput.canDecodeMore() else {
             fatalError()

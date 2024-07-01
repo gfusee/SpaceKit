@@ -9,18 +9,18 @@ import MultiversX
     
     public func testNestedDecodeIntEmptyBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
-        let result = Int.depDecode(input: &input)
+        let result = Int(depDecode: &input)
     }
     
     public func testNestedDecodeIntTooSmallBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000".hexadecimal)))
-        let result = Int.depDecode(input: &input)
+        let result = Int(depDecode: &input)
     }
     
     public func testNestedDecodeTwoIntsTooSmallBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000003e8000000".hexadecimal)))
-        let result1 = Int.depDecode(input: &input)
-        let result2 = Int.depDecode(input: &input)
+        let result1 = Int(depDecode: &input)
+        let result2 = Int(depDecode: &input)
     }
 }
 
@@ -244,7 +244,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntZero() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
-        let result = Int.depDecode(input: &input)
+        let result = Int(depDecode: &input)
         
         let expected = 0
         
@@ -253,7 +253,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntOne() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000001".hexadecimal)))
-        let result = Int.depDecode(input: &input)
+        let result = Int(depDecode: &input)
         
         let expected = 1
         
@@ -262,7 +262,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntMinusThousand() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("fffffc18".hexadecimal)))
-        let result = Int.depDecode(input: &input)
+        let result = Int(depDecode: &input)
         
         let expected = -1000
         
@@ -271,7 +271,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntThousand() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000003e8".hexadecimal)))
-        let result = Int.depDecode(input: &input)
+        let result = Int(depDecode: &input)
         
         let expected = 1000
         
@@ -280,7 +280,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntMax() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("7fffffff".hexadecimal)))
-        let result = Int.depDecode(input: &input)
+        let result = Int(depDecode: &input)
         
         let expected = Int(Int32.max)
         
@@ -309,7 +309,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntThousandTooLargeBuffer() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000003e800000064".hexadecimal)))
-        let result = Int.depDecode(input: &input)
+        let result = Int(depDecode: &input)
         
         let expected = 1000
         
@@ -318,8 +318,8 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeTwoInts() throws {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000003e800000064".hexadecimal)))
-        let result1 = Int.depDecode(input: &input)
-        let result2 = Int.depDecode(input: &input)
+        let result1 = Int(depDecode: &input)
+        let result2 = Int(depDecode: &input)
         
         let expected1 = 1000
         let expected2 = 100

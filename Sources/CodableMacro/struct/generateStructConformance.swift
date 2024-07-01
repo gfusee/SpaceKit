@@ -74,7 +74,7 @@ fileprivate func generateTopDecodeExtension(structName: TokenSyntax, fields: [Va
                      )
                 }
         
-                self = \(raw: structName).depDecode(input: &input)
+                self = \(raw: structName)(depDecode: &input)
             }
         }
         """
@@ -98,7 +98,7 @@ fileprivate func generateNestedDecodeExtension(structName: TokenSyntax, fields: 
             throw CodableMacroError.allFieldsShouldHaveAType
         }
         
-        nestedDecodeInitArgsList.append("\(fieldName) \(fieldType).depDecode(input: &input)")
+        nestedDecodeInitArgsList.append("\(fieldName) \(fieldType)(depDecode: &input)")
     }
     
     let nestedDecodeInitArgs = nestedDecodeInitArgsList.joined(separator: ",\n")
@@ -107,8 +107,8 @@ fileprivate func generateNestedDecodeExtension(structName: TokenSyntax, fields: 
         extendedType: IdentifierTypeSyntax(name: structName),
         memberBlock: """
         : NestedDecode {
-            public static func depDecode<I: NestedDecodeInput>(input: inout I) -> \(structName) {
-                return \(raw: structName)(
+            public init(depDecode input: inout some NestedDecodeInput) {
+                self = \(raw: structName)(
                     \(raw: nestedDecodeInitArgs)
                 )
             }
