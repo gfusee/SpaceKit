@@ -27,7 +27,7 @@ import XCTest
     public func testTopDecodeInputTooLarge() {
         let input = MXBuffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal))
         
-        _ = MXArray<CustomCodableEnum>.topDecode(input: input)
+        _ = MXArray<CustomCodableEnum>(topDecode: input)
     }
     
     public func testReplacedOutOfRangeShouldFail() {
@@ -711,7 +711,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testTopDecodeZeroElement() throws {
         let input = MXBuffer(data: Array("".hexadecimal))
         
-        let array = MXArray<CustomCodableEnum>.topDecode(input: input)
+        let array = MXArray<CustomCodableEnum>(topDecode: input)
         let expected: MXArray<CustomCodableEnum> = []
         
         XCTAssertEqual(array, expected)
@@ -720,7 +720,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testTopDecodeOneElement() throws {
         let input = MXBuffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
-        let array = MXArray<CustomCodableEnum>.topDecode(input: input)
+        let array = MXArray<CustomCodableEnum>(topDecode: input)
         let expected: MXArray<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
@@ -736,7 +736,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testTopDecodeTwoElements() throws {
         let input = MXBuffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
-        let array = MXArray<CustomCodableEnum>.topDecode(input: input)
+        let array = MXArray<CustomCodableEnum>(topDecode: input)
         let expected: MXArray<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
@@ -758,7 +758,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testTopDecodeThreeDifferentCases() throws {
         let input = MXBuffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal))
         
-        let array = MXArray<CustomCodableEnum>.topDecode(input: input)
+        let array = MXArray<CustomCodableEnum>(topDecode: input)
         let expected: MXArray<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",

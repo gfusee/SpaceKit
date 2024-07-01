@@ -6,7 +6,7 @@
         get {
             let storedValueBufferHandle = getNextHandle()
             let _ = API.bufferStorageLoad(keyHandle: self.key.handle, bufferHandle: storedValueBufferHandle)
-            return T.topDecode(input: MXBuffer(handle: storedValueBufferHandle))
+            return T(topDecode: MXBuffer(handle: storedValueBufferHandle))
         }
         set {
             var output = MXBuffer()

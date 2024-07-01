@@ -12,7 +12,7 @@ import XCTest
     public func testTopDecodeInputTooLarge() {
         let input = MXBuffer(data: Array("000000000000000a01".hexadecimal))
         
-        _ = MXArray<UInt64>.topDecode(input: input)
+        _ = MXArray<UInt64>(topDecode: input)
     }
     
     public func testReplacedOutOfRangeShouldFail() {
@@ -262,7 +262,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     func testTopDecodeZeroElement() throws {
         let input = MXBuffer(data: Array("".hexadecimal))
         
-        let array = MXArray<UInt64>.topDecode(input: input).toArray()
+        let array = MXArray<UInt64>(topDecode: input).toArray()
         let expected: [UInt64] = []
         
         XCTAssertEqual(array, expected)
@@ -271,7 +271,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     func testTopDecodeOneElement() throws {
         let input = MXBuffer(data: Array("000000000000000a".hexadecimal))
         
-        let array = MXArray<UInt64>.topDecode(input: input)
+        let array = MXArray<UInt64>(topDecode: input)
         let expected: MXArray<UInt64> = [10]
         
         XCTAssertEqual(array, expected)
@@ -280,7 +280,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     func testTopDecodeTwoElements() throws {
         let input = MXBuffer(data: Array("000000000000000a0000000000000064".hexadecimal))
         
-        let array = MXArray<UInt64>.topDecode(input: input)
+        let array = MXArray<UInt64>(topDecode: input)
         let expected: MXArray<UInt64> = [10, 100]
         
         XCTAssertEqual(array, expected)

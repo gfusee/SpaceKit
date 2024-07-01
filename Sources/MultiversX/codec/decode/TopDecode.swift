@@ -1,3 +1,3 @@
 public protocol TopDecode {
-    static func topDecode(input: MXBuffer) -> Self
+    init(topDecode input: MXBuffer)
 }

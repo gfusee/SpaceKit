@@ -138,7 +138,7 @@ fileprivate func getEndpointVariablesDeclarations(
             argumentDeclarationsList.append("var _argsLoader = EndpointArgumentsLoader()")
         }
         
-        argumentDeclarationsList.append("let \(variableName) = \(variableType).topDecodeMulti(input: &_argsLoader)")
+        argumentDeclarationsList.append("let \(variableName) = \(variableType)(topDecodeMulti: &_argsLoader)")
         contractFunctionCallArgumentsList.append("\(variableName): \(variableName)")
     }
     

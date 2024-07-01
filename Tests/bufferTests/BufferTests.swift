@@ -233,14 +233,14 @@ final class BufferTests: ContractTestCase {
     
     func testEmptyBufferTopDecode() throws {
         let input: MXBuffer = ""
-        let buffer = MXBuffer.topDecode(input: input)
+        let buffer = MXBuffer(topDecode: input)
         
         XCTAssertEqual(buffer, "")
     }
     
     func testNonEmptyBufferTopDecode() throws {
         let input: MXBuffer = "Hello World!"
-        let buffer = MXBuffer.topDecode(input: input)
+        let buffer = MXBuffer(topDecode: input)
         
         XCTAssertEqual(buffer, "Hello World!")
     }

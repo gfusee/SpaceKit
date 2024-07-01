@@ -27,6 +27,7 @@ fileprivate func generateTopEncodeExtension(structName: TokenSyntax) throws -> E
         extendedType: IdentifierTypeSyntax(name: structName),
         memberBlock: """
         : TopEncode {
+            @inline(__always)
             public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
                 var nestedEncoded = MXBuffer()
                 self.depEncode(dest: &nestedEncoded)
@@ -63,7 +64,7 @@ fileprivate func generateTopDecodeExtension(structName: TokenSyntax, fields: [Va
         extendedType: IdentifierTypeSyntax(name: structName),
         memberBlock: """
         : TopDecode {
-            public static func topDecode(input: MXBuffer) -> \(structName) {
+            public init(topDecode input: MXBuffer) {
                 var input = BufferNestedDecodeInput(buffer: input)
         
                 defer {
@@ -73,7 +74,7 @@ fileprivate func generateTopDecodeExtension(structName: TokenSyntax, fields: [Va
                      )
                 }
         
-                return \(raw: structName).depDecode(input: &input)
+                self = \(raw: structName).depDecode(input: &input)
             }
         }
         """

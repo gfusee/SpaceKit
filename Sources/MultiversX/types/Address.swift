@@ -56,28 +56,31 @@ extension Address: Equatable {
 }
 
 extension Address: TopEncode { // TODO: add tests
+    @inline(__always)
     public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
         self.buffer.topEncode(output: &output)
     }
 }
 
 extension Address: TopDecode { // TODO: add tests
-    public static func topDecode(input: MXBuffer) -> Address {
-        let buffer = MXBuffer.topDecode(input: input)
+    public init(topDecode input: MXBuffer) {
+        let buffer = MXBuffer(topDecode: input)
         
-        return Address(buffer: buffer)
+        self = Self(buffer: buffer)
     }
 }
 
 extension Address: TopDecodeMulti {}
 
 extension Address: NestedEncode { // TODO: add tests
+    @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         dest.write(buffer: self.buffer)
     }
 }
 
 extension Address: NestedDecode { // TODO: add tests
+    @inline(__always)
     public static func depDecode<I>(input: inout I) -> Address where I : NestedDecodeInput {
         let buffer = input.readNextBuffer(length: ADDRESS_LENGTH)
         

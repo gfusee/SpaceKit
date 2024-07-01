@@ -27,7 +27,7 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     }
     
     let extractedResultBuffer = MXBuffer(data: bytesData) // ...and reinject it in the root context
-    let extractedResult = ReturnType.topDecode(input: extractedResultBuffer)
+    let extractedResult = ReturnType(topDecode: extractedResultBuffer)
     
     return extractedResult
 }

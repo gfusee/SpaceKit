@@ -13,6 +13,7 @@ extension Int {
 }
 
 extension Int: TopEncode {
+    @inline(__always)
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         let bigEndianBytes = self.asBigEndianBytes()
         
@@ -30,28 +31,30 @@ extension Int: TopEncode {
 }
 
 extension Int: NestedEncode {
+    @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         dest.write(buffer: MXBuffer(data: self.asBigEndianBytes()))
     }
 }
 
 extension Int: TopDecode {
-    public static func topDecode(input: MXBuffer) -> Int {
+    public init(topDecode input: MXBuffer) {
         let bytes: FixedArray8<UInt8> = input.toFixedSizeBytes()
         if bytes.count > intSize {
             smartContractError(message: "Cannot decode Int: input too large.")
         }
         
-        return bytes.toBigEndianInt()
+        self = bytes.toBigEndianInt()
     }
 }
 
 extension Int: TopDecodeMulti {}
 
 extension Int: NestedDecode {
+    @inline(__always)
     public static func depDecode<I>(input: inout I) -> Int where I : NestedDecodeInput {
         let buffer = input.readNextBuffer(length: intSize)
         
-        return Int.topDecode(input: buffer)
+        return Int(topDecode: buffer)
     }
 }

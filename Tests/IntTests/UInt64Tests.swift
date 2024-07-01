@@ -4,7 +4,7 @@ import MultiversX
 @Contract struct UInt64TestsContract {
     public func testTopDecodeUInt64TooLargeBufferShouldFail() {
         let input = MXBuffer(data: Array("000000000000000000".hexadecimal))
-        let _ = UInt64.topDecode(input: input)
+        let _ = UInt64(topDecode: input)
     }
     
     public func testNestedDecodeUInt64EmptyBufferShouldFail() {
@@ -138,7 +138,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testTopDecodeUInt64EmptyBuffer() throws {
         let input = MXBuffer(data: Array("00".hexadecimal))
-        let result = UInt64.topDecode(input: input)
+        let result = UInt64(topDecode: input)
         
         let expected: UInt64 = 0
         
@@ -147,7 +147,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testTopDecodeUInt64Zero() throws {
         let input = MXBuffer(data: Array("00".hexadecimal))
-        let result = UInt64.topDecode(input: input)
+        let result = UInt64(topDecode: input)
         
         let expected: UInt64 = 0
         
@@ -156,7 +156,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testTopDecodeUInt64One() throws {
         let input = MXBuffer(data: Array("01".hexadecimal))
-        let result = UInt64.topDecode(input: input)
+        let result = UInt64(topDecode: input)
         
         let expected: UInt64 = 1
         
@@ -165,7 +165,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testTopDecodeUInt64Thousand() throws {
         let input = MXBuffer(data: Array("03e8".hexadecimal))
-        let result = UInt64.topDecode(input: input)
+        let result = UInt64(topDecode: input)
         
         let expected: UInt64 = 1000
         
@@ -174,7 +174,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testTopDecodeUInt64Max() throws {
         let input = MXBuffer(data: Array("ffffffffffffffff".hexadecimal))
-        let result = UInt64.topDecode(input: input)
+        let result = UInt64(topDecode: input)
         
         let expected = UInt64.max
         

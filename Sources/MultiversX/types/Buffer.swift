@@ -130,14 +130,15 @@ public struct MXBuffer {
 }
 
 extension MXBuffer: TopDecode {
-    public static func topDecode(input: MXBuffer) -> MXBuffer {
-        input.clone()
+    public init(topDecode input: MXBuffer) {
+        self = input.clone()
     }
 }
 
 extension MXBuffer: TopDecodeMulti {}
 
 extension MXBuffer: NestedDecode {
+    @inline(__always)
     public static func depDecode<I>(input: inout I) -> MXBuffer where I : NestedDecodeInput {
         return input.readNextBufferOfDynamicLength()
     }
@@ -150,12 +151,14 @@ extension MXBuffer: TopEncodeOutput {
 }
 
 extension MXBuffer: TopEncode {
+    @inline(__always)
     public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
         output.setBuffer(buffer: self)
     }
 }
 
 extension MXBuffer: NestedEncode {
+    @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         Int(self.count).depEncode(dest: &dest)
         dest.write(buffer: self)

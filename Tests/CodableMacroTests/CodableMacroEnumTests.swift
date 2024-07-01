@@ -168,7 +168,8 @@ final class CodableMacroEnumTests: XCTestCase {
         }
         
         extension PaymentType: TopEncode {
-            public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
+            @inline(__always)
+    public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
                 var nestedEncoded = MXBuffer()
                 self.depEncode(dest: &nestedEncoded)
                 nestedEncoded.topEncode(output: &output)
@@ -189,7 +190,8 @@ final class CodableMacroEnumTests: XCTestCase {
         }
         
         extension PaymentType: TopDecode {
-            public static func topDecode(input: MXBuffer) -> PaymentType {
+            @inline(__always)
+    public static func topDecode(input: MXBuffer) -> PaymentType {
                 var input = BufferNestedDecodeInput(buffer: input)
 
                 defer {
@@ -247,7 +249,8 @@ final class CodableMacroEnumTests: XCTestCase {
         }
         
         extension SinglePayment: TopEncode {
-            public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
+            @inline(__always)
+    public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
                 var nestedEncoded = MXBuffer()
                 self.depEncode(dest: &nestedEncoded)
                 nestedEncoded.topEncode(output: &output)
@@ -272,7 +275,8 @@ final class CodableMacroEnumTests: XCTestCase {
         }
         
         extension SinglePayment: TopDecode {
-            public static func topDecode(input: MXBuffer) -> SinglePayment {
+            @inline(__always)
+    public static func topDecode(input: MXBuffer) -> SinglePayment {
                 var input = BufferNestedDecodeInput(buffer: input)
 
                 defer {

@@ -31,30 +31,34 @@ fileprivate extension OptionalEnum {
 }
 
 extension Optional: TopEncode where Wrapped: MXCodable {
+    @inline(__always)
     public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
         OptionalEnum(optional: self).topEncode(output: &output)
     }
 }
 
 extension Optional: NestedEncode where Wrapped: MXCodable {
+    @inline(__always)
     public func depEncode<O>(dest: inout O) where O: NestedEncodeOutput {
         OptionalEnum(optional: self).depEncode(dest: &dest)
     }
 }
 
 extension Optional: TopDecode where Wrapped: MXCodable {
-    public static func topDecode(input: MXBuffer) -> Optional<Wrapped> {
-        return OptionalEnum<Wrapped>.topDecode(input: input).intoOptional()
+    public init(topDecode input: MXBuffer) {
+        self = OptionalEnum<Wrapped>(topDecode: input).intoOptional()
     }
 }
 
 extension Optional: TopDecodeMulti where Wrapped: MXCodable {
+    @inline(__always)
     public static func topDecodeMulti<T>(input: inout T) -> Optional<Wrapped> where T: TopDecodeMultiInput {
-        return OptionalEnum<Wrapped>.topDecodeMulti(input: &input).intoOptional()
+        return OptionalEnum<Wrapped>(topDecodeMulti: &input).intoOptional()
     }
 }
 
 extension Optional: NestedDecode where Wrapped: MXCodable {
+    @inline(__always)
     public static func depDecode<I>(input: inout I) -> Optional<Wrapped> where I : NestedDecodeInput {
         return OptionalEnum<Wrapped>.depDecode(input: &input).intoOptional()
     }

@@ -270,7 +270,7 @@ final class ContractMacroBasicTests: XCTestCase {
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
             var _argsLoader = EndpointArgumentsLoader()
-            let buffer = MXBuffer.topDecodeMulti(input: &_argsLoader)
+            let buffer = MXBuffer(topDecodeMulti: &_argsLoader)
             let _ = Contract(buffer: buffer)
         }
         """
@@ -325,8 +325,8 @@ final class ContractMacroBasicTests: XCTestCase {
         @_expose(wasm, "init")
         @_cdecl("init") func __macro_local_4initfMu_() {
             var _argsLoader = EndpointArgumentsLoader()
-            let buffer = MXBuffer.topDecodeMulti(input: &_argsLoader)
-            let number = BigUint.topDecodeMulti(input: &_argsLoader)
+            let buffer = MXBuffer(topDecodeMulti: &_argsLoader)
+            let number = BigUint(topDecodeMulti: &_argsLoader)
             let _ = Contract(buffer: buffer, number: number)
         }
         """
@@ -473,7 +473,7 @@ final class ContractMacroBasicTests: XCTestCase {
         @_cdecl("singleFunction") func __macro_local_14singleFunctionfMu_() {
             var _contract = Contract(_noDeploy: ())
             var _argsLoader = EndpointArgumentsLoader()
-            let buffer = MXBuffer.topDecodeMulti(input: &_argsLoader)
+            let buffer = MXBuffer(topDecodeMulti: &_argsLoader)
             _contract.singleFunction(buffer: buffer)
         }
         """
@@ -547,8 +547,8 @@ final class ContractMacroBasicTests: XCTestCase {
         @_cdecl("singleFunction") func __macro_local_14singleFunctionfMu_() {
             var _contract = Contract(_noDeploy: ())
             var _argsLoader = EndpointArgumentsLoader()
-            let buffer = MXBuffer.topDecodeMulti(input: &_argsLoader)
-            let number = BigUint.topDecodeMulti(input: &_argsLoader)
+            let buffer = MXBuffer(topDecodeMulti: &_argsLoader)
+            let number = BigUint(topDecodeMulti: &_argsLoader)
             _contract.singleFunction(buffer: buffer, number: number)
         }
         """
@@ -643,7 +643,7 @@ final class ContractMacroBasicTests: XCTestCase {
         @Contract
         struct Contract {
             public func singleFunction(buffer: MXBuffer) -> BigUint {
-                return BigUint.topDecode(input: buffer)
+                return BigUint(topDecode: buffer)
             }
         }
         """
@@ -651,7 +651,7 @@ final class ContractMacroBasicTests: XCTestCase {
         let expected = """
         struct Contract {
             public func singleFunction(buffer: MXBuffer) -> BigUint {
-                return BigUint.topDecode(input: buffer)
+                return BigUint(topDecode: buffer)
             }
         
             init() {
@@ -700,7 +700,7 @@ final class ContractMacroBasicTests: XCTestCase {
         @_cdecl("singleFunction") func __macro_local_14singleFunctionfMu_() {
             var _contract = Contract(_noDeploy: ())
             var _argsLoader = EndpointArgumentsLoader()
-            let buffer = MXBuffer.topDecodeMulti(input: &_argsLoader)
+            let buffer = MXBuffer(topDecodeMulti: &_argsLoader)
             let endpointOutput = _contract.singleFunction(buffer: buffer)
 
             var _result = MXBuffer()

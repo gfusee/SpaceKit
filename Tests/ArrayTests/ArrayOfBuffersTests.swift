@@ -12,7 +12,7 @@ import XCTest
     public func testTopDecodeInputTooLarge() {
         let input = MXBuffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal))
         
-        _ = MXArray<MXBuffer>.topDecode(input: input)
+        _ = MXArray<MXBuffer>(topDecode: input)
     }
     
     public func testReplacedOutOfRangeShouldFail() {
@@ -271,7 +271,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testTopDecodeZeroElement() throws {
         let input = MXBuffer(data: Array("".hexadecimal))
         
-        let array = MXArray<MXBuffer>.topDecode(input: input).toArray()
+        let array = MXArray<MXBuffer>(topDecode: input).toArray()
         let expected: [MXBuffer] = []
         
         XCTAssertEqual(array, expected)
@@ -280,7 +280,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testTopDecodeOneElement() throws {
         let input = MXBuffer(data: Array("0000000161".hexadecimal))
         
-        let array = MXArray<MXBuffer>.topDecode(input: input).toArray()
+        let array = MXArray<MXBuffer>(topDecode: input).toArray()
         let expected: [MXBuffer] = ["a"]
         
         XCTAssertEqual(array, expected)
@@ -289,7 +289,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testTopDecodeTwoElements() throws {
         let input = MXBuffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal))
         
-        let array = MXArray<MXBuffer>.topDecode(input: input).toArray()
+        let array = MXArray<MXBuffer>(topDecode: input).toArray()
         let expected: [MXBuffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
         
         XCTAssertEqual(array, expected)

@@ -107,28 +107,31 @@ extension BigUint {
 }
 
 extension BigUint: TopDecode {
-    public static func topDecode(input: MXBuffer) -> BigUint {
-        BigUint(bigEndianBuffer: input)
+    public init(topDecode input: MXBuffer) {
+        self = Self(bigEndianBuffer: input)
     }
 }
 
 extension BigUint: TopDecodeMulti {}
 
 extension BigUint: NestedDecode {
+    @inline(__always)
     public static func depDecode<I>(input: inout I) -> BigUint where I : NestedDecodeInput {
         let buffer = MXBuffer.depDecode(input: &input)
         
-        return BigUint.topDecode(input: buffer)
+        return BigUint(topDecode: buffer)
     }
 }
 
 extension BigUint: TopEncode {
+    @inline(__always)
     public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
         output.setBuffer(buffer: self.toBytesBigEndianBuffer())
     }
 }
 
 extension BigUint: NestedEncode {
+    @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         self.toBytesBigEndianBuffer().depEncode(dest: &dest)
     }

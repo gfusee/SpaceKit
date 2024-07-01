@@ -16,7 +16,7 @@ public struct StorageMap<K: TopEncode, V: TopEncode & TopDecode> {
         get {
             let storedValueBufferHandle = getNextHandle()
             let _ = API.bufferStorageLoad(keyHandle: self.getKey(keyItem: item).handle, bufferHandle: storedValueBufferHandle)
-            return V.topDecode(input: MXBuffer(handle: storedValueBufferHandle))
+            return V(topDecode: MXBuffer(handle: storedValueBufferHandle))
         } set {
             var output = MXBuffer()
             newValue.topEncode(output: &output)

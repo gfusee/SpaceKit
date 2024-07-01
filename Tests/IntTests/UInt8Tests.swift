@@ -4,7 +4,7 @@ import MultiversX
 @Contract struct UInt8TestsContract {
     public func testTopDecodeUInt8TooLargeBufferShouldFail() {
         let input = MXBuffer(data: Array("0000".hexadecimal))
-        let _ = UInt8.topDecode(input: input)
+        let _ = UInt8(topDecode: input)
     }
     
     public func testNestedDecodeUInt8EmptyBufferShouldFail() {
@@ -111,7 +111,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testTopDecodeUInt8EmptyBuffer() throws {
         let input = MXBuffer(data: Array("00".hexadecimal))
-        let result = UInt8.topDecode(input: input)
+        let result = UInt8(topDecode: input)
         
         let expected: UInt8 = 0
         
@@ -120,7 +120,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testTopDecodeUInt8Zero() throws {
         let input = MXBuffer(data: Array("00".hexadecimal))
-        let result = UInt8.topDecode(input: input)
+        let result = UInt8(topDecode: input)
         
         let expected: UInt8 = 0
         
@@ -129,7 +129,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testTopDecodeUInt8One() throws {
         let input = MXBuffer(data: Array("01".hexadecimal))
-        let result = UInt8.topDecode(input: input)
+        let result = UInt8(topDecode: input)
         
         let expected: UInt8 = 1
         
@@ -138,7 +138,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testTopDecodeUInt8Max() throws {
         let input = MXBuffer(data: Array("ff".hexadecimal))
-        let result = UInt8.topDecode(input: input)
+        let result = UInt8(topDecode: input)
         
         let expected = UInt8.max
         

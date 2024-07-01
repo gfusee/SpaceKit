@@ -168,6 +168,7 @@ extension MXArray: TopEncode {
 }
 
 extension MXArray: NestedEncode {
+    @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         var countEncoded = MXBuffer()
         Int(self.count).depEncode(dest: &countEncoded)
@@ -180,7 +181,7 @@ extension MXArray: NestedEncode {
 }
 
 extension MXArray: TopDecode {
-    public static func topDecode(input: MXBuffer) -> MXArray<T> {
+    public init(topDecode input: MXBuffer) {
         var nestedDecodeInput = BufferNestedDecodeInput(buffer: input)
         
         var buffer = MXBuffer()
@@ -189,13 +190,14 @@ extension MXArray: TopDecode {
             buffer = buffer + item.intoArrayPayload()
         }
         
-        return MXArray(buffer: buffer)
+        self = Self(buffer: buffer)
     }
 }
 
 extension MXArray: TopDecodeMulti {}
 
 extension MXArray: NestedDecode {
+    @inline(__always)
     public static func depDecode<I>(input: inout I) -> MXArray<T> where I : NestedDecodeInput {
         let count = Int.depDecode(input: &input)
         

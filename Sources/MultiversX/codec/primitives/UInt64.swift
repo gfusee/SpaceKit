@@ -17,6 +17,7 @@ extension UInt64 {
 }
 
 extension UInt64: TopEncode {
+    @inline(__always)
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         let bigEndianBytes = self.asBigEndianBytes()
         
@@ -32,29 +33,31 @@ extension UInt64: TopEncode {
 }
 
 extension UInt64: NestedEncode {
+    @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         dest.write(buffer: MXBuffer(data: self.asBigEndianBytes()))
     }
 }
 
 extension UInt64: TopDecode {
-    public static func topDecode(input: MXBuffer) -> UInt64 {
+    public init(topDecode input: MXBuffer) {
         let bytes: FixedArray8<UInt8> = input.toFixedSizeBytes()
         if input.count > intSize {
             smartContractError(message: "Cannot decode UInt64: input too large.")
         }
         
-        return bytes.toBigEndianUInt64()
+        self = bytes.toBigEndianUInt64()
     }
 }
 
 extension UInt64: TopDecodeMulti {}
 
 extension UInt64: NestedDecode {
+    @inline(__always)
     public static func depDecode<I>(input: inout I) -> UInt64 where I : NestedDecodeInput {
         let buffer = input.readNextBuffer(length: intSize)
         
-        return UInt64.topDecode(input: buffer)
+        return UInt64(topDecode: buffer)
     }
 }
 

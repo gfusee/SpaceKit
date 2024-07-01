@@ -4,7 +4,7 @@ import MultiversX
 @Contract struct IntTestsContract {
     public func testTopDecodeIntTooLargeBufferShouldFail() {
         let input = MXBuffer(data: Array("0001020304".hexadecimal))
-        _ = Int.topDecode(input: input)
+        _ = Int(topDecode: input)
     }
     
     public func testNestedDecodeIntEmptyBufferShouldFail() {
@@ -171,7 +171,7 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntEmpty() throws {
         let input = MXBuffer(data: Array("".hexadecimal))
-        let result = Int.topDecode(input: input)
+        let result = Int(topDecode: input)
         
         let expected = 0
         
@@ -180,7 +180,7 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntZero() throws {
         let input = MXBuffer(data: Array("00".hexadecimal))
-        let result = Int.topDecode(input: input)
+        let result = Int(topDecode: input)
         
         let expected = 0
         
@@ -189,7 +189,7 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntOne() throws {
         let input = MXBuffer(data: Array("01".hexadecimal))
-        let result = Int.topDecode(input: input)
+        let result = Int(topDecode: input)
         
         let expected = 1
         
@@ -198,7 +198,7 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntMinusThousand() throws {
         let input = MXBuffer(data: Array("fc18".hexadecimal))
-        let result = Int.topDecode(input: input)
+        let result = Int(topDecode: input)
         
         let expected = -1000
         
@@ -207,7 +207,7 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntThousand() throws {
         let input = MXBuffer(data: Array("03e8".hexadecimal))
-        let result = Int.topDecode(input: input)
+        let result = Int(topDecode: input)
         
         let expected = 1000
         
@@ -216,7 +216,7 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntMin() throws {
         let input = MXBuffer(data: Array("80000000".hexadecimal))
-        let result = Int.topDecode(input: input)
+        let result = Int(topDecode: input)
         
         let expected = Int(Int32.min)
         
@@ -225,7 +225,7 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntMax() throws {
         let input = MXBuffer(data: Array("7fffffff".hexadecimal))
-        let result = Int.topDecode(input: input)
+        let result = Int(topDecode: input)
         
         let expected = Int(Int32.max)
         

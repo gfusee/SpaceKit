@@ -14,7 +14,7 @@ import XCTest
 @Contract struct CodableMacroEnumImplTestsContract {
     public func testTopDecodeForEnumInputTooLargeError() {
         let input = MXBuffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e800".hexadecimal))
-        let _ = PaymentType.topDecode(input: input)
+        let _ = PaymentType(topDecode: input)
     }
 }
 
@@ -82,7 +82,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopDecodeForEnumWithoutAssociatedValue() throws {
         let input = MXBuffer(data: Array("01".hexadecimal))
-        let result = PaymentType.topDecode(input: input)
+        let result = PaymentType(topDecode: input)
         
         let expected = PaymentType.esdt
         
@@ -91,7 +91,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopDecodeForEnumWithOneAssociatedValue() throws {
         let input = MXBuffer(data: Array("000000000203e8".hexadecimal))
-        let result = SinglePayment.topDecode(input: input)
+        let result = SinglePayment(topDecode: input)
         
         let expected = SinglePayment.egld(1000)
         
@@ -100,7 +100,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopDecodeForEnumWithMultipleAssociatedValues() throws {
         let input = MXBuffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e8".hexadecimal))
-        let result = SinglePayment.topDecode(input: input)
+        let result = SinglePayment(topDecode: input)
         
         let expected = SinglePayment.esdt("SFT-abcdef", 5, 1000)
         
