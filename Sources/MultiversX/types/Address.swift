@@ -57,7 +57,7 @@ extension Address: Equatable {
 
 extension Address: TopEncode { // TODO: add tests
     @inline(__always)
-    public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
+    public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
         self.buffer.topEncode(output: &output)
     }
 }

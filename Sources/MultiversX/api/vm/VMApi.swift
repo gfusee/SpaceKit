@@ -127,6 +127,11 @@ func managedSCAddress(resultHandle: Int32)
 @_extern(c)
 func getBlockTimestamp() -> Int64
 
+// MARK: CallValue-related OPCODES
+@_extern(wasm, module: "env", name: "bigIntGetCallValue")
+@_extern(c)
+func bigIntGetCallValue(dest: Int32)
+
 // MARK: Send-related OPCODES
 @_extern(wasm, module: "env", name: "managedMultiTransferESDTNFTExecute")
 @_extern(c)
@@ -308,7 +313,15 @@ extension VMApi: BlockchainApiProtocol {
     }
 }
 
-// MARK: SendApiProtocolImplementation
+// MARK: CallValueApiProtocol Implementation
+
+extension VMApi: CallValueApiProtocol {
+    mutating func bigIntGetCallValue(dest: Int32) {
+        return MultiversX.bigIntGetCallValue(dest: dest)
+    }
+}
+
+// MARK: SendApiProtocol Implementation
 
 extension VMApi: SendApiProtocol {
     mutating func managedMultiTransferESDTNFTExecute(

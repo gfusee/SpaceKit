@@ -124,7 +124,7 @@ extension BigUint: NestedDecode {
 
 extension BigUint: TopEncode {
     @inline(__always)
-    public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
+    public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
         output.setBuffer(buffer: self.toBytesBigEndianBuffer())
     }
 }

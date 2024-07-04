@@ -364,6 +364,12 @@ extension DummyApi: BlockchainApiProtocol {
     }
 }
 
+extension DummyApi: CallValueApiProtocol {
+    public func bigIntGetCallValue(dest: Int32) {
+        fatalError() // TODO: implement and test
+    }
+}
+
 extension DummyApi: SendApiProtocol {
     public func managedMultiTransferESDTNFTExecute(
         dstHandle: Int32,

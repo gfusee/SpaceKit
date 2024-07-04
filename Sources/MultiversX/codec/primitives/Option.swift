@@ -32,7 +32,7 @@ fileprivate extension OptionalEnum {
 
 extension Optional: TopEncode where Wrapped: MXCodable {
     @inline(__always)
-    public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
+    public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
         OptionalEnum(optional: self).topEncode(output: &output)
     }
 }

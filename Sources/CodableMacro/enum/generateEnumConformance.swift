@@ -32,7 +32,7 @@ fileprivate func generateTopEncodeExtension(enumName: TokenSyntax) throws -> Ext
         memberBlock: """
         : TopEncode {
             @inline(__always)
-            public func topEncode<T>(output: inout T) where T: TopEncodeOutput {
+            public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
                 var nestedEncoded = MXBuffer()
                 self.depEncode(dest: &nestedEncoded)
                 nestedEncoded.topEncode(output: &output)
