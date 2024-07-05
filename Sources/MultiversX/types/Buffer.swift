@@ -76,6 +76,31 @@ public struct MXBuffer {
     }
     #endif
     
+    @inline(__always)
+    package func to32BytesStackArray() -> [UInt8] {
+        // 32-bytes array allocated on the stack
+        let bytes: [UInt8] = [
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0
+        ]
+        
+        require(
+            self.count <= 32,
+            "TODO"
+        )
+        
+        let _ = bytes.withUnsafeBytes { pointer in
+            API.bufferGetBytes(handle: self.handle, resultPointer: pointer.baseAddress!)
+        }
+        
+        return bytes
+    }
+    
     public func toFixedSizeBytes<T: FixedArrayProtocol>() -> T {
         var result: T = T(count: Int(self.count))
         

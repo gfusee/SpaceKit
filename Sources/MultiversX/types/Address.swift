@@ -86,3 +86,17 @@ extension Address: NestedDecode {
         self = Self(buffer: buffer)
     }
 }
+
+extension Address: ArrayItem {
+    public static var payloadSize: Int32 {
+        MXBuffer.payloadSize
+    }
+    
+    public static func decodeArrayPayload(payload: MXBuffer) -> Address {
+        return Address(buffer: MXBuffer.decodeArrayPayload(payload: payload))
+    }
+    
+    public func intoArrayPayload() -> MXBuffer {
+        self.buffer.intoArrayPayload()
+    }
+}

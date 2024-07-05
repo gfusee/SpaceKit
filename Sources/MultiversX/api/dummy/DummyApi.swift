@@ -362,6 +362,18 @@ extension DummyApi: BlockchainApiProtocol {
     public func getBlockTimestamp() -> Int64 {
         return self.blockInfos.timestamp
     }
+    
+    public func bigIntGetESDTExternalBalance(addressPtr: UnsafeRawPointer, tokenIDOffset: UnsafeRawPointer, tokenIDLen: Int32, nonce: Int64, dest: Int32) {
+        fatalError() // TODO: implement and test
+    }
+    
+    public func getCaller(resultOffset: UnsafeRawPointer) {
+        fatalError() // TODO: implement and test
+    }
+    
+    public func getGasLeft() -> Int64 {
+        fatalError() // TODO: implement and test
+    }
 }
 
 extension DummyApi: CallValueApiProtocol {

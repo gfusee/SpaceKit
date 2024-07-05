@@ -127,6 +127,25 @@ func managedSCAddress(resultHandle: Int32)
 @_extern(c)
 func getBlockTimestamp() -> Int64
 
+@_extern(wasm, module: "env", name: "bigIntGetESDTExternalBalance")
+@_extern(c)
+func bigIntGetESDTExternalBalance(
+    address_ptr: UnsafeRawPointer,
+    tokenIDOffset: UnsafeRawPointer,
+    tokenIDLen: Int32,
+    nonce: Int64,
+    dest: Int32
+)
+
+@_extern(wasm, module: "env", name: "getCaller")
+@_extern(c)
+func getCaller(resultOffset: UnsafeRawPointer)
+
+@_extern(wasm, module: "env", name: "getGasLeft")
+@_extern(c)
+func getGasLeft() -> Int64
+
+
 // MARK: CallValue-related OPCODES
 @_extern(wasm, module: "env", name: "bigIntGetCallValue")
 @_extern(c)
@@ -310,6 +329,30 @@ extension VMApi: BlockchainApiProtocol {
     
     mutating func getBlockTimestamp() -> Int64 {
         return MultiversX.getBlockTimestamp()
+    }
+    
+    mutating func bigIntGetESDTExternalBalance(
+        addressPtr: UnsafeRawPointer,
+        tokenIDOffset: UnsafeRawPointer,
+        tokenIDLen: Int32,
+        nonce: Int64,
+        dest: Int32
+    ) {
+        return MultiversX.bigIntGetESDTExternalBalance(
+            address_ptr: addressPtr,
+            tokenIDOffset: tokenIDOffset,
+            tokenIDLen: tokenIDLen,
+            nonce: nonce,
+            dest: dest
+        )
+    }
+    
+    mutating func getCaller(resultOffset: UnsafeRawPointer) {
+        return MultiversX.getCaller(resultOffset: resultOffset)
+    }
+    
+    mutating func getGasLeft() -> Int64 {
+        return MultiversX.getGasLeft()
     }
 }
 
