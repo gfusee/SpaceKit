@@ -23,6 +23,8 @@ public protocol BufferApiProtocol {
     mutating func bufferToBigIntUnsigned(bufferHandle: Int32, bigIntHandle: Int32) -> Int32
     mutating func bufferEqual(handle1: Int32, handle2: Int32) -> Int32
     
+    mutating func managedBufferToHex(sourceHandle: Int32, destinationHandle: Int32)
+    
     #if !WASM
     mutating func bufferToDebugString(handle: Int32) -> String
     mutating func bufferToUTF8String(handle: Int32) -> String?

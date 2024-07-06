@@ -152,6 +152,14 @@ public struct MXBuffer {
         
         return MXBuffer(handle: resultHandle)
     }
+    
+    public func toHexadecimalBuffer() -> MXBuffer {
+        let resultHandle = getNextHandle()
+        
+        API.managedBufferToHex(sourceHandle: self.handle, destinationHandle: resultHandle)
+        
+        return MXBuffer(handle: resultHandle)
+    }
 }
 
 extension MXBuffer: TopDecode {
@@ -213,7 +221,7 @@ extension MXBuffer: ArrayItem {
     }
     
     public func intoArrayPayload() -> MXBuffer {
-        return MXBuffer(data: Int(self.handle).asBigEndianBytes())
+        return MXBuffer(data: self.handle.asBigEndianBytes())
     }
 }
 

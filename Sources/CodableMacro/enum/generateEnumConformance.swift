@@ -96,16 +96,20 @@ fileprivate func generateTopDecodeExtension(enumName: TokenSyntax, discriminants
         memberBlock: """
         : TopDecode {
             public init(topDecode input: MXBuffer) {
-                var input = BufferNestedDecodeInput(buffer: input)
+                var nestedDecodeInput = BufferNestedDecodeInput(buffer: input)
+        
+                if nestedDecodeInput.bufferCount == 0 {
+                    smartContractError(message: "Top decode error for \(enumName): empty buffer. Hint: maybe are you trying to retrieve an empty storage?")
+                }
         
                 defer {
                      require(
-                        !input.canDecodeMore(),
+                        !nestedDecodeInput.canDecodeMore(),
                         "Top decode error for \(enumName): input too large."
                      )
                 }
         
-                self = \(raw: enumName)(depDecode: &input)
+                self = \(raw: enumName)(depDecode: &nestedDecodeInput)
             }
         }
         """

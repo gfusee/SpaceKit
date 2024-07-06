@@ -342,7 +342,7 @@ final class IntTests: ContractTestCase {
         let array: FixedArray8<UInt8> = FixedArray8(count: 0)
         let result = array.toBigEndianInt()
         
-        let expected: Int = 0
+        let expected: Int32 = 0
         
         XCTAssertEqual(result, expected)
     }
@@ -352,7 +352,7 @@ final class IntTests: ContractTestCase {
         array[0] = 1
         let result = array.toBigEndianInt()
         
-        let expected: Int = 1
+        let expected: Int32 = 1
         
         XCTAssertEqual(result, expected)
     }
@@ -362,7 +362,7 @@ final class IntTests: ContractTestCase {
         array[0] = 10
         let result = array.toBigEndianInt()
         
-        let expected: Int = 10
+        let expected: Int32 = 10
         
         XCTAssertEqual(result, expected)
     }
@@ -375,7 +375,7 @@ final class IntTests: ContractTestCase {
         
         let result = array.toBigEndianInt()
         
-        let expected: Int = -1000
+        let expected: Int32 = -1000
         
         XCTAssertEqual(result, expected)
     }
@@ -388,7 +388,7 @@ final class IntTests: ContractTestCase {
         
         let result = array.toBigEndianInt()
         
-        let expected: Int = 1000
+        let expected: Int32 = 1000
         
         XCTAssertEqual(result, expected)
     }
@@ -403,7 +403,7 @@ final class IntTests: ContractTestCase {
         
         let result = array.toBigEndianInt()
         
-        let expected = Int(Int32.min)
+        let expected = Int32.min
         
         XCTAssertEqual(result, expected)
     }
@@ -418,7 +418,7 @@ final class IntTests: ContractTestCase {
         
         let result = array.toBigEndianInt()
         
-        let expected = Int(Int32.max)
+        let expected = Int32.max
         
         XCTAssertEqual(result, expected)
     }

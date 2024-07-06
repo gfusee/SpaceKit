@@ -1,14 +1,8 @@
 // TODO: add tests for the below extensions
 
 @Codable fileprivate enum OptionalEnum<T: MXCodable> {
+    case none
     case some(T)
-    case none
-}
-
-/// OptionalEnum<T>.topDecodeMulti doesn't compile in embedded Swift, this struct is a workaround
-@Codable fileprivate enum OptionalEnumBuffer {
-    case some(MXBuffer)
-    case none
 }
 
 fileprivate extension OptionalEnum {
@@ -33,7 +27,11 @@ fileprivate extension OptionalEnum {
 extension Optional: TopEncode where Wrapped: MXCodable {
     @inline(__always)
     public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
-        OptionalEnum(optional: self).topEncode(output: &output)
+        if self == nil {
+            MXBuffer().topEncode(output: &output)
+        } else {
+            OptionalEnum(optional: self).topEncode(output: &output)
+        }
     }
 }
 
@@ -46,7 +44,11 @@ extension Optional: NestedEncode where Wrapped: MXCodable {
 
 extension Optional: TopDecode where Wrapped: MXCodable {
     public init(topDecode input: MXBuffer) {
-        self = OptionalEnum<Wrapped>(topDecode: input).intoOptional()
+        if input.count == 0 {
+            self = nil
+        } else {
+            self = OptionalEnum<Wrapped>(topDecode: input).intoOptional()
+        }
     }
 }
 

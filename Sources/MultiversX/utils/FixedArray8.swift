@@ -163,7 +163,7 @@ extension FixedArray8 where T == UInt8 {
         return result
     }
     
-    public func toBigEndianInt() -> Int {
+    public func toBigEndianInt() -> Int32 {
         if self.count == 0 {
             return 0
         }
@@ -184,6 +184,6 @@ extension FixedArray8 where T == UInt8 {
             result |= Int32(valueToShift) << (8 * (3 - i))
         }
         
-        return Int(result)
+        return result
     }
 }

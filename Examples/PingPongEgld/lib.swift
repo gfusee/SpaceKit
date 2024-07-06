@@ -2,7 +2,7 @@ import MultiversX
 
 // TODO: Use OptionalValue in the init when implemented
 
-let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
+let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 600_000
 
 @Contract struct PingPong {
     @Storage(key: "pingAmount") var pingAmount: BigUint
@@ -63,7 +63,7 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
         }
         
         let caller = Message.caller
-        let userStatus = self.userStatus[caller]
+        let userStatus = self.userStatus[ifPresent: caller] ?? .new
         
         switch userStatus {
         case .new:
@@ -77,7 +77,7 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
     }
     
     mutating func pongByUserAddress(user: Address) -> MXBuffer? {
-        let userStatus = self.userStatus[user]
+        let userStatus = self.userStatus[ifPresent: user] ?? .new
         
         switch userStatus {
         case .new:
@@ -87,6 +87,8 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
             
             let amount = self.pingAmount
             user.send(egldValue: amount)
+            
+            return nil
         case .withdrawn:
             return "already withdrawn"
         }
@@ -126,9 +128,15 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
                 return .interruptedBeforeOutOfGas
             }
             
-            pongAllLastUser += 1
-            
             let _ = self.pongByUserAddress(user: users[pongAllLastUser])
+            
+            pongAllLastUser += 1
         }
+    }
+    
+    // TODO: the original Rust contract returns a TopDecodeMulti type with multiple outputs
+    // TODO: creating views for storages is annoying
+    public func getUserAddresses() -> MXArray<Address> {
+        self.users
     }
 }

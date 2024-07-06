@@ -154,7 +154,7 @@ extension BigUint: ArrayItem {
     }
     
     public func intoArrayPayload() -> MXBuffer {
-        return MXBuffer(data: Int(self.handle).asBigEndianBytes())
+        return MXBuffer(data: self.handle.asBigEndianBytes())
     }
 }
 

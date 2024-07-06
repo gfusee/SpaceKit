@@ -214,6 +214,14 @@ extension DummyApi: BufferApiProtocol {
         
         return String(data: data, encoding: .utf8)
     }
+    
+    public func managedBufferToHex(sourceHandle: Int32, destinationHandle: Int32) {
+        // TODO: add tests for this opcode
+        let sourceData = self.getCurrentContainer().getBufferData(handle: sourceHandle)
+        let destinationData = sourceData.hexEncodedString().data(using: .utf8)
+        
+        self.getCurrentContainer().managedBuffersData[destinationHandle] = destinationData
+    }
 }
 
 extension DummyApi: BigIntApiProtocol {

@@ -51,6 +51,10 @@ func mBufferFromBigIntUnsigned(mBufferHandle: Int32, bigIntHandle: Int32) -> Int
 @_extern(c)
 func mBufferEq(handle1: Int32, handle2: Int32) -> Int32
 
+@_extern(wasm, module: "env", name: "managedBufferToHex")
+@_extern(c)
+func managedBufferToHex(sourceHandle: Int32, destinationHandle: Int32)
+
 // MARK: BigInt-related OPCODES
 
 @_extern(wasm, module: "env", name: "bigIntSetInt64")
@@ -249,6 +253,10 @@ extension VMApi: BufferApiProtocol {
     
     mutating func bufferEqual(handle1: Int32, handle2: Int32) -> Int32 {
         return mBufferEq(handle1: handle1, handle2: handle2)
+    }
+    
+    mutating func managedBufferToHex(sourceHandle: Int32, destinationHandle: Int32) {
+        MultiversX.managedBufferToHex(sourceHandle: sourceHandle, destinationHandle: destinationHandle)
     }
 }
 
