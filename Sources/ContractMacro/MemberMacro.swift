@@ -72,12 +72,24 @@ func getTestableStructDeclaration(
         )
     )
     
-    var testableAddressParameter = "_ _testableAddress: String"
-    if initDecl.signature.parameterClause.parameters.count > 0 {
-        testableAddressParameter += ", "
-    }
+    let testableAddressParameter = "_ _testableAddress: String,"
     
-    let testableStaticInitializerParameters = [FunctionParameterSyntax(stringLiteral: testableAddressParameter)] + initDecl.signature.parameterClause.parameters
+    // We have to add a comma to the last parameter declaration
+    let initEndpointParameters = initDecl.signature.parameterClause.parameters
+        .map { parameter in
+            var parameter = parameter
+            
+            parameter.trailingComma = parameter.trailingComma ?? ","
+            
+            return parameter
+        }
+    
+    let transactionInputOptionalParameters: [FunctionParameterSyntax] = [
+        "callerAddress: String? = nil"
+    ]
+        .map { FunctionParameterSyntax(stringLiteral: $0) }
+    
+    let testableStaticInitializerParameters: FunctionParameterListSyntax = [FunctionParameterSyntax(stringLiteral: testableAddressParameter)] + initEndpointParameters + transactionInputOptionalParameters
     
     var parameterNamesList: [String] = []
     var initCallParametersList: [String] = []
@@ -97,7 +109,7 @@ func getTestableStructDeclaration(
         "\(parameterNames) in"
     }
     
-    let testableStaticInitializerCallParameters = initCallParameters.count > 0 ? ", \(initCallParameters)" : ""
+    let testableStaticInitializerCallParameters = initCallParameters.count > 0 ? "\(initCallParameters)," : ""
     
     var throwsEffectSpecifiers = FunctionEffectSpecifiersSyntax()
     throwsEffectSpecifiers.throwsSpecifier = TokenSyntax.init(stringLiteral: "throws(TransactionError)")
@@ -118,7 +130,7 @@ func getTestableStructDeclaration(
             )
         ),
         bodyBuilder: {
-            "try Testable(_testableAddress\(raw: testableStaticInitializerCallParameters))"
+            "try Testable(_testableAddress, \(raw: testableStaticInitializerCallParameters) callerAddress: callerAddress)"
         }
     )
     
@@ -135,7 +147,8 @@ func getTestableStructDeclaration(
             try runTestCall(
                 contractAddress: self.address,
                 endpointName: "init",
-                args: (\(raw: parameterNames))
+                args: (\(raw: parameterNames)),
+                callerAddress: callerAddress
             ) { \(raw: closureParameterInstantiations)
                 let _ = \(structDecl.name.trimmed)(\(raw: initCallParameters))
             }
@@ -173,6 +186,17 @@ func getTestableStructDeclaration(
         
         var testableFunction = function
         
+        // We have to add a comma to the last parameter declaration
+        let baseParameters = testableFunction.signature.parameterClause.parameters
+            .map { parameter in
+                var parameter = parameter
+                
+                parameter.trailingComma = parameter.trailingComma ?? ","
+                
+                return parameter
+            }
+        
+        testableFunction.signature.parameterClause.parameters = FunctionParameterListSyntax(baseParameters + transactionInputOptionalParameters)
         testableFunction.signature.effectSpecifiers = throwsEffectSpecifiers
         
         testableFunction.body = CodeBlockSyntax(
@@ -180,7 +204,8 @@ func getTestableStructDeclaration(
             return try runTestCall(
                 contractAddress: self.address,
                 endpointName: "\(function.name)",
-                args: (\(raw: variableNames))
+                args: (\(raw: variableNames)),
+                callerAddress: callerAddress
             ) { \(raw: closureVariableInstantiations)
                 var contract = \(structDecl.name.trimmed)(_noDeploy: ())
                 return contract.\(function.name)(\(raw: args))

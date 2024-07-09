@@ -21,10 +21,8 @@ final class BlockchainTests: ContractTestCase {
         let contract = try BlockchainContract.testable("adder")
         
         let contractAddress = try contract.getSelfAddress()
-        var encodedAddress = MXBuffer()
-        contractAddress.topEncode(output: &encodedAddress)
         
-        XCTAssertEqual(encodedAddress.hexDescription, "0000000000000000000061646465725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f")
+        XCTAssertEqual(contractAddress.hexDescription, "0000000000000000000061646465725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f")
     }
     
 }

@@ -5,6 +5,7 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     contractAddress: String,
     endpointName: String,
     args: (repeat each InputArg),
+    callerAddress: String? = nil,
     operation: @escaping (repeat each InputArg) -> ReturnType
 ) throws(TransactionError) -> ReturnType {
     // Pushing a container makes the previous handles invalid.
@@ -16,7 +17,12 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     let concatenatedInputArgsBufferBytes = concatenatedInputArgsBuffer.toBytes()
     
     var bytesData: [UInt8] = []
-    try API.runTransactions(contractAddress: contractAddress) {
+    let transactionInput = getTransactionInput(
+        contractAddress: contractAddress,
+        callerAddress: callerAddress
+    )
+    
+    try API.runTransactions(transactionInput: transactionInput) {
         var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
         
         let result = operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
@@ -36,6 +42,7 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     contractAddress: String,
     endpointName: String,
     args: (repeat each InputArg),
+    callerAddress: String? = nil,
     operation: @escaping (repeat each InputArg) -> Void
 ) throws(TransactionError) {
     // Pushing a container makes the previous handles invalid.
@@ -46,11 +53,28 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     }
     let concatenatedInputArgsBufferBytes = concatenatedInputArgsBuffer.toBytes()
     
-    try API.runTransactions(contractAddress: contractAddress) {
+    let transactionInput = getTransactionInput(
+        contractAddress: contractAddress,
+        callerAddress: callerAddress
+    )
+    
+    try API.runTransactions(transactionInput: transactionInput) {
         var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
         
         operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
     }
+}
+
+private func getTransactionInput(
+    contractAddress: String,
+    callerAddress: String?
+) -> TransactionInput {
+    let callerAddress = callerAddress ?? contractAddress
+    
+    return TransactionInput(
+        contractAddress: contractAddress.toAddressData(),
+        callerAddress: callerAddress.toAddressData()
+    )
 }
 
 #endif

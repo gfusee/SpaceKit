@@ -124,6 +124,12 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "MessageTests",
+            dependencies: [
+                "MultiversX"
+            ]
+        ),
+        .testTarget(
             name: "SendTests",
             dependencies: [
                 "MultiversX",

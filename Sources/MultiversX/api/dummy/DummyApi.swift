@@ -15,7 +15,7 @@ public class DummyApi {
     
     package var worldState = WorldState()
     
-    package func runTransactions(contractAddress: String, operations: @escaping () -> Void) throws(TransactionError) {
+    package func runTransactions(transactionInput: TransactionInput, operations: @escaping () -> Void) throws(TransactionError) {
         self.containerLock.lock()
         
         while let transactionContainer = self.transactionContainer {
@@ -26,7 +26,7 @@ public class DummyApi {
         
         self.transactionContainer = TransactionContainer(
             worldState: self.worldState,
-            currentContractAddress: contractAddress,
+            transactionInput: transactionInput,
             errorBehavior: .blockThread
         )
         
@@ -362,9 +362,9 @@ extension DummyApi: EndpointApiProtocol {
 
 extension DummyApi: BlockchainApiProtocol {
     public func managedSCAddress(resultHandle: Int32) {
-        let currentContractAddress = self.getCurrentContainer().getCurrentSCAccount()
+        let currentContractAccount = self.getCurrentContainer().getCurrentSCAccount()
         
-        self.getCurrentContainer().managedBuffersData[resultHandle] = currentContractAddress.addressData
+        self.getCurrentContainer().managedBuffersData[resultHandle] = currentContractAccount.addressData
     }
     
     public func getBlockTimestamp() -> Int64 {
@@ -376,7 +376,12 @@ extension DummyApi: BlockchainApiProtocol {
     }
     
     public func getCaller(resultOffset: UnsafeRawPointer) {
-        fatalError() // TODO: implement and test
+        let callerAccount = self.getCurrentContainer().getCurrentCallerAccount()
+        let callerAccountAddressData = callerAccount.addressData
+        
+        let mutablePointer = UnsafeMutableRawBufferPointer(start: UnsafeMutableRawPointer(mutating: resultOffset), count: callerAccountAddressData.count)
+        
+        callerAccountAddressData.copyBytes(to: mutablePointer)
     }
     
     public func getGasLeft() -> Int64 {

@@ -100,3 +100,17 @@ extension Address: ArrayItem {
         self.buffer.intoArrayPayload()
     }
 }
+
+#if !WASM
+extension Address: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        self.hexDescription
+    }
+}
+
+extension Address {
+    public var hexDescription: String {
+        self.buffer.hexDescription
+    }
+}
+#endif

@@ -7,6 +7,11 @@ package enum TransactionContainerErrorBehavior {
     case fatalError
 }
 
+package struct TransactionInput {
+    let contractAddress: Data
+    let callerAddress: Data
+}
+
 package class TransactionContainer {
     package var managedBuffersData: [Int32 : Data] = [:]
     package var managedBigIntData: [Int32 : BigInt] = [:]
@@ -14,17 +19,17 @@ package class TransactionContainer {
     public package(set) var error: TransactionError? = nil
     public package(set) var shouldExitThread: Bool = false
     
-    private var currentContractAddress: Data? = nil
+    private var transactionInput: TransactionInput? = nil
     private var errorBehavior: TransactionContainerErrorBehavior
     
     package init(
         worldState: WorldState,
-        currentContractAddress: String,
+        transactionInput: TransactionInput,
         errorBehavior: TransactionContainerErrorBehavior
     ) {
-        self.errorBehavior = errorBehavior
-        self.currentContractAddress = currentContractAddress.toAddressData()
         self.state = worldState
+        self.transactionInput = transactionInput
+        self.errorBehavior = errorBehavior
     }
     
     package init(errorBehavior: TransactionContainerErrorBehavior) {
@@ -73,16 +78,30 @@ package class TransactionContainer {
         return data
     }
     
-    private func getCurrentContractAddress() -> Data {
-        guard let currentContractAddress = self.currentContractAddress else {
-            self.throwError(error: .worldError(message: "No current contract address. Are you in a transaction context?"))
+    package func getTransactionInput() -> TransactionInput {
+        guard let input = self.transactionInput else {
+            self.throwError(error: .worldError(message: "No transaction input provided. Are you in a transaction context?"))
         }
         
-        return currentContractAddress
+        return input
+    }
+    
+    private func getCurrentContractAddress() -> Data {
+        self.getTransactionInput().contractAddress
+    }
+    
+    private func getCurrentCallerAddress() -> Data {
+        self.getTransactionInput().callerAddress
     }
     
     package func getCurrentSCAccount() -> WorldAccount {
         let address = self.getCurrentContractAddress()
+        
+        return self.getAccount(address: address)
+    }
+    
+    package func getCurrentCallerAccount() -> WorldAccount {
+        let address = self.getCurrentCallerAddress()
         
         return self.getAccount(address: address)
     }
