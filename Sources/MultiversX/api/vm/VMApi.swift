@@ -131,6 +131,10 @@ func managedSCAddress(resultHandle: Int32)
 @_extern(c)
 func getBlockTimestamp() -> Int64
 
+@_extern(wasm, module: "env", name: "bigIntGetExternalBalance")
+@_extern(c)
+func bigIntGetExternalBalance(address_ptr: UnsafeRawPointer, dest: Int32)
+
 @_extern(wasm, module: "env", name: "bigIntGetESDTExternalBalance")
 @_extern(c)
 func bigIntGetESDTExternalBalance(
@@ -337,6 +341,13 @@ extension VMApi: BlockchainApiProtocol {
     
     mutating func getBlockTimestamp() -> Int64 {
         return MultiversX.getBlockTimestamp()
+    }
+    
+    mutating func bigIntGetExternalBalance(addressPtr: UnsafeRawPointer, dest: Int32) {
+        return MultiversX.bigIntGetExternalBalance(
+            address_ptr: addressPtr,
+            dest: dest
+        )
     }
     
     mutating func bigIntGetESDTExternalBalance(

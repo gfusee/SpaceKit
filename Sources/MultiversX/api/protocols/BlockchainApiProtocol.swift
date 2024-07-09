@@ -3,6 +3,8 @@ public protocol BlockchainApiProtocol {
     
     mutating func getBlockTimestamp() -> Int64
     
+    mutating func bigIntGetExternalBalance(addressPtr: UnsafeRawPointer, dest: Int32)
+    
     mutating func bigIntGetESDTExternalBalance(
         addressPtr: UnsafeRawPointer,
         tokenIDOffset: UnsafeRawPointer,

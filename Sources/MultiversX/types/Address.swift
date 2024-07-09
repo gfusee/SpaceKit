@@ -102,6 +102,12 @@ extension Address: ArrayItem {
 }
 
 #if !WASM
+extension Address: ExpressibleByStringLiteral {
+    public init(stringLiteral value: StaticString) {
+        self.init(buffer: MXBuffer(data: Array("\(value)".toAddressData())))
+    }
+}
+
 extension Address: CustomDebugStringConvertible {
     public var debugDescription: String {
         self.hexDescription

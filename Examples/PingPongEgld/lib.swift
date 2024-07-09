@@ -2,7 +2,7 @@ import MultiversX
 
 // TODO: Use OptionalValue in the init when implemented
 
-let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 600_000
+let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 700_000
 
 @Contract struct PingPong {
     @Storage(key: "pingAmount") var pingAmount: BigUint
@@ -54,9 +54,8 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 600_000
         
         if let maxFunds = self.maxFunds {
             require(
-                Blockchain.getSCBalance(
-                    tokenIdentifier: "EGLD", // TODO: don't use hard coded EGLD value
-                    nonce: 0
+                Blockchain.getBalance(
+                    address: Blockchain.getSCAddress()
                 ) <= maxFunds,
                 "smart contract full"
             )

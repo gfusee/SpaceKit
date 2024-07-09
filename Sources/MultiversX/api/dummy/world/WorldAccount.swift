@@ -5,6 +5,11 @@ import BigInt
 public struct EsdtBalance {
     var nonce: UInt64
     var balance: BigInt
+    
+    public init(nonce: UInt64, balance: BigInt) {
+        self.nonce = nonce
+        self.balance = balance
+    }
 }
 
 public struct WorldAccount {
@@ -15,11 +20,11 @@ public struct WorldAccount {
     public init(
         address: String,
         balance: BigInt = 0,
-        esdtBalances: [Data : [EsdtBalance]] = [:]
+        esdtBalances: [String : [EsdtBalance]] = [:]
     ) {
         self.addressData = address.toAddressData()
         self.balance = balance
-        self.esdtBalances = esdtBalances
+        self.esdtBalances = Dictionary(uniqueKeysWithValues: esdtBalances.map { ($0.key.data(using: .utf8)!, $0.value) })
     }
     
     public func toAddress() -> Address {

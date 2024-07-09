@@ -371,8 +371,33 @@ extension DummyApi: BlockchainApiProtocol {
         return self.blockInfos.timestamp
     }
     
+    public func bigIntGetExternalBalance(addressPtr: UnsafeRawPointer, dest: Int32) {
+        let addressData = Data(bytes: addressPtr, count: 32)
+        
+        guard let account = self.getAccount(addressData: addressData)
+        else {
+            self.getCurrentContainer().managedBigIntData[dest] = 0
+            
+            return
+        }
+        
+        self.getCurrentContainer().managedBigIntData[dest] = account.balance
+    }
+    
     public func bigIntGetESDTExternalBalance(addressPtr: UnsafeRawPointer, tokenIDOffset: UnsafeRawPointer, tokenIDLen: Int32, nonce: Int64, dest: Int32) {
-        fatalError() // TODO: implement and test
+        let addressData = Data(bytes: addressPtr, count: 32)
+        let tokenIdData = Data(bytes: tokenIDOffset, count: Int(tokenIDLen))
+        
+        guard let account = self.getAccount(addressData: addressData),
+              let tokenBalances = account.esdtBalances[tokenIdData],
+              let balance = tokenBalances.first(where: { $0.nonce == nonce })
+        else {
+            self.getCurrentContainer().managedBigIntData[dest] = 0
+            
+            return
+        }
+        
+        self.getCurrentContainer().managedBigIntData[dest] = balance.balance
     }
     
     public func getCaller(resultOffset: UnsafeRawPointer) {
