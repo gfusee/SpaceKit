@@ -6,6 +6,7 @@
 ignore_dir
 *.o
 *.wasm
+Package.resolved
 run.sh
 test.sh
 run-scenarios
