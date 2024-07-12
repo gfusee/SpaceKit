@@ -232,19 +232,19 @@ extension DummyApi: BigIntApiProtocol {
     public func bigIntIsInt64(reference: Int32) -> Int32 {
         let value = self.getCurrentContainer().getBigIntData(handle: reference)
         
-        return value <= BigInt(INT64_MAX) ? 1 : 0
+        return value <= BigInt(Int64.max) ? 1 : 0
     }
     
     public func bigIntGetInt64Unsafe(reference: Int32) -> Int64 {
         let value = self.getCurrentContainer().getBigIntData(handle: reference)
-        let formatted = value.formatted().replacingOccurrences(of: " ", with: "")
+        let formatted = String(value).replacingOccurrences(of: " ", with: "")
         
         return Int64(formatted)!
     }
 
     public func bigIntToBuffer(bigIntHandle: Int32, destHandle: Int32) {
         let bigIntValue = self.getCurrentContainer().getBigIntData(handle: bigIntHandle)
-        [UInt8](bigIntValue.formatted().utf8).withUnsafeBytes { pointer in
+        [UInt8](String(bigIntValue).data(using: .utf8)!).withUnsafeBytes { pointer in
             guard let baseAddress = pointer.baseAddress else {
                 fatalError()
             }
