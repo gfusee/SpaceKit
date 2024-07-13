@@ -149,6 +149,10 @@ func bigIntGetESDTExternalBalance(
 @_extern(c)
 func getCaller(resultOffset: UnsafeRawPointer)
 
+@_extern(wasm, module: "env", name: "managedOwnerAddress")
+@_extern(c)
+func managedOwnerAddress(resultHandle: Int32)
+
 @_extern(wasm, module: "env", name: "getGasLeft")
 @_extern(c)
 func getGasLeft() -> Int64
@@ -158,6 +162,10 @@ func getGasLeft() -> Int64
 @_extern(wasm, module: "env", name: "bigIntGetCallValue")
 @_extern(c)
 func bigIntGetCallValue(dest: Int32)
+
+@_extern(wasm, module: "env", name: "managedGetMultiESDTCallValue")
+@_extern(c)
+func managedGetMultiESDTCallValue(resultHandle: Int32)
 
 // MARK: Send-related OPCODES
 @_extern(wasm, module: "env", name: "managedMultiTransferESDTNFTExecute")
@@ -369,6 +377,10 @@ extension VMApi: BlockchainApiProtocol {
     mutating func getCaller(resultOffset: UnsafeRawPointer) {
         return MultiversX.getCaller(resultOffset: resultOffset)
     }
+
+    mutating func managedOwnerAddress(resultHandle: Int32) {
+        return MultiversX.managedOwnerAddress(resultHandle: resultHandle)
+    }
     
     mutating func getGasLeft() -> Int64 {
         return MultiversX.getGasLeft()
@@ -380,6 +392,10 @@ extension VMApi: BlockchainApiProtocol {
 extension VMApi: CallValueApiProtocol {
     mutating func bigIntGetCallValue(dest: Int32) {
         return MultiversX.bigIntGetCallValue(dest: dest)
+    }
+
+    mutating func managedGetMultiESDTCallValue(resultHandle: Int32) {
+        return MultiversX.managedGetMultiESDTCallValue(resultHandle: resultHandle)
     }
 }
 

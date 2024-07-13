@@ -9,7 +9,7 @@ public struct EndpointArgumentsLoader {
 
 extension EndpointArgumentsLoader: TopDecodeMultiInput {
     public func hasNext() -> Bool {
-        self.numArguments > self.currentIndex
+        self.numArguments > self.currentIndex + 1
     }
     
     public mutating func nextValueInput() -> MXBuffer {

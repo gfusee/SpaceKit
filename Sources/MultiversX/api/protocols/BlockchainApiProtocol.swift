@@ -15,5 +15,7 @@ public protocol BlockchainApiProtocol {
     
     mutating func getCaller(resultOffset: UnsafeRawPointer)
     
+    mutating func managedOwnerAddress(resultHandle: Int32)
+
     mutating func getGasLeft() -> Int64
 }

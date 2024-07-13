@@ -1,6 +1,6 @@
 import MultiversX
 
-// TODO: Use OptionalValue in the init when implemented
+// TODO: Assert in the @Contract macro that OptionalArgument args are the last ones
 
 let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 700_000
 
@@ -17,7 +17,7 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 700_000
         pingAmount: BigUint,
         durationInSeconds: UInt64,
         optActivationTimestamp: UInt64?,
-        maxFunds: BigUint?
+        maxFunds: OptionalArgument<BigUint>
     ) {
         self.pingAmount = pingAmount
         let activationTimestamp = if let activationTimestamp = optActivationTimestamp {
@@ -29,7 +29,7 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 700_000
         let deadline = activationTimestamp + durationInSeconds
         self.deadline = deadline
         self.activationTimestamp = activationTimestamp
-        self.maxFunds = maxFunds
+        self.maxFunds = maxFunds.intoOptional()
     }
     
     public mutating func ping() {

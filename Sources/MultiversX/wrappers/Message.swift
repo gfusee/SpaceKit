@@ -9,6 +9,15 @@ public struct Message {
         
         return BigUint(handle: valueHandle)
     }
+
+    public static var allEsdtTransfers: MXArray<TokenPayment> {
+        // TODO: add caching
+        let resultHandle = getNextHandle()
+        
+        API.managedGetMultiESDTCallValue(resultHandle: resultHandle)
+        
+        return MXArray(handle: resultHandle)
+    }
     
     public static var caller: Address {
         // TODO: add caching

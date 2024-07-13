@@ -408,6 +408,10 @@ extension DummyApi: BlockchainApiProtocol {
         
         callerAccountAddressData.copyBytes(to: mutablePointer)
     }
+
+    public func managedOwnerAddress(resultHandle: Int32) {
+        fatalError() // TODO: implement and test
+    }
     
     public func getGasLeft() -> Int64 {
         fatalError() // TODO: implement and test
@@ -416,6 +420,10 @@ extension DummyApi: BlockchainApiProtocol {
 
 extension DummyApi: CallValueApiProtocol {
     public func bigIntGetCallValue(dest: Int32) {
+        fatalError() // TODO: implement and test
+    }
+
+    public func managedGetMultiESDTCallValue(resultHandle: Int32) {
         fatalError() // TODO: implement and test
     }
 }

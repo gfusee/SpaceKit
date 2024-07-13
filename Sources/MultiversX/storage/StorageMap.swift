@@ -4,6 +4,16 @@ public struct StorageMap<K: TopEncode, V: TopEncode & TopDecode> {
     public init(baseKey: MXBuffer) {
         self.baseKey = baseKey
     }
+
+    public func clear(_ key: K) {
+        // TODO: add tests
+        clearStorage(key: self.getKey(keyItem: key))
+    }
+
+    public func isEmpty(_ key: K) -> Bool {
+        // TODO: add tests
+        return self.loadStorageBuffer(key: key).count == 0
+    }
     
     private func getKey(keyItem: K) -> MXBuffer {
         var result = MXBuffer()
@@ -38,12 +48,6 @@ public struct StorageMap<K: TopEncode, V: TopEncode & TopDecode> {
             } else {
                 return V(topDecode: self.loadStorageBuffer(key: item))
             }
-        }
-    }
-    
-    public subscript(isEmpty item: K) -> Bool { // TODO: add tests
-        get {
-            return self.loadStorageBuffer(key: item).count == 0
         }
     }
 }

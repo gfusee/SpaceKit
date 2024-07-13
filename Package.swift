@@ -15,13 +15,10 @@ let unsafeFlags = isWasm ? [
     "Embedded",
     "-Xcc",
     "-fdeclspec",
-    "-Xcc",
-    "-fno-stack-protector",
-    "-Xcc",
-    "-fno-stack-check",
     "-whole-module-optimization",
     "-D",
-    "WASM"
+    "WASM",
+    "-disable-stack-protector"
 ] : []
 
 var packageDependencies: [Package.Dependency] = [
@@ -174,6 +171,16 @@ let package = Package(
                 "MultiversX"
             ],
             path: "Examples/Adder",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
+            name: "CrowdfundingEsdt",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/CrowdfundingEsdt",
             swiftSettings: [
                 .unsafeFlags(unsafeFlags)
             ]

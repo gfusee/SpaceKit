@@ -5,6 +5,7 @@ import SwiftSyntaxMacros
 // TODO: check if the above TODO applies for enums too
 
 // TODO: check if optional fields works with "?"
+// TODO: recreate the auto-generate init to make it public
 
 func generateStructConformance(
     structDecl: StructDeclSyntax

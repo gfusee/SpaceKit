@@ -4,7 +4,7 @@ public struct Address {
     let buffer: MXBuffer
     
     public init() {
-        // Literal arrays avoid the use of posix_memalign symbol
+        // Literal arrays avoid the use of heap allocations
         let emptyBytes: [UInt8] = [
             0, 0, 0, 0, 0,
             0, 0, 0, 0, 0,
@@ -39,9 +39,39 @@ public struct Address {
     public func send(egldValue: BigUint) {
         let emptyBuffer = MXBuffer()
         
-        let _ = API.managedTransferValueExecute(
+        let _ = API.managedTransferValueExecute( // TODO: do something with the result
             dstHandle: self.buffer.handle,
             valueHandle: egldValue.handle,
+            gasLimit: 0,
+            functionHandle: emptyBuffer.handle,
+            argumentsHandle: emptyBuffer.handle
+        )
+    }
+
+    // TODO: use the TokenIdentifier type once implemented
+    public func send(tokenIdentifier: MXBuffer, nonce: UInt64, amount: BigUint) {
+        // TODO: add tests
+        if tokenIdentifier == "EGLD" { // TODO: no hardcoded EGLD
+            self.send(egldValue: amount)
+        } else {
+            // TODO: instantiating a MXArray<TokenPayment> through a literal expression causes heap allocation, while instantiating some other types, such as MXArray<UInt64> doesn't. I should investigate on this
+            let payments: MXArray<TokenPayment> = MXArray()
+                .appended(TokenPayment.new(
+                    tokenIdentifier: tokenIdentifier,
+                    nonce: nonce,
+                    amount: amount
+                ))
+            self.send(payments: payments)
+        }
+    }
+
+    public func send(payments: MXArray<TokenPayment>) {
+        // TODO: add tests
+        let emptyBuffer = MXBuffer()
+
+        let _ = API.managedMultiTransferESDTNFTExecute( // TODO: do something with the result
+            dstHandle: self.buffer.handle,
+            tokenTransfersHandle: payments.buffer.handle,
             gasLimit: 0,
             functionHandle: emptyBuffer.handle,
             argumentsHandle: emptyBuffer.handle

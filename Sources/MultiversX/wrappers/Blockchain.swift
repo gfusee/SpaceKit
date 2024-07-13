@@ -48,6 +48,15 @@ public struct Blockchain {
         
         return BigUint(handle: destHandle)
     }
+
+    public static func getOwner() -> Address {
+        // TODO: add caching
+        let resultHandle = getNextHandle()
+        
+        API.managedOwnerAddress(resultHandle: resultHandle)
+        
+        return Address(handle: resultHandle)
+    }
     
     public static func getGasLeft() -> UInt64 {
         return UInt64(API.getGasLeft()) // TODO: Is this cast safe?
