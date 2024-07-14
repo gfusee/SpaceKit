@@ -19,6 +19,12 @@ import XCTest
 }
 
 final class CodableMacroEnumImplTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
     
     func testTopEncodeForEnumWithoutAssociatedValue() throws {
         let tokenType = PaymentType.multiEsdts
@@ -109,7 +115,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopDecodeForEnumInputTooLargeError() throws {
         do {
-            try CodableMacroEnumImplTestsContract.testable("").testTopDecodeForEnumInputTooLargeError()
+            try CodableMacroEnumImplTestsContract.testable("contract").testTopDecodeForEnumInputTooLargeError()
             
             XCTFail()
         } catch {

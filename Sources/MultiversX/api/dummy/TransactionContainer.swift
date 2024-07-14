@@ -10,6 +10,7 @@ package enum TransactionContainerErrorBehavior {
 package struct TransactionInput {
     let contractAddress: Data
     let callerAddress: Data
+    let egldValue: BigInt
 }
 
 package class TransactionContainer {
@@ -99,11 +100,33 @@ package class TransactionContainer {
         
         return self.getAccount(address: address)
     }
+
+    package func getCurrentSCOwnerAccount() -> WorldAccount {
+        guard let ownerAddress = self.getCurrentSCAccount().owner else {
+            self.throwError(error: .worldError(message: "No owner set for the contract account."))
+        }
+
+        let ownerAccount = self.getAccount(address: ownerAddress)
+        
+        return ownerAccount
+    }
+
+    package func setCurrentSCOwnerAddress(owner: Data) {
+        var scAccount = self.getCurrentSCAccount()
+
+        scAccount.owner = owner
+
+        self.state.setAccount(account: scAccount)
+    }
     
     package func getCurrentCallerAccount() -> WorldAccount {
         let address = self.getCurrentCallerAddress()
         
         return self.getAccount(address: address)
+    }
+
+    package func getEgldValue() -> BigInt {
+        return self.getTransactionInput().egldValue
     }
     
     package func getStorageForCurrentContractAddress() -> [Data : Data] {
@@ -117,8 +140,13 @@ package class TransactionContainer {
         
         self.state.storageForContractAddress[currentContractAddress] = storage
     }
+
+    public func performEgldTransfer(from: Data, to: Data, value: BigInt) {
+        self.addEgldToAddressBalance(address: from, value: -value)
+        self.addEgldToAddressBalance(address: to, value: value)
+    }
     
-    public func addEgldToAddressBalance(address: Data, value: BigInt) {
+    private func addEgldToAddressBalance(address: Data, value: BigInt) {
         var account = self.getAccount(address: address)
         let newBalance = account.balance + value
         
@@ -130,8 +158,13 @@ package class TransactionContainer {
         
         self.state.setAccount(account: account)
     }
+
+    public func performEsdtTransfer(from: Data, to: Data, token: Data, nonce: UInt64, value: BigInt) {
+        self.addEsdtToAddressBalance(address: from, token: token, nonce: nonce, value: -value)
+        self.addEsdtToAddressBalance(address: to, token: token, nonce: nonce, value: value)
+    }
     
-    public func addEsdtToAddressBalance(address: Data, token: Data, nonce: UInt64, value: BigInt) {
+    private func addEsdtToAddressBalance(address: Data, token: Data, nonce: UInt64, value: BigInt) {
         var account = self.getAccount(address: address)
         var allBalances = account.esdtBalances[token] ?? []
         var tokenBalance = EsdtBalance(nonce: nonce, balance: 0)

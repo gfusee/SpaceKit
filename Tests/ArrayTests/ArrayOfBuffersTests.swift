@@ -24,6 +24,12 @@ import XCTest
 }
 
 final class ArrayOfBuffersTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
     
     func testEmptyArray() throws {
         let array: MXArray<MXBuffer> = MXArray()
@@ -155,7 +161,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("").testGetOutOfRangeShouldFail()
+            try ArrayOfBuffersTestsContract.testable("contract").testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -388,7 +394,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("").testReplacedOutOfRangeShouldFail()
+            try ArrayOfBuffersTestsContract.testable("contract").testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

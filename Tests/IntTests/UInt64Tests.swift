@@ -25,6 +25,12 @@ import MultiversX
 }
 
 final class UInt64Tests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
     
     func testTopEncodeUInt64Zero() throws {
         var output = MXBuffer()
@@ -183,7 +189,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testTopDecodeUInt64TooLargeBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("").testTopDecodeUInt64TooLargeBufferShouldFail()
+            try UInt64TestsContract.testable("contract").testTopDecodeUInt64TooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -229,7 +235,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64EmptyBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("").testNestedDecodeUInt64EmptyBufferShouldFail()
+            try UInt64TestsContract.testable("contract").testNestedDecodeUInt64EmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -239,7 +245,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64TooSmallBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("").testNestedDecodeUInt64TooSmallBufferShouldFail()
+            try UInt64TestsContract.testable("contract").testNestedDecodeUInt64TooSmallBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -270,7 +276,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeTwoUInt64sTooSmallBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("").testNestedDecodeTwoUInt64sTooSmallBufferShouldFail()
+            try UInt64TestsContract.testable("contract").testNestedDecodeTwoUInt64sTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {

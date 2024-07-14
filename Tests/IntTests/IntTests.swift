@@ -25,6 +25,12 @@ import MultiversX
 }
 
 final class IntTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
     
     func testTopEncodeIntZero() throws {
         var output = MXBuffer()
@@ -234,7 +240,7 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntTooLargeBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("").testTopDecodeIntTooLargeBufferShouldFail()
+            try IntTestsContract.testable("contract").testTopDecodeIntTooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -289,7 +295,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntEmptyBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("").testNestedDecodeIntEmptyBufferShouldFail()
+            try IntTestsContract.testable("contract").testNestedDecodeIntEmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -299,7 +305,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntTooSmallBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("").testNestedDecodeIntTooSmallBufferShouldFail()
+            try IntTestsContract.testable("contract").testNestedDecodeIntTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -330,7 +336,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeTwoIntsTooSmallBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("").testNestedDecodeTwoIntsTooSmallBufferShouldFail()
+            try IntTestsContract.testable("contract").testNestedDecodeTwoIntsTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {

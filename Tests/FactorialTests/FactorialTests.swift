@@ -23,6 +23,12 @@ struct Factorial {
 }
 
 final class FactorialTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "factorial")
+        ]
+    }
     
     func testZero() throws {
         let contract = try Factorial.testable("factorial")

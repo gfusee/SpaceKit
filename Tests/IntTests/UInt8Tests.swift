@@ -20,6 +20,12 @@ import MultiversX
 }
 
 final class UInt8Tests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
     
     func testTopEncodeUInt8Zero() throws {
         var output = MXBuffer()
@@ -147,7 +153,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testTopDecodeUInt8TooLargeBufferShouldFail() throws {
         do {
-            try UInt8TestsContract.testable("").testTopDecodeUInt8TooLargeBufferShouldFail()
+            try UInt8TestsContract.testable("contract").testTopDecodeUInt8TooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -184,7 +190,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testNestedDecodeUInt8EmptyBufferShouldFail() throws {
         do {
-            try UInt8TestsContract.testable("").testNestedDecodeUInt8EmptyBufferShouldFail()
+            try UInt8TestsContract.testable("contract").testNestedDecodeUInt8EmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -206,7 +212,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testNestedDecodeTwoUInt8sTooSmallBufferShouldFail() throws {
         do {
-            try UInt8TestsContract.testable("").testNestedDecodeTwoUInt8sTooSmallBufferShouldFail()
+            try UInt8TestsContract.testable("contract").testNestedDecodeTwoUInt8sTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {

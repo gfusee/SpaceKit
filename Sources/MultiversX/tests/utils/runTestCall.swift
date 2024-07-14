@@ -1,11 +1,13 @@
 #if !WASM
 import Foundation
+import BigInt
 
 public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: TopEncode & TopDecode>(
     contractAddress: String,
     endpointName: String,
     args: (repeat each InputArg),
     callerAddress: String? = nil,
+    egldValue: BigUint = 0,
     operation: @escaping (repeat each InputArg) -> ReturnType
 ) throws(TransactionError) -> ReturnType {
     // Pushing a container makes the previous handles invalid.
@@ -19,7 +21,8 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     var bytesData: [UInt8] = []
     let transactionInput = getTransactionInput(
         contractAddress: contractAddress,
-        callerAddress: callerAddress
+        callerAddress: callerAddress,
+        egldValue: egldValue
     )
     
     try API.runTransactions(transactionInput: transactionInput) {
@@ -43,6 +46,7 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     endpointName: String,
     args: (repeat each InputArg),
     callerAddress: String? = nil,
+    egldValue: BigUint = 0,
     operation: @escaping (repeat each InputArg) -> Void
 ) throws(TransactionError) {
     // Pushing a container makes the previous handles invalid.
@@ -55,7 +59,8 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     
     let transactionInput = getTransactionInput(
         contractAddress: contractAddress,
-        callerAddress: callerAddress
+        callerAddress: callerAddress,
+        egldValue: egldValue
     )
     
     try API.runTransactions(transactionInput: transactionInput) {
@@ -67,13 +72,15 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
 
 private func getTransactionInput(
     contractAddress: String,
-    callerAddress: String?
+    callerAddress: String?,
+    egldValue: BigUint
 ) -> TransactionInput {
     let callerAddress = callerAddress ?? contractAddress
     
     return TransactionInput(
         contractAddress: contractAddress.toAddressData(),
-        callerAddress: callerAddress.toAddressData()
+        callerAddress: callerAddress.toAddressData(),
+        egldValue: BigInt(bigUint: egldValue)
     )
 }
 

@@ -29,6 +29,15 @@ public class DummyApi {
             transactionInput: transactionInput,
             errorBehavior: .blockThread
         )
+
+        defer {
+            self.transactionContainer = nil
+            self.containerLock.unlock()
+        }
+
+        if transactionInput.egldValue > 0 {
+            self.getCurrentContainer().performEgldTransfer(from: transactionInput.callerAddress, to: transactionInput.contractAddress, value: transactionInput.egldValue)
+        }
         
         var hasThreadStartedExecution = false
         
@@ -49,11 +58,6 @@ public class DummyApi {
         }
         
         let transactionContainer = self.transactionContainer! // It's impossible that this is nil
-        
-        defer {
-            self.transactionContainer = nil
-            self.containerLock.unlock()
-        }
         
         if let transactionError = transactionContainer.error {
             throw transactionError
@@ -76,6 +80,10 @@ public class DummyApi {
     
     package func setWorld(world: WorldState) {
         self.worldState = world
+    }
+
+    package func setCurrentSCOwnerAddress(owner: Data) {
+        self.getCurrentContainer().setCurrentSCOwnerAddress(owner: owner)
     }
     
     func throwUserError(message: String) -> Never {
@@ -410,7 +418,9 @@ extension DummyApi: BlockchainApiProtocol {
     }
 
     public func managedOwnerAddress(resultHandle: Int32) {
-        fatalError() // TODO: implement and test
+        let ownerAccount = self.getCurrentContainer().getCurrentSCOwnerAccount()
+
+        self.getCurrentContainer().managedBuffersData[resultHandle] = ownerAccount.addressData 
     }
     
     public func getGasLeft() -> Int64 {
@@ -420,7 +430,9 @@ extension DummyApi: BlockchainApiProtocol {
 
 extension DummyApi: CallValueApiProtocol {
     public func bigIntGetCallValue(dest: Int32) {
-        fatalError() // TODO: implement and test
+        let value = self.getCurrentContainer().getEgldValue()
+
+        self.getCurrentContainer().managedBigIntData[dest] = value
     }
 
     public func managedGetMultiESDTCallValue(resultHandle: Int32) {
@@ -450,8 +462,7 @@ extension DummyApi: SendApiProtocol {
                 self.throwExecutionFailed(reason: "insufficient funds")
             }
             
-            self.getCurrentContainer().addEsdtToAddressBalance(address: sender.addressData, token: tokenIdentifier, nonce: tokenPayment.nonce, value: -value)
-            self.getCurrentContainer().addEsdtToAddressBalance(address: receiver, token: tokenIdentifier, nonce: tokenPayment.nonce, value: value)
+            self.getCurrentContainer().performEsdtTransfer(from: sender.addressData, to: receiver, token: tokenIdentifier, nonce: tokenPayment.nonce, value: value)
         }
         
         return 0
@@ -473,9 +484,8 @@ extension DummyApi: SendApiProtocol {
         }
         
         let receiver = self.getCurrentContainer().getBufferData(handle: dstHandle)
-        
-        self.getCurrentContainer().addEgldToAddressBalance(address: sender.addressData, value: -value)
-        self.getCurrentContainer().addEgldToAddressBalance(address: receiver, value: value)
+
+        self.getCurrentContainer().performEgldTransfer(from: sender.addressData, to: receiver, value: value)
         
         return 0
     }

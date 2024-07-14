@@ -55,6 +55,12 @@ import XCTest
 
 final class ArrayOfCustomEnumsTests: ContractTestCase {
     
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
+    
     func testEmptyArray() throws {
         let array: MXArray<CustomCodableEnum> = MXArray()
         
@@ -471,7 +477,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("").testGetOutOfRangeShouldFail()
+            try ArrayOfBuffersTestsContract.testable("contract").testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -1050,7 +1056,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("").testReplacedOutOfRangeShouldFail()
+            try ArrayOfBuffersTestsContract.testable("contract").testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

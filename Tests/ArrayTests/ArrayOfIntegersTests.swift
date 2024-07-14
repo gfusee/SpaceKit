@@ -24,6 +24,12 @@ import XCTest
 }
 
 final class ArrayOfIntegersTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
     
     func testEmptyArray() throws {
         let array: MXArray<UInt64> = MXArray()
@@ -155,7 +161,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfIntegersTestsContract.testable("").testGetOutOfRangeShouldFail()
+            try ArrayOfIntegersTestsContract.testable("contract").testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -379,7 +385,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfIntegersTestsContract.testable("").testReplacedOutOfRangeShouldFail()
+            try ArrayOfIntegersTestsContract.testable("contract").testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

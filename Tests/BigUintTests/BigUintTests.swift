@@ -22,6 +22,12 @@ import MultiversX
 }
 
 final class BigUintTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
     
     func testZeroBigUint() throws {
         let bigUint = BigUint()
@@ -99,7 +105,7 @@ final class BigUintTests: ContractTestCase {
     
     func testSubstractTwoBigUintNegativeShouldFail() throws {
         do {
-            try BigUintTestsContract.testable("").testSubstractTwoBigUintNegativeShouldFail()
+            try BigUintTestsContract.testable("contract").testSubstractTwoBigUintNegativeShouldFail()
             
             XCTFail()
         } catch {
@@ -145,7 +151,7 @@ final class BigUintTests: ContractTestCase {
     
     func testDivideTwoBigUintZeroRightSideShouldFail() throws {
         do {
-            try BigUintTestsContract.testable("").testDivideTwoBigUintZeroRightSideShouldFail()
+            try BigUintTestsContract.testable("contract").testDivideTwoBigUintZeroRightSideShouldFail()
             
             XCTFail()
         } catch {
@@ -182,7 +188,7 @@ final class BigUintTests: ContractTestCase {
     
     func testModuloTwoBigUintZeroRightSideShouldFail() throws {
         do {
-            try BigUintTestsContract.testable("").testModuloTwoBigUintZeroRightSideShouldFail()
+            try BigUintTestsContract.testable("contract").testModuloTwoBigUintZeroRightSideShouldFail()
             
             XCTFail()
         } catch {

@@ -20,6 +20,10 @@ import MultiversX
     ) -> BigUint {
         return Blockchain.getESDTBalance(address: address, tokenIdentifier: tokenIdentifier, nonce: nonce)
     }
+
+    public func getOwner() -> Address {
+        return Blockchain.getOwner()
+    }
     
 }
 
@@ -129,6 +133,22 @@ final class BlockchainTests: ContractTestCase {
         let balance = try contract.getEsdtBalance(address: "userNonFungible", tokenIdentifier: "SFT-abcdef", nonce: 10)
         
         XCTAssertEqual(balance, 40)
+    }
+
+    func testGetOwnerDefaultOwner() throws {
+        let contract = try BlockchainContract.testable("adder")
+        
+        let owner = try contract.getOwner()
+        
+        XCTAssertEqual(owner.hexDescription, "0000000000000000000061646465725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f")
+    }
+
+    func testGetOwner() throws {
+        let contract = try BlockchainContract.testable("adder", callerAddress: "user")
+        
+        let owner = try contract.getOwner()
+        
+        XCTAssertEqual(owner.hexDescription, "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f")
     }
     
 }

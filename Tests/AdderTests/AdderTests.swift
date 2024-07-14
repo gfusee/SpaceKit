@@ -19,6 +19,12 @@ struct Adder {
 }
 
 final class AdderTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "adder")
+        ]
+    }
     
     func testDeployAdderInitialValueZero() throws {
         let contract = try Adder.testable("adder", initialValue: 0)

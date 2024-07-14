@@ -55,6 +55,12 @@ import XCTest
 }
 
 final class ArrayOfCustomStructsTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
     
     func testEmptyArray() throws {
         let array: MXArray<CustomCodableStruct> = MXArray()
@@ -439,7 +445,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("").testGetOutOfRangeShouldFail()
+            try ArrayOfBuffersTestsContract.testable("contract").testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -923,7 +929,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("").testReplacedOutOfRangeShouldFail()
+            try ArrayOfBuffersTestsContract.testable("contract").testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

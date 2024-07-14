@@ -15,6 +15,12 @@ import XCTest
 }
 
 final class CodableMacroStructImplTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
     
     func testTopEncodeForCustomStruct() throws {
         let tokenPayment = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
@@ -47,7 +53,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
     
     func testTopDecodeForCustomInputTooLargeError() throws {
         do {
-            try CodableMacroStructImplTestsContract.testable("").testTopDecodeForCustomInputTooLargeError()
+            try CodableMacroStructImplTestsContract.testable("contract").testTopDecodeForCustomInputTooLargeError()
             
             XCTFail()
         } catch {

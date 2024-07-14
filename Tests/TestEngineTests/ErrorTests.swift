@@ -12,10 +12,16 @@ import MultiversX
 }
 
 final class ErrorTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "contract")
+        ]
+    }
     
     func testUserErrorStopsTheExecution() throws {
         do {
-            try ErrorTestsContract.testable("").testUserErrorStopsTheExecution()
+            try ErrorTestsContract.testable("contract").testUserErrorStopsTheExecution()
             
             XCTFail()
         } catch {

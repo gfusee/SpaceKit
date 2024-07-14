@@ -21,6 +21,14 @@ struct CounterContract {
 }
 
 final class ContractStorageTests: ContractTestCase {
+
+    override var initialAccounts: [WorldAccount] {
+        [
+            WorldAccount(address: "counter"),
+            WorldAccount(address: "counter1"),
+            WorldAccount(address: "counter2")
+        ]
+    }
     
     func testGetCounterBeforeAnyIncrease() throws {
         let contract = try CounterContract.testable("counter")

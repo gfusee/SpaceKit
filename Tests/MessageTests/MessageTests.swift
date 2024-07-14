@@ -16,7 +16,10 @@ import MultiversX
     public func getStorageAddress() -> Address {
         return self.address
     }
-    
+
+    public func getEgldValue() -> BigUint {
+        return Message.egldValue
+    }
 }
 
 final class MessageTests: ContractTestCase {
@@ -24,7 +27,10 @@ final class MessageTests: ContractTestCase {
     override var initialAccounts: [WorldAccount] {
         [
             WorldAccount(address: "adder"),
-            WorldAccount(address: "user")
+            WorldAccount(
+                address: "user",
+                balance: 1000
+            )
         ]
     }
     
@@ -63,5 +69,21 @@ final class MessageTests: ContractTestCase {
         )
         
         XCTAssertEqual(contractAddress.hexDescription, "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f")
+    }
+
+    func testGetEgldValueNoValue() throws {
+        let contract = try MessageContract.testable("adder")
+        
+        let value = try contract.getEgldValue()
+        
+        XCTAssertEqual(value, 0)
+    }
+
+    func testGetEgldValue() throws {
+        let contract = try MessageContract.testable("adder")
+        
+        let value = try contract.getEgldValue(callerAddress: "user", egldValue: 100)
+        
+        XCTAssertEqual(value, 100)
     }
 }
