@@ -36,7 +36,25 @@ public class DummyApi {
         }
 
         if transactionInput.egldValue > 0 {
-            self.getCurrentContainer().performEgldTransfer(from: transactionInput.callerAddress, to: transactionInput.contractAddress, value: transactionInput.egldValue)
+            guard transactionInput.esdtValue.isEmpty else {
+                self.throwExecutionFailed(reason: "cannot have both egld and esdt value") // TODO: use the same error message as the SpaceVM
+            }
+
+            self.getCurrentContainer().performEgldTransfer(
+                from: transactionInput.callerAddress,
+                to: transactionInput.contractAddress,
+                value: transactionInput.egldValue
+            )
+        } else {
+            for value in transactionInput.esdtValue {
+                self.getCurrentContainer().performEsdtTransfer(
+                    from: transactionInput.callerAddress,
+                    to: transactionInput.contractAddress,
+                    token: value.tokenIdentifier,
+                    nonce: value.nonce,
+                    value: value.amount
+                )
+            }
         }
         
         var hasThreadStartedExecution = false
@@ -436,7 +454,20 @@ extension DummyApi: CallValueApiProtocol {
     }
 
     public func managedGetMultiESDTCallValue(resultHandle: Int32) {
-        fatalError() // TODO: implement and test
+        let payments = self.getCurrentContainer().getEsdtValue()
+
+        var array: MXArray<TokenPayment> = []
+        for payment in payments {
+            array = array.appended(
+                TokenPayment.new(
+                    tokenIdentifier: MXBuffer(data: Array(payment.tokenIdentifier)),
+                    nonce: payment.nonce,
+                    amount: BigUint(bigInt: payment.amount)
+                )
+            )
+        }
+
+        self.getCurrentContainer().managedBuffersData[resultHandle] = Data(array.buffer.toBytes())
     }
 }
 

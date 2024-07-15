@@ -1,12 +1,6 @@
 import MultiversX
 import XCTest
 
-@Codable struct TokenPayment: Equatable {
-    let tokenIdentifier: MXBuffer
-    let nonce: UInt64
-    let amount: BigUint
-}
-
 @Contract struct CodableMacroStructImplTestsContract {
     public func testTopDecodeForCustomInputTooLargeError() {
         let input = MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a000000016400".hexadecimal))
@@ -23,7 +17,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
     }
     
     func testTopEncodeForCustomStruct() throws {
-        let tokenPayment = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
+        let tokenPayment = TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
         var result = MXBuffer()
         tokenPayment.topEncode(output: &result)
         
@@ -33,7 +27,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
     }
     
     func testNestedEncodeForCustomStruct() throws {
-        let tokenPayment = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
+        let tokenPayment = TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
         var result = MXBuffer()
         tokenPayment.depEncode(dest: &result)
         
@@ -46,7 +40,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
         let input = MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a0000000164".hexadecimal))
         let result = TokenPayment(topDecode: input)
         
-        let expected = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
+        let expected = TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
         
         XCTAssertEqual(result, expected)
     }
@@ -65,7 +59,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
         var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a0000000164".hexadecimal)))
         let result = TokenPayment(depDecode: &input)
         
-        let expected = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
+        let expected = TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
         
         XCTAssertEqual(result, expected)
     }
@@ -75,8 +69,8 @@ final class CodableMacroStructImplTests: ContractTestCase {
         let result1 = TokenPayment(depDecode: &input)
         let result2 = TokenPayment(depDecode: &input)
         
-        let expected1 = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
-        let expected2 = TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 1000)
+        let expected1 = TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
+        let expected2 = TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 1000)
         
         XCTAssertEqual(result1, expected1)
         XCTAssertEqual(result2, expected2)

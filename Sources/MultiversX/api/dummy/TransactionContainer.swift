@@ -8,9 +8,16 @@ package enum TransactionContainerErrorBehavior {
 }
 
 package struct TransactionInput {
+    package struct EsdtPayment {
+        let tokenIdentifier: Data
+        let nonce: UInt64
+        let amount: BigInt
+    }
+
     let contractAddress: Data
     let callerAddress: Data
     let egldValue: BigInt
+    let esdtValue: [EsdtPayment]
 }
 
 package class TransactionContainer {
@@ -127,6 +134,10 @@ package class TransactionContainer {
 
     package func getEgldValue() -> BigInt {
         return self.getTransactionInput().egldValue
+    }
+
+    package func getEsdtValue() -> [TransactionInput.EsdtPayment] {
+        return self.getTransactionInput().esdtValue
     }
     
     package func getStorageForCurrentContractAddress() -> [Data : Data] {

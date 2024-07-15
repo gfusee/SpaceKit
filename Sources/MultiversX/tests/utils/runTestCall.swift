@@ -8,6 +8,7 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     args: (repeat each InputArg),
     callerAddress: String? = nil,
     egldValue: BigUint = 0,
+    esdtValue: MXArray<TokenPayment>,
     operation: @escaping (repeat each InputArg) -> ReturnType
 ) throws(TransactionError) -> ReturnType {
     // Pushing a container makes the previous handles invalid.
@@ -22,7 +23,8 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     let transactionInput = getTransactionInput(
         contractAddress: contractAddress,
         callerAddress: callerAddress,
-        egldValue: egldValue
+        egldValue: egldValue,
+        esdtValue: esdtValue
     )
     
     try API.runTransactions(transactionInput: transactionInput) {
@@ -47,6 +49,7 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     args: (repeat each InputArg),
     callerAddress: String? = nil,
     egldValue: BigUint = 0,
+    esdtValue: MXArray<TokenPayment> = [],
     operation: @escaping (repeat each InputArg) -> Void
 ) throws(TransactionError) {
     // Pushing a container makes the previous handles invalid.
@@ -60,7 +63,8 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     let transactionInput = getTransactionInput(
         contractAddress: contractAddress,
         callerAddress: callerAddress,
-        egldValue: egldValue
+        egldValue: egldValue,
+        esdtValue: esdtValue
     )
     
     try API.runTransactions(transactionInput: transactionInput) {
@@ -73,14 +77,27 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
 private func getTransactionInput(
     contractAddress: String,
     callerAddress: String?,
-    egldValue: BigUint
+    egldValue: BigUint,
+    esdtValue: MXArray<TokenPayment>
 ) -> TransactionInput {
     let callerAddress = callerAddress ?? contractAddress
+    var esdtValueArray: [TransactionInput.EsdtPayment] = []
+
+    for transfer in esdtValue {
+        esdtValueArray.append(
+            TransactionInput.EsdtPayment(
+                tokenIdentifier: Data(transfer.tokenIdentifier.toBytes()),
+                nonce: transfer.nonce,
+                amount: BigInt(bigUint: transfer.amount)
+            )
+        )
+    }
     
     return TransactionInput(
         contractAddress: contractAddress.toAddressData(),
         callerAddress: callerAddress.toAddressData(),
-        egldValue: BigInt(bigUint: egldValue)
+        egldValue: BigInt(bigUint: egldValue),
+        esdtValue: esdtValueArray
     )
 }
 

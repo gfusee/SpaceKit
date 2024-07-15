@@ -19,4 +19,10 @@ extension BigInt {
         return bigIntData.count > 0 ? bigIntData[1...] : Data()
     }
 }
+
+extension BigUint {
+    init(bigInt: BigInt) {
+        self = BigUint(bigEndianBuffer: MXBuffer(data: Array(bigInt.toBigEndianUnsignedData())))
+    }
+}
 #endif

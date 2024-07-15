@@ -20,6 +20,10 @@ import MultiversX
     public func getEgldValue() -> BigUint {
         return Message.egldValue
     }
+
+    public func getAllEsdtTransfers() -> MXArray<TokenPayment> {
+        return Message.allEsdtTransfers
+    }
 }
 
 final class MessageTests: ContractTestCase {
@@ -29,7 +33,16 @@ final class MessageTests: ContractTestCase {
             WorldAccount(address: "adder"),
             WorldAccount(
                 address: "user",
-                balance: 1000
+                balance: 1000,
+                esdtBalances: [
+                    "WEGLD-abcdef": [
+                        EsdtBalance(nonce: 0, balance: 1000)
+                    ],
+                    "SFT-abcdef": [
+                        EsdtBalance(nonce: 1, balance: 500),
+                        EsdtBalance(nonce: 2, balance: 50)
+                    ]
+                ]
             )
         ]
     }
@@ -79,11 +92,66 @@ final class MessageTests: ContractTestCase {
         XCTAssertEqual(value, 0)
     }
 
+    // TODO: add a test that ensures it is impossible to provide both egldValue and esdtValue
+
     func testGetEgldValue() throws {
         let contract = try MessageContract.testable("adder")
         
         let value = try contract.getEgldValue(callerAddress: "user", egldValue: 100)
         
         XCTAssertEqual(value, 100)
+        XCTAssertEqual(self.getAccount(address: "adder")!.balance, 100)
+        XCTAssertEqual(self.getAccount(address: "user")!.balance, 900)
+    }
+
+    func testGetAllEsdtTransfersNoTransfers() throws {
+        let contract = try MessageContract.testable("adder")
+        
+        let value = try contract.getAllEsdtTransfers()
+        
+        XCTAssertEqual(value, [])
+    }
+
+    func testGetAllEsdtTransfersSingleTransfer() throws {
+        let contract = try MessageContract.testable("adder")
+        
+        let value = try contract.getAllEsdtTransfers(
+            callerAddress: "user",
+            esdtValue: [TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)]
+        )
+        
+        XCTAssertEqual(value, [TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)])
+        XCTAssertEqual(self.getAccount(address: "adder")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 100)
+        XCTAssertEqual(self.getAccount(address: "user")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 900)
+    }
+
+    func testGetAllEsdtTransfersMultiTransfers() throws {
+        let contract = try MessageContract.testable("adder")
+        
+        let value = try contract.getAllEsdtTransfers(
+            callerAddress: "user",
+            esdtValue: [
+                TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
+                TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
+                TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
+            ]
+        )
+
+        let expected: MXArray<TokenPayment> = [
+            TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
+            TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
+            TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
+        ]
+        
+        XCTAssertEqual(value, expected)
+
+        XCTAssertEqual(self.getAccount(address: "adder")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 100)
+        XCTAssertEqual(self.getAccount(address: "user")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 900)
+
+        XCTAssertEqual(self.getAccount(address: "adder")!.getEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 1), 10)
+        XCTAssertEqual(self.getAccount(address: "user")!.getEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 1), 490)
+
+        XCTAssertEqual(self.getAccount(address: "adder")!.getEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 2), 50)
+        XCTAssertEqual(self.getAccount(address: "user")!.getEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 2), 0)
     }
 }

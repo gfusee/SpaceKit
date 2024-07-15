@@ -86,7 +86,8 @@ func getTestableStructDeclaration(
     
     let transactionInputOptionalParameters: [FunctionParameterSyntax] = [
         "callerAddress: String? = nil,",
-        "egldValue: BigUint = 0"
+        "egldValue: BigUint = 0,",
+        "esdtValue: MXArray<TokenPayment> = []"
     ]
         .map { FunctionParameterSyntax(stringLiteral: $0) }
     
@@ -131,7 +132,7 @@ func getTestableStructDeclaration(
             )
         ),
         bodyBuilder: {
-            "try Testable(_testableAddress, \(raw: testableStaticInitializerCallParameters) callerAddress: callerAddress, egldValue: egldValue)"
+            "try Testable(_testableAddress, \(raw: testableStaticInitializerCallParameters) callerAddress: callerAddress, egldValue: egldValue, esdtValue: esdtValue)"
         }
     )
     
@@ -150,7 +151,8 @@ func getTestableStructDeclaration(
                 endpointName: "init",
                 args: (\(raw: parameterNames)),
                 callerAddress: callerAddress,
-                egldValue: egldValue
+                egldValue: egldValue,
+                esdtValue: esdtValue
             ) { \(raw: closureParameterInstantiations)
                 let ownerAddress = callerAddress?.toAddressData() ?? _testableAddress.toAddressData()
                 API.setCurrentSCOwnerAddress(owner: ownerAddress)
@@ -211,7 +213,8 @@ func getTestableStructDeclaration(
                 endpointName: "\(function.name)",
                 args: (\(raw: variableNames)),
                 callerAddress: callerAddress,
-                egldValue: egldValue
+                egldValue: egldValue,
+                esdtValue: esdtValue
             ) { \(raw: closureVariableInstantiations)
                 var contract = \(structDecl.name.trimmed)(_noDeploy: ())
                 return contract.\(function.name)(\(raw: args))

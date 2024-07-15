@@ -2,7 +2,7 @@
 import Foundation
 import BigInt
 
-public struct EsdtBalance {
+public struct EsdtBalance: Equatable {
     var nonce: UInt64
     var balance: BigInt
     
@@ -40,6 +40,18 @@ public struct WorldAccount {
     
     public func getBalance() -> BigUint {
         return BigUint(bigEndianBuffer: MXBuffer(data: Array(self.balance.toBigEndianUnsignedData())))
+    }
+
+    public func getEsdtBalance(tokenIdentifier: String, nonce: UInt64) -> BigUint {
+        guard let balances = self.esdtBalances[tokenIdentifier.data(using: .utf8)!] else {
+            return 0
+        }
+
+        guard let balance = balances.first(where: { $0.nonce == nonce }) else {
+            return 0
+        }
+
+        return BigUint(bigEndianBuffer: MXBuffer(data: Array(balance.balance.toBigEndianUnsignedData())))
     }
 }
 
