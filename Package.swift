@@ -186,6 +186,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "CryptoBubbles",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/CryptoBubbles",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "PingPongEgld",
             dependencies: [
                 "MultiversX"
