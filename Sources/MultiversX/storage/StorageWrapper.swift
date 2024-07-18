@@ -4,15 +4,15 @@
     
     public var wrappedValue: T {
         get {
-            let storedValueBufferHandle = getNextHandle()
-            let _ = API.bufferStorageLoad(keyHandle: self.key.handle, bufferHandle: storedValueBufferHandle)
-            return T(topDecode: MXBuffer(handle: storedValueBufferHandle))
+            return SingleValueMapper(key: key).get()
         }
         set {
-            var output = MXBuffer()
-            newValue.topEncode(output: &output)
-            let _ = API.bufferStorageStore(keyHandle: self.key.handle, bufferHandle: output.handle)
+            SingleValueMapper(key: key).set(newValue)
         }
+    }
+    
+    public var projectedValue: SingleValueMapper<T> {
+        SingleValueMapper(key: self.key)
     }
     
     public init(

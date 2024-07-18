@@ -2,16 +2,16 @@ import MultiversX
 
 // TODO: Assert in the @Contract macro that OptionalArgument args are the last ones
 
-let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 700_000
+let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
 
 @Contract struct PingPong {
     @Storage(key: "pingAmount") var pingAmount: BigUint
     @Storage(key: "deadline") var deadline: UInt64
     @Storage(key: "activationTimestamp") var activationTimestamp: UInt64
     @Storage(key: "maxFunds") var maxFunds: BigUint?
-    @Storage(key: "users") var users: MXArray<Address> // TODO: This is not efficient, use a specific mapper once implemented
-    @Mapping(key: "userStatus") var userStatus: StorageMap<Address, UserStatus>
-    @Storage(key: "pongAllLastUser") var pongAllLastUser: Int32
+    @UserMapping(key: "user") var users: UserMap
+    @Mapping(key: "userStatus") var userStatus: StorageMap<UInt32, UserStatus>
+    @Storage(key: "pongAllLastUser") var pongAllLastUser: UInt32
     
     init(
         pingAmount: BigUint,
@@ -62,12 +62,12 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 700_000
         }
         
         let caller = Message.caller
-        let userStatus = self.userStatus[ifPresent: caller] ?? .new
+        let userId = self.users.getOrCreateUser(address: caller)
+        let userStatus = self.userStatus[ifPresent: userId] ?? .new
         
         switch userStatus {
         case .new:
-            self.users = self.users.appended(caller)
-            self.userStatus[caller] = .registered
+            self.userStatus[userId] = .registered
         case .registered:
             smartContractError(message: "can only ping once")
         case .withdrawn:
@@ -75,14 +75,18 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 700_000
         }
     }
     
-    mutating func pongByUserAddress(user: Address) -> MXBuffer? {
-        let userStatus = self.userStatus[ifPresent: user] ?? .new
+    mutating func pongByUserId(userId: UInt32) -> MXBuffer? {
+        let userStatus = self.userStatus[ifPresent: userId] ?? .new
         
         switch userStatus {
         case .new:
             return "can't pong, never pinged"
         case .registered:
-            self.userStatus[user] = .withdrawn
+            guard let user = self.users.getUserAddress(id: userId) else {
+                smartContractError(message: "unknown user")
+            }
+            
+            self.userStatus[userId] = .withdrawn
             
             let amount = self.pingAmount
             user.send(egldValue: amount)
@@ -99,7 +103,9 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 700_000
             "can't withdraw before deadline"
         )
         
-        if let errorMessage = self.pongByUserAddress(user: Message.caller) {
+        let userId = self.users.getUserId(address: Message.caller)
+        
+        if let errorMessage = self.pongByUserId(userId: userId) {
             smartContractError(message: errorMessage)
         }
     }
@@ -110,8 +116,7 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 700_000
             "can't withdraw before deadline"
         )
         
-        let users = self.users
-        let usersCount = users.count
+        let usersCount = self.users.getUserCount()
         var pongAllLastUser = self.pongAllLastUser
         
         while true {
@@ -121,21 +126,22 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 700_000
                 return .completed
             }
             
+            
             if Blockchain.getGasLeft() < PONG_ALL_LOW_GAS_LIMIT {
                 self.pongAllLastUser = pongAllLastUser
                 
                 return .interruptedBeforeOutOfGas
             }
             
-            let _ = self.pongByUserAddress(user: users[pongAllLastUser])
-            
             pongAllLastUser += 1
+            
+            let _ = self.pongByUserId(userId: pongAllLastUser)
         }
     }
     
     // TODO: the original Rust contract returns a TopDecodeMulti type with multiple outputs
     // TODO: creating views for storages is annoying
     public func getUserAddresses() -> MXArray<Address> {
-        self.users
+        return self.users.getAllAddresses()
     }
 }

@@ -1,5 +1,8 @@
-TARGET="CrowdfundingEsdt"
-SCENARIO_JSON_EXECUTABLE="/home/Quentin/multiversx-sdk/vmtools/v1.5.24/mx-chain-vm-go-1.5.24/cmd/test/test"
+set -e
+
+TARGET="PingPongEgld"
+SWIFT_BIN_FOLDER="/Library/Developer/Toolchains/swift-6.0-DEVELOPMENT-SNAPSHOT-2024-07-16-a.xctoolchain/usr/bin/"
+SCENARIO_JSON_EXECUTABLE="/Users/quentin/multiversx-sdk/vmtools/v1.5.24/mx-chain-vm-go-1.5.24/cmd/test/test"
 
 # Do not edit the below variables
 TARGET_PACKAGE_PATH="$(pwd)/Examples/$TARGET"
@@ -14,7 +17,7 @@ SCENARIOS_JSON_DIR="$TARGET_PACKAGE_PATH/scenarios"
 # rm -rf *.o || true
 # rm -rf *.d || true
 
-SWIFT_WASM=true swift build --target $TARGET --triple wasm32-unknown-none-wasm --disable-index-store -Xswiftc -Osize -Xswiftc -gnone
+SWIFT_WASM=true $SWIFT_BIN_FOLDER/swift build --target $TARGET --triple wasm32-unknown-none-wasm --disable-index-store -Xswiftc -Osize -Xswiftc -gnone
 wasm-ld --no-entry --allow-undefined $OBJECT_FILE_PATH -o $WASM_BUILT_FILE_PATH
 wasm-opt -Os -o $WASM_OPT_FILE_PATH $WASM_BUILT_FILE_PATH
 

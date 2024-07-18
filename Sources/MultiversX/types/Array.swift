@@ -158,7 +158,6 @@ extension MXArray: Sequence {
 
 extension MXArray: TopEncode {
     public func topEncode<O>(output: inout O) where O : TopEncodeOutput {
-        let test = self.buffer.hexDescription
         var encodedItems = MXBuffer()
         for item in self {
             item.depEncode(dest: &encodedItems)

@@ -29,7 +29,6 @@
         {
             "step": "scDeploy",
             "id": "deploy",
-            "displayLogs": true,
             "tx": {
                 "from": "address:my_address",
                 "contractCode": "file:../output/PingPongEgld.wasm",

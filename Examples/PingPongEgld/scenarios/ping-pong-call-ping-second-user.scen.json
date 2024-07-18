@@ -55,9 +55,13 @@
                         "str:pingAmount": "500,000,000,000",
                         "str:activationTimestamp": "780",
                         "str:deadline": "123,780",
-                        "str:userStatus|address:participant1": "1",
-                        "str:userStatus|address:participant2": "1",
-                        "str:users": "address:participant1|address:participant2"
+                        "str:user_address_to_id|address:participant1": "1",
+                        "str:user_id_to_address|0x0000001": "address:participant1",
+                        "str:userStatus|0x0000001": "1",
+                        "str:user_address_to_id|address:participant2": "2",
+                        "str:user_id_to_address|0x0000002": "address:participant2",
+                        "str:userStatus|0x0000002": "1",
+                        "str:user_count": "2"
                     },
                     "code": "file:../output/PingPongEgld.wasm"
                 }

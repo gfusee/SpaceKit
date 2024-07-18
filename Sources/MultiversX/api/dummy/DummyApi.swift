@@ -442,7 +442,7 @@ extension DummyApi: BlockchainApiProtocol {
     }
     
     public func getGasLeft() -> Int64 {
-        fatalError() // TODO: implement and test
+        return 100 // TODO: the RustVM implements this the same way, in the future we should provide a real implementation
     }
 }
 
