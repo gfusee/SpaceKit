@@ -53,7 +53,7 @@
                         "address": "sc:crypto_bubbles",
                         "endpoint": "str:withdraw",
                         "topics": [
-                            "str:withdraw",
+                            "str:WithdrawEvent",
                             "address:acc1"
                         ],
                         "data": [

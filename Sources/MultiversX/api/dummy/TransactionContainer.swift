@@ -7,19 +7,6 @@ package enum TransactionContainerErrorBehavior {
     case fatalError
 }
 
-package struct TransactionInput {
-    package struct EsdtPayment {
-        let tokenIdentifier: Data
-        let nonce: UInt64
-        let amount: BigInt
-    }
-
-    let contractAddress: Data
-    let callerAddress: Data
-    let egldValue: BigInt
-    let esdtValue: [EsdtPayment]
-}
-
 package class TransactionContainer {
     package var managedBuffersData: [Int32 : Data] = [:]
     package var managedBigIntData: [Int32 : BigInt] = [:]
@@ -28,6 +15,7 @@ package class TransactionContainer {
     public package(set) var shouldExitThread: Bool = false
     
     private var transactionInput: TransactionInput? = nil
+    package private(set) var transactionOutput: TransactionOutput? = nil
     private var errorBehavior: TransactionContainerErrorBehavior
     
     package init(
@@ -37,6 +25,7 @@ package class TransactionContainer {
     ) {
         self.state = worldState
         self.transactionInput = transactionInput
+        self.transactionOutput = TransactionOutput()
         self.errorBehavior = errorBehavior
     }
     
@@ -46,6 +35,8 @@ package class TransactionContainer {
     }
     
     package func throwError(error: TransactionError) -> Never {
+        // TODO: change logs to only have signalError or nothing
+        
         switch self.errorBehavior {
         case .fatalError:
             fatalError(error.message)
@@ -199,6 +190,18 @@ package class TransactionContainer {
         account.esdtBalances[token] = allBalances
         
         self.state.setAccount(account: account)
+    }
+    
+    package func writeLog(topicsHandle: Int32, dataHandle: Int32) {
+        let topicsArray: MXArray<MXBuffer> = MXArray(buffer: MXBuffer(data: Array(self.getBufferData(handle: topicsHandle))))
+        let data = self.getBufferData(handle: dataHandle)
+        
+        var topics: [Data] = []
+        for topic in topicsArray {
+            topics.append(Data(topic.toBytes()))
+        }
+        
+        self.transactionOutput?.writeLog(log: TransactionOutputLogRaw(topics: topics, data: data))
     }
 }
 

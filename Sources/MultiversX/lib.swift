@@ -11,6 +11,9 @@ public macro Contract() = #externalMacro(module: "ContractMacro", type: "Contrac
 @attached(extension, conformances: TopEncode & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode & ArrayItem, names: arbitrary)
 public macro Codable() = #externalMacro(module: "CodableMacro", type: "Codable")
 
+@attached(extension, conformances: TopEncode & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode & ArrayItem, names: arbitrary)
+public macro Event(dataType: TopEncode.Type) = #externalMacro(module: "EventMacro", type: "Event")
+
 var nextHandle: Int32 = -100
 func getNextHandle() -> Int32 {
     let currentHandle = nextHandle

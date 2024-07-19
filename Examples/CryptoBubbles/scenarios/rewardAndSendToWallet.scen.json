@@ -48,7 +48,7 @@
                         "address": "sc:crypto_bubbles",
                         "endpoint": "str:rewardAndSendToWallet",
                         "topics": [
-                            "str:reward_winner",
+                            "str:RewardWinnerEvent",
                             "0x12",
                             "address:acc1"
                         ],
@@ -69,7 +69,7 @@
                         "address": "sc:crypto_bubbles",
                         "endpoint": "str:rewardAndSendToWallet",
                         "topics": [
-                            "str:withdraw",
+                            "str:WithdrawEvent",
                             "address:acc1"
                         ],
                         "data": [

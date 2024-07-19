@@ -1,7 +1,7 @@
 public typealias MXString = MXBuffer
 
 public struct MXBuffer {
-    let handle: Int32
+    public let handle: Int32
     
     public var count: Int32 {
         get {

@@ -25,8 +25,9 @@ public struct Address {
     }
     
     public init(buffer: MXBuffer) {
+        // TODO: for endpoint's argument decode, this doesn't tell which parameter cannot be decoded (this todo is not restricted to the Address type)
         if buffer.count != ADDRESS_LENGTH {
-            fatalError()
+            smartContractError(message: "Cannot decode address: bad array length")
         }
         
         self.buffer = buffer

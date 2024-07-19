@@ -44,7 +44,7 @@
                         "address": "sc:crypto_bubbles",
                         "endpoint": "str:topUp",
                         "topics": [
-                            "str:top_up",
+                            "str:TopUpEvent",
                             "address:acc1"
                         ],
                         "data": [
@@ -76,7 +76,7 @@
                         "address": "sc:crypto_bubbles",
                         "endpoint": "str:topUp",
                         "topics": [
-                            "str:top_up",
+                            "str:TopUpEvent",
                             "address:acc2"
                         ],
                         "data": [

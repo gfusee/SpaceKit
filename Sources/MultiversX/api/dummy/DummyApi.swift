@@ -15,7 +15,7 @@ public class DummyApi {
     
     package var worldState = WorldState()
     
-    package func runTransactions(transactionInput: TransactionInput, operations: @escaping () -> Void) throws(TransactionError) {
+    package func runTransactions(transactionInput: TransactionInput, transactionOutput: TransactionOutput? = nil, operations: @escaping () -> Void) throws(TransactionError) {
         self.containerLock.lock()
         
         while let transactionContainer = self.transactionContainer {
@@ -24,13 +24,20 @@ public class DummyApi {
             }
         }
         
-        self.transactionContainer = TransactionContainer(
+        // We have to keep it in a local variable to be sure to be able to access it in the defer clause
+        let transactionContainer = TransactionContainer(
             worldState: self.worldState,
             transactionInput: transactionInput,
             errorBehavior: .blockThread
         )
+        
+        self.transactionContainer = transactionContainer
 
         defer {
+            if let output = transactionContainer.transactionOutput {
+                transactionOutput?.merge(output: output)
+            }
+            
             self.transactionContainer = nil
             self.containerLock.unlock()
         }
@@ -74,8 +81,6 @@ public class DummyApi {
                 }
             }
         }
-        
-        let transactionContainer = self.transactionContainer! // It's impossible that this is nil
         
         if let transactionError = transactionContainer.error {
             throw transactionError
@@ -526,6 +531,12 @@ extension DummyApi: ErrorApiProtocol {
     public func managedSignalError(messageHandle: Int32) -> Never {
         let errorMessageData = self.getCurrentContainer().getBufferData(handle: messageHandle)
         self.throwUserError(message: String(data: errorMessageData, encoding: .utf8) ?? errorMessageData.hexEncodedString())
+    }
+}
+
+extension DummyApi: LogApiProtocol {
+    public func managedWriteLog(topicsHandle: Int32, dataHandle: Int32) {
+        self.getCurrentContainer().writeLog(topicsHandle: topicsHandle, dataHandle: dataHandle)
     }
 }
 #endif

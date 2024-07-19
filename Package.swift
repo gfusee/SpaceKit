@@ -27,7 +27,8 @@ var packageDependencies: [Package.Dependency] = [
 
 var libraryDependencies: [Target.Dependency] = [
     "ContractMacro",
-    "CodableMacro"
+    "CodableMacro",
+    "EventMacro"
 ]
 
 var testTargets: [Target] = []
@@ -104,6 +105,12 @@ if !isWasm {
         ),
         .testTarget(
             name: "ArrayTests",
+            dependencies: [
+                "MultiversX"
+            ]
+        ),
+        .testTarget(
+            name: "EventTests",
             dependencies: [
                 "MultiversX"
             ]
@@ -222,6 +229,14 @@ let package = Package(
         ),
         .macro(
             name: "CodableMacro",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+            ]
+        ),
+        .macro(
+            name: "EventMacro",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),

@@ -1,7 +1,7 @@
 public typealias MXArrayType = TopDecode & TopEncode & NestedDecode & NestedEncode & ArrayItem
 
 public struct MXArray<T: MXArrayType> {
-    let buffer: MXBuffer
+    public let buffer: MXBuffer
     
     public init() {
         self.buffer = MXBuffer()

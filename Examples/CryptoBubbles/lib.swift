@@ -1,5 +1,25 @@
 import MultiversX
 
+// TODO: add tests to ensure non public func are not exported in the wasm
+
+@Event(dataType: BigUint) struct TopUpEvent {
+    let player: Address
+}
+
+@Event(dataType: BigUint) struct WithdrawEvent {
+    let player: Address
+}
+
+@Event(dataType: BigUint) struct PlayerJoinsGameEvent {
+    let gameIndex: BigUint
+    let player: Address
+}
+
+@Event(dataType: BigUint) struct RewardWinnerEvent {
+    let gameIndex: BigUint
+    let winner: Address
+}
+
 @Contract struct CryptoBubbles {
     
     @Mapping(key: "playerBalance") var playerBalance: StorageMap<Address, BigUint>
@@ -14,6 +34,12 @@ import MultiversX
         
         let caller = Message.caller
         self.playerBalance[caller] = self.playerBalance[caller] + payment
+        
+        TopUpEvent(player: caller).emit(data: payment)
+    }
+    
+    public mutating func withdraw(amount: BigUint) {
+        self.transferBackToPlayerWallet(player: Message.caller, amount: amount)
     }
     
     mutating func transferBackToPlayerWallet(player: Address, amount: BigUint) {
@@ -27,6 +53,8 @@ import MultiversX
         self.playerBalance[player] = playerBalance - amount
         
         player.send(egldValue: amount)
+        
+        WithdrawEvent(player: player).emit(data: amount)
     }
     
     mutating func addPlayerToGameStateChange(
@@ -42,6 +70,8 @@ import MultiversX
         )
         
         self.playerBalance[player] = self.playerBalance[player] - bet
+        
+        PlayerJoinsGameEvent(gameIndex: gameIndex, player: player).emit(data: bet)
     }
     
     public mutating func joinGame(
@@ -71,6 +101,8 @@ import MultiversX
         )
         
         self.playerBalance[winner] = self.playerBalance[winner] + prize
+        
+        RewardWinnerEvent(gameIndex: gameIndex, winner: winner).emit(data: prize)
     }
     
     public mutating func rewardAndSendToWallet(

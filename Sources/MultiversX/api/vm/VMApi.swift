@@ -194,6 +194,11 @@ func managedTransferValueExecute(
 @_extern(c)
 func managedSignalError(messageHandle: Int32)
 
+// MARK: Log-related OPCODES
+@_extern(wasm, module: "env", name: "managedWriteLog")
+@_extern(c)
+func managedWriteLog(topicsHandle: Int32, dataHandle: Int32)
+
 struct VMApi {}
 
 // MARK: BufferApi Implementation
@@ -441,6 +446,14 @@ extension VMApi: ErrorApiProtocol {
     mutating func managedSignalError(messageHandle: Int32) -> Never {
         MultiversX.managedSignalError(messageHandle: messageHandle)
         fatalError()
+    }
+}
+
+// MARK: LogApiProtocol implementation
+
+extension VMApi: LogApiProtocol {
+    mutating func managedWriteLog(topicsHandle: Int32, dataHandle: Int32) {
+        MultiversX.managedWriteLog(topicsHandle: topicsHandle, dataHandle: dataHandle)
     }
 }
 

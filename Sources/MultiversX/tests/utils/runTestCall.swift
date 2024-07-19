@@ -9,6 +9,7 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
     callerAddress: String? = nil,
     egldValue: BigUint = 0,
     esdtValue: MXArray<TokenPayment>,
+    transactionOutput: TransactionOutput = TransactionOutput(),
     operation: @escaping (repeat each InputArg) -> ReturnType
 ) throws(TransactionError) -> ReturnType {
     // Pushing a container makes the previous handles invalid.
@@ -27,7 +28,10 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode, ReturnType: 
         esdtValue: esdtValue
     )
     
-    try API.runTransactions(transactionInput: transactionInput) {
+    try API.runTransactions(
+        transactionInput: transactionInput,
+        transactionOutput: transactionOutput
+    ) {
         var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
         
         let result = operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
@@ -50,6 +54,7 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
     callerAddress: String? = nil,
     egldValue: BigUint = 0,
     esdtValue: MXArray<TokenPayment> = [],
+    transactionOutput: TransactionOutput = TransactionOutput(),
     operation: @escaping (repeat each InputArg) -> Void
 ) throws(TransactionError) {
     // Pushing a container makes the previous handles invalid.
@@ -67,7 +72,10 @@ public func runTestCall<each InputArg: NestedEncode & NestedDecode>(
         esdtValue: esdtValue
     )
     
-    try API.runTransactions(transactionInput: transactionInput) {
+    try API.runTransactions(
+        transactionInput: transactionInput,
+        transactionOutput: transactionOutput
+    ) {
         var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
         
         operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
