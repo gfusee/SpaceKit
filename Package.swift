@@ -203,6 +203,26 @@ let package = Package(
             ]
         ),
         .target(
+            name: "Empty",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/Empty",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
+            name: "Factorial",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/Factorial",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "PingPongEgld",
             dependencies: [
                 "MultiversX"
