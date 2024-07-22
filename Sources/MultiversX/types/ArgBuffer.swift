@@ -10,9 +10,6 @@ public struct ArgBuffer {
 
 extension ArgBuffer: TopEncodeMultiOutput {
     public mutating func pushSingleValue<TE>(arg: TE) where TE : TopEncode {
-        var buffer = MXBuffer()
-        arg.topEncode(output: &buffer)
-        
-        self.buffers = self.buffers.appended(buffer)
+        self.buffers.pushSingleValue(arg: arg)
     }
 }

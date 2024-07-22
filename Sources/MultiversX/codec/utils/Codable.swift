@@ -1,1 +1,1 @@
-public typealias MXCodable = TopDecode & TopDecodeMulti & TopEncode & NestedDecode & NestedEncode & ArrayItem
+public typealias MXCodable = TopDecode & TopDecodeMulti & TopEncode & TopEncodeMulti & NestedDecode & NestedEncode & ArrayItem

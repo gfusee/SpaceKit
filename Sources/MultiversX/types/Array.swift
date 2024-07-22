@@ -26,6 +26,10 @@ public struct MXArray<T: MXArrayType> {
         return MXArray(buffer: newBuffer)
     }
     
+    public func clone() -> MXArray<T> {
+        MXArray(buffer: self.buffer.clone())
+    }
+    
     public func appended(contentsOf newElements: MXArray<T>) -> MXArray<T> {
         var newArray = MXArray(buffer: self.buffer.clone())
         
@@ -206,6 +210,15 @@ extension MXArray: TopEncode {
 }
 
 extension MXArray: TopEncodeMulti {}
+
+extension MXArray: TopEncodeMultiOutput where T == MXBuffer {
+    public mutating func pushSingleValue<TE>(arg: TE) where TE : TopEncode {
+        var buffer = MXBuffer()
+        arg.topEncode(output: &buffer)
+        
+        self = self.appended(buffer)
+    }
+}
 
 extension MXArray: NestedEncode {
     @inline(__always)

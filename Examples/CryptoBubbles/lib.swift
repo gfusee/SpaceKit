@@ -95,10 +95,7 @@ import MultiversX
         winner: Address,
         prize: BigUint
     ) {
-        require( // TODO: add only owner wrapper
-            Message.caller == Blockchain.getOwner(),
-            "endpoint can only be called by owner"
-        )
+        assertOwner()
         
         self.playerBalance[winner] = self.playerBalance[winner] + prize
         

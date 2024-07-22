@@ -190,6 +190,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "CheckPause",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/CheckPause",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "CrowdfundingEsdt",
             dependencies: [
                 "MultiversX"
@@ -235,6 +245,16 @@ let package = Package(
                 "MultiversX"
             ],
             path: "Examples/PingPongEgld",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
+            name: "ProxyPause",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/ProxyPause",
             swiftSettings: [
                 .unsafeFlags(unsafeFlags)
             ]
