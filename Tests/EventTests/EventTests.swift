@@ -24,7 +24,7 @@ import MultiversX
             address: Message.caller,
             number: 100,
             buffer: "Hello World!"
-        ).emit()
+        ).emit(data: "")
     }
     
     public func emitNoEvent() {
@@ -32,7 +32,7 @@ import MultiversX
     }
     
     public func emitSingleIndexedFieldEventNoData() {
-        TestSingleIndexedFieldMXBufferDataEvent(address: Message.caller).emit()
+        TestSingleIndexedFieldMXBufferDataEvent(address: Message.caller).emit(data: "")
     }
     
     public func emitSingleIndexedFieldEventWithBufferData() {
@@ -50,7 +50,7 @@ import MultiversX
             address: Message.caller,
             number: 100,
             buffer: "Hello World!"
-        ).emit()
+        ).emit(data: "")
     }
     
     public func emitMultipleEvents() {
@@ -61,7 +61,7 @@ import MultiversX
             address: Message.caller,
             number: 100,
             buffer: "Hello World!"
-        ).emit()
+        ).emit(data: "")
     }
     
     public func emitEventFromArgs(
@@ -108,7 +108,10 @@ final class EventTests: ContractTestCase {
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
-                topics: ["00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"],
+                topics: [
+                    "5465737453696e676c65496e64657865644669656c644d58427566666572446174614576656e74",
+                    "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"
+                ],
                 data: ""
             )
         ]
@@ -125,7 +128,10 @@ final class EventTests: ContractTestCase {
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
-                topics: ["00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"],
+                topics: [
+                    "5465737453696e676c65496e64657865644669656c644d58427566666572446174614576656e74",
+                    "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"
+                ],
                 data: "48656c6c6f20576f726c6421"
             )
         ]
@@ -142,7 +148,10 @@ final class EventTests: ContractTestCase {
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
-                topics: ["00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"],
+                topics: [
+                    "5465737453696e676c65496e64657865644669656c6442696755696e74446174614576656e74",
+                    "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"
+                ],
                 data: "64"
             )
         ]
@@ -160,6 +169,7 @@ final class EventTests: ContractTestCase {
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
                 topics: [
+                    "546573744d756c7469706c65496e64657865644669656c644576656e74",
                     "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f",
                     "64",
                     "48656c6c6f20576f726c6421"
@@ -180,11 +190,15 @@ final class EventTests: ContractTestCase {
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
-                topics: ["00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"],
+                topics: [
+                    "5465737453696e676c65496e64657865644669656c644d58427566666572446174614576656e74",
+                    "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"
+                ],
                 data: "48656c6c6f20576f726c6421"
             ),
             TransactionOutputLog(
                 topics: [
+                    "546573744d756c7469706c65496e64657865644669656c644576656e74",
                     "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f",
                     "64",
                     "48656c6c6f20576f726c6421"
@@ -212,6 +226,7 @@ final class EventTests: ContractTestCase {
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
                 topics: [
+                    "546573744d756c7469706c65496e64657865644669656c644576656e74",
                     "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f",
                     "64",
                     "48656c6c6f20576f726c6421"
@@ -230,11 +245,15 @@ final class EventTests: ContractTestCase {
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
-                topics: ["00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"],
+                topics: [
+                    "5465737453696e676c65496e64657865644669656c644d58427566666572446174614576656e74",
+                    "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"
+                ],
                 data: "48656c6c6f20576f726c6421"
             ),
             TransactionOutputLog(
                 topics: [
+                    "546573744d756c7469706c65496e64657865644669656c644576656e74",
                     "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f",
                     "64",
                     "48656c6c6f20576f726c6421"

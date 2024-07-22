@@ -31,6 +31,8 @@ extension UInt64: TopEncode {
     }
 }
 
+extension UInt64: TopEncodeMulti {}
+
 extension UInt64: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {

@@ -525,6 +525,17 @@ extension DummyApi: SendApiProtocol {
         
         return 0
     }
+    
+    public func managedExecuteOnDestContext(
+        gas: Int64,
+        addressHandle: Int32,
+        valueHandle: Int32,
+        functionHandle: Int32,
+        argumentsHandle: Int32,
+        resultHandle: Int32
+    ) -> Int32 {
+        fatalError() // TODO: implement and test
+    }
 }
 
 extension DummyApi: ErrorApiProtocol {

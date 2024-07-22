@@ -30,6 +30,8 @@ extension UInt32: TopEncode {
     }
 }
 
+extension UInt32: TopEncodeMulti {}
+
 extension UInt32: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {

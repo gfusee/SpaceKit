@@ -28,6 +28,18 @@ extension OptionalArgument: TopEncode {
     }
 }
 
+extension OptionalArgument: TopEncodeMulti {
+    public func multiEncode<O>(output: inout O) where O : TopEncodeMultiOutput {
+        // TODO: add tests
+        switch self {
+        case .none:
+            break
+        case .some(let value):
+            output.pushSingleValue(arg: value)
+        }
+    }
+}
+
 extension OptionalArgument: NestedEncode {
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         return self.intoOptional().depEncode(dest: &dest)

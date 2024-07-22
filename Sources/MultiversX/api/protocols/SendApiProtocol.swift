@@ -14,4 +14,13 @@ public protocol SendApiProtocol {
         functionHandle: Int32,
         argumentsHandle: Int32
     ) -> Int32
+    
+    mutating func managedExecuteOnDestContext(
+        gas: Int64,
+        addressHandle: Int32,
+        valueHandle: Int32,
+        functionHandle: Int32,
+        argumentsHandle: Int32,
+        resultHandle: Int32
+    ) -> Int32
 }

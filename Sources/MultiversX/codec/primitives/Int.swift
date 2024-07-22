@@ -4,6 +4,8 @@ extension Int: TopEncode {
     }
 }
 
+extension Int: TopEncodeMulti {}
+
 extension Int: NestedEncode {
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         dest.write(buffer: MXBuffer(data: Int32(self).asBigEndianBytes())) // TODO: check that this cast is safe

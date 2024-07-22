@@ -64,6 +64,44 @@ public struct MXArray<T: MXArrayType> {
         return MXArray(buffer: newBuffer)
     }
     
+    public func popFirst() -> (MXArray<T>, T) {
+        // TODO: add tests
+        let count = self.count
+        let bufferCount = T.payloadSize * count
+        
+        guard count > 0 else {
+            smartContractError(message: "Index out of range.") // TODO: use the same message than the Rust SDK
+        }
+        
+        let startIndex: Int32
+        
+        if count == 1 {
+            startIndex = 0
+        } else {
+            startIndex = T.payloadSize
+        }
+        
+        let newBufferLength = bufferCount - T.payloadSize
+        let newBuffer = self.buffer.getSubBuffer(startIndex: startIndex, length: newBufferLength)
+        
+        return (MXArray(buffer: newBuffer), self.get(0))
+    }
+    
+    public func popLast() -> (MXArray<T>, T) {
+        // TODO: add tests
+        let count = self.count
+        let bufferCount = count * T.payloadSize
+        
+        guard count > 0 else {
+            smartContractError(message: "Index out of range.") // TODO: use the same message than the Rust SDK
+        }
+        
+        let newBufferLength = bufferCount - T.payloadSize
+        let newBuffer = self.buffer.getSubBuffer(startIndex: 0, length: newBufferLength)
+        
+        return (MXArray(buffer: newBuffer), self.get(count - 1))
+    }
+    
     public subscript(_ index: Int32) -> T {
         get {
             self.get(index)
@@ -167,6 +205,8 @@ extension MXArray: TopEncode {
     }
 }
 
+extension MXArray: TopEncodeMulti {}
+
 extension MXArray: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
@@ -195,6 +235,19 @@ extension MXArray: TopDecode {
 }
 
 extension MXArray: TopDecodeMulti {}
+
+extension MXArray: TopDecodeMultiInput where T == MXBuffer {
+    public func hasNext() -> Bool {
+        return self.count > 0
+    }
+    
+    public mutating func nextValueInput() -> MXBuffer {
+        let (newSelf, firstElement) = self.popFirst()
+        
+        self = newSelf
+        return firstElement
+    }
+}
 
 extension MXArray: NestedDecode {
     public init(depDecode input: inout some NestedDecodeInput) {

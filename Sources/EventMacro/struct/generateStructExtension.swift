@@ -7,7 +7,7 @@ import SwiftSyntaxMacros
 // TODO: check if optional fields works with "?"
 // TODO: recreate the auto-generate init to make it public
 
-func generateStructConformance(
+func generateStructExtension(
     structDecl: StructDeclSyntax,
     dataTypeName: String
 ) throws -> [ExtensionDeclSyntax] {

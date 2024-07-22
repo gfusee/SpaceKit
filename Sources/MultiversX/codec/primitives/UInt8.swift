@@ -12,6 +12,8 @@ extension UInt8: TopEncode {
     }
 }
 
+extension UInt8: TopEncodeMulti {}
+
 extension UInt8: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {

@@ -16,7 +16,7 @@ extension Event: ExtensionMacro {
         }
         
         if let structDecl = declaration.as(StructDeclSyntax.self) {
-            return try generateStructConformance(
+            return try generateStructExtension(
                 structDecl: structDecl,
                 dataTypeName: arg.expression.description
             )

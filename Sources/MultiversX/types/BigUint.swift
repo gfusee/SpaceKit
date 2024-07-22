@@ -129,6 +129,8 @@ extension BigUint: TopEncode {
     }
 }
 
+extension BigUint: TopEncodeMulti {}
+
 extension BigUint: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {

@@ -188,6 +188,17 @@ func managedTransferValueExecute(
     argumentsHandle: Int32
 ) -> Int32
 
+@_extern(wasm, module: "env", name: "managedExecuteOnDestContext")
+@_extern(c)
+func managedExecuteOnDestContext(
+    gas: Int64,
+    addressHandle: Int32,
+    valueHandle: Int32,
+    functionHandle: Int32,
+    argumentsHandle: Int32,
+    resultHandle: Int32
+) -> Int32
+
 // MARK: Error-related OPCODES
 
 @_extern(wasm, module: "env", name: "managedSignalError")
@@ -436,6 +447,24 @@ extension VMApi: SendApiProtocol {
             gasLimit: gasLimit,
             functionHandle: functionHandle,
             argumentsHandle: argumentsHandle
+        )
+    }
+    
+    mutating func managedExecuteOnDestContext(
+        gas: Int64,
+        addressHandle: Int32,
+        valueHandle: Int32,
+        functionHandle: Int32,
+        argumentsHandle: Int32,
+        resultHandle: Int32
+    ) -> Int32 {
+        return MultiversX.managedExecuteOnDestContext(
+            gas: gas,
+            addressHandle: addressHandle,
+            valueHandle: valueHandle,
+            functionHandle: functionHandle,
+            argumentsHandle: argumentsHandle,
+            resultHandle: resultHandle
         )
     }
 }

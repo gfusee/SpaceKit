@@ -189,6 +189,8 @@ extension MXBuffer: TopEncode {
     }
 }
 
+extension MXBuffer: TopEncodeMulti {}
+
 extension MXBuffer: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {

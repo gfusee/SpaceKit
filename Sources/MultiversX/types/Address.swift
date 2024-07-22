@@ -93,6 +93,8 @@ extension Address: TopEncode { // TODO: add tests
     }
 }
 
+extension Address: TopEncodeMulti {}
+
 extension Address: TopDecode { // TODO: add tests
     public init(topDecode input: MXBuffer) {
         let buffer = MXBuffer(topDecode: input)
