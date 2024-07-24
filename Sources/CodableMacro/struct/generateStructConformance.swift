@@ -17,6 +17,7 @@ func generateStructConformance(
     
     return [
         try generateTopEncodeExtension(structName: structName),
+        try generateTopEncodeMultiExtension(structName: structName),
         try generateNestedEncodeExtension(structName: structName, fields: fields),
         try generateTopDecodeExtension(structName: structName, fields: fields),
         try generateTopDecodeMultiExtension(structName: structName),
@@ -37,6 +38,15 @@ fileprivate func generateTopEncodeExtension(structName: TokenSyntax) throws -> E
                 nestedEncoded.topEncode(output: &output)
             }
         }
+        """
+    )
+}
+
+fileprivate func generateTopEncodeMultiExtension(structName: TokenSyntax) throws -> ExtensionDeclSyntax {
+    return ExtensionDeclSyntax(
+        extendedType: IdentifierTypeSyntax(name: structName),
+        memberBlock: """
+        : TopEncodeMulti {}
         """
     )
 }

@@ -18,6 +18,7 @@ func generateEnumConformance(
     
     return [
         try generateTopEncodeExtension(enumName: enumName),
+        try generateTopEncodeMultiExtension(enumName: enumName),
         try generateNestedEncodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
         try generateTopDecodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
         try generateTopDecodeMultiExtension(enumName: enumName),
@@ -38,6 +39,15 @@ fileprivate func generateTopEncodeExtension(enumName: TokenSyntax) throws -> Ext
                 nestedEncoded.topEncode(output: &output)
             }
         }
+        """
+    )
+}
+
+fileprivate func generateTopEncodeMultiExtension(enumName: TokenSyntax) throws -> ExtensionDeclSyntax {
+    return ExtensionDeclSyntax(
+        extendedType: IdentifierTypeSyntax(name: enumName),
+        memberBlock: """
+        : TopEncodeMulti {}
         """
     )
 }

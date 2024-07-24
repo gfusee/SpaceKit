@@ -74,6 +74,12 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
                     argBuffer: _argBuffer
                 ).call()
             }
+        
+            public func callAndIgnoreResult(
+                receiver: Address
+            ) {
+                let _: IgnoreValue = self.call(receiver: receiver)
+            }
         }
         """
     )

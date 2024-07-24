@@ -1,14 +1,16 @@
+// TODO: add tests
+
 fileprivate let NULL_ENTRY: UInt32 = 0
 fileprivate let INFO_IDENTIFIER: StaticString = ".info"
 fileprivate let NODE_IDENTIFIER: StaticString = ".node_links"
 fileprivate let VALUE_IDENTIFIER: StaticString = ".value"
 
-@Codable struct Node {
+@Codable package struct Node {
     var previous: UInt32
     var next: UInt32
 }
 
-@Codable struct QueueMapperInfo {
+@Codable package struct QueueMapperInfo {
     var len: UInt32
     var front: UInt32
     var back: UInt32
@@ -44,23 +46,23 @@ public struct QueueMap<V: TopEncode & TopDecode> {
         return self.baseKey + name + nodeIdNestedEncoded
     }
     
-    private func getInfoMapper() -> SingleValueMapper<QueueMapperInfo> {
+    package func getInfoMapper() -> SingleValueMapper<QueueMapperInfo> {
         return SingleValueMapper(key: self.buildNameKey(name: MXBuffer(stringLiteral: INFO_IDENTIFIER)))
     }
     
-    private func getNodeMapper(nodeId: UInt32) -> SingleValueMapper<Node> {
+    package func getNodeMapper(nodeId: UInt32) -> SingleValueMapper<Node> {
         return SingleValueMapper(key: self.buildNodeIdNamedKey(name: MXBuffer(stringLiteral: NODE_IDENTIFIER), nodeId: nodeId))
     }
     
-    private func getValueMapper(nodeId: UInt32) -> SingleValueMapper<V> {
+    package func getValueMapper(nodeId: UInt32) -> SingleValueMapper<V> {
         return SingleValueMapper(key: self.buildNodeIdNamedKey(name: MXBuffer(stringLiteral: VALUE_IDENTIFIER), nodeId: nodeId))
     }
     
-    private func getValue(nodeId: UInt32) -> V {
+    package func getValue(nodeId: UInt32) -> V {
         return self.getValueMapper(nodeId: nodeId).get()
     }
     
-    private func getValueOption(nodeId: UInt32) -> V? {
+    package func getValueOption(nodeId: UInt32) -> V? {
         if nodeId == NULL_ENTRY {
             return nil
         }
@@ -68,7 +70,7 @@ public struct QueueMap<V: TopEncode & TopDecode> {
         return self.getValue(nodeId: nodeId)
     }
     
-    private func pushBackNodeId(value: V) -> UInt32 {
+    package func pushBackNodeId(value: V) -> UInt32 {
         var infoMapper = self.getInfoMapper()
         
         var info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
@@ -128,5 +130,84 @@ public struct QueueMap<V: TopEncode & TopDecode> {
     
     public func pushBack(value: V) {
         let _ = self.pushBackNodeId(value: value)
+    }
+    
+    
+    package func removeByNodeId(nodeId: UInt32) -> V? {
+        if nodeId == NULL_ENTRY {
+            return nil
+        }
+        
+        let nodeMapper = self.getNodeMapper(nodeId: nodeId)
+        let node = nodeMapper.get()
+        
+        let infoMapper = self.getInfoMapper()
+        var info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
+        
+        if node.previous == NULL_ENTRY {
+            info.front = node.next
+        } else {
+            let previousNodeMapper = self.getNodeMapper(nodeId: node.previous)
+            var previousNode = previousNodeMapper.get()
+            
+            previousNode.next = node.next
+            
+            previousNodeMapper.set(previousNode)
+        }
+        
+        if node.next == NULL_ENTRY {
+            info.back = node.previous
+        } else {
+            let nextNodeMapper = self.getNodeMapper(nodeId: node.next)
+            var nextNode = nextNodeMapper.get()
+            
+            nextNode.previous = node.previous
+            nextNodeMapper.set(nextNode)
+        }
+        
+        
+        nodeMapper.clear()
+        
+        let valueMapper = self.getValueMapper(nodeId: nodeId)
+        let removedValue = valueMapper.get()
+        valueMapper.clear()
+        info.len -= 1
+        infoMapper.set(info)
+        
+        return removedValue
+    }
+}
+
+public struct QueueMapIterator<V: TopEncode & TopDecode>: IteratorProtocol {
+    // TODO: add tests
+    let queueMap: QueueMap<V>
+    
+    var nodeId: UInt32
+    
+    init(queueMap: QueueMap<V>) {
+        self.queueMap = queueMap
+        
+        let infoMapper = queueMap.getInfoMapper()
+        let info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
+        
+        self.nodeId = info.front
+    }
+    
+    public mutating func next() -> V? {
+        let currentNodeId = self.nodeId
+        
+        if currentNodeId == NULL_ENTRY {
+            return nil
+        }
+        
+        self.nodeId = self.queueMap.getNodeMapper(nodeId: currentNodeId).get().next
+        
+        return self.queueMap.getValueMapper(nodeId: currentNodeId).get()
+    }
+}
+
+extension QueueMap: Sequence {
+    public func makeIterator() -> QueueMapIterator<V> {
+        QueueMapIterator(queueMap: self)
     }
 }

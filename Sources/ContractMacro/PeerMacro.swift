@@ -75,10 +75,8 @@ fileprivate func getEndpointExportDeclaration(structName: TokenSyntax, function:
         \(endpointParams.argumentDeclarations)
         let endpointOutput = _contract.\(function.name)(\(endpointParams.contractFunctionCallArguments))
         
-        var _result = MXBuffer()
-        endpointOutput.topEncode(output: &_result)
-        
-        _result.finish()
+        var outputAdapter = ApiOutputAdapter()
+        endpointOutput.multiEncode(output: &outputAdapter)
         """
     } else {
         body = """
