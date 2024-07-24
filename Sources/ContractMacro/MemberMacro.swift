@@ -28,6 +28,8 @@ extension Contract: MemberMacro {
         #endif
         """
         
+        
+        
         var results: [DeclSyntax] = [
             DeclSyntax(getNoDeployInit()),
             DeclSyntax(stringLiteral: testableDeclSyntax)

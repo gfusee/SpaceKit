@@ -7,5 +7,7 @@ extension StructDeclSyntax {
         guard members.filter({ $0.decl.is(InitializerDeclSyntax.self) }).count < 2 else {
             throw ContractMacroError.onlyOneInitAllowed
         }
+        
+        // TODO: ensure no static method are presents
     }
 }

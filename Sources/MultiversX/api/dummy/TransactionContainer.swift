@@ -14,6 +14,11 @@ package class TransactionContainer {
     public package(set) var error: TransactionError? = nil
     public package(set) var shouldExitThread: Bool = false
     
+    
+    // If nestedCallTransactionContainer != nil, then nestedCallTransactionContainer.parent == self
+    package weak var parentContainer: TransactionContainer? = nil
+    package var nestedCallTransactionContainer: TransactionContainer? = nil
+    
     private var transactionInput: TransactionInput? = nil
     package private(set) var transactionOutput: TransactionOutput? = nil
     private var errorBehavior: TransactionContainerErrorBehavior
@@ -43,11 +48,15 @@ package class TransactionContainer {
         case .blockThread:
             self.error = error
             
-            // Wait for the error to be handled from an external process, and we don't want any further instruction to be executed
-            // This container should not be used anymore
-            while true {
-                if self.shouldExitThread {
-                    Thread.exit()
+            if let parentContainer = self.parentContainer {
+                parentContainer.throwError(error: .userError(message: "execution failed"))
+            } else {
+                // Wait for the error to be handled from an external process, as we don't want any further instruction to be executed
+                // This container should not be used anymore
+                while true {
+                    if self.shouldExitThread {
+                        Thread.exit()
+                    }
                 }
             }
         }

@@ -94,7 +94,13 @@ public class DummyApi {
     // TODO: If we are in a transaction context and another thread wants to perform operations on the static, it will modify instead the transaction container.
     
     package func getCurrentContainer() -> TransactionContainer {
-        return self.transactionContainer ?? self.staticContainer
+        var container = self.transactionContainer ?? self.staticContainer
+        
+        while let nestedCallContainer = container.nestedCallTransactionContainer {
+            container = nestedCallContainer
+        }
+        
+        return container
     }
     
     package func getAccount(addressData: Data) -> WorldAccount? {
@@ -107,6 +113,10 @@ public class DummyApi {
 
     package func setCurrentSCOwnerAddress(owner: Data) {
         self.getCurrentContainer().setCurrentSCOwnerAddress(owner: owner)
+    }
+    
+    public func throwFunctionNotFoundError() -> Never {
+        self.getCurrentContainer().throwError(error: .executionFailed(reason: "invalid function (not found)")) // TODO: use the same error as in the WASM VM
     }
     
     func throwUserError(message: String) -> Never {
