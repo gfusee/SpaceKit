@@ -13,21 +13,8 @@ extension Contract: PeerMacro {
         
         try structDecl.isValidStruct()
         
-        let optionalInitDecl = structDecl.memberBlock.members.first(where: { $0.decl.as(InitializerDeclSyntax.self) != nil } )
-        
-        let initDecl = optionalInitDecl?.decl.as(InitializerDeclSyntax.self) ?? InitializerDeclSyntax(
-            signature: FunctionSignatureSyntax(
-                parameterClause: FunctionParameterClauseSyntax(
-                    parameters: []
-                )
-            ),
-            body: CodeBlockSyntax(
-                statements: ""
-            )
-        )
-        
         var results: [FunctionDeclSyntax] = [
-            getInitExportDeclaration(structName: structDecl.name, initDecl: initDecl, context: context)
+            getInitExportDeclaration(structName: structDecl.name, context: context)
         ]
         
         let functionDecls = structDecl.memberBlock.members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
@@ -46,6 +33,8 @@ fileprivate func getEndpointExportDeclaration(structName: TokenSyntax, function:
         return nil
     }
     
+    let endpointName = function.name.trimmed
+    
     var exportedFunction = FunctionDeclSyntax(
         name: context.makeUniqueName(function.name.text),
         signature: FunctionSignatureSyntax(
@@ -57,43 +46,21 @@ fileprivate func getEndpointExportDeclaration(structName: TokenSyntax, function:
     
     exportedFunction.attributes = """
     #if WASM
-    @_expose(wasm, "\(function.name)")
-    @_cdecl("\(function.name)")
+    @_expose(wasm, "\(endpointName)")
+    @_cdecl("\(endpointName)")
     #endif
     """
     
-    let endpointParams = getEndpointVariablesDeclarations(
-        functionParameters: function.signature.parameterClause.parameters
+    exportedFunction.body = CodeBlockSyntax(
+        statements: """
+        \(structName).\(endpointName)()
+        """
     )
-    
-    let contractVariableDeclaration: ExprSyntax = "var _contract = \(structName.trimmed)(_noDeploy: ())"
-    
-    let body: String
-    if function.signature.returnClause != nil {
-        body = """
-        \(contractVariableDeclaration)
-        \(endpointParams.argumentDeclarations)
-        let endpointOutput = _contract.\(function.name)(\(endpointParams.contractFunctionCallArguments))
-        
-        var outputAdapter = ApiOutputAdapter()
-        endpointOutput.multiEncode(output: &outputAdapter)
-        """
-    } else {
-        body = """
-        \(contractVariableDeclaration)
-        \(endpointParams.argumentDeclarations)
-        _contract.\(function.name)(\(endpointParams.contractFunctionCallArguments))
-        """
-    }
-    
-    exportedFunction.body = CodeBlockSyntax(statements: """
-    \(raw: body)
-    """)
     
     return exportedFunction
 }
 
-fileprivate func getInitExportDeclaration(structName: TokenSyntax, initDecl: InitializerDeclSyntax, context: some MacroExpansionContext) -> FunctionDeclSyntax {
+fileprivate func getInitExportDeclaration(structName: TokenSyntax, context: some MacroExpansionContext) -> FunctionDeclSyntax {
     var exportedFunction = FunctionDeclSyntax(
         name: context.makeUniqueName("init"),
         signature: FunctionSignatureSyntax(
@@ -110,42 +77,9 @@ fileprivate func getInitExportDeclaration(structName: TokenSyntax, initDecl: Ini
     #endif
     """
     
-    let endpointParams = getEndpointVariablesDeclarations(
-        functionParameters: initDecl.signature.parameterClause.parameters
-    )
-    
     exportedFunction.body = CodeBlockSyntax(statements: """
-    \(raw: endpointParams.argumentDeclarations)
-    let _ = \(structName.trimmed)(\(raw: endpointParams.contractFunctionCallArguments))
+        \(structName).__contractInit()
     """)
     
     return exportedFunction
-}
-
-fileprivate func getEndpointVariablesDeclarations(
-    functionParameters: FunctionParameterListSyntax
-) -> (argumentDeclarations: String, contractFunctionCallArguments: String) {
-    var contractFunctionCallArgumentsList: [String] = []
-    var argumentDeclarationsList: [String] = []
-    
-    for parameter in functionParameters {
-        let variableName = parameter.secondName ?? parameter.firstName
-        let variableType = parameter.type
-        
-        if argumentDeclarationsList.isEmpty {
-            argumentDeclarationsList.append("var _argsLoader = EndpointArgumentsLoader()")
-        }
-        
-        argumentDeclarationsList.append("let \(variableName) = \(variableType)(topDecodeMulti: &_argsLoader)")
-        
-        contractFunctionCallArgumentsList.append("\(variableName): \(variableName)")
-    }
-    
-    let argumentDeclarations = argumentDeclarationsList.joined(separator: "\n")
-    let contractFunctionCallArguments = contractFunctionCallArgumentsList.joined(separator: ", ")
-    
-    return (
-        argumentDeclarations: argumentDeclarations,
-        contractFunctionCallArguments: contractFunctionCallArguments
-    )
 }

@@ -13,5 +13,6 @@ package struct TransactionInput {
     let callerAddress: Data
     let egldValue: BigInt
     let esdtValue: [EsdtPayment]
+    let arguments: [Data]
 }
 #endif

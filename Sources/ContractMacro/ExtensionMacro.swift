@@ -36,19 +36,31 @@ func getContractEndpointSelectorConformance(
 ) throws -> ExtensionDeclSyntax {
     let structName = structDecl.name.trimmed
     
+    var endpointCasesList: [String] = []
+    
     for function in functions {
         guard function.isEndpoint() else {
             continue
         }
+        
+        let functionName = function.name.trimmed
+        
+        endpointCasesList.append("""
+        case "\(functionName)":
+            \(structName).\(functionName)()
+        """)
     }
     
-    var extensionSyntax = try ExtensionDeclSyntax(
+    let endpointCases = endpointCasesList.joined(separator: "\n")
+    
+    let extensionSyntax = try ExtensionDeclSyntax(
         "extension \(structName): ContractEndpointSelector"
     ) {
         """
         @inline(__always)
-        public mutating func callEndpoint(name: String) {
-            switch self {
+        public mutating func _callEndpoint(name: String) {
+            switch name {
+            \(raw: endpointCases)
             default:
                 API.throwFunctionNotFoundError()
             }

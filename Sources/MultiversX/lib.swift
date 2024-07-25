@@ -6,7 +6,9 @@ public var API = DummyApi()
 
 @attached(peer)
 @attached(member, names: arbitrary)
+#if !WASM
 @attached(extension, conformances: ContractEndpointSelector, names: arbitrary)
+#endif
 public macro Contract() = #externalMacro(module: "ContractMacro", type: "Contract")
 
 @attached(extension, conformances: TopEncode & TopEncodeMulti & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode & ArrayItem, names: arbitrary)

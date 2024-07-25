@@ -1,3 +1,5 @@
+#if !WASM
 public protocol ContractEndpointSelector {
-    mutating func callEndpoint(name: String)
+    mutating func _callEndpoint(name: String)
 }
+#endif

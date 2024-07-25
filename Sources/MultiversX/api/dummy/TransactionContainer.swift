@@ -11,6 +11,7 @@ package class TransactionContainer {
     package var managedBuffersData: [Int32 : Data] = [:]
     package var managedBigIntData: [Int32 : BigInt] = [:]
     package var state: WorldState
+    package var outputs: [Data] = []
     public package(set) var error: TransactionError? = nil
     public package(set) var shouldExitThread: Bool = false
     
@@ -49,7 +50,7 @@ package class TransactionContainer {
             self.error = error
             
             if let parentContainer = self.parentContainer {
-                parentContainer.throwError(error: .userError(message: "execution failed"))
+                parentContainer.throwError(error: .executionFailed(reason: "execution failed"))
             } else {
                 // Wait for the error to be handled from an external process, as we don't want any further instruction to be executed
                 // This container should not be used anymore
@@ -60,6 +61,18 @@ package class TransactionContainer {
                 }
             }
         }
+    }
+    
+    package func registerContractEndpointSelectorForContractAccount(
+        contractAddress: Data,
+        selector: any ContractEndpointSelector
+    ) {
+        let contractAccount = self.getAccount(address: contractAddress)
+        
+        self.state.addContractEndpointSelectorForContractAccount(
+            contractAccount: contractAccount,
+            selector: selector
+        )
     }
     
     private func getAccount(address: Data) -> WorldAccount {
@@ -92,6 +105,14 @@ package class TransactionContainer {
         }
         
         return input
+    }
+    
+    private func getContractEndpointSelectorForContractAccount(contractAccount: WorldAccount) -> any ContractEndpointSelector {
+        guard let selector = self.state.contractEndpointSelectorForContractAddress[contractAccount.addressData] else {
+            self.throwError(error: .worldError(message: "Contract not registered for address: \(contractAccount.addressData.hexEncodedString())"))
+        }
+        
+        return selector
     }
     
     private func getCurrentContractAddress() -> Data {
@@ -140,6 +161,10 @@ package class TransactionContainer {
         return self.getTransactionInput().esdtValue
     }
     
+    package func getEndpointInputArguments() -> [Data] {
+        return self.getTransactionInput().arguments
+    }
+    
     package func getStorageForCurrentContractAddress() -> [Data : Data] {
         let currentContractAddress = self.getCurrentContractAddress()
         
@@ -173,6 +198,33 @@ package class TransactionContainer {
     public func performEsdtTransfer(from: Data, to: Data, token: Data, nonce: UInt64, value: BigInt) {
         self.addEsdtToAddressBalance(address: from, token: token, nonce: nonce, value: -value)
         self.addEsdtToAddressBalance(address: to, token: token, nonce: nonce, value: value)
+    }
+    
+    public func performNestedContractCall(
+        receiver: Data,
+        function: Data,
+        inputs: TransactionInput
+    ) -> [Data] {
+        let endpointName = String(data: function, encoding: .utf8)!
+        let receiverAccount = self.getAccount(address: receiver)
+        var selector = self.getContractEndpointSelectorForContractAccount(contractAccount: receiverAccount)
+        
+        let nestedCallTransactionContainer = TransactionContainer(
+            worldState: self.state,
+            transactionInput: inputs,
+            errorBehavior: self.errorBehavior
+        )
+        nestedCallTransactionContainer.parentContainer = self
+        self.nestedCallTransactionContainer = nestedCallTransactionContainer
+        
+        selector._callEndpoint(name: endpointName)
+        
+        let outputData = nestedCallTransactionContainer.outputs
+        self.state = nestedCallTransactionContainer.state
+        
+        self.nestedCallTransactionContainer = nil
+        
+        return outputData
     }
     
     private func addEsdtToAddressBalance(address: Data, token: Data, nonce: UInt64, value: BigInt) {

@@ -91,6 +91,16 @@ public class DummyApi {
         }
     }
     
+    package func registerContractEndpointSelectorForContractAddress(
+        contractAddress: Data,
+        selector: any ContractEndpointSelector
+    ) {
+        self.getCurrentContainer().registerContractEndpointSelectorForContractAccount(
+            contractAddress: contractAddress,
+            selector: selector
+        )
+    }
+    
     // TODO: If we are in a transaction context and another thread wants to perform operations on the static, it will modify instead the transaction container.
     
     package func getCurrentContainer() -> TransactionContainer {
@@ -217,6 +227,12 @@ extension DummyApi: BufferApiProtocol {
     }
 
     public func bufferFinish(handle: Int32) -> Int32 {
+        let currentContainer = self.getCurrentContainer()
+        
+        let outputData = currentContainer.getBufferData(handle: handle)
+        
+        self.getCurrentContainer().outputs.append(outputData)
+        
         return 0
     }
     
@@ -393,10 +409,21 @@ extension DummyApi: StorageApiProtocol {
 
 extension DummyApi: EndpointApiProtocol {
     public func getNumArguments() -> Int32 {
-        return 0
+        return Int32(self.getCurrentContainer().getEndpointInputArguments().count) // TODO: is it ok that this cast is unsafe?
     }
     
     func bufferGetArgument(argId: Int32, bufferHandle: Int32) -> Int32 {
+        let currentContainer = self.getCurrentContainer()
+        let arguments = currentContainer.getEndpointInputArguments()
+        
+        guard argId < arguments.count else {
+            self.throwExecutionFailed(reason: "Argument out of range.") // TODO: use the same message as the WASM VM
+        }
+        
+        let data = arguments[Int(argId)]
+        
+        currentContainer.managedBuffersData[bufferHandle] = data
+        
         return 0
     }
 }
@@ -544,7 +571,42 @@ extension DummyApi: SendApiProtocol {
         argumentsHandle: Int32,
         resultHandle: Int32
     ) -> Int32 {
-        fatalError() // TODO: implement and test
+        // TODO: test
+        let currentTransactionContainer = self.getCurrentContainer()
+        
+        let sender = currentTransactionContainer.getCurrentSCAccount().addressData
+        let receiver = currentTransactionContainer.getBufferData(handle: addressHandle)
+        let value = currentTransactionContainer.getBigIntData(handle: valueHandle)
+        let function = currentTransactionContainer.getBufferData(handle: functionHandle)
+        
+        let argumentsArray: MXArray<MXBuffer> = MXArray(handle: argumentsHandle)
+        var arguments: [Data] = []
+        
+        for argument in argumentsArray {
+            arguments.append(Data(argument.toBytes()))
+        }
+        
+        let results = currentTransactionContainer.performNestedContractCall(
+            receiver: receiver,
+            function: function,
+            inputs: TransactionInput(
+                contractAddress: receiver,
+                callerAddress: sender,
+                egldValue: value,
+                esdtValue: [], // TODO: implement and test
+                arguments: arguments
+            )
+        )
+        
+        var resultsArray: MXArray<MXBuffer> = MXArray()
+        
+        for result in results {
+            resultsArray = resultsArray.appended(MXBuffer(data: Array(result)))
+        }
+        
+        currentTransactionContainer.managedBuffersData[resultHandle] = Data(resultsArray.buffer.toBytes())
+        
+        return 0
     }
 }
 
