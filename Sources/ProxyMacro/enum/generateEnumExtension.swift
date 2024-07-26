@@ -60,7 +60,9 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
         memberBlock: """
         {
             public func call<T: TopDecodeMulti>(
-                receiver: Address
+                receiver: Address,
+                egldValue: BigUint = 0,
+                esdtTransfers: MXArray<TokenPayment> = []
             ) -> T {
                 var _argBuffer = ArgBuffer()
                 let _endpointName: MXBuffer
@@ -72,13 +74,21 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
                     receiver: receiver,
                     endpointName: _endpointName,
                     argBuffer: _argBuffer
-                ).call()
+                ).call(
+                    value: egldValue
+                )
             }
         
             public func callAndIgnoreResult(
-                receiver: Address
+                receiver: Address,
+                egldValue: BigUint = 0,
+                esdtTransfers: MXArray<TokenPayment> = []
             ) {
-                let _: IgnoreValue = self.call(receiver: receiver)
+                let _: IgnoreValue = self.call(
+                    receiver: receiver,
+                    egldValue: egldValue,
+                    esdtTransfers: esdtTransfers
+                )
             }
         }
         """

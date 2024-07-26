@@ -6,9 +6,7 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode, 
     contractAddress: String,
     endpointName: String,
     args: (repeat each InputArg),
-    callerAddress: String? = nil,
-    egldValue: BigUint = 0,
-    esdtValue: MXArray<TokenPayment>,
+    transactionInput: TransactionInput,
     transactionOutput: TransactionOutput = TransactionOutput(),
     operation: @escaping (repeat each InputArg) -> ReturnType
 ) throws(TransactionError) -> ReturnType {
@@ -32,13 +30,6 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode, 
     let concatenatedInputArgsBufferBytes = concatenatedInputArgsBuffer.toBytes()
     
     var bytesData: [UInt8] = []
-    let transactionInput = getTransactionInput(
-        contractAddress: contractAddress,
-        callerAddress: callerAddress,
-        egldValue: egldValue,
-        esdtValue: esdtValue,
-        arguments: concatenatedInputArgsArray
-    )
     
     try API.runTransactions(
         transactionInput: transactionInput,
@@ -63,9 +54,7 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode>(
     contractAddress: String,
     endpointName: String,
     args: (repeat each InputArg),
-    callerAddress: String? = nil,
-    egldValue: BigUint = 0,
-    esdtValue: MXArray<TokenPayment> = [],
+    transactionInput: TransactionInput,
     transactionOutput: TransactionOutput = TransactionOutput(),
     operation: @escaping (repeat each InputArg) -> Void
 ) throws(TransactionError) {
@@ -88,14 +77,6 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode>(
     
     let concatenatedInputArgsBufferBytes = concatenatedInputArgsBuffer.toBytes()
     
-    let transactionInput = getTransactionInput(
-        contractAddress: contractAddress,
-        callerAddress: callerAddress,
-        egldValue: egldValue,
-        esdtValue: esdtValue,
-        arguments: concatenatedInputArgsArray
-    )
-    
     try API.runTransactions(
         transactionInput: transactionInput,
         transactionOutput: transactionOutput
@@ -106,39 +87,5 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode>(
     }
 }
 
-private func getTransactionInput(
-    contractAddress: String,
-    callerAddress: String?,
-    egldValue: BigUint,
-    esdtValue: MXArray<TokenPayment>,
-    arguments: MXArray<MXBuffer>
-) -> TransactionInput {
-    let callerAddress = callerAddress ?? contractAddress
-    var esdtValueArray: [TransactionInput.EsdtPayment] = []
-
-    for transfer in esdtValue {
-        esdtValueArray.append(
-            TransactionInput.EsdtPayment(
-                tokenIdentifier: Data(transfer.tokenIdentifier.toBytes()),
-                nonce: transfer.nonce,
-                amount: BigInt(bigUint: transfer.amount)
-            )
-        )
-    }
-    
-    var argumentsData: [Data] = []
-    
-    for arg in arguments {
-        argumentsData.append(Data(arg.toBytes()))
-    }
-    
-    return TransactionInput(
-        contractAddress: contractAddress.toAddressData(),
-        callerAddress: callerAddress.toAddressData(),
-        egldValue: BigInt(bigUint: egldValue),
-        esdtValue: esdtValueArray,
-        arguments: argumentsData
-    )
-}
 
 #endif

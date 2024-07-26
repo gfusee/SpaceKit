@@ -177,9 +177,38 @@ package class TransactionContainer {
         self.state.storageForContractAddress[currentContractAddress] = storage
     }
 
-    public func performEgldTransfer(from: Data, to: Data, value: BigInt) {
+    package func performEgldTransfer(from: Data, to: Data, value: BigInt) {
         self.addEgldToAddressBalance(address: from, value: -value)
         self.addEgldToAddressBalance(address: to, value: value)
+    }
+    
+    package func performEgldOrEsdtTransfers(
+        senderAddress: Data,
+        receiverAddress: Data,
+        egldValue: BigInt,
+        esdtValue: [TransactionInput.EsdtPayment]
+    ) {
+        if egldValue > 0 {
+            guard esdtValue.isEmpty else {
+                self.throwError(error: .executionFailed(reason: "cannot have both egld and esdt value")) // TODO: use the same error message as the SpaceVM
+            }
+
+            self.performEgldTransfer(
+                from: senderAddress,
+                to: receiverAddress,
+                value: egldValue
+            )
+        } else {
+            for value in esdtValue {
+                self.performEsdtTransfer(
+                    from: senderAddress,
+                    to: receiverAddress,
+                    token: value.tokenIdentifier,
+                    nonce: value.nonce,
+                    value: value.amount
+                )
+            }
+        }
     }
     
     private func addEgldToAddressBalance(address: Data, value: BigInt) {
@@ -187,7 +216,7 @@ package class TransactionContainer {
         let newBalance = account.balance + value
         
         guard newBalance >= 0 else {
-            fatalError()
+            self.throwError(error: .executionFailed(reason: "insufficient balance")) // TODO: use the same error as the WASM VM
         }
         
         account.balance = newBalance
@@ -205,6 +234,13 @@ package class TransactionContainer {
         function: Data,
         inputs: TransactionInput
     ) -> [Data] {
+        self.performEgldOrEsdtTransfers(
+            senderAddress: inputs.callerAddress,
+            receiverAddress: receiver,
+            egldValue: inputs.egldValue,
+            esdtValue: inputs.esdtValue
+        )
+        
         let endpointName = String(data: function, encoding: .utf8)!
         let receiverAccount = self.getAccount(address: receiver)
         var selector = self.getContractEndpointSelectorForContractAccount(contractAccount: receiverAccount)

@@ -107,9 +107,7 @@ fileprivate func getTestableStructDeclaration(
         }
     
     let transactionInputOptionalParameters: [FunctionParameterSyntax] = [
-        "callerAddress: String? = nil,",
-        "egldValue: BigUint = 0,",
-        "esdtValue: MXArray<TokenPayment> = [],",
+        "transactionInput: ContractCallTransactionInput? = nil,",
         "transactionOutput: TransactionOutput = TransactionOutput()"
     ]
         .map { FunctionParameterSyntax(stringLiteral: $0) }
@@ -155,7 +153,7 @@ fileprivate func getTestableStructDeclaration(
             )
         ),
         bodyBuilder: {
-            "try Testable(_testableAddress, \(raw: testableStaticInitializerCallParameters) callerAddress: callerAddress, egldValue: egldValue, esdtValue: esdtValue, transactionOutput: transactionOutput)"
+            "try Testable(_testableAddress, \(raw: testableStaticInitializerCallParameters) transactionInput: transactionInput, transactionOutput: transactionOutput)"
         }
     )
     
@@ -169,16 +167,15 @@ fileprivate func getTestableStructDeclaration(
         body: CodeBlockSyntax(
             statements: """
             self.address = _testableAddress
+            let transactionInput = transactionInput ?? ContractCallTransactionInput()
             try runTestCall(
                 contractAddress: self.address,
                 endpointName: "init",
                 args: (\(raw: parameterNames)),
-                callerAddress: callerAddress,
-                egldValue: egldValue,
-                esdtValue: esdtValue,
+                transactionInput: transactionInput.toTransactionInput(contractAddress: _testableAddress),
                 transactionOutput: transactionOutput
             ) { \(raw: closureParameterInstantiations)
-                let ownerAddress = callerAddress?.toAddressData() ?? _testableAddress.toAddressData()
+                let ownerAddress = transactionInput.callerAddress?.toAddressData() ?? _testableAddress.toAddressData()
                 API.setCurrentSCOwnerAddress(owner: ownerAddress)
                 
                 let _ = \(structDecl.name.trimmed)(\(raw: initCallParameters))
@@ -237,13 +234,12 @@ fileprivate func getTestableStructDeclaration(
         
         testableFunction.body = CodeBlockSyntax(
             statements: """
+            let transactionInput = transactionInput ?? ContractCallTransactionInput()
             return try runTestCall(
                 contractAddress: self.address,
                 endpointName: "\(function.name)",
                 args: (\(raw: variableNames)),
-                callerAddress: callerAddress,
-                egldValue: egldValue,
-                esdtValue: esdtValue,
+                transactionInput: transactionInput.toTransactionInput(contractAddress: self.address),
                 transactionOutput: transactionOutput
             ) { \(raw: closureVariableInstantiations)
                 var contract = \(structDecl.name.trimmed)(_noDeploy: ())

@@ -91,7 +91,10 @@ final class EventTests: ContractTestCase {
         let contract = try EventTestsContract.testable("contract")
         let transactionOutput = TransactionOutput()
         
-        try contract.emitNoEvent(callerAddress: "user", transactionOutput: transactionOutput)
+        try contract.emitNoEvent(
+            transactionInput: ContractCallTransactionInput(callerAddress: "user"),
+            transactionOutput: transactionOutput
+        )
         
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = []
@@ -103,7 +106,10 @@ final class EventTests: ContractTestCase {
         let contract = try EventTestsContract.testable("contract")
         let transactionOutput = TransactionOutput()
         
-        try contract.emitSingleIndexedFieldEventNoData(callerAddress: "user", transactionOutput: transactionOutput)
+        try contract.emitSingleIndexedFieldEventNoData(
+            transactionInput: ContractCallTransactionInput(callerAddress: "user"),
+            transactionOutput: transactionOutput
+        )
         
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [
@@ -123,7 +129,10 @@ final class EventTests: ContractTestCase {
         let contract = try EventTestsContract.testable("contract")
         let transactionOutput = TransactionOutput()
         
-        try contract.emitSingleIndexedFieldEventWithBufferData(callerAddress: "user", transactionOutput: transactionOutput)
+        try contract.emitSingleIndexedFieldEventWithBufferData(
+            transactionInput: ContractCallTransactionInput(callerAddress: "user"),
+            transactionOutput: transactionOutput
+        )
         
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [
@@ -143,7 +152,10 @@ final class EventTests: ContractTestCase {
         let contract = try EventTestsContract.testable("contract")
         let transactionOutput = TransactionOutput()
         
-        try contract.emitSingleIndexedFieldEventWithBigUintData(callerAddress: "user", transactionOutput: transactionOutput)
+        try contract.emitSingleIndexedFieldEventWithBigUintData(
+            transactionInput: ContractCallTransactionInput(callerAddress: "user"),
+            transactionOutput: transactionOutput
+        )
         
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [
@@ -163,7 +175,10 @@ final class EventTests: ContractTestCase {
         let contract = try EventTestsContract.testable("contract")
         let transactionOutput = TransactionOutput()
         
-        try contract.emitMultipleIndexedFieldEventNoData(callerAddress: "user", transactionOutput: transactionOutput)
+        try contract.emitMultipleIndexedFieldEventNoData(
+            transactionInput: ContractCallTransactionInput(callerAddress: "user"),
+            transactionOutput: transactionOutput
+        )
         
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [
@@ -185,7 +200,10 @@ final class EventTests: ContractTestCase {
         let contract = try EventTestsContract.testable("contract")
         let transactionOutput = TransactionOutput()
         
-        try contract.emitMultipleEvents(callerAddress: "user", transactionOutput: transactionOutput)
+        try contract.emitMultipleEvents(
+            transactionInput: ContractCallTransactionInput(callerAddress: "user"),
+            transactionOutput: transactionOutput
+        )
         
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [
@@ -240,7 +258,11 @@ final class EventTests: ContractTestCase {
     
     func testMultipleEventsInInit() throws {
         let transactionOutput = TransactionOutput()
-        let _ = try EventTestsContract.testable("contract", callerAddress: "user", transactionOutput: transactionOutput)
+        let _ = try EventTestsContract.testable(
+            "contract",
+            transactionInput: ContractCallTransactionInput(callerAddress: "user"),
+            transactionOutput: transactionOutput
+        )
         
         let logs = transactionOutput.getLogs()
         let expected: [TransactionOutputLog] = [

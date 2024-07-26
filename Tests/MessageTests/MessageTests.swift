@@ -58,7 +58,7 @@ final class MessageTests: ContractTestCase {
     func testGetCallerInInit() throws {
         let contract = try MessageContract.testable(
             "adder",
-            callerAddress: "user"
+            transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
         
         let storedAddress = try contract.getStorageAddress()
@@ -78,7 +78,7 @@ final class MessageTests: ContractTestCase {
         let contract = try MessageContract.testable("adder")
         
         let contractAddress = try contract.getCallerAddress(
-            callerAddress: "user"
+            transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
         
         XCTAssertEqual(contractAddress.hexDescription, "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f")
@@ -97,7 +97,7 @@ final class MessageTests: ContractTestCase {
     func testGetEgldValue() throws {
         let contract = try MessageContract.testable("adder")
         
-        let value = try contract.getEgldValue(callerAddress: "user", egldValue: 100)
+        let value = try contract.getEgldValue(transactionInput: ContractCallTransactionInput(callerAddress: "user", egldValue: 100))
         
         XCTAssertEqual(value, 100)
         XCTAssertEqual(self.getAccount(address: "adder")!.balance, 100)
@@ -116,8 +116,10 @@ final class MessageTests: ContractTestCase {
         let contract = try MessageContract.testable("adder")
         
         let value = try contract.getAllEsdtTransfers(
-            callerAddress: "user",
-            esdtValue: [TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)]
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                esdtValue: [TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)]
+            )
         )
         
         XCTAssertEqual(value, [TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)])
@@ -129,12 +131,14 @@ final class MessageTests: ContractTestCase {
         let contract = try MessageContract.testable("adder")
         
         let value = try contract.getAllEsdtTransfers(
-            callerAddress: "user",
-            esdtValue: [
-                TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
-                TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
-                TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
-            ]
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                esdtValue: [
+                    TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
+                    TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
+                    TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
+                ]
+            )
         )
 
         let expected: MXArray<TokenPayment> = [

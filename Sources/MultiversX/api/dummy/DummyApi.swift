@@ -41,33 +41,19 @@ public class DummyApi {
             self.transactionContainer = nil
             self.containerLock.unlock()
         }
-
-        if transactionInput.egldValue > 0 {
-            guard transactionInput.esdtValue.isEmpty else {
-                self.throwExecutionFailed(reason: "cannot have both egld and esdt value") // TODO: use the same error message as the SpaceVM
-            }
-
-            self.getCurrentContainer().performEgldTransfer(
-                from: transactionInput.callerAddress,
-                to: transactionInput.contractAddress,
-                value: transactionInput.egldValue
-            )
-        } else {
-            for value in transactionInput.esdtValue {
-                self.getCurrentContainer().performEsdtTransfer(
-                    from: transactionInput.callerAddress,
-                    to: transactionInput.contractAddress,
-                    token: value.tokenIdentifier,
-                    nonce: value.nonce,
-                    value: value.amount
-                )
-            }
-        }
         
         var hasThreadStartedExecution = false
         
         let thread = Thread {
             hasThreadStartedExecution = true
+            
+            transactionContainer.performEgldOrEsdtTransfers(
+                senderAddress: transactionInput.callerAddress,
+                receiverAddress: transactionInput.contractAddress,
+                egldValue: transactionInput.egldValue,
+                esdtValue: transactionInput.esdtValue
+            )
+            
             operations()
         }
         

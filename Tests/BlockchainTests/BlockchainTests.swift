@@ -144,7 +144,10 @@ final class BlockchainTests: ContractTestCase {
     }
 
     func testGetOwner() throws {
-        let contract = try BlockchainContract.testable("adder", callerAddress: "user")
+        let contract = try BlockchainContract.testable(
+            "adder",
+            transactionInput: ContractCallTransactionInput(callerAddress: "user")
+        )
         
         let owner = try contract.getOwner()
         
