@@ -28,7 +28,7 @@ fileprivate func  getDefaultInfo() -> QueueMapperInfo {
     return QueueMapperInfo(len: 0, front: 0, back: 0, new: 0)
 }
 
-public struct QueueMap<V: TopEncode & TopDecode> {
+public struct QueueMapper<V: TopEncode & TopDecode> {
     private let baseKey: MXBuffer
     
     public init(baseKey: MXBuffer) {
@@ -180,11 +180,11 @@ public struct QueueMap<V: TopEncode & TopDecode> {
 
 public struct QueueMapIterator<V: TopEncode & TopDecode>: IteratorProtocol {
     // TODO: add tests
-    let queueMap: QueueMap<V>
+    let queueMap: QueueMapper<V>
     
     var nodeId: UInt32
     
-    init(queueMap: QueueMap<V>) {
+    init(queueMap: QueueMapper<V>) {
         self.queueMap = queueMap
         
         let infoMapper = queueMap.getInfoMapper()
@@ -206,7 +206,7 @@ public struct QueueMapIterator<V: TopEncode & TopDecode>: IteratorProtocol {
     }
 }
 
-extension QueueMap: Sequence {
+extension QueueMapper: Sequence {
     public func makeIterator() -> QueueMapIterator<V> {
         QueueMapIterator(queueMap: self)
     }

@@ -50,11 +50,11 @@ import MultiversX
         }
     }
     
-    public func owners() -> SetMap<Address> {
+    public func owners() -> SetMapper<Address> {
         return self.allOwners
     }
     
-    public func contracts() -> SetMap<Address> {
+    public func contracts() -> SetMapper<Address> {
         return self.allContracts
     }
     

@@ -9,7 +9,7 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
     @Storage(key: "deadline") var deadline: UInt64
     @Storage(key: "activationTimestamp") var activationTimestamp: UInt64
     @Storage(key: "maxFunds") var maxFunds: BigUint?
-    @UserMapping(key: "user") var users: UserMap
+    @UserMapping(key: "user") var users: UserMapper
     @Mapping(key: "userStatus") var userStatus: StorageMap<UInt32, UserStatus>
     @Storage(key: "pongAllLastUser") var pongAllLastUser: UInt32
     

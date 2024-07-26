@@ -3,14 +3,14 @@
 fileprivate let NULL_ENTRY: UInt32 = 0
 fileprivate let NODE_ID_IDENTIFIER: StaticString = ".node_id"
 
-public struct SetMap<V: TopEncode & NestedEncode & TopDecode> {
+public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
     // TODO: add tests
     private let baseKey: MXBuffer
-    private let queueMapper: QueueMap<V>
+    private let queueMapper: QueueMapper<V>
     
     public init(baseKey: MXBuffer) {
         self.baseKey = baseKey
-        self.queueMapper = QueueMap(baseKey: baseKey)
+        self.queueMapper = QueueMapper(baseKey: baseKey)
     }
     
     private func buildNamedValueKey(name: MXBuffer, value: V) -> MXBuffer {
@@ -92,13 +92,13 @@ public struct SetMap<V: TopEncode & NestedEncode & TopDecode> {
     }
 }
 
-extension SetMap: Sequence {
+extension SetMapper: Sequence {
     public func makeIterator() -> QueueMapIterator<V> {
         QueueMapIterator(queueMap: self.queueMapper)
     }
 }
 
-extension SetMap: TopEncodeMulti {
+extension SetMapper: TopEncodeMulti {
     public func multiEncode<O>(output: inout O) where O : TopEncodeMultiOutput {
         for element in self {
             output.pushSingleValue(arg: element)

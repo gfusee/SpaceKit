@@ -2,9 +2,9 @@
     
     private let key: MXBuffer
     
-    public var wrappedValue: SetMap<V> {
+    public var wrappedValue: SetMapper<V> {
         get {
-            return SetMap(baseKey: key)
+            return SetMapper(baseKey: key)
         }
     }
     
