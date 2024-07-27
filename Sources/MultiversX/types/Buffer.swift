@@ -1,5 +1,14 @@
 public typealias MXString = MXBuffer
 
+@inline(__always)
+fileprivate func initFromBytesPointer(handle: Int32, pointer: UnsafeMutableRawBufferPointer) {
+    guard let baseAddress = pointer.baseAddress else {
+        fatalError()
+    }
+    
+    let _ = API.bufferSetBytes(handle: handle, bytePtr: baseAddress, byteLen: Int32(pointer.count))
+}
+
 public struct MXBuffer {
     public let handle: Int32
     
@@ -20,19 +29,76 @@ public struct MXBuffer {
     public init(_ string: String) {
         self.init(data: Array(string.utf8))
     }
-    #endif
     
     @inline(__always)
     package init(data: [UInt8]) {
         let handle = getNextHandle()
         
-        [UInt8](data).withUnsafeBytes { pointer in
+        var data = data
+        
+        data.withUnsafeMutableBufferPointer { pointer in
             guard let baseAddress = pointer.baseAddress else {
                 fatalError()
             }
             
             let _ = API.bufferSetBytes(handle: handle, bytePtr: baseAddress, byteLen: Int32(pointer.count))
         }
+        
+        self.handle = handle
+    }
+    #endif
+    
+    @inline(__always)
+    package init(data: FixedArray8<UInt8>) {
+        let handle = getNextHandle()
+        
+        var data = data
+        
+        withUnsafeMutableBytes(of: &data, { initFromBytesPointer(handle: handle, pointer: $0) })
+        
+        self.handle = handle
+    }
+    
+    @inline(__always)
+    package init(data: UInt8) {
+        let handle = getNextHandle()
+        
+        var data = data
+        
+        withUnsafeMutableBytes(of: &data, { initFromBytesPointer(handle: handle, pointer: $0) })
+        
+        self.handle = handle
+    }
+    
+    @inline(__always)
+    package init(data: Bytes4) {
+        let handle = getNextHandle()
+        
+        var data = data
+        
+        withUnsafeMutableBytes(of: &data, { initFromBytesPointer(handle: handle, pointer: $0) })
+        
+        self.handle = handle
+    }
+    
+    @inline(__always)
+    package init(data: Bytes8) {
+        let handle = getNextHandle()
+        
+        var data = data
+        
+        withUnsafeMutableBytes(of: &data, { initFromBytesPointer(handle: handle, pointer: $0) })
+        
+        self.handle = handle
+    }
+    
+    @inline(__always)
+    package init(data: Bytes32) {
+        let handle = getNextHandle()
+        
+        var data = data
+        
+        withUnsafeMutableBytes(of: &data, { initFromBytesPointer(handle: handle, pointer: $0) })
         
         self.handle = handle
     }
@@ -66,9 +132,9 @@ public struct MXBuffer {
     #if !WASM
     public func toBytes() -> [UInt8] {
         let selfCount = self.count
-        let result: [UInt8] = Array(repeating: 0, count: Int(selfCount))
+        var result: [UInt8] = Array(repeating: 0, count: Int(selfCount))
         
-        let _ = result.withUnsafeBytes { pointer in
+        let _ = result.withUnsafeMutableBytes { pointer in
             API.bufferGetBytes(handle: self.handle, resultPointer: pointer.baseAddress!)
         }
         
@@ -77,9 +143,13 @@ public struct MXBuffer {
     #endif
     
     @inline(__always)
-    package func to32BytesStackArray() -> [UInt8] {
-        // 32-bytes array allocated on the stack
-        let bytes: [UInt8] = [
+    package func to32BytesStackArray() -> Bytes32 {
+        require(
+            self.count <= 32,
+            "TODO" // TODO: add an error message
+        )
+        
+        var bytes: Bytes32 = (
             0, 0, 0, 0, 0,
             0, 0, 0, 0, 0,
             0, 0, 0, 0, 0,
@@ -87,16 +157,11 @@ public struct MXBuffer {
             0, 0, 0, 0, 0,
             0, 0, 0, 0, 0,
             0, 0
-        ]
-        
-        require(
-            self.count <= 32,
-            "TODO"
         )
         
-        let _ = bytes.withUnsafeBytes { pointer in
-            API.bufferGetBytes(handle: self.handle, resultPointer: pointer.baseAddress!)
-        }
+        withUnsafeMutableBytes(of: &bytes, { pointer in
+            let _ = API.bufferGetBytes(handle: self.handle, resultPointer: pointer.baseAddress!)
+        })
         
         return bytes
     }

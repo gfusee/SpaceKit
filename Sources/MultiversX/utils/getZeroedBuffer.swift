@@ -3,12 +3,7 @@ public func getZeroedBuffer(count: Int32) -> MXBuffer {
     
     var remaining = count
     
-    let zeros = MXBuffer(data: [
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0
-    ])
+    let zeros = MXBuffer(data: getZeroedBytes32())
     
     while remaining > 0 {
         let usedZeros: Int32

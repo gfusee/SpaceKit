@@ -18,7 +18,8 @@ let unsafeFlags = isWasm ? [
     "-whole-module-optimization",
     "-D",
     "WASM",
-    "-disable-stack-protector"
+    "-disable-stack-protector",
+    "-no-allocations"
 ] : []
 
 var packageDependencies: [Package.Dependency] = [

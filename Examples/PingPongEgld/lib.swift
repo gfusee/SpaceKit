@@ -141,7 +141,7 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
     
     // TODO: the original Rust contract returns a TopDecodeMulti type with multiple outputs
     // TODO: creating views for storages is annoying
-    public func getUserAddresses() -> MXArray<Address> {
-        return self.users.getAllAddresses()
+    public func getUserAddresses() -> UserMapper {
+        return self.users
     }
 }

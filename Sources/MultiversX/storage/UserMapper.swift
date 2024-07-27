@@ -89,3 +89,9 @@ public struct UserMapper {
         return userId
     }
 }
+
+extension UserMapper: TopEncodeMulti {
+    public func multiEncode<O>(output: inout O) where O : TopEncodeMultiOutput {
+        self.getAllAddresses().multiEncode(output: &output)
+    }
+}

@@ -221,6 +221,7 @@ extension MXArray: Equatable where T: Equatable {
     }
 }
 
+#if !WASM
 extension MXArray: ExpressibleByArrayLiteral {
     public typealias ArrayLiteralElement = T
     
@@ -234,6 +235,7 @@ extension MXArray: ExpressibleByArrayLiteral {
         self.buffer = tempArray.buffer
     }
 }
+#endif
 
 extension MXArray: Sequence {
     public func makeIterator() -> MXArrayIterator<T> {
@@ -252,7 +254,13 @@ extension MXArray: TopEncode {
     }
 }
 
-extension MXArray: TopEncodeMulti {}
+extension MXArray: TopEncodeMulti {
+    public func multiEncode<O>(output: inout O) where O : TopEncodeMultiOutput {
+        for element in self {
+            output.pushSingleValue(arg: element)
+        }
+    }
+}
 
 extension MXArray: TopEncodeMultiOutput where T == MXBuffer {
     public mutating func pushSingleValue<TE>(arg: TE) where TE : TopEncode {
@@ -317,6 +325,23 @@ extension MXArray: NestedDecode {
         
         self = Self(buffer: buffer)
     }
+}
+
+extension MXArray: ArrayItem {
+    
+    // TODO: add tests
+    public static var payloadSize: Int32 {
+        MXBuffer.payloadSize
+    }
+    
+    public static func decodeArrayPayload(payload: MXBuffer) -> MXArray<T> {
+        return MXArray(buffer: MXBuffer.decodeArrayPayload(payload: payload))
+    }
+    
+    public func intoArrayPayload() -> MXBuffer {
+        return self.buffer.intoArrayPayload()
+    }
+    
 }
 
 #if !WASM

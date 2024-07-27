@@ -41,19 +41,12 @@ public struct Message {
     public static var caller: Address {
         // TODO: add caching
         // 32-bytes array allocated on the stack
-        let callerBytes: [UInt8] = [
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0
-        ]
+        var callerBytes: Bytes32 = getZeroedBytes32()
         
-        let _ = callerBytes.withUnsafeBytes { pointer in
-            API.getCaller(resultOffset: pointer.baseAddress!)
-        }
+        withUnsafeMutableBytes(of: &callerBytes, { pointer in
+                API.getCaller(resultOffset: pointer.baseAddress!)
+            }
+        )
         
         return Address(buffer: MXBuffer(data: callerBytes))
     }

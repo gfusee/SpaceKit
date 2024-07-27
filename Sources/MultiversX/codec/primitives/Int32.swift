@@ -2,13 +2,13 @@ private let intSize: Int32 = 4
 
 extension Int32 {
     // This function should be inlined top avoid heap allocation
-    @inline(__always) package func asBigEndianBytes() -> [UInt8] {
-        return [
+    @inline(__always) package func asBigEndianBytes() -> Bytes4 {
+        return (
             UInt8((self >> 24) & 0xFF),
             UInt8((self >> 16) & 0xFF),
             UInt8((self >> 8) & 0xFF),
-            UInt8(self & 0xFF),
-        ]
+            UInt8(self & 0xFF)
+        )
     }
 }
 
@@ -16,11 +16,17 @@ extension Int32: TopEncode {
     @inline(__always)
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         let bigEndianBytes = self.asBigEndianBytes()
+        var bigEndianBytesArray = FixedArray8<UInt8>(count: Int(intSize))
+        
+        bigEndianBytesArray[0] = bigEndianBytes.0
+        bigEndianBytesArray[1] = bigEndianBytes.1
+        bigEndianBytesArray[2] = bigEndianBytes.2
+        bigEndianBytesArray[3] = bigEndianBytes.3
         
         let leftBytesToRemove = self >= 0 ? 0x00 : 0xFF
         
         var startEncodingIndex: Int32 = 0
-        while startEncodingIndex < intSize && bigEndianBytes[Int(startEncodingIndex)] == leftBytesToRemove {
+        while startEncodingIndex < intSize && bigEndianBytesArray[Int(startEncodingIndex)] == leftBytesToRemove {
             startEncodingIndex += 1
         }
         

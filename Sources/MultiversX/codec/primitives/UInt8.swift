@@ -5,9 +5,7 @@ private let intSize: Int32 = 1
 extension UInt8: TopEncode {
     @inline(__always)
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
-        let bigEndianBytes = [self]
-        
-        MXBuffer(data: bigEndianBytes)
+        MXBuffer(data: self)
             .topEncode(output: &output)
     }
 }
@@ -17,7 +15,7 @@ extension UInt8: TopEncodeMulti {}
 extension UInt8: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        dest.write(buffer: MXBuffer(data: [self]))
+        dest.write(buffer: MXBuffer(data: self))
     }
 }
 

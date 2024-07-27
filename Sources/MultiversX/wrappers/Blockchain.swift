@@ -24,10 +24,16 @@ public struct Blockchain {
         
         let destHandle = getNextHandle()
         
-        API.bigIntGetExternalBalance(
-            addressPtr: addressBytes,
-            dest: destHandle
-        )
+        withUnsafeBytes(of: addressBytes) { addressBytesPointer in
+            guard let addressBytesPointer = addressBytesPointer.baseAddress else {
+                fatalError()
+            }
+            
+            API.bigIntGetExternalBalance(
+                addressPtr: addressBytesPointer,
+                dest: destHandle
+            )
+        }
         
         return BigUint(handle: destHandle)
     }
@@ -42,13 +48,25 @@ public struct Blockchain {
         
         let destHandle = getNextHandle()
         
-        API.bigIntGetESDTExternalBalance(
-            addressPtr: addressBytes,
-            tokenIDOffset: tokenIdentifierBytes,
-            tokenIDLen: tokenIdentifier.count,
-            nonce: Int64(nonce), // TODO: Is this cast safe?
-            dest: destHandle
-        )
+        withUnsafeBytes(of: addressBytes) { addressBytesPointer in
+            guard let addressBytesPointer = addressBytesPointer.baseAddress else {
+                fatalError()
+            }
+            
+            withUnsafeBytes(of: tokenIdentifierBytes) { tokenIdentifierBytesPointer in
+                guard let tokenIdentifierBytesPointer = tokenIdentifierBytesPointer.baseAddress else {
+                    fatalError()
+                }
+                
+                API.bigIntGetESDTExternalBalance(
+                    addressPtr: addressBytesPointer,
+                    tokenIDOffset: tokenIdentifierBytesPointer,
+                    tokenIDLen: tokenIdentifier.count,
+                    nonce: Int64(nonce), // TODO: Is this cast safe?
+                    dest: destHandle
+                )
+            }
+        }
         
         return BigUint(handle: destHandle)
     }

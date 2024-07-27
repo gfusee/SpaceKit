@@ -6,6 +6,8 @@ struct PayFeeAndFundModule {
         address: Address,
         valability: UInt64
     ) {
+        assertNoEgldPayment()
+        
         var payments = Message.allEsdtTransfers
         let fee = payments.get(0)
         let caller = Message.caller
@@ -21,6 +23,8 @@ struct PayFeeAndFundModule {
         address: Address,
         valability: UInt64
     ) {
+        assertNoEsdtPayment()
+        
         var fund = Message.egldValue
         let feeValue = StorageModule().feeForToken["EGLD"] // TODO: no hardcoded EGLD
         
@@ -84,6 +88,8 @@ struct PayFeeAndFundModule {
     }
     
     func depositFees(address: Address) {
+        assertNoEsdtPayment()
+        
         let payment = Message.egldValue
         let caller = Message.caller
         

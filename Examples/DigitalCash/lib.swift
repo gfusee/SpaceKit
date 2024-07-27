@@ -5,6 +5,54 @@ import MultiversX
         self.whitelistFeeToken(fee: fee, token: token)
     }
     
+    /*
+    
+    public func payFeeAndFundESDT(
+        address: Address,
+        valability: UInt64
+    ) {
+        PayFeeAndFundModule().payFeeAndFundESDT(address: address, valability: valability)
+    }
+    
+    public func payFeeAndFundEGLD(
+        address: Address,
+        valability: UInt64
+    ) {
+        PayFeeAndFundModule().payFeeAndFundEGLD(address: address, valability: valability)
+    }
+    
+    public func fund(
+        address: Address,
+        valability: UInt64
+    ) {
+        PayFeeAndFundModule().fund(address: address, valability: valability)
+    }
+    
+    public func depositFees(address: Address) {
+        PayFeeAndFundModule().depositFees(address: address)
+    }
+    
+    public func withdraw(address: Address) {
+        SignatureOperationsModule().withdraw(address: address)
+    }
+    
+    public func claim(
+        address: Address,
+        signature: MXBuffer
+    ) {
+        SignatureOperationsModule().claim(address: address, signature: signature)
+    }
+    
+    public func forward(
+        address: Address,
+        forwardAddress: Address,
+        signature: MXBuffer
+    ) {
+        SignatureOperationsModule().forward(address: address, forwardAddress: forwardAddress, signature: signature)
+    }
+     
+     */
+    
     public mutating func whitelistFeeToken(
         fee: BigUint,
         token: MXBuffer
@@ -71,7 +119,7 @@ import MultiversX
             caller.send(payments: collectedEsdtFees)
         }
     }
-    
+
     public func getAmount(
         address: Address,
         token: MXBuffer,
@@ -84,6 +132,12 @@ import MultiversX
             "non-existent key"
         )
         
+        let deposut = depositMapper.get()
+        
+        // TODO: remove
+        
+        /*
+        
         let deposit = depositMapper.get()
         
         if token == "EGLD" { // TODO: no hardcoded EGLD
@@ -95,6 +149,8 @@ import MultiversX
                 return esdt.amount
             }
         }
+         
+         */
         
         return 0
     }

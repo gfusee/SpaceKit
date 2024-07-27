@@ -10,7 +10,7 @@ public struct ContractCallTransactionInput {
     public init(
         callerAddress: String? = nil,
         egldValue: BigUint = 0,
-        esdtValue: MXArray<TokenPayment> = []
+        esdtValue: MXArray<TokenPayment> = MXArray()
     ) {
         self.callerAddress = callerAddress
         self.egldValue = egldValue

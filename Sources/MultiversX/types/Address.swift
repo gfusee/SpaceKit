@@ -5,15 +5,7 @@ public struct Address {
     
     public init() {
         // Literal arrays avoid the use of heap allocations
-        let emptyBytes: [UInt8] = [
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0
-        ]
+        let emptyBytes: Bytes32 = getZeroedBytes32()
         
         self.buffer = MXBuffer(data: emptyBytes)
     }

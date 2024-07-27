@@ -2,8 +2,8 @@ private let intSize: Int32 = 8
 
 extension UInt64 {
     // This function should be inlined top avoid heap allocation
-    @inline(__always) func asBigEndianBytes() -> [UInt8] {
-        return [
+    @inline(__always) func asBigEndianBytes() -> Bytes8 {
+        return (
             UInt8((self >> 56) & 0xFF),
             UInt8((self >> 48) & 0xFF),
             UInt8((self >> 40) & 0xFF),
@@ -11,17 +11,27 @@ extension UInt64 {
             UInt8((self >> 24) & 0xFF),
             UInt8((self >> 16) & 0xFF),
             UInt8((self >> 8) & 0xFF),
-            UInt8(self & 0xFF),
-        ]
+            UInt8(self & 0xFF)
+        )
     }
 }
 
 extension UInt64: TopEncode {
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         let bigEndianBytes = self.asBigEndianBytes()
+        var bigEndianBytesArray = FixedArray8<UInt8>(count: Int(intSize))
+        
+        bigEndianBytesArray[0] = bigEndianBytes.0
+        bigEndianBytesArray[1] = bigEndianBytes.1
+        bigEndianBytesArray[2] = bigEndianBytes.2
+        bigEndianBytesArray[3] = bigEndianBytes.3
+        bigEndianBytesArray[4] = bigEndianBytes.4
+        bigEndianBytesArray[5] = bigEndianBytes.5
+        bigEndianBytesArray[6] = bigEndianBytes.6
+        bigEndianBytesArray[7] = bigEndianBytes.7
         
         var startEncodingIndex: Int32 = 0
-        while startEncodingIndex < intSize && bigEndianBytes[Int(startEncodingIndex)] == 0 {
+        while startEncodingIndex < intSize && bigEndianBytesArray[Int(startEncodingIndex)] == 0 {
             startEncodingIndex += 1
         }
         
