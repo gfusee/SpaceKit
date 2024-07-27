@@ -1,7 +1,7 @@
 private let ADDRESS_LENGTH: Int32 = 32
 
 public struct Address {
-    let buffer: MXBuffer
+    public let buffer: MXBuffer
     
     public init() {
         // Literal arrays avoid the use of heap allocations

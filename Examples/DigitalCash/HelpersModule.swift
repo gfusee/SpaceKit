@@ -2,6 +2,21 @@ import MultiversX
 
 struct HelpersModule {
     
+    func sendFeeToAddress(
+        fee: TokenPayment,
+        address: Address
+    ) {
+        if fee.tokenIdentifier == "EGLD" { // TODO: no hardcoded EGLD
+            address.send(egldValue: fee.amount)
+        } else {
+            address.send(
+                tokenIdentifier: fee.tokenIdentifier,
+                nonce: 0,
+                amount: fee.amount
+            )
+        }
+    }
+    
     func getNumTokenTransfers(
         egldValue: BigUint,
         esdtTransfers: MXArray<TokenPayment>

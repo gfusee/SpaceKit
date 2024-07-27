@@ -214,6 +214,11 @@ func managedSignalError(messageHandle: Int32)
 @_extern(c)
 func managedWriteLog(topicsHandle: Int32, dataHandle: Int32)
 
+// MARK: Crypto-related OPCODES
+@_extern(wasm, module: "env", name: "managedVerifyEd25519")
+@_extern(c)
+func managedVerifyEd25519(keyHandle: Int32, messageHandle: Int32, sigHandle: Int32) -> Int32
+
 struct VMApi {}
 
 // MARK: BufferApi Implementation
@@ -491,6 +496,13 @@ extension VMApi: ErrorApiProtocol {
 extension VMApi: LogApiProtocol {
     mutating func managedWriteLog(topicsHandle: Int32, dataHandle: Int32) {
         MultiversX.managedWriteLog(topicsHandle: topicsHandle, dataHandle: dataHandle)
+    }
+}
+
+// MARK: CryptoApiProtocol implementation {
+extension VMApi: CryptoApiProtocol {
+    mutating func managedVerifyEd25519(keyHandle: Int32, messageHandle: Int32, sigHandle: Int32) -> Int32 {
+        return MultiversX.managedVerifyEd25519(keyHandle: keyHandle, messageHandle: messageHandle, sigHandle: sigHandle)
     }
 }
 

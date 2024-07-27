@@ -612,4 +612,10 @@ extension DummyApi: LogApiProtocol {
         self.getCurrentContainer().writeLog(topicsHandle: topicsHandle, dataHandle: dataHandle)
     }
 }
+
+extension DummyApi: CryptoApiProtocol {
+    public func managedVerifyEd25519(keyHandle: Int32, messageHandle: Int32, sigHandle: Int32) -> Int32 {
+        fatalError() // TODO: implement and test
+    }
+}
 #endif
