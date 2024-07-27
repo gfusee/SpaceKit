@@ -73,6 +73,7 @@ public struct MXArray<T: MXArrayType> {
     }
     
     public func popFirst() -> (MXArray<T>, T) {
+        // TODO: use self.slice?
         // TODO: add tests
         let count = self.count
         let bufferCount = T.payloadSize * count
@@ -96,6 +97,7 @@ public struct MXArray<T: MXArrayType> {
     }
     
     public func popLast() -> (MXArray<T>, T) {
+        // TODO: use self.slice?
         // TODO: add tests
         let count = self.count
         let bufferCount = count * T.payloadSize
@@ -108,6 +110,43 @@ public struct MXArray<T: MXArrayType> {
         let newBuffer = self.buffer.getSubBuffer(startIndex: 0, length: newBufferLength)
         
         return (MXArray(buffer: newBuffer), self.get(count - 1))
+    }
+    
+    public func removed(_ index: Int32) -> MXArray<T> {
+        // TODO: add tests
+        let count = self.count
+        
+        guard index < count else {
+            smartContractError(message: "Index out of range.") // TODO: use the same message than the Rust SDK
+        }
+        
+        let partBefore: MXArray<T>
+        if index > 0 {
+            partBefore = self.slice(startIndex: 0, endIndex: index - 1)
+        } else {
+            partBefore = MXArray()
+        }
+        
+        let partAfter: MXArray<T>
+        if index < count {
+            partAfter = self.slice(startIndex: index + 1, endIndex: count - 1)
+        } else {
+            partAfter = MXArray()
+        }
+        
+        return partBefore.appended(contentsOf: partAfter)
+    }
+    
+    /// Returns a new `MXArray`, containing the [start_index, end_index] range of elements.
+    public func slice(startIndex: Int32, endIndex: Int32) -> MXArray<T> {
+        // TODO: add tests
+        // TODO: ensure indexes are correct? Or is using the getSubBuffer's checks enough
+        let startPosition = startIndex * T.payloadSize
+        let endPosition = (endIndex + 1) * T.payloadSize
+        
+        let sliceBuffer = self.buffer.getSubBuffer(startIndex: startPosition, length: endPosition - startPosition)
+        
+        return MXArray(buffer: sliceBuffer)
     }
     
     public subscript(_ index: Int32) -> T {

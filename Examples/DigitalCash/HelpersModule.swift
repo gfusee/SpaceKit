@@ -2,6 +2,52 @@ import MultiversX
 
 struct HelpersModule {
     
+    func getNumTokenTransfers(
+        egldValue: BigUint,
+        esdtTransfers: MXArray<TokenPayment>
+    ) -> Int32 {
+        var amount = esdtTransfers.count
+        
+        if egldValue > 0 {
+            amount += 1
+        }
+        
+        return amount
+    }
+    
+    func getExpirationRound(valability: UInt64) -> UInt64 {
+        let valabilityRounds = valability / SECONDS_PER_ROUND
+        
+        return Blockchain.getBlockRound() + valabilityRounds
+    }
+    
+    func makeFunds(
+        egldPayment: BigUint,
+        esdtPayments: MXArray<TokenPayment>,
+        address: Address,
+        valability: UInt64
+    ) {
+        let depositMapper = StorageModule().$depositForDonor[address]
+        
+        var currentDeposit = depositMapper.get()
+        
+        require(
+            currentDeposit.egldFunds == 0 && currentDeposit.esdtFunds.isEmpty,
+            "key already used"
+        )
+        
+        let numTokens = self.getNumTokenTransfers(
+            egldValue: egldPayment,
+            esdtTransfers: esdtPayments
+        )
+        
+        currentDeposit.fees.numTokenToTransfer += UInt32(numTokens)
+        currentDeposit.valability = valability
+        currentDeposit.expirationRound = self.getExpirationRound(valability: valability)
+        currentDeposit.esdtFunds = esdtPayments
+        currentDeposit.egldFunds = egldPayment
+    }
+    
     func updateFees(
         callerAddress: Address,
         address: Address,

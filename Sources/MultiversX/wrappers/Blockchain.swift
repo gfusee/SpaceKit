@@ -13,6 +13,10 @@ public struct Blockchain {
         return UInt64(API.getBlockTimestamp()) // TODO: is this cast fine?
     }
     
+    public static func getBlockRound() -> UInt64 { // TODO: add tests
+        return UInt64(API.getBlockRound()) // TODO: is this cast fine?
+    }
+    
     public static func getBalance(
         address: Address
     ) -> BigUint {
