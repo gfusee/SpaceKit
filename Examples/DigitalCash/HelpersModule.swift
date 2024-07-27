@@ -48,6 +48,22 @@ struct HelpersModule {
         currentDeposit.egldFunds = egldPayment
     }
     
+    func checkFeesCoverNumberOfTokens(
+        numTokens: Int32,
+        fee: BigUint,
+        paidFee: BigUint
+    ) {
+        require(
+            numTokens > 0,
+            "amount must be greater than 0"
+        )
+        
+        require(
+            fee * BigUint(value: Int64(numTokens)) <= paidFee,
+            "cannot deposit funds without covering the fee cost first"
+        )
+    }
+    
     func updateFees(
         callerAddress: Address,
         address: Address,
