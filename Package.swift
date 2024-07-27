@@ -220,6 +220,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "DigitalCash",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/DigitalCash",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "Empty",
             dependencies: [
                 "MultiversX"

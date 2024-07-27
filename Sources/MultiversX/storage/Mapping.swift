@@ -10,6 +10,10 @@
         }
     }
     
+    public var projectedValue: SingleValueMapperMap<K, T> {
+        SingleValueMapperMap(baseKey: self.key)
+    }
+    
     public init(
         key: MXBuffer
     ) {

@@ -1,8 +1,8 @@
 // TODO: Use TokenIdentifier instead of MXBuffer for tokenIdentifier
 @Codable public struct TokenPayment: Equatable {
-    public let tokenIdentifier: MXBuffer
-    public let nonce: UInt64
-    public let amount: BigUint
+    public var tokenIdentifier: MXBuffer
+    public var nonce: UInt64
+    public var amount: BigUint
 }
 
 extension TokenPayment {

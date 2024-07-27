@@ -88,3 +88,33 @@ public struct UnorderedSetMapper<V: TopEncode & NestedEncode & TopDecode> {
         self.vecMapper.clear()
     }
 }
+
+public struct UnorderedSetMapperIterator<V: TopEncode & NestedEncode & TopDecode>: IteratorProtocol {
+    // TODO: add tests
+    let vecMapper: VecMapper<V>
+    let count: UInt32
+    var index: UInt32
+    
+    init(vecMapper: VecMapper<V>) {
+        self.vecMapper = vecMapper
+        self.count = vecMapper.count
+        self.index = 1
+    }
+    
+    public mutating func next() -> V? {
+        let currentIndex = self.index
+        
+        guard currentIndex <= self.count else {
+            return nil
+        }
+        
+        self.index += 1
+        return self.vecMapper.getUnchecked(index: currentIndex)
+    }
+}
+
+extension UnorderedSetMapper: Sequence {
+    public func makeIterator() -> VecMapperIterator<V> {
+        VecMapperIterator(vecMapper: self.vecMapper)
+    }
+}

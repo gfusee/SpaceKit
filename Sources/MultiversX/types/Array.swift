@@ -19,6 +19,10 @@ public struct MXArray<T: MXArrayType> {
         return self.buffer.count / T.payloadSize
     }
     
+    public var isEmpty: Bool {
+        return self.count == 0
+    }
+    
     public func appended(_ item: T) -> MXArray<T>{
         let payload = item.intoArrayPayload()
         let newBuffer = self.buffer + payload

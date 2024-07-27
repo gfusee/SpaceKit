@@ -15,6 +15,13 @@ public struct SingleValueMapper<V: TopEncode & TopDecode> {
         return self.getRawBuffer().count == 0
     }
     
+    public func take() -> V {
+        let value = self.get()
+        self.clear()
+        
+        return value
+    }
+    
     private func getRawBuffer() -> MXBuffer {
         let storedValueBufferHandle = getNextHandle()
         let _ = API.bufferStorageLoad(keyHandle: self.key.handle, bufferHandle: storedValueBufferHandle)
