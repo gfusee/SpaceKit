@@ -86,3 +86,9 @@ public struct UnorderedSetMapper<V: TopEncode & NestedEncode & TopDecode> {
         self.vecMapper.clear()
     }
 }
+
+extension UnorderedSetMapper: Sequence {
+    public func makeIterator() -> VecMapperIterator<V> {
+        VecMapperIterator(vecMapper: self.vecMapper)
+    }
+}
