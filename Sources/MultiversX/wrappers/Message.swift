@@ -43,10 +43,7 @@ public struct Message {
         // 32-bytes array allocated on the stack
         var callerBytes: Bytes32 = getZeroedBytes32()
         
-        withUnsafeMutableBytes(of: &callerBytes, { pointer in
-                API.getCaller(resultOffset: pointer.baseAddress!)
-            }
-        )
+        API.getCaller(resultOffset: &callerBytes)
         
         return Address(buffer: MXBuffer(data: callerBytes))
     }

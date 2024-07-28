@@ -287,13 +287,9 @@ extension DummyApi: BigIntApiProtocol {
 
     public func bigIntToBuffer(bigIntHandle: Int32, destHandle: Int32) {
         let bigIntValue = self.getCurrentContainer().getBigIntData(handle: bigIntHandle)
-        [UInt8](String(bigIntValue).data(using: .utf8)!).withUnsafeBytes { pointer in
-            guard let baseAddress = pointer.baseAddress else {
-                fatalError()
-            }
-            
-            let _ = self.bufferSetBytes(handle: destHandle, bytePtr: baseAddress, byteLen: Int32(pointer.count))
-        }
+        var bigIntValueData: [UInt8] = Array(String(bigIntValue).data(using: .utf8)!)
+        
+        let _ = self.bufferSetBytes(handle: destHandle, bytePtr: &bigIntValueData, byteLen: Int32(bigIntValueData.count))
     }
     
     public func bigIntCompare(lhsHandle: Int32, rhsHandle: Int32) -> Int32 {

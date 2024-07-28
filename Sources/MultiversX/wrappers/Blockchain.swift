@@ -20,20 +20,14 @@ public struct Blockchain {
     public static func getBalance(
         address: Address
     ) -> BigUint {
-        let addressBytes = address.buffer.to32BytesStackArray()
+        var addressBytes = address.buffer.to32BytesStackArray()
         
         let destHandle = getNextHandle()
         
-        withUnsafeBytes(of: addressBytes) { addressBytesPointer in
-            guard let addressBytesPointer = addressBytesPointer.baseAddress else {
-                fatalError()
-            }
-            
-            API.bigIntGetExternalBalance(
-                addressPtr: addressBytesPointer,
-                dest: destHandle
-            )
-        }
+        API.bigIntGetExternalBalance(
+            addressPtr: &addressBytes,
+            dest: destHandle
+        )
         
         return BigUint(handle: destHandle)
     }
@@ -43,30 +37,18 @@ public struct Blockchain {
         tokenIdentifier: MXBuffer,
         nonce: UInt64
     ) -> BigUint {
-        let addressBytes = address.buffer.to32BytesStackArray()
-        let tokenIdentifierBytes = tokenIdentifier.to32BytesStackArray()
+        var addressBytes = address.buffer.to32BytesStackArray()
+        var tokenIdentifierBytes = tokenIdentifier.to32BytesStackArray()
         
         let destHandle = getNextHandle()
         
-        withUnsafeBytes(of: addressBytes) { addressBytesPointer in
-            guard let addressBytesPointer = addressBytesPointer.baseAddress else {
-                fatalError()
-            }
-            
-            withUnsafeBytes(of: tokenIdentifierBytes) { tokenIdentifierBytesPointer in
-                guard let tokenIdentifierBytesPointer = tokenIdentifierBytesPointer.baseAddress else {
-                    fatalError()
-                }
-                
-                API.bigIntGetESDTExternalBalance(
-                    addressPtr: addressBytesPointer,
-                    tokenIDOffset: tokenIdentifierBytesPointer,
-                    tokenIDLen: tokenIdentifier.count,
-                    nonce: Int64(nonce), // TODO: Is this cast safe?
-                    dest: destHandle
-                )
-            }
-        }
+        API.bigIntGetESDTExternalBalance(
+            addressPtr: &addressBytes,
+            tokenIDOffset: &tokenIdentifierBytes,
+            tokenIDLen: tokenIdentifier.count,
+            nonce: Int64(nonce), // TODO: Is this cast safe?
+            dest: destHandle
+        )
         
         return BigUint(handle: destHandle)
     }

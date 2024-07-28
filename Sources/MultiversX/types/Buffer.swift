@@ -36,13 +36,7 @@ public struct MXBuffer {
         
         var data = data
         
-        data.withUnsafeMutableBufferPointer { pointer in
-            guard let baseAddress = pointer.baseAddress else {
-                fatalError()
-            }
-            
-            let _ = API.bufferSetBytes(handle: handle, bytePtr: baseAddress, byteLen: Int32(pointer.count))
-        }
+        let _ = API.bufferSetBytes(handle: handle, bytePtr: &data, byteLen: Int32(data.count))
         
         self.handle = handle
     }
@@ -54,7 +48,7 @@ public struct MXBuffer {
         
         var data = data
         
-        withUnsafeMutableBytes(of: &data, { initFromBytesPointer(handle: handle, pointer: $0) })
+        let _ = API.bufferSetBytes(handle: handle, bytePtr: &data, byteLen: Int32(data.count))
         
         self.handle = handle
     }
@@ -65,7 +59,7 @@ public struct MXBuffer {
         
         var data = data
         
-        withUnsafeMutableBytes(of: &data, { initFromBytesPointer(handle: handle, pointer: $0) })
+        let _ = API.bufferSetBytes(handle: handle, bytePtr: &data, byteLen: 1)
         
         self.handle = handle
     }
@@ -76,7 +70,7 @@ public struct MXBuffer {
         
         var data = data
         
-        withUnsafeMutableBytes(of: &data, { initFromBytesPointer(handle: handle, pointer: $0) })
+        let _ = API.bufferSetBytes(handle: handle, bytePtr: &data, byteLen: 4)
         
         self.handle = handle
     }
@@ -87,7 +81,7 @@ public struct MXBuffer {
         
         var data = data
         
-        withUnsafeMutableBytes(of: &data, { initFromBytesPointer(handle: handle, pointer: $0) })
+        let _ = API.bufferSetBytes(handle: handle, bytePtr: &data, byteLen: 8)
         
         self.handle = handle
     }
@@ -98,7 +92,7 @@ public struct MXBuffer {
         
         var data = data
         
-        withUnsafeMutableBytes(of: &data, { initFromBytesPointer(handle: handle, pointer: $0) })
+        let _ = API.bufferSetBytes(handle: handle, bytePtr: &data, byteLen: 32)
         
         self.handle = handle
     }
@@ -134,9 +128,7 @@ public struct MXBuffer {
         let selfCount = self.count
         var result: [UInt8] = Array(repeating: 0, count: Int(selfCount))
         
-        let _ = result.withUnsafeMutableBytes { pointer in
-            API.bufferGetBytes(handle: self.handle, resultPointer: pointer.baseAddress!)
-        }
+        let _ = API.bufferGetBytes(handle: self.handle, resultPointer: &result)
         
         return result
     }
@@ -159,19 +151,15 @@ public struct MXBuffer {
             0, 0
         )
         
-        withUnsafeMutableBytes(of: &bytes, { pointer in
-            let _ = API.bufferGetBytes(handle: self.handle, resultPointer: pointer.baseAddress!)
-        })
+        let _ = API.bufferGetBytes(handle: self.handle, resultPointer: &bytes)
         
         return bytes
     }
     
-    public func toFixedSizeBytes<T: FixedArrayProtocol>() -> T {
-        var result: T = T(count: Int(self.count))
+    public func toFixedSizeBytes() -> FixedArray8<UInt8> {
+        var result = FixedArray8<UInt8>(count: Int(self.count))
         
-        let _ = result.withUnsafeMutableBufferPointer { pointer in
-            API.bufferGetBytes(handle: self.handle, resultPointer: pointer.baseAddress!)
-        }
+        let _ = API.bufferGetBytes(handle: self.handle, resultPointer: &result)
         
         return result
     }
