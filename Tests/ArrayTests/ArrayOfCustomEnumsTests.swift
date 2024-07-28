@@ -488,9 +488,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testForLoopZeroElement() throws {
         let array: MXArray<CustomCodableEnum> = MXArray()
         
-        for _ in array {
-            XCTFail()
-        }
+        array.forEach { _ in XCTFail() }
     }
     
     func testForLoopOneElement() throws {
@@ -504,7 +502,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         )
         
-        for item in array {
+        array.forEach { item in
             XCTAssertEqual(
                 item,
                 CustomCodableEnum.first(
@@ -538,9 +536,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
         
         var heapArray: [CustomCodableEnum] = []
         
-        for item in array {
-            heapArray.append(item)
-        }
+        array.forEach { heapArray.append($0) }
         
         let expected: [CustomCodableEnum] = [
             CustomCodableEnum.first(

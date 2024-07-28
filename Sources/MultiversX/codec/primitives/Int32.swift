@@ -1,32 +1,15 @@
 private let intSize: Int32 = 4
 
-extension Int32 {
-    // This function should be inlined top avoid heap allocation
-    @inline(__always) package func asBigEndianBytes() -> Bytes4 {
-        return (
-            UInt8((self >> 24) & 0xFF),
-            UInt8((self >> 16) & 0xFF),
-            UInt8((self >> 8) & 0xFF),
-            UInt8(self & 0xFF)
-        )
-    }
-}
-
 extension Int32: TopEncode {
     @inline(__always)
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
-        let bigEndianBytes = self.asBigEndianBytes()
-        var bigEndianBytesArray = FixedArray8<UInt8>(count: Int(intSize))
-        
-        bigEndianBytesArray[0] = bigEndianBytes.0
-        bigEndianBytesArray[1] = bigEndianBytes.1
-        bigEndianBytesArray[2] = bigEndianBytes.2
-        bigEndianBytesArray[3] = bigEndianBytes.3
+        let bigEndianBytes = self.toBytes4()
         
         let leftBytesToRemove = self >= 0 ? 0x00 : 0xFF
         
         var startEncodingIndex: Int32 = 0
-        while startEncodingIndex < intSize && bigEndianBytesArray[Int(startEncodingIndex)] == leftBytesToRemove {
+        
+        while startEncodingIndex < intSize && accessNthElementOfBytes4(index: startEncodingIndex, bytes: bigEndianBytes) == leftBytesToRemove {
             startEncodingIndex += 1
         }
         
@@ -41,18 +24,21 @@ extension Int32: TopEncodeMulti {}
 extension Int32: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        dest.write(buffer: MXBuffer(data: self.asBigEndianBytes()))
+        dest.write(buffer: MXBuffer(data: self.toBytes4()))
     }
 }
 
 extension Int32: TopDecode {
     public init(topDecode input: MXBuffer) {
-        let bytes: FixedArray8<UInt8> = input.toFixedSizeBytes()
-        if bytes.count > intSize {
+        let count = input.count
+        if count > intSize {
             smartContractError(message: "Cannot decode Int: input too large.")
         }
         
-        self = bytes.toBigEndianInt()
+        let bytes8 = input.toBigEndianBytes8()
+        let bytes4 = toBytes4BigEndian(bytes8: bytes8)
+        
+        self = toBigEndianInt32(skipZerosCount: 4 - count, from: bytes4)
     }
 }
 

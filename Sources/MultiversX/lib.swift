@@ -1,3 +1,10 @@
+// TODO: report a Swift error in which Int64(<Int32 or UInt64 variable>) and UInt64(<Int32 or Int64 variable>) don't work in -no-allocations mode
+
+@_cdecl("memcpy")
+public func memcpy(destPtr: Int32, srcPtr: Int32, bytesCount: Int32) -> Int32 {
+    return 0
+}
+
 #if WASM
 var API = VMApi()
 #else

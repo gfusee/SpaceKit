@@ -18,15 +18,9 @@ extension UInt32: TopEncode {
     @inline(__always)
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         let bigEndianBytes = self.asBigEndianBytes()
-        var bigEndianBytesArray = FixedArray8<UInt8>(count: Int(intSize))
-        
-        bigEndianBytesArray[0] = bigEndianBytes.0
-        bigEndianBytesArray[1] = bigEndianBytes.1
-        bigEndianBytesArray[2] = bigEndianBytes.2
-        bigEndianBytesArray[3] = bigEndianBytes.3
         
         var startEncodingIndex: Int32 = 0
-        while startEncodingIndex < intSize && bigEndianBytesArray[Int(startEncodingIndex)] == 0 {
+        while startEncodingIndex < intSize && accessNthElementOfBytes4(index: startEncodingIndex, bytes: bigEndianBytes) == 0 {
             startEncodingIndex += 1
         }
         
@@ -47,12 +41,14 @@ extension UInt32: NestedEncode {
 
 extension UInt32: TopDecode {
     public init(topDecode input: MXBuffer) {
-        let bytes: FixedArray8<UInt8> = input.toFixedSizeBytes()
         if input.count > intSize {
-            smartContractError(message: "Cannot decode UInt64: input too large.")
+            smartContractError(message: "Cannot decode UInt32: input too large.")
         }
         
-        self = UInt32(bytes.toBigEndianUInt64())
+        let bytes8 = input.toBigEndianBytes8()
+        let bytes4 = toBytes4BigEndian(bytes8: bytes8)
+        
+        self = toBigEndianUInt32(from: bytes4)
     }
 }
 

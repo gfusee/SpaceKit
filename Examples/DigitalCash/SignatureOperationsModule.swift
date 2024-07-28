@@ -77,7 +77,7 @@ struct SignatureOperationsModule {
             "deposit expired"
         )
         
-        let feeCost = fee * BigUint(value: Int64(numTokensTransfered))
+        let feeCost = fee * BigUint(value: numTokensTransfered)
         depositedFee.amount = depositedFee.amount - feeCost
         
         let collectedFeesMapper = StorageModule().$collectedFeesForToken[feeToken]
@@ -130,7 +130,7 @@ struct SignatureOperationsModule {
             egldValue: currentDeposit.egldFunds,
             esdtTransfers: currentDeposit.esdtFunds
         )
-        let numTokensBigUint = BigUint(value: Int64(numTokens))
+        let numTokensBigUint = BigUint(value: numTokens)
         
         var forwardDeposit = forwardDepositMapper.get()
         

@@ -9,12 +9,13 @@ public struct Blockchain {
         return Address(handle: handle)
     }
     
-    public static func getBlockTimestamp() -> UInt64 { // TODO: add tests
-        return UInt64(API.getBlockTimestamp()) // TODO: is this cast fine?
+    public static func getBlockTimestamp() -> UInt64 {
+        // TODO: add tests
+        return toBigEndianUInt64(from: API.getBlockTimestamp().toBytes8()) // TODO: super tricky, we should ensure it works
     }
     
     public static func getBlockRound() -> UInt64 { // TODO: add tests
-        return UInt64(API.getBlockRound()) // TODO: is this cast fine?
+        return toBigEndianUInt64(from: API.getBlockRound().toBytes8()) // TODO: super tricky, we should ensure it works
     }
     
     public static func getBalance(
@@ -46,7 +47,7 @@ public struct Blockchain {
             addressPtr: &addressBytes,
             tokenIDOffset: &tokenIdentifierBytes,
             tokenIDLen: tokenIdentifier.count,
-            nonce: Int64(nonce), // TODO: Is this cast safe?
+            nonce: toBigEndianInt64(from: API.getGasLeft().toBytes8()), // TODO: super tricky, we should ensure it works
             dest: destHandle
         )
         
@@ -63,7 +64,7 @@ public struct Blockchain {
     }
     
     public static func getGasLeft() -> UInt64 {
-        return UInt64(API.getGasLeft()) // TODO: Is this cast safe?
+        return toBigEndianUInt64(from: API.getGasLeft().toBytes8()) // TODO: super tricky, we should ensure it works
     }
     
     private static func getEGLDOrESDTBalance(

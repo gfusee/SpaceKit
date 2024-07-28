@@ -74,7 +74,7 @@ struct HelpersModule {
         )
         
         require(
-            fee * BigUint(value: Int64(numTokens)) <= paidFee,
+            fee * BigUint(value: numTokens) <= paidFee,
             "cannot deposit funds without covering the fee cost first"
         )
     }

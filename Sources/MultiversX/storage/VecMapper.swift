@@ -112,32 +112,17 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
 }
 
-public struct VecMapperIterator<V: TopEncode & NestedEncode & TopDecode>: IteratorProtocol {
-    // TODO: add tests
-    let vecMapper: VecMapper<V>
-    let count: UInt32
-    var index: UInt32
-    
-    init(vecMapper: VecMapper<V>) {
-        self.vecMapper = vecMapper
-        self.count = vecMapper.count
-        self.index = 1
-    }
-    
-    public mutating func next() -> V? {
-        let currentIndex = self.index
-        
-        guard currentIndex <= self.count else {
-            return nil
-        }
-        
-        self.index += 1
-        return self.vecMapper.getUnchecked(index: currentIndex)
-    }
-}
 
-extension VecMapper: Sequence {
-    public func makeIterator() -> VecMapperIterator<V> {
-        VecMapperIterator(vecMapper: self)
+extension VecMapper: MXSequence {
+    public func forEach(_ operations: (V) throws -> Void) rethrows {
+        let count = self.count
+        var index: UInt32 = 1
+        
+        while index <= count {
+            let element = self.getUnchecked(index: index)
+            try operations(element)
+            
+            index += 1
+        }
     }
 }

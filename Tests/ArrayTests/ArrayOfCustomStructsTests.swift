@@ -456,9 +456,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testForLoopZeroElement() throws {
         let array: MXArray<CustomCodableStruct> = MXArray()
         
-        for _ in array {
-            XCTFail()
-        }
+        array.forEach { _ in XCTFail() }
     }
     
     func testForLoopOneElement() throws {
@@ -472,7 +470,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         )
         
-        for item in array {
+        array.forEach { item in
             XCTAssertEqual(
                 item,
                 CustomCodableStruct(
@@ -506,9 +504,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
         
         var heapArray: [CustomCodableStruct] = []
         
-        for item in array {
-            heapArray.append(item)
-        }
+        array.forEach { heapArray.append($0) }
         
         let expected: [CustomCodableStruct] = [
             CustomCodableStruct(

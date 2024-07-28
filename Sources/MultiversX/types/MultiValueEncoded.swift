@@ -26,50 +26,29 @@ public struct MultiValueEncoded<Item: MXCodable> {
     public func toArray() -> MXArray<Item> {
         var result = MXArray<Item>()
         
-        for item in self {
-            result = result.appended(item)
-        }
+        self.forEach { result = result.appended($0) }
         
         return result
     }
 }
 
-public struct MultiValueEncodedIterator<Item: MXCodable>: IteratorProtocol {
-    // TODO: add tests
-    let multiValueEncoded: MultiValueEncoded<Item>
-    let count: Int32
-    
-    var index: Int32 = 0
-    
-    init(multiValueEncoded: MultiValueEncoded<Item>) {
-        self.count = multiValueEncoded.count
-        self.multiValueEncoded = multiValueEncoded
-    }
-    
-    public mutating func next() -> Item? {
-        guard self.index < self.count else {
-            return nil
+extension MultiValueEncoded: MXSequence {
+    public func forEach(_ operations: (Item) throws -> Void) rethrows {
+        let count = self.count
+        var index: Int32 = 0
+        
+        while index < count {
+            let element = self.get(index)
+            try operations(element)
+            
+            index += 1
         }
-        
-        let result = self.multiValueEncoded.get(self.index)
-        
-        self.index += 1
-        
-        return result
-    }
-}
-
-extension MultiValueEncoded: Sequence {
-    public func makeIterator() -> MultiValueEncodedIterator<Item> {
-        MultiValueEncodedIterator(multiValueEncoded: self)
     }
 }
 
 extension MultiValueEncoded: TopEncodeMulti {
     public func multiEncode<O>(output: inout O) where O : TopEncodeMultiOutput {
-        for buffer in self.rawBuffers {
-            buffer.multiEncode(output: &output)
-        }
+        self.rawBuffers.forEach { $0.multiEncode(output: &output) }
     }
 }
 

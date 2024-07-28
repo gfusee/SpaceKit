@@ -21,7 +21,7 @@ public struct ContractCallTransactionInput {
         let callerAddress = self.callerAddress ?? contractAddress
         var esdtValueArray: [TransactionInput.EsdtPayment] = []
 
-        for transfer in self.esdtValue {
+        self.esdtValue.forEach { transfer in
             esdtValueArray.append(
                 TransactionInput.EsdtPayment(
                     tokenIdentifier: Data(transfer.tokenIdentifier.toBytes()),
@@ -71,9 +71,7 @@ public struct TransactionInput {
     public mutating func withArguments(args: MXArray<MXBuffer>) {
         var argumentsData: [Data] = []
         
-        for arg in args {
-            argumentsData.append(Data(arg.toBytes()))
-        }
+        args.forEach { argumentsData.append(Data($0.toBytes())) }
         
         self.arguments = argumentsData
     }

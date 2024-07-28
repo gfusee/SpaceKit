@@ -294,9 +294,8 @@ package class TransactionContainer {
         let data = self.getBufferData(handle: dataHandle)
         
         var topics: [Data] = []
-        for topic in topicsArray {
-            topics.append(Data(topic.toBytes()))
-        }
+        
+        topicsArray.forEach { topics.append(Data($0.toBytes())) }
         
         self.transactionOutput?.writeLog(log: TransactionOutputLogRaw(topics: topics, data: data))
     }

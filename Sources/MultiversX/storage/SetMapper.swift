@@ -39,8 +39,8 @@ public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
         return true
     }
     
-    public func extend<I: Sequence<V>>(iterable: I) {
-        for element in iterable {
+    public func extend<I: MXSequence>(iterable: I) where I.V == V {
+        iterable.forEach { element in
             let _ = self.insert(value: element)
         }
     }
@@ -59,8 +59,8 @@ public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
         return true
     }
     
-    public func removeAll<I: Sequence<V>>(iterable: I) {
-        for element in iterable {
+    public func removeAll<I: MXSequence>(iterable: I) where I.V == V {
+        iterable.forEach { element in
             let _ = self.remove(value: element)
         }
     }
@@ -92,15 +92,15 @@ public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
 }
 
-extension SetMapper: Sequence {
-    public func makeIterator() -> QueueMapIterator<V> {
-        QueueMapIterator(queueMap: self.queueMapper)
+extension SetMapper: MXSequence {
+    public func forEach(_ operations: (V) throws -> Void) rethrows {
+        try self.queueMapper.forEach(operations)
     }
 }
 
 extension SetMapper: TopEncodeMulti {
     public func multiEncode<O>(output: inout O) where O : TopEncodeMultiOutput {
-        for element in self {
+        self.forEach { element in
             output.pushSingleValue(arg: element)
         }
     }

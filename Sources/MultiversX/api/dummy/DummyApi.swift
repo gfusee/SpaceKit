@@ -568,9 +568,7 @@ extension DummyApi: SendApiProtocol {
         let argumentsArray: MXArray<MXBuffer> = MXArray(handle: argumentsHandle)
         var arguments: [Data] = []
         
-        for argument in argumentsArray {
-            arguments.append(Data(argument.toBytes()))
-        }
+        argumentsArray.forEach { arguments.append(Data($0.toBytes())) }
         
         let results = currentTransactionContainer.performNestedContractCall(
             receiver: receiver,

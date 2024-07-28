@@ -2,12 +2,22 @@ public struct BigUint {
     let handle: Int32
     
     public init() {
-        self.init(value: 0)
+        self.init(value: getZeroedBytes8())
     }
-
+    
     public init(value: Int64) {
         let handle = getNextHandle()
         API.bigIntSetInt64(destination: handle, value: value)
+        self.handle = handle
+    }
+    
+    public init(value: Int32) {
+        self.init(value: value.toBytes8())
+    }
+
+    package init(value: Bytes8) {
+        let handle = getNextHandle()
+        API.bigIntSetInt64(destination: handle, value: toBigEndianInt64(from: value))
         self.handle = handle
     }
     
@@ -156,13 +166,17 @@ extension BigUint: ArrayItem {
     }
     
     public func intoArrayPayload() -> MXBuffer {
-        return MXBuffer(data: self.handle.asBigEndianBytes())
+        return MXBuffer(data: self.handle.toBytes4())
     }
 }
 
 extension BigUint: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: IntegerLiteralType) {
-        self.init(value: Int64(value))
+        #if WASM
+        self.init(value: Int32(value).toBytes8())
+        #else
+        self.init(value: Int64(value).toBytes8())
+        #endif
     }
 }
 

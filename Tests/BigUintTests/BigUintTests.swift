@@ -36,7 +36,7 @@ final class BigUintTests: ContractTestCase {
     }
     
     func testNonZeroBigUint() throws {
-        let bigUint = BigUint(value: 4)
+        let bigUint: BigUint = 4
         
         XCTAssertEqual(bigUint, 4)
     }

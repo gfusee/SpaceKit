@@ -172,27 +172,21 @@ final class ArrayOfIntegersTests: ContractTestCase {
     func testForLoopZeroElement() throws {
         let array: MXArray<UInt64> = MXArray()
         
-        for _ in array {
-            XCTFail()
-        }
+        array.forEach { _ in XCTFail() }
     }
     
     func testForLoopOneElement() throws {
-        var array: MXArray<UInt64> = [10]
+        let array: MXArray<UInt64> = [10]
         
-        for item in array {
-            XCTAssertEqual(item, 10)
-        }
+        array.forEach { XCTAssertEqual($0, 10) }
     }
     
     func testForLoopTwoElements() throws {
-        var array: MXArray<UInt64> = [10, 100]
+        let array: MXArray<UInt64> = [10, 100]
         
         var heapArray: [UInt64] = []
         
-        for item in array {
-            heapArray.append(item)
-        }
+        array.forEach { heapArray.append($0) }
         
         let expected: [UInt64] = [10, 100]
         
@@ -211,7 +205,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     }
     
     func testTopEncodeOneElement() throws {
-        var array: MXArray<UInt64> = [10]
+        let array: MXArray<UInt64> = [10]
         
         var output = MXBuffer()
         array.topEncode(output: &output)
@@ -222,7 +216,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     }
     
     func testTopEncodeTwoElements() throws {
-        var array: MXArray<UInt64> = [10, 100]
+        let array: MXArray<UInt64> = [10, 100]
         
         var output = MXBuffer()
         array.topEncode(output: &output)
@@ -244,7 +238,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     }
     
     func testNestedEncodeOneElement() throws {
-        var array: MXArray<UInt64> = [10]
+        let array: MXArray<UInt64> = [10]
         
         var output = MXBuffer()
         array.depEncode(dest: &output)
@@ -255,7 +249,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     }
     
     func testNestedEncodeTwoElements() throws {
-        var array: MXArray<UInt64> = [10, 100]
+        let array: MXArray<UInt64> = [10, 100]
         
         var output = MXBuffer()
         array.depEncode(dest: &output)

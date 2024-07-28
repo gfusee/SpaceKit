@@ -178,36 +178,16 @@ public struct QueueMapper<V: TopEncode & TopDecode> {
     }
 }
 
-public struct QueueMapIterator<V: TopEncode & TopDecode>: IteratorProtocol {
-    // TODO: add tests
-    let queueMap: QueueMapper<V>
-    
-    var nodeId: UInt32
-    
-    init(queueMap: QueueMapper<V>) {
-        self.queueMap = queueMap
-        
-        let infoMapper = queueMap.getInfoMapper()
+extension QueueMapper: MXSequence {
+    public func forEach(_ operations: (V) throws -> Void) rethrows {
+        let infoMapper = self.getInfoMapper()
         let info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
         
-        self.nodeId = info.front
-    }
-    
-    public mutating func next() -> V? {
-        let currentNodeId = self.nodeId
+        var currentNodeId = info.front
         
-        if currentNodeId == NULL_ENTRY {
-            return nil
+        while currentNodeId != NULL_ENTRY {
+            try operations(self.getValueMapper(nodeId: currentNodeId).get())
+            currentNodeId = self.getNodeMapper(nodeId: currentNodeId).get().next
         }
-        
-        self.nodeId = self.queueMap.getNodeMapper(nodeId: currentNodeId).get().next
-        
-        return self.queueMap.getValueMapper(nodeId: currentNodeId).get()
-    }
-}
-
-extension QueueMapper: Sequence {
-    public func makeIterator() -> QueueMapIterator<V> {
-        QueueMapIterator(queueMap: self)
     }
 }

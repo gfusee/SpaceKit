@@ -345,8 +345,8 @@ final class IntTests: ContractTestCase {
     }
     
     func testFixedArrayToIntWithZero() throws {
-        let array: FixedArray8<UInt8> = FixedArray8(count: 0)
-        let result = array.toBigEndianInt()
+        let array = getZeroedBytes8()
+        let result = toBigEndianInt32(skipZerosCount: 4, from: toBytes4BigEndian(bytes8: array))
         
         let expected: Int32 = 0
         
@@ -354,9 +354,11 @@ final class IntTests: ContractTestCase {
     }
     
     func testFixedArrayToIntWithOne() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(count: 1)
-        array[0] = 1
-        let result = array.toBigEndianInt()
+        var array = getZeroedBytes8()
+        
+        array.7 = 1
+        
+        let result = toBigEndianInt32(skipZerosCount: 3, from: toBytes4BigEndian(bytes8: array))
         
         let expected: Int32 = 1
         
@@ -364,9 +366,11 @@ final class IntTests: ContractTestCase {
     }
     
     func testFixedArrayToIntWithTen() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(count: 1)
-        array[0] = 10
-        let result = array.toBigEndianInt()
+        var array = getZeroedBytes8()
+        
+        array.7 = 10
+        
+        let result = toBigEndianInt32(skipZerosCount: 3, from: toBytes4BigEndian(bytes8: array))
         
         let expected: Int32 = 10
         
@@ -374,12 +378,12 @@ final class IntTests: ContractTestCase {
     }
     
     func testFixedArrayToIntWithMinusThousand() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(count: 2)
+        var array = getZeroedBytes8()
         
-        array[0] = 252
-        array[1] = 24
+        array.6 = 252
+        array.7 = 24
         
-        let result = array.toBigEndianInt()
+        let result = toBigEndianInt32(skipZerosCount: 2, from: toBytes4BigEndian(bytes8: array))
         
         let expected: Int32 = -1000
         
@@ -387,12 +391,12 @@ final class IntTests: ContractTestCase {
     }
     
     func testFixedArrayToIntWithThousand() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(count: 2)
+        var array = getZeroedBytes8()
         
-        array[0] = 3
-        array[1] = 232
+        array.6 = 3
+        array.7 = 232
         
-        let result = array.toBigEndianInt()
+        let result = toBigEndianInt32(skipZerosCount: 2, from: toBytes4BigEndian(bytes8: array))
         
         let expected: Int32 = 1000
         
@@ -400,14 +404,14 @@ final class IntTests: ContractTestCase {
     }
     
     func testFixedArrayToIntWithMin() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(count: 4)
+        var array = getZeroedBytes8()
         
-        array[0] = 128
-        array[1] = 0
-        array[2] = 0
-        array[3] = 0
+        array.4 = 128
+        array.5 = 0
+        array.6 = 0
+        array.7 = 0
         
-        let result = array.toBigEndianInt()
+        let result = toBigEndianInt32(skipZerosCount: 0, from: toBytes4BigEndian(bytes8: array))
         
         let expected = Int32.min
         
@@ -415,14 +419,14 @@ final class IntTests: ContractTestCase {
     }
     
     func testFixedArrayToIntWithMax() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(count: 4)
+        var array = getZeroedBytes8()
         
-        array[0] = 127
-        array[1] = 255
-        array[2] = 255
-        array[3] = 255
+        array.4 = 127
+        array.5 = 255
+        array.6 = 255
+        array.7 = 255
         
-        let result = array.toBigEndianInt()
+        let result = toBigEndianInt32(skipZerosCount: 0, from: toBytes4BigEndian(bytes8: array))
         
         let expected = Int32.max
         

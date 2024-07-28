@@ -95,11 +95,11 @@ import MultiversX
         let caller = Message.caller
         var collectedEsdtFees: MXArray<TokenPayment> = MXArray()
         
-        for token in feeTokensMapper {
+        feeTokensMapper.forEach { token in
             let fee = StorageModule().$collectedFeesForToken[token].take()
             
             guard fee > 0 else {
-                continue
+                return
             }
             
             if token == "EGLD" { // TODO: no hardcoded EGLD

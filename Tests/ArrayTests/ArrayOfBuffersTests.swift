@@ -172,18 +172,14 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testForLoopZeroElement() throws {
         let array: MXArray<MXBuffer> = MXArray()
         
-        for _ in array {
-            XCTFail()
-        }
+        array.forEach { _ in XCTFail() }
     }
     
     func testForLoopOneElement() throws {
         var array: MXArray<MXBuffer> = MXArray()
         array = array.appended("Hey!")
         
-        for item in array {
-            XCTAssertEqual(item, "Hey!")
-        }
+        array.forEach { XCTAssertEqual($0, "Hey!") }
     }
     
     func testForLoopTwoElements() throws {
@@ -193,9 +189,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
         
         var heapArray: [MXBuffer] = []
         
-        for item in array {
-            heapArray.append(item)
-        }
+        array.forEach { heapArray.append($0) }
         
         let expected: [MXBuffer] = ["Hey!", "How's it going?"]
         

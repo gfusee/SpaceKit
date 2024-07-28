@@ -37,9 +37,7 @@ public struct MXArray<T: MXArrayType> {
     public func appended(contentsOf newElements: MXArray<T>) -> MXArray<T> {
         var newArray = MXArray(buffer: self.buffer.clone())
         
-        for item in newElements {
-            newArray = newArray.appended(item)
-        }
+        newElements.forEach { newArray = newArray.appended($0) }
         
         return newArray
     }
@@ -159,42 +157,30 @@ public struct MXArray<T: MXArrayType> {
     public func toArray() -> [T] {
         var result: [T] = []
         
-        for item in self {
-            result.append(item)
-        }
+        self.forEach { result.append($0) }
         
         return result
     }
     #endif
 }
 
-public struct MXArrayIterator<T: MXArrayType>: IteratorProtocol {
-    let array: MXArray<T>
-    let count: Int32
-    
-    var index: Int32 = 0
-    
-    init(array: MXArray<T>) {
-        self.count = array.count
-        self.array = array
-    }
-    
-    public mutating func next() -> T? {
-        guard self.index < self.count else {
-            return nil
-        }
-        
-        let result = self.array.get(self.index)
-        
-        self.index += 1
-        
-        return result
-    }
-}
-
 extension MXArray {
     public static func + (lhs: MXArray<T>, rhs: MXArray<T>) -> MXArray<T> {
         return lhs.appended(contentsOf: rhs)
+    }
+}
+
+extension MXArray: MXSequence {
+    public func forEach(_ operations: (T) throws -> Void) rethrows {
+        let count = self.count
+        var index: Int32 = 0
+        
+        while index < count {
+            let element = self.get(index)
+            try operations(element)
+            
+            index += 1
+        }
     }
 }
 
@@ -237,18 +223,11 @@ extension MXArray: ExpressibleByArrayLiteral {
 }
 #endif
 
-extension MXArray: Sequence {
-    public func makeIterator() -> MXArrayIterator<T> {
-        MXArrayIterator(array: self)
-    }
-}
-
 extension MXArray: TopEncode {
     public func topEncode<O>(output: inout O) where O : TopEncodeOutput {
         var encodedItems = MXBuffer()
-        for item in self {
-            item.depEncode(dest: &encodedItems)
-        }
+        
+        self.forEach { $0.depEncode(dest: &encodedItems) }
         
         output.setBuffer(buffer: encodedItems)
     }
@@ -256,9 +235,7 @@ extension MXArray: TopEncode {
 
 extension MXArray: TopEncodeMulti {
     public func multiEncode<O>(output: inout O) where O : TopEncodeMultiOutput {
-        for element in self {
-            output.pushSingleValue(arg: element)
-        }
+        self.forEach { output.pushSingleValue(arg: $0) }
     }
 }
 
@@ -349,9 +326,7 @@ extension MXArray: CustomDebugStringConvertible where T: CustomDebugStringConver
     public var debugDescription: String {
         var itemDebugDescriptions: [String] = []
         
-        for item in self {
-            itemDebugDescriptions.append(item.debugDescription)
-        }
+        self.forEach { itemDebugDescriptions.append($0.debugDescription) }
         
         return "[\(itemDebugDescriptions.joined(separator: ", "))]"
     }

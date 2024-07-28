@@ -79,7 +79,7 @@ public struct UnorderedSetMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
     
     public func clear() {
-        for value in self.vecMapper {
+        self.vecMapper.forEach { value in
             self.getItemIndexMapper(value: value).clear()
         }
         
@@ -87,8 +87,8 @@ public struct UnorderedSetMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
 }
 
-extension UnorderedSetMapper: Sequence {
-    public func makeIterator() -> VecMapperIterator<V> {
-        VecMapperIterator(vecMapper: self.vecMapper)
+extension UnorderedSetMapper: MXSequence {
+    public func forEach(_ operations: (V) throws -> Void) rethrows {
+        try self.vecMapper.forEach(operations)
     }
 }

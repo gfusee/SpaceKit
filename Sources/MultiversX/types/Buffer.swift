@@ -43,17 +43,6 @@ public struct MXBuffer {
     #endif
     
     @inline(__always)
-    package init(data: FixedArray8<UInt8>) {
-        let handle = getNextHandle()
-        
-        var data = data
-        
-        let _ = API.bufferSetBytes(handle: handle, bytePtr: &data, byteLen: Int32(data.count))
-        
-        self.handle = handle
-    }
-    
-    @inline(__always)
     package init(data: UInt8) {
         let handle = getNextHandle()
         
@@ -156,10 +145,33 @@ public struct MXBuffer {
         return bytes
     }
     
-    public func toFixedSizeBytes() -> FixedArray8<UInt8> {
-        var result = FixedArray8<UInt8>(count: Int(self.count))
+    package func toBigEndianBytes8() -> Bytes8 {
+        let count = self.count
         
-        let _ = API.bufferGetBytes(handle: self.handle, resultPointer: &result)
+        require(
+            count <= 8,
+            "wrong buffer bytes count"
+        )
+        
+        var resultWithoutLeadingZeros = getZeroedBytes8()
+        
+        let _ = API.bufferGetBytes(handle: self.handle, resultPointer: &resultWithoutLeadingZeros)
+        
+        var result = getZeroedBytes8()
+        
+        var counter: Int32 = 0
+        let lastIndex: Int32 = 7
+        let numberOfLeadingZeros = 8 - count
+        
+        // If self is [4, 3, 2], then resultWithoutLeadingZeros is 43200000 and result should be 00000432
+        while counter <= lastIndex {
+            if counter >= numberOfLeadingZeros {
+                let sourceByte = accessNthElementOfBytes8(index: counter - numberOfLeadingZeros, bytes: resultWithoutLeadingZeros)
+                setNthElementOfBytes8(index: counter, bytes: &result, value: sourceByte)
+            }
+            
+            counter += 1
+        }
         
         return result
     }
@@ -276,7 +288,7 @@ extension MXBuffer: ArrayItem {
     }
     
     public func intoArrayPayload() -> MXBuffer {
-        return MXBuffer(data: self.handle.asBigEndianBytes())
+        return MXBuffer(data: self.handle.toBytes4())
     }
 }
 

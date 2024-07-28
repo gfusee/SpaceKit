@@ -285,8 +285,8 @@ final class UInt64Tests: ContractTestCase {
     }
     
     func testFixedArrayToUInt64WithZero() throws {
-        let array: FixedArray8<UInt8> = FixedArray8(count: 0)
-        let result = array.toBigEndianUInt64()
+        var array = getZeroedBytes8()
+        let result = toBigEndianUInt64(from: array)
         
         let expected: UInt64 = 0
         
@@ -294,9 +294,9 @@ final class UInt64Tests: ContractTestCase {
     }
     
     func testFixedArrayToUInt64WithOne() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(count: 1)
-        array[0] = 1
-        let result = array.toBigEndianUInt64()
+        var array = getZeroedBytes8()
+        array.7 = 1
+        let result = toBigEndianUInt64(from: array)
         
         let expected: UInt64 = 1
         
@@ -304,9 +304,9 @@ final class UInt64Tests: ContractTestCase {
     }
     
     func testFixedArrayToUInt64WithTen() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(count: 1)
-        array[0] = 10
-        let result = array.toBigEndianUInt64()
+        var array = getZeroedBytes8()
+        array.7 = 10
+        let result = toBigEndianUInt64(from: array)
         
         let expected: UInt64 = 10
         
@@ -314,27 +314,27 @@ final class UInt64Tests: ContractTestCase {
     }
     
     func testFixedArrayToUInt64WithThousand() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(count: 2)
+        var array = getZeroedBytes8()
         
-        array[0] = 3
-        array[1] = 232
+        array.6 = 3
+        array.7 = 232
         
-        let result = array.toBigEndianUInt64()
+        let result = toBigEndianUInt64(from: array)
         
         let expected: UInt64 = 1000
         
         XCTAssertEqual(result, expected)
     }
     
-    func testFixedArrayToUInt64WithUInt32() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(allZeros: ())
+    func testFixedArrayToUInt64WithUInt32Max() throws {
+        var array = getZeroedBytes8()
         
-        array[4] = 255
-        array[5] = 255
-        array[6] = 255
-        array[7] = 255
+        array.4 = 255
+        array.5 = 255
+        array.6 = 255
+        array.7 = 255
         
-        let result = array.toBigEndianUInt64()
+        let result = toBigEndianUInt64(from: array)
         
         let expected: UInt64 = UInt64(UInt32.max)
         
@@ -342,18 +342,18 @@ final class UInt64Tests: ContractTestCase {
     }
     
     func testFixedArrayToUInt64WithUInt64Max() throws {
-        var array: FixedArray8<UInt8> = FixedArray8(allZeros: ())
+        var array = getZeroedBytes8()
         
-        array[0] = 255
-        array[1] = 255
-        array[2] = 255
-        array[3] = 255
-        array[4] = 255
-        array[5] = 255
-        array[6] = 255
-        array[7] = 255
+        array.0 = 255
+        array.1 = 255
+        array.2 = 255
+        array.3 = 255
+        array.4 = 255
+        array.5 = 255
+        array.6 = 255
+        array.7 = 255
         
-        let result = array.toBigEndianUInt64()
+        let result = toBigEndianUInt64(from: array)
         
         let expected = UInt64.max
         
