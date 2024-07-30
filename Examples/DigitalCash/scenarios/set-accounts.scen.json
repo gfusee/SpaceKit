@@ -40,7 +40,6 @@
         {
             "step": "scDeploy",
             "id": "deploy",
-            "displayLogs": true,
             "tx": {
                 "from": "address:digital_cash_owner_address",
                 "contractCode": "file:../output/DigitalCash.wasm",

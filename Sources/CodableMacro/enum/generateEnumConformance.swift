@@ -105,6 +105,7 @@ fileprivate func generateTopDecodeExtension(enumName: TokenSyntax, discriminants
         extendedType: IdentifierTypeSyntax(name: enumName),
         memberBlock: """
         : TopDecode {
+            @inline(__always)
             public init(topDecode input: MXBuffer) {
                 var nestedDecodeInput = BufferNestedDecodeInput(buffer: input)
         
@@ -176,6 +177,7 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
         extendedType: IdentifierTypeSyntax(name: enumName),
         memberBlock: """
         : NestedDecode {
+            @inline(__always)
             public init(depDecode input: inout some NestedDecodeInput) {
                 let _discriminant = UInt8(depDecode: &input)
         
@@ -272,6 +274,7 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
                 return max(\(raw: payloadSizeSum))
             }
             
+            @inline(__always)
             public static func decodeArrayPayload(payload: MXBuffer) -> \(enumName) {
                 var payloadInput = BufferNestedDecodeInput(buffer: payload)
                 
@@ -284,6 +287,7 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
                 }
             }
               
+            @inline(__always)
             public func intoArrayPayload() -> MXBuffer {
                 var totalPayload = MXBuffer()
         

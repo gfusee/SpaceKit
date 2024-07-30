@@ -5,8 +5,6 @@ import MultiversX
         self.whitelistFeeToken(fee: fee, token: token)
     }
     
-    /*
-    
     public func payFeeAndFundESDT(
         address: Address,
         valability: UInt64
@@ -50,13 +48,12 @@ import MultiversX
     ) {
         SignatureOperationsModule().forward(address: address, forwardAddress: forwardAddress, signature: signature)
     }
-     
-     */
     
     public mutating func whitelistFeeToken(
         fee: BigUint,
         token: MXBuffer
     ) {
+        let _ = Blockchain.getOwner()
         assertOwner()
         
         let feeForTokenMapper = StorageModule().$feeForToken[token]
@@ -132,25 +129,19 @@ import MultiversX
             "non-existent key"
         )
         
-        let deposut = depositMapper.get()
-        
-        // TODO: remove
-        
-        /*
-        
         let deposit = depositMapper.get()
         
         if token == "EGLD" { // TODO: no hardcoded EGLD
             return deposit.egldFunds
         }
         
-        for esdt in deposit.esdtFunds {
+        for esdtIndex in 0..<deposit.esdtFunds.count {
+            let esdt = deposit.esdtFunds.get(esdtIndex)
+            
             if esdt.tokenIdentifier == token && esdt.nonce == nonce {
                 return esdt.amount
             }
         }
-         
-         */
         
         return 0
     }

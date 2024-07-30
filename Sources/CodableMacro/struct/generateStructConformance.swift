@@ -64,6 +64,7 @@ fileprivate func generateNestedEncodeExtension(structName: TokenSyntax, fields: 
         extendedType: IdentifierTypeSyntax(name: structName),
         memberBlock: """
         : NestedEncode {
+            @inline(__always)
             public func depEncode<O: NestedEncodeOutput>(dest: inout O) {
                 \(raw: nestedEncodeFieldsCalls)
             }
@@ -77,6 +78,7 @@ fileprivate func generateTopDecodeExtension(structName: TokenSyntax, fields: [Va
         extendedType: IdentifierTypeSyntax(name: structName),
         memberBlock: """
         : TopDecode {
+            @inline(__always)
             public init(topDecode input: MXBuffer) {
                 var input = BufferNestedDecodeInput(buffer: input)
         
@@ -120,6 +122,7 @@ fileprivate func generateNestedDecodeExtension(structName: TokenSyntax, fields: 
         extendedType: IdentifierTypeSyntax(name: structName),
         memberBlock: """
         : NestedDecode {
+            @inline(__always)
             public init(depDecode input: inout some NestedDecodeInput) {
                 self = \(raw: structName)(
                     \(raw: nestedDecodeInitArgs)
@@ -166,6 +169,7 @@ fileprivate func generateArrayItemExtension(structName: TokenSyntax, fields: [Va
                 return \(raw: payloadSizeSum)
             }
             
+            @inline(__always)
             public static func decodeArrayPayload(payload: MXBuffer) -> \(structName) {
                 var payloadInput = BufferNestedDecodeInput(buffer: payload)
                 
@@ -180,6 +184,7 @@ fileprivate func generateArrayItemExtension(structName: TokenSyntax, fields: [Va
                 )
             }
               
+            @inline(__always)
             public func intoArrayPayload() -> MXBuffer {
                 var totalPayload = MXBuffer()
         
