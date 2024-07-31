@@ -61,6 +61,8 @@ struct HelpersModule {
         currentDeposit.expirationRound = self.getExpirationRound(valability: valability)
         currentDeposit.esdtFunds = esdtPayments
         currentDeposit.egldFunds = egldPayment
+        
+        depositMapper.set(currentDeposit)
     }
     
     func checkFeesCoverNumberOfTokens(
@@ -101,6 +103,7 @@ struct HelpersModule {
             )
             
             currentDeposit.fees.value.amount = currentDeposit.fees.value.amount + payment.amount
+            depositMapper.set(currentDeposit)
             
             return
         }

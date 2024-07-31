@@ -2,7 +2,7 @@ import MultiversX
 
 @Contract struct DigitalCash {
     init(fee: BigUint, token: MXBuffer) {
-        self.whitelistFeeToken(fee: fee, token: token)
+        self.whitelistFeeTokenLogic(fee: fee, token: token)
     }
     
     public func payFeeAndFundESDT(
@@ -53,20 +53,9 @@ import MultiversX
         fee: BigUint,
         token: MXBuffer
     ) {
-        let _ = Blockchain.getOwner()
         assertOwner()
         
-        let feeForTokenMapper = StorageModule().$feeForToken[token]
-        
-        require(
-            feeForTokenMapper.isEmpty(),
-            "Token already whitelisted"
-        )
-        
-        feeForTokenMapper.set(fee)
-        
-        let _ = StorageModule().whitelistedFeeTokens.insert(value: token)
-        let _ = StorageModule().allTimeFeeTokens.insert(value: token)
+        self.whitelistFeeTokenLogic(fee: fee, token: token)
     }
     
     public mutating func blacklistFeeToken(
@@ -144,5 +133,22 @@ import MultiversX
         }
         
         return 0
+    }
+    
+    func whitelistFeeTokenLogic(
+        fee: BigUint,
+        token: MXBuffer
+    ) {
+        let feeForTokenMapper = StorageModule().$feeForToken[token]
+        
+        require(
+            feeForTokenMapper.isEmpty(),
+            "Token already whitelisted"
+        )
+        
+        feeForTokenMapper.set(fee)
+        
+        let _ = StorageModule().whitelistedFeeTokens.insert(value: token)
+        let _ = StorageModule().allTimeFeeTokens.insert(value: token)
     }
 }

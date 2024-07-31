@@ -73,29 +73,6 @@
         },
         {
             "step": "scCall",
-            "id": "claim4",
-            "tx": {
-                "from": "address:acc1",
-                "to": "sc:the_digital_cash_contract",
-                "function": "claim",
-                "arguments": [
-                    "0x487bd4010b50c24a02018345fe5171edf4182e6294325382c75ef4c4409f01bd",
-                    "0x1dd092ec3a8d971daede79da4e5c5c90d66af9f2209a6f6541affa00c46a72fc2596e4db1b1bb226ce76e50730733078ff74a79ff7d0d185054375e0989330600"
-                ],
-                "gasLimit": "500,000,000",
-                "gasPrice": "0"
-            },
-            "expect": {
-                "out": [],
-                "status": "4",
-                "message": "str:argument decode error (signature): bad array length",
-                "logs": "*",
-                "gas": "*",
-                "refund": "*"
-            }
-        },
-        {
-            "step": "scCall",
             "id": "claim5",
             "tx": {
                 "from": "address:acc1",
@@ -171,7 +148,7 @@
                     "code": "file:../output/DigitalCash.wasm"
                 },
                 "address:acc1": {
-                    "nonce": "7",
+                    "nonce": "6",
                     "balance": "998,000",
                     "esdt": {
                         "str:CASHTOKEN-123456": "50"

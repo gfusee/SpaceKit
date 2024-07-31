@@ -50,7 +50,7 @@ struct SignatureOperationsModule {
         let depositMapper = StorageModule().$depositForDonor[address]
         
         require(
-            depositMapper.isEmpty(),
+            !depositMapper.isEmpty(),
             "non-existent key"
         )
         

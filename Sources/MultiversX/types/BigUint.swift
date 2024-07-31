@@ -11,6 +11,10 @@ public struct BigUint {
         self.handle = handle
     }
     
+    public init(value: UInt64) {
+        self.init(value: value.toBytes8())
+    }
+    
     public init(value: Int32) {
         self.init(value: value.toBytes8())
     }

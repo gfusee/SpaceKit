@@ -34,7 +34,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
     
     public func get(index: UInt32) -> V {
-        guard index != 0 && index < self.count else {
+        guard index != 0 && index <= self.count else {
             smartContractError(message: MXBuffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
         }
         
@@ -54,7 +54,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
     
     public func set(index: UInt32, item: V) {
-        guard index != 0 && index < self.count else {
+        guard index != 0 && index <= self.count else {
             smartContractError(message: MXBuffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
         }
         
@@ -76,7 +76,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
     
     public func clearEntry(index: UInt32) {
-        guard index != 0 && index < self.count else {
+        guard index != 0 && index <= self.count else {
             smartContractError(message: MXBuffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
         }
         
@@ -94,7 +94,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     package func swapRemoveAndGetOldLast(index: UInt32) -> V? {
         let lastItemIndex = self.count
         
-        guard index != 0 && index < self.count else {
+        guard index != 0 && index <= lastItemIndex else {
             smartContractError(message: MXBuffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
         }
         
