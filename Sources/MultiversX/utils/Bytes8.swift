@@ -142,3 +142,20 @@ extension UInt64 {
         return result
     }
 }
+
+extension UInt32 {
+    package func toBytes8() -> Bytes8 {
+        // TODO: add tests
+        
+        let bytes4 = self.toBytes4()
+        
+        var result = getZeroedBytes8()
+        
+        result.4 = bytes4.0
+        result.5 = bytes4.1
+        result.6 = bytes4.2
+        result.7 = bytes4.3
+        
+        return result
+    }
+}

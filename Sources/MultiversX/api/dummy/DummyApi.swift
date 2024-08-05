@@ -246,6 +246,10 @@ extension DummyApi: BufferApiProtocol {
         return data1 == data2 ? 1 : 0
     }
     
+    public func mBufferSetRandom(destinationHandle: Int32, length: Int32) -> Int32 {
+        fatalError() // TODO: implement and test
+    }
+    
     public func bufferToDebugString(handle: Int32) -> String {
         let data = self.getCurrentContainer().getBufferData(handle: handle)
         
@@ -471,6 +475,11 @@ extension DummyApi: BlockchainApiProtocol {
     
     public func getGasLeft() -> Int64 {
         return 100 // TODO: the RustVM implements this the same way, in the future we should provide a real implementation
+    }
+    
+    public func getESDTLocalRoles(tokenIdHandle: Int32) -> Int64 {
+        // TODO: implement and tests
+        fatalError()
     }
 }
 

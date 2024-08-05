@@ -11,6 +11,10 @@ public struct UnorderedSetMapper<V: TopEncode & NestedEncode & TopDecode> {
         self.vecMapper.count
     }
     
+    public var isEmpty: Bool {
+        self.vecMapper.isEmpty
+    }
+    
     public init(baseKey: MXBuffer) {
         self.baseKey = baseKey
         self.vecMapper = VecMapper(baseKey: baseKey)

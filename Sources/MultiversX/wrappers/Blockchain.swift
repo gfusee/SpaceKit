@@ -79,4 +79,10 @@ public struct Blockchain {
             Blockchain.getEGLDOrESDTBalance(address: address, tokenIdentifier: tokenIdentifier, nonce: nonce)
         }
     }
+    
+    public static func getESDTLocalRoles(tokenIdentifier: MXBuffer) -> EsdtLocalRoles { // TODO: use TokenIdentifier type
+        let flags = API.getESDTLocalRoles(tokenIdHandle: tokenIdentifier.handle)
+        
+        return EsdtLocalRoles(flags: flags)
+    }
 }

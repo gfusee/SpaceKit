@@ -81,3 +81,18 @@ extension Int32 {
         return result
     }
 }
+
+extension UInt32 {
+    package func toBytes4() -> Bytes4 {
+        // TODO: add tests
+        var result = getZeroedBytes4()
+        
+        withUnsafeMutableBytes(of: &result) { resultMutablePointer in
+            withUnsafeBytes(of: self.bigEndian) { selfPointer in
+                resultMutablePointer.copyMemory(from: selfPointer)
+            }
+        }
+        
+        return result
+    }
+}

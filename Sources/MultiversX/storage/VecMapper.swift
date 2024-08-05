@@ -18,6 +18,10 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
         self.getLenMapper().get()
     }
     
+    public var isEmpty: Bool {
+        self.count == 0
+    }
+    
     private func getItemMapper(index: UInt32) -> SingleValueMapper<V> {
         var itemEncoded = MXBuffer()
         index.depEncode(dest: &itemEncoded)
@@ -27,10 +31,6 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     
     private func getLenMapper() -> SingleValueMapper<UInt32> {
         return SingleValueMapper(key: self.lenKey)
-    }
-    
-    public func isEmpty() -> Bool {
-        return self.count == 0
     }
     
     public func get(index: UInt32) -> V {

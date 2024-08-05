@@ -55,6 +55,10 @@ func mBufferEq(handle1: Int32, handle2: Int32) -> Int32
 @_extern(c)
 func managedBufferToHex(sourceHandle: Int32, destinationHandle: Int32)
 
+@_extern(wasm, module: "env", name: "mBufferSetRandom")
+@_extern(c)
+func mBufferSetRandom(destinationHandle: Int32, length: Int32) -> Int32
+
 // MARK: BigInt-related OPCODES
 
 @_extern(wasm, module: "env", name: "bigIntSetInt64")
@@ -161,6 +165,9 @@ func managedOwnerAddress(resultHandle: Int32)
 @_extern(c)
 func getGasLeft() -> Int64
 
+@_extern(wasm, module: "env", name: "getESDTLocalRoles")
+@_extern(c)
+func getESDTLocalRoles(tokenhandle: Int32) -> Int64
 
 // MARK: CallValue-related OPCODES
 @_extern(wasm, module: "env", name: "bigIntGetCallValue")
@@ -295,6 +302,10 @@ extension VMApi: BufferApiProtocol {
     mutating func managedBufferToHex(sourceHandle: Int32, destinationHandle: Int32) {
         MultiversX.managedBufferToHex(sourceHandle: sourceHandle, destinationHandle: destinationHandle)
     }
+    
+    mutating func mBufferSetRandom(destinationHandle: Int32, length: Int32) -> Int32 {
+        return MultiversX.mBufferSetRandom(destinationHandle: destinationHandle, length: length)
+    }
 }
 
 // MARK: BigIntApi Implementation
@@ -413,6 +424,10 @@ extension VMApi: BlockchainApiProtocol {
     
     mutating func getGasLeft() -> Int64 {
         return MultiversX.getGasLeft()
+    }
+    
+    mutating func getESDTLocalRoles(tokenIdHandle: Int32) -> Int64 {
+        return MultiversX.getESDTLocalRoles(tokenhandle: tokenIdHandle)
     }
 }
 

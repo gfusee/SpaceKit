@@ -20,4 +20,6 @@ public protocol BlockchainApiProtocol {
     mutating func managedOwnerAddress(resultHandle: Int32)
 
     mutating func getGasLeft() -> Int64
+    
+    mutating func getESDTLocalRoles(tokenIdHandle: Int32) -> Int64
 }

@@ -110,6 +110,10 @@ public struct MXBuffer {
         let _ = API.bufferAppend(accumulatorHandle: self.handle, dataHandle: other.handle)
     }
     
+    package mutating func setRandomUnsafe(length: Int32) {
+        let _ = API.mBufferSetRandom(destinationHandle: self.handle, length: length)
+    }
+    
     public func clone() -> MXBuffer {
         let cloned = MXBuffer()
         let _ = API.bufferAppend(accumulatorHandle: cloned.handle, dataHandle: self.handle)
