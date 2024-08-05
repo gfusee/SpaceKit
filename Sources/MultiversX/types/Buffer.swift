@@ -17,6 +17,11 @@ public struct MXBuffer {
             return self.getCountSized()
         }
     }
+    
+    public var isEmpty: Bool {
+        // TODO: add tests
+        return self.count == 0
+    }
 
     public init(_ string: StaticString) {
         let handle = getNextHandle()

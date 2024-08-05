@@ -251,6 +251,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "LotteryEsdt",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/LotteryEsdt",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "PingPongEgld",
             dependencies: [
                 "MultiversX"
