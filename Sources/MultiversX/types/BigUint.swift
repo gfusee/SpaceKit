@@ -93,14 +93,14 @@ extension BigUint {
     
     public static func / (lhs: BigUint, rhs: BigUint) -> BigUint {
         let handle = getNextHandle()
-        API.bigIntDiv(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
+        API.bigIntTDiv(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         
         return BigUint(handle: handle)
     }
     
     public static func % (lhs: BigUint, rhs: BigUint) -> BigUint {
         let handle = getNextHandle()
-        API.bigIntMod(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
+        API.bigIntTMod(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         
         return BigUint(handle: handle)
     }

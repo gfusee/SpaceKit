@@ -8,8 +8,8 @@ public protocol BigIntApiProtocol {
     mutating func bigIntAdd(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32)
     mutating func bigIntSub(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32)
     mutating func bigIntMul(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32)
-    mutating func bigIntDiv(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32)
-    mutating func bigIntMod(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32)
+    mutating func bigIntTDiv(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32)
+    mutating func bigIntTMod(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32)
     mutating func bigIntToString(bigIntHandle: Int32, destHandle: Int32)
 }
 

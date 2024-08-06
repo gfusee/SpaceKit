@@ -43,7 +43,7 @@ extension UInt8: NestedDecode {
 
 extension UInt8: ArrayItem {
     public static var payloadSize: Int32 {
-        return 4
+        return 1
     }
     
     public static func decodeArrayPayload(payload: MXBuffer) -> UInt8 {

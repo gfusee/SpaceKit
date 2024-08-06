@@ -15,6 +15,13 @@ public struct MXArray<T: MXArrayType> {
         self.buffer = buffer.clone()
     }
     
+    public init(singleItem: T) {
+        var array = MXArray()
+        array = array.appended(singleItem)
+        
+        self = array
+    }
+    
     public var count: Int32 {
         return self.buffer.count / T.payloadSize
     }

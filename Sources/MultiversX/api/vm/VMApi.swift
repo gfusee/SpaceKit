@@ -93,13 +93,13 @@ func bigIntSub(dest: Int32, x: Int32, y: Int32)
 @_extern(c)
 func bigIntMul(dest: Int32, x: Int32, y: Int32)
 
-@_extern(wasm, module: "env", name: "bigIntDiv")
+@_extern(wasm, module: "env", name: "bigIntTDiv")
 @_extern(c)
-func bigIntDiv(dest: Int32, x: Int32, y: Int32)
+func bigIntTDiv(dest: Int32, x: Int32, y: Int32)
 
-@_extern(wasm, module: "env", name: "bigIntMod")
+@_extern(wasm, module: "env", name: "bigIntTMod")
 @_extern(c)
-func bigIntMod(dest: Int32, x: Int32, y: Int32)
+func bigIntTMod(dest: Int32, x: Int32, y: Int32)
 
 @_extern(wasm, module: "env", name: "mBufferToBigIntUnsigned")
 @_extern(c)
@@ -343,12 +343,12 @@ extension VMApi: BigIntApiProtocol {
         MultiversX.bigIntMul(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
-    mutating func bigIntDiv(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        MultiversX.bigIntDiv(dest: destHandle, x: lhsHandle, y: rhsHandle)
+    mutating func bigIntTDiv(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
+        MultiversX.bigIntTDiv(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
-    mutating func bigIntMod(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        MultiversX.bigIntMod(dest: destHandle, x: lhsHandle, y: rhsHandle)
+    mutating func bigIntTMod(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
+        MultiversX.bigIntTMod(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
     public mutating func bigIntToString(bigIntHandle: Int32, destHandle: Int32) {

@@ -334,7 +334,7 @@ extension DummyApi: BigIntApiProtocol {
         self.getCurrentContainer().managedBigIntData[destHandle] = result
     }
     
-    public func bigIntDiv(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
+    public func bigIntTDiv(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
         let lhs = self.getCurrentContainer().getBigIntData(handle: lhsHandle)
         let rhs = self.getCurrentContainer().getBigIntData(handle: rhsHandle)
         
@@ -347,7 +347,7 @@ extension DummyApi: BigIntApiProtocol {
         self.getCurrentContainer().managedBigIntData[destHandle] = result
     }
     
-    public func bigIntMod(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
+    public func bigIntTMod(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
         let lhs = self.getCurrentContainer().getBigIntData(handle: lhsHandle)
         let rhs = self.getCurrentContainer().getBigIntData(handle: rhsHandle)
         

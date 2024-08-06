@@ -1,7 +1,8 @@
 import MultiversX
 
+// TODO: use TokenIdentifier type
 @Codable struct LotteryInfo {
-    let tokenIdentifier: MXBuffer // TODO: use TokenIdentifier type
+    let tokenIdentifier: MXBuffer
     let ticketPrice: BigUint
     var ticketsLeft: UInt32
     let deadline: UInt64

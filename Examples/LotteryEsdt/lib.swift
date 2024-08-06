@@ -8,7 +8,7 @@ let MAX_TICKETS: UInt32 = 800
     @Mapping(key: "lotteryInfo") var lotteryInfoForLotteryName: StorageMap<MXBuffer, LotteryInfo>
     @Mapping(key: "burnPercentageForLottery") var burnPercentageForLottery: StorageMap<MXBuffer, BigUint>
     
-    mutating func start(
+    public mutating func start(
         lotteryName: MXBuffer,
         tokenIdentifier: MXBuffer,
         ticketPrice: BigUint,
@@ -52,7 +52,7 @@ let MAX_TICKETS: UInt32 = 800
         let totalTickets = optTotalTickets ?? MAX_TICKETS
         let deadline = optDeadline ?? (timestamp + THIRTY_DAYS_IN_SECONDS)
         let maxEntriesPerUser = optMaxEntriesPerUser ?? MAX_TICKETS
-        let prizeDistribution = optPrizeDistribution ?? [UInt8(PERCENTAGE_TOTAL)]
+        let prizeDistribution = optPrizeDistribution ?? MXArray(singleItem: UInt8(PERCENTAGE_TOTAL))
         
         require(
             self.status(lotteryName: lotteryName) == .inactive,
@@ -131,6 +131,30 @@ let MAX_TICKETS: UInt32 = 800
         self.lotteryInfoForLotteryName[lotteryName] = info
     }
     
+    public mutating func createLotteryPool(
+        lotteryName: MXBuffer,
+        tokenIdentifier: MXBuffer,
+        ticketPrice: BigUint,
+        optTotalTickets: UInt32?,
+        optDeadline: UInt64?,
+        optMaxEntriesPerUser: UInt32?,
+        optPrizeDistribution: MXArray<UInt8>?,
+        optWhitelist: MXArray<Address>?,
+        optBurnPercentage: OptionalArgument<BigUint>
+    ) {
+        self.startLottery(
+            lotteryName: lotteryName,
+            tokenIdentifier: tokenIdentifier,
+            ticketPrice: ticketPrice,
+            optTotalTickets: optTotalTickets,
+            optDeadline: optDeadline,
+            optMaxEntriesPerUser: optMaxEntriesPerUser,
+            optPrizeDistribution: optPrizeDistribution,
+            optWhitelist: optWhitelist,
+            optBurnPercentage: optBurnPercentage
+        )
+    }
+    
     public func buyTicket(lotteryName: MXBuffer) {
         let payment = Message.egldOrSingleEsdtTransfer
         
@@ -181,7 +205,11 @@ let MAX_TICKETS: UInt32 = 800
             let esdtTokenId = info.tokenIdentifier
             let roles = Blockchain.getESDTLocalRoles(tokenIdentifier: esdtTokenId)
             if roles.contains(flag: .burn) {
-                smartContractError(message: "TODO") // TODO: implement
+                TokenPayment.new(
+                    tokenIdentifier: esdtTokenId,
+                    nonce: 0,
+                    amount: burnAmount
+                ).burn()
             }
             
             info.prizePool = info.prizePool - burnAmount
@@ -297,12 +325,26 @@ let MAX_TICKETS: UInt32 = 800
     }
     
     func clearStorage(lotteryName: MXBuffer) {
-        fatalError() // TODO: implement
+        let ticketsHolderMapper = self.getTicketsHoldersMapper(lotteryName: lotteryName)
+        let currentTicketNumber = ticketsHolderMapper.count
+        
+        for i in 1...currentTicketNumber {
+            let addr = ticketsHolderMapper.get(index: i)
+            self.getNumberOfEntriesForUserMapper(lotteryName: lotteryName, user: addr).clear()
+        }
+        
+        ticketsHolderMapper.clear()
+        self.$lotteryInfoForLotteryName[lotteryName].clear()
+        self.getLotteryWhitelistMapper(lotteryName: lotteryName).clear()
+        self.$burnPercentageForLottery[lotteryName].clear()
     }
     
     // TODO: not super dev friendly
     func getLotteryWhitelistMapper(lotteryName: MXBuffer) -> UnorderedSetMapper<Address> {
-        return UnorderedSetMapper(baseKey: "lotteryWhitelist" + lotteryName)
+        var lotteryNameNestedEncoded = MXBuffer()
+        lotteryName.depEncode(dest: &lotteryNameNestedEncoded)
+        
+        return UnorderedSetMapper(baseKey: "lotteryWhitelist" + lotteryNameNestedEncoded)
     }
     
     // TODO: not super dev friendly
@@ -310,13 +352,20 @@ let MAX_TICKETS: UInt32 = 800
         lotteryName: MXBuffer,
         user: Address
     ) -> SingleValueMapper<UInt32> {
+        var lotteryNameNestedEncoded = MXBuffer()
+        lotteryName.depEncode(dest: &lotteryNameNestedEncoded)
+        
         var userNestedEncoded = MXBuffer()
         user.depEncode(dest: &userNestedEncoded)
         
-        return SingleValueMapper(key: "numberOfEntriesForUser" + lotteryName + userNestedEncoded)
+        return SingleValueMapper(key: "numberOfEntriesForUser" + lotteryNameNestedEncoded + userNestedEncoded)
     }
     
+    // TODO: not super dev friendly
     func getTicketsHoldersMapper(lotteryName: MXBuffer) -> VecMapper<Address> {
-        return VecMapper(baseKey: "ticketHolder" + lotteryName)
+        var lotteryNameNestedEncoded = MXBuffer()
+        lotteryName.depEncode(dest: &lotteryNameNestedEncoded)
+        
+        return VecMapper(baseKey: "ticketHolder" + lotteryNameNestedEncoded)
     }
 }
