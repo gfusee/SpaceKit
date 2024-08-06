@@ -94,7 +94,7 @@ let MAX_TICKETS: UInt32 = 800
         
         if let burnPercentage = optBurnPercentage.intoOptional() {
             require(
-                tokenIdentifier == "EGLD", // TODO: no hardcoded EGLD
+                tokenIdentifier != "EGLD", // TODO: no hardcoded EGLD
                 "EGLD can't be burned!"
             )
             
@@ -223,7 +223,31 @@ let MAX_TICKETS: UInt32 = 800
         }
         
         let totalPrize = info.prizePool
-        let winningTickets = self.getDistinctRandom
+        let winningTickets = self.getDistinctRandom(min: 1, max: totalTickets, amount: totalWinningTickets)
+        
+        for i in 1..<totalWinningTickets {
+            let winningTicketId = winningTickets[Int32(i)]
+            let winnerAddress = ticketHoldersMapper.get(index: winningTicketId)
+            
+            let prize = self.calculatePercentageOf(
+                value: totalPrize,
+                percentage: BigUint(value: info.prizeDistribution.get(Int32(i)))
+            )
+            winnerAddress.send(
+                tokenIdentifier: info.tokenIdentifier,
+                nonce: 0,
+                amount: prize
+            )
+            
+            info.prizePool = info.prizePool - prize
+        }
+        
+        let firstPlaceWinner = ticketHoldersMapper.get(index: winningTickets.get(0))
+        firstPlaceWinner.send(
+            tokenIdentifier: info.tokenIdentifier,
+            nonce: 0,
+            amount: info.prizePool
+        )
     }
     
     func updateAfterBuyTicket(
@@ -328,7 +352,7 @@ let MAX_TICKETS: UInt32 = 800
         let ticketsHolderMapper = self.getTicketsHoldersMapper(lotteryName: lotteryName)
         let currentTicketNumber = ticketsHolderMapper.count
         
-        for i in 1...currentTicketNumber {
+        for i in 1..<(1 + currentTicketNumber) {
             let addr = ticketsHolderMapper.get(index: i)
             self.getNumberOfEntriesForUserMapper(lotteryName: lotteryName, user: addr).clear()
         }

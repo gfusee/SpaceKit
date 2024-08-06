@@ -49,7 +49,7 @@ public struct UserMapper {
         
         var result = MXArray<Address>()
         
-        for i in 1...userCount {
+        for i in 1..<(1 + userCount) {
             result = result.appended(self.getUserAddress(id: i) ?? Address())
         }
         

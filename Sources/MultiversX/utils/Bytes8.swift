@@ -159,3 +159,15 @@ extension UInt32 {
         return result
     }
 }
+
+extension UInt8 {
+    package func toBytes8() -> Bytes8 {
+        // TODO: add tests
+        
+        var result = getZeroedBytes8()
+        
+        result.7 = self
+        
+        return result
+    }
+}

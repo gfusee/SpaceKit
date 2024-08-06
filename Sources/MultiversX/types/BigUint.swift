@@ -22,6 +22,10 @@ public struct BigUint {
     public init(value: UInt32) {
         self.init(value: value.toBytes8())
     }
+    
+    public init(value: UInt8) {
+        self.init(value: value.toBytes8())
+    }
 
     package init(value: Bytes8) {
         let handle = getNextHandle()

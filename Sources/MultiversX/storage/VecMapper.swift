@@ -68,7 +68,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     public func clear() {
         let count = self.count
         
-        for index in 1...count {
+        for index in 1..<(1 + count) {
             self.getItemMapper(index: index).clear()
         }
         
