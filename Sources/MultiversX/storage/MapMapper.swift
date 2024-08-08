@@ -47,4 +47,20 @@ public struct MapMapper<K: TopEncode & NestedEncode & TopDecode, V: TopEncode & 
         
         return nil
     }
+    
+    public func clear() {
+        self.keysSetMapper.forEach { key in
+            self.getMappedValueMapper(key: key).clear()
+        }
+        
+        self.keysSetMapper.clear()
+    }
+    
+    public func forEach(_ operations: (K, V) throws -> Void) rethrows {
+        try self.keysSetMapper.forEach { key in
+            let value = self.getMappedValueMapper(key: key).get()
+            
+            try operations(key, value)
+        }
+    }
 }

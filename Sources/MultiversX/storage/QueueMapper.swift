@@ -176,6 +176,23 @@ public struct QueueMapper<V: TopEncode & TopDecode> {
         
         return removedValue
     }
+    
+    public func clear() {
+        let infoMapper = self.getInfoMapper()
+        var info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
+        
+        var nodeId = info.front
+        
+        while nodeId != NULL_ENTRY {
+            let nodeMapper = self.getNodeMapper(nodeId: nodeId)
+            let node = nodeMapper.get()
+            nodeMapper.clear()
+            self.getValueMapper(nodeId: nodeId).clear()
+            nodeId = node.next
+        }
+        
+        infoMapper.clear()
+    }
 }
 
 extension QueueMapper: MXSequence {

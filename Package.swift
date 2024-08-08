@@ -240,6 +240,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "EsdtTransferWithFee",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/EsdtTransferWithFee",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "Factorial",
             dependencies: [
                 "MultiversX"

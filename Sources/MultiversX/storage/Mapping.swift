@@ -1,4 +1,4 @@
-@propertyWrapper public struct Mapping<T: TopEncode & TopDecode, K: NestedEncode> {
+@propertyWrapper public struct Mapping<K: NestedEncode, T: TopEncode & TopDecode> {
     
     private let key: MXBuffer
     

@@ -65,6 +65,14 @@ public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
         }
     }
     
+    public func clear() {
+        self.queueMapper.forEach { value in
+            self.getNodeIdMapper(value: value).clear()
+        }
+        
+        self.queueMapper.clear()
+    }
+    
     private func next(value: V) -> V? {
         let nodeIdMapper = self.getNodeIdMapper(value: value)
         let nodeId = nodeIdMapper.get()
