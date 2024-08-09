@@ -26,6 +26,7 @@ var packageDependencies: [Package.Dependency] = [
 ]
 
 var libraryDependencies: [Target.Dependency] = [
+    "CallbackMacro",
     "ContractMacro",
     "CodableMacro",
     "EventMacro",
@@ -294,6 +295,14 @@ let package = Package(
             dependencies: libraryDependencies,
             swiftSettings: [
                 .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .macro(
+            name: "CallbackMacro",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ]
         ),
         .macro(

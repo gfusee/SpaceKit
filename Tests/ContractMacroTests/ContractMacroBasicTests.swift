@@ -39,6 +39,60 @@ final class ContractMacroBasicTests: XCTestCase {
         )
     }
     
+     */
+    
+    // TODO: remove this test
+    func test() throws {
+        let source = """
+        @Contract
+        struct Contract {
+            @Callback public func testCallback() {
+            }
+        }
+        """
+
+        let expected = """
+        struct Contract {
+        
+            init() {
+            }
+
+            init(_noDeploy: ()) {
+            }
+        
+            #if !WASM
+            public static func testable(_ _testableAddress: String) -> Testable {
+                Testable(_testableAddress)
+            }
+
+            public struct Testable {
+                let address: String
+                init(_ _testableAddress: String) {
+                    self.address = _testableAddress
+                    runTestCall(
+                        contractAddress: self.address,
+                        endpointName: "init",
+                        hexEncodedArgs: []
+                    ) {
+                        let _ = Contract()
+                    }
+                }
+            }
+            #endif}
+        
+        @_expose(wasm, "init")
+        @_cdecl("init") func __macro_local_4initfMu_() {
+            let _ = Contract()
+        }
+        """
+
+        assertMacroExpansion(
+            source,
+            expandedSource: expected,
+            macros: testMacros
+        )
+    }
+    /*
     func testExpandEmptyStruct() throws {
         let source = """
         @Contract

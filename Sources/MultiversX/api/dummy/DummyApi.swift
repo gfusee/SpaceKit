@@ -601,6 +601,22 @@ extension DummyApi: SendApiProtocol {
         
         return 0
     }
+    
+    public func managedCreateAsyncCall(
+        dstHandle: Int32,
+        valueHandle: Int32,
+        functionHandle: Int32,
+        argumentsHandle: Int32,
+        successOffset: UnsafeRawPointer,
+        successLength: Int32,
+        errorOffset: UnsafeRawPointer,
+        errorLength: Int32,
+        gas: Int64,
+        extraGasForCallback: Int64,
+        callbackClosureHandle: Int32
+    ) -> Int32 {
+        fatalError() // TODO: implement and test
+    }
 }
 
 extension DummyApi: ErrorApiProtocol {

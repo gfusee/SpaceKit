@@ -23,4 +23,18 @@ public protocol SendApiProtocol {
         argumentsHandle: Int32,
         resultHandle: Int32
     ) -> Int32
+    
+    mutating func managedCreateAsyncCall(
+        dstHandle: Int32,
+        valueHandle: Int32,
+        functionHandle: Int32,
+        argumentsHandle: Int32,
+        successOffset: UnsafeRawPointer,
+        successLength: Int32,
+        errorOffset: UnsafeRawPointer,
+        errorLength: Int32,
+        gas: Int64,
+        extraGasForCallback: Int64,
+        callbackClosureHandle: Int32
+    ) -> Int32
 }

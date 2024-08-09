@@ -16,6 +16,9 @@ public macro Contract() = #externalMacro(module: "ContractMacro", type: "Contrac
 @attached(extension, conformances: TopEncode & TopEncodeMulti & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode & ArrayItem, names: arbitrary)
 public macro Codable() = #externalMacro(module: "CodableMacro", type: "Codable")
 
+@attached(peer)
+public macro Callback() = #externalMacro(module: "CallbackMacro", type: "Callback");
+
 @attached(extension, names: arbitrary)
 public macro Event(dataType: TopEncode.Type) = #externalMacro(module: "EventMacro", type: "Event")
 

@@ -210,6 +210,22 @@ func managedExecuteOnDestContext(
     resultHandle: Int32
 ) -> Int32
 
+@_extern(wasm, module: "env", name: "managedCreateAsyncCall")
+@_extern(c)
+func managedCreateAsyncCall(
+    dstHandle: Int32,
+    valueHandle: Int32,
+    functionHandle: Int32,
+    argumentsHandle: Int32,
+    successOffset: UnsafeRawPointer,
+    successLength: Int32,
+    errorOffset: UnsafeRawPointer,
+    errorLength: Int32,
+    gas: Int64,
+    extraGasForCallback: Int64,
+    callbackClosureHandle: Int32
+) -> Int32
+
 // MARK: Error-related OPCODES
 
 @_extern(wasm, module: "env", name: "managedSignalError")
@@ -493,6 +509,34 @@ extension VMApi: SendApiProtocol {
             functionHandle: functionHandle,
             argumentsHandle: argumentsHandle,
             resultHandle: resultHandle
+        )
+    }
+    
+    mutating func managedCreateAsyncCall(
+        dstHandle: Int32,
+        valueHandle: Int32,
+        functionHandle: Int32,
+        argumentsHandle: Int32,
+        successOffset: UnsafeRawPointer,
+        successLength: Int32,
+        errorOffset: UnsafeRawPointer,
+        errorLength: Int32,
+        gas: Int64,
+        extraGasForCallback: Int64,
+        callbackClosureHandle: Int32
+    ) -> Int32 {
+        return MultiversX.managedCreateAsyncCall(
+            dstHandle: dstHandle,
+            valueHandle: valueHandle,
+            functionHandle: functionHandle,
+            argumentsHandle: argumentsHandle,
+            successOffset: successOffset,
+            successLength: successLength,
+            errorOffset: errorOffset,
+            errorLength: errorLength,
+            gas: gas,
+            extraGasForCallback: extraGasForCallback,
+            callbackClosureHandle: callbackClosureHandle
         )
     }
 }

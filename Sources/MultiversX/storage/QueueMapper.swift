@@ -179,7 +179,7 @@ public struct QueueMapper<V: TopEncode & TopDecode> {
     
     public func clear() {
         let infoMapper = self.getInfoMapper()
-        var info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
+        let info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
         
         var nodeId = info.front
         

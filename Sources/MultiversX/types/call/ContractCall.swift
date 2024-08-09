@@ -30,4 +30,28 @@ public struct ContractCall {
         
         return ReturnType(topDecodeMulti: &resultBuffers)
     }
+    
+    public func registerPromise(
+        callbackName: StaticString,
+        gas: UInt64,
+        gasForCallback: UInt64,
+        callbackArgs: ArgBuffer,
+        value: BigUint = 0
+    ) {
+        let callbackNameLength = Int32(callbackName.utf8CodeUnitCount)
+        let callbackName = callbackName.utf8Start
+        let _ = API.managedCreateAsyncCall(
+            dstHandle: self.receiver.buffer.handle,
+            valueHandle: value.handle,
+            functionHandle: self.endpointName.handle,
+            argumentsHandle: self.argBuffer.buffers.buffer.handle,
+            successOffset: callbackName,
+            successLength: callbackNameLength,
+            errorOffset: callbackName,
+            errorLength: callbackNameLength,
+            gas: Int64(gas), // TODO: Is this cast safe?
+            extraGasForCallback: Int64(gasForCallback), // TODO: Is this cast safe?
+            callbackClosureHandle: callbackArgs.buffers.buffer.handle
+        )
+    }
 }
