@@ -398,7 +398,7 @@ extension DummyApi: EndpointApiProtocol {
         return Int32(self.getCurrentContainer().getEndpointInputArguments().count) // TODO: is it ok that this cast is unsafe?
     }
     
-    func bufferGetArgument(argId: Int32, bufferHandle: Int32) -> Int32 {
+    public func bufferGetArgument(argId: Int32, bufferHandle: Int32) -> Int32 {
         let currentContainer = self.getCurrentContainer()
         let arguments = currentContainer.getEndpointInputArguments()
         
@@ -411,6 +411,10 @@ extension DummyApi: EndpointApiProtocol {
         currentContainer.managedBuffersData[bufferHandle] = data
         
         return 0
+    }
+    
+    public func managedGetCallbackClosure(callbackClosureHandle: Int32) {
+        fatalError() // TODO: implement and test
     }
 }
 

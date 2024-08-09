@@ -125,6 +125,10 @@ func getNumArguments() -> Int32
 @_extern(c)
 func mBufferGetArgument(argId: Int32, mBufferHandle: Int32) -> Int32;
 
+@_extern(wasm, module: "env", name: "managedGetCallbackClosure")
+@_extern(c)
+func managedGetCallbackClosure(callbackClosureHandle: Int32)
+
 // MARK: Blockchain-related OPCODES
 
 @_extern(wasm, module: "env", name: "managedSCAddress")
@@ -389,6 +393,10 @@ extension VMApi: EndpointApiProtocol {
     
     mutating func bufferGetArgument(argId: Int32, bufferHandle: Int32) -> Int32 {
         return MultiversX.mBufferGetArgument(argId: argId, mBufferHandle: bufferHandle)
+    }
+    
+    mutating func managedGetCallbackClosure(callbackClosureHandle: Int32) {
+        return MultiversX.managedGetCallbackClosure(callbackClosureHandle: callbackClosureHandle)
     }
 }
 

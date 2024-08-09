@@ -275,6 +275,7 @@ fileprivate func getStaticEndpointDeclarations(
         }
         
         let endpointParams = getEndpointVariablesDeclarations(
+            isCallback: function.isCallback(),
             functionParameters: function.signature.parameterClause.parameters
         )
         
@@ -332,10 +333,9 @@ fileprivate func getStaticInitializerDeclarations(
     let structName = structDecl.name.trimmed
     
     let endpointParams = getEndpointVariablesDeclarations(
+        isCallback: false,
         functionParameters: initDecl.signature.parameterClause.parameters
     )
-    
-    let contractVariableDeclaration: ExprSyntax = "var _contract = \(structName)(_noDeploy: ())"
     
     let body: String = """
     \(endpointParams.argumentDeclarations)
@@ -382,6 +382,7 @@ fileprivate func getNoDeployInit() -> InitializerDeclSyntax {
 }
 
 fileprivate func getEndpointVariablesDeclarations(
+    isCallback: Bool,
     functionParameters: FunctionParameterListSyntax
 ) -> (argumentDeclarations: String, contractFunctionCallArguments: String) {
     var contractFunctionCallArgumentsList: [String] = []
@@ -391,7 +392,13 @@ fileprivate func getEndpointVariablesDeclarations(
         let variableName = parameter.secondName ?? parameter.firstName
         let variableType = parameter.type
         
-        if argumentDeclarationsList.isEmpty {
+        if isCallback {
+            if argumentDeclarationsList.isEmpty {
+                argumentDeclarationsList.append("let _ = CallbackClosureLoader()") // We need this so the exported function fails in case of direct (non-callback) call
+            } else {
+                argumentDeclarationsList.append("var _argsLoader = CallbackClosureLoader()")
+            }
+        } else if argumentDeclarationsList.isEmpty {
             argumentDeclarationsList.append("var _argsLoader = EndpointArgumentsLoader()")
         }
         
