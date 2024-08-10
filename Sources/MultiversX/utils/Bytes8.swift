@@ -96,6 +96,20 @@ package func toBytes4BigEndian(bytes8: Bytes8) -> Bytes4 {
     return bytes4
 }
 
+package func toBytes2BigEndian(bytes8: Bytes8) -> Bytes2 {
+    let isBytes2 = bytes8.0 + bytes8.1 + bytes8.2 + bytes8.3 + bytes8.4 + bytes8.5 == 0
+    
+    guard isBytes2 else {
+        fatalError()
+    }
+    
+    var bytes2 = getZeroedBytes2()
+    bytes2.0 = bytes8.6
+    bytes2.1 = bytes8.7
+    
+    return bytes2
+}
+
 extension Int32 {
     package func toBytes8() -> Bytes8 {
         // TODO: add tests

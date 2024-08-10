@@ -59,6 +59,17 @@ public struct MXBuffer {
     }
     
     @inline(__always)
+    package init(data: Bytes2) {
+        let handle = getNextHandle()
+        
+        var data = data
+        
+        let _ = API.bufferSetBytes(handle: handle, bytePtr: &data, byteLen: 2)
+        
+        self.handle = handle
+    }
+    
+    @inline(__always)
     package init(data: Bytes4) {
         let handle = getNextHandle()
         

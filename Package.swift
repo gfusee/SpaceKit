@@ -291,6 +291,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "Multisig",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/Multisig",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "MultiversX",
             dependencies: libraryDependencies,
             swiftSettings: [

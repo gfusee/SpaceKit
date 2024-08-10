@@ -110,6 +110,10 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
         self.getLenMapper().set(lastItemIndex - 1)
         return lastItemOptional
     }
+    
+    package func isItemEmptyUnchecked(index: UInt32) -> Bool {
+        return self.getItemMapper(index: index).isEmpty()
+    }
 }
 
 

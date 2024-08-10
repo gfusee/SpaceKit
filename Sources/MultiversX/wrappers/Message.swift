@@ -47,4 +47,12 @@ public struct Message {
         
         return Address(buffer: MXBuffer(data: callerBytes))
     }
+    
+    public static func asyncCallResult<T>() -> AsyncCallResult<T> {
+        // TODO: add caching
+        // TODO: what's the behavior of this function being called in a non-callback execution?
+        var endpointArgumentLoader = EndpointArgumentsLoader()
+        
+        return AsyncCallResult(topDecodeMulti: &endpointArgumentLoader)
+    }
 }
