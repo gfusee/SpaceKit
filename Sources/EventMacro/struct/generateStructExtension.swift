@@ -33,11 +33,8 @@ fileprivate func generateEmitExtension(
         }
         
         let fieldName = field.bindings.first!.pattern
-        let fieldBufferName = "\(fieldName)Buffer"
         nestedEncodeFieldsCallsList.append("""
-        var \(fieldBufferName) = MXBuffer()
-        self.\(fieldName).topEncode(output: &\(fieldBufferName))
-        _indexedArgs = _indexedArgs.appended(\(fieldBufferName))
+        self.\(fieldName).multiEncode(output: &_indexedArgs)
         """)
     }
     

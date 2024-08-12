@@ -1,4 +1,4 @@
-public enum OptionalArgument<Wrapped: MXCodable> {
+public enum OptionalArgument<Wrapped: TopEncode & TopEncodeMulti & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode> {
     case some(Wrapped)
     case none
 }

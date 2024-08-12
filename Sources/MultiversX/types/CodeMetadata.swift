@@ -53,8 +53,46 @@ public struct CodeMetadata {
     }
 }
 
+extension CodeMetadata: TopEncode {
+    public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
+        self.getFlag().topEncode(output: &output)
+    }
+}
+
+extension CodeMetadata: TopEncodeMulti {}
+
+extension CodeMetadata: NestedEncode {
+    public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
+        self.getFlag().depEncode(dest: &dest)
+    }
+}
+
 extension CodeMetadata: TopDecode {
     public init(topDecode input: MXBuffer) {
-        self = CodeMetadata.init(flag: UInt16(topDecode: input))
+        self = CodeMetadata(flag: UInt16(topDecode: input))
     }
+}
+
+extension CodeMetadata: TopDecodeMulti {}
+
+extension CodeMetadata: NestedDecode {
+    public init(depDecode input: inout some NestedDecodeInput) {
+        self = CodeMetadata(flag: UInt16(depDecode: &input))
+    }
+}
+
+extension CodeMetadata: ArrayItem {
+    public static var payloadSize: Int32 {
+        UInt16.payloadSize
+    }
+    
+    public static func decodeArrayPayload(payload: MXBuffer) -> CodeMetadata {
+        return CodeMetadata(flag: UInt16.decodeArrayPayload(payload: payload))
+    }
+    
+    public func intoArrayPayload() -> MXBuffer {
+        return self.getFlag().intoArrayPayload()
+    }
+    
+    
 }

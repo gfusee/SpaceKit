@@ -33,3 +33,19 @@ import MultiversX
     case scDeployFromSource(DeployFromSourceActionData)
     case scUpgradeFromSource(UpgradeFromSourceActionData)
 }
+
+extension Action {
+    var isPending: Bool {
+        if case .nothing = self {
+            false
+        } else {
+            true
+        }
+    }
+}
+
+@Codable public struct ActionFullInfo {
+    let actionId: UInt32
+    let actionData: Action
+    let signers: MXArray<Address>
+}

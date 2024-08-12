@@ -110,7 +110,7 @@ fileprivate func generateTopDecodeExtension(enumName: TokenSyntax, discriminants
                 var nestedDecodeInput = BufferNestedDecodeInput(buffer: input)
         
                 if nestedDecodeInput.bufferCount == 0 {
-                    smartContractError(message: "Top decode error for \(enumName): empty buffer. Hint: maybe are you trying to retrieve an empty storage?")
+                    \(raw: getTopDecodeWhenEmptyIfPossible(enumName: enumName, firstCase: discriminantsAndCases[0].1))
                 }
         
                 defer {
@@ -321,4 +321,19 @@ fileprivate func getDiscriminantForCase(cases: [EnumCaseDeclSyntax]) -> [(UInt8,
     }
     
     return result
+}
+
+fileprivate func getTopDecodeWhenEmptyIfPossible(enumName: TokenSyntax, firstCase: EnumCaseElementSyntax) -> String {
+    // TODO: add tests
+    let cannotTopDecodedError = """
+        smartContractError(message: "Top decode error for \(enumName): empty buffer. Hint: maybe are you trying to retrieve an empty storage?")
+        """
+    
+    guard firstCase.parameterClause == nil else {
+        return cannotTopDecodedError
+    }
+    
+    return """
+    self = .\(firstCase.name.trimmed)
+    """
 }

@@ -1,4 +1,6 @@
-public struct IgnoreValue {}
+public struct IgnoreValue {
+    public init() {}
+}
 
 extension IgnoreValue: TopEncode {
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {}

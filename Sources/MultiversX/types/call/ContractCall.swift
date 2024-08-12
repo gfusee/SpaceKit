@@ -13,6 +13,19 @@ public struct ContractCall {
         self.argBuffer = argBuffer
     }
     
+    public func transferExecute(
+        gas: UInt64 = Blockchain.getGasLeft(),
+        value: BigUint = 0
+    ) {
+        let _ = API.managedTransferValueExecute(
+            dstHandle: self.receiver.buffer.handle,
+            valueHandle: value.handle,
+            gasLimit: Int64(gas),
+            functionHandle: self.endpointName.handle,
+            argumentsHandle: self.argBuffer.buffers.buffer.handle
+        )
+    }
+    
     public func call<ReturnType: TopDecodeMulti>(
         gas: UInt64 = Blockchain.getGasLeft(),
         value: BigUint = 0

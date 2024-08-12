@@ -171,6 +171,12 @@ public struct MXArray<T: MXArrayType> {
     #endif
 }
 
+extension MXArray where T == MXBuffer {
+    public func toArgBuffer() -> ArgBuffer {
+        return ArgBuffer(rawArgs: self)
+    }
+}
+
 extension MXArray {
     public static func + (lhs: MXArray<T>, rhs: MXArray<T>) -> MXArray<T> {
         return lhs.appended(contentsOf: rhs)

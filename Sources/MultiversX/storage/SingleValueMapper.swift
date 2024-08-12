@@ -1,3 +1,5 @@
+public var TEST_DEBUG: Bool = false // TODO: remove
+
 public struct SingleValueMapper<V: TopEncode & TopDecode> {
     private let key: MXBuffer
     
@@ -30,6 +32,10 @@ public struct SingleValueMapper<V: TopEncode & TopDecode> {
     }
     
     public func get() -> V {
+        if TEST_DEBUG {
+            let test = self.getRawBuffer()
+            smartContractError(message: test.toHexadecimalBuffer())
+        }
         return V(topDecode: self.getRawBuffer())
     }
     

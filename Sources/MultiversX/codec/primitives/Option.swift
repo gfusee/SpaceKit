@@ -1,66 +1,59 @@
 // TODO: add tests for the below extensions
 
-@Codable fileprivate enum OptionalEnum<T: MXCodable> {
-    case none
-    case some(T)
-}
-
-fileprivate extension OptionalEnum {
-    init(optional: Optional<T>) {
-        if let value = optional {
-            self = .some(value)
-        } else {
-            self = .none
-        }
-    }
-    
-    func intoOptional() -> Optional<T> {
-        switch self {
-        case .some(let value):
-            return value
-        case .none:
-            return nil
-        }
-    }
-}
-
-extension Optional: TopEncode where Wrapped: MXCodable {
+extension Optional: TopEncode where Wrapped: NestedEncode {
     @inline(__always)
     public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
-        if self == nil {
-            MXBuffer().topEncode(output: &output)
-        } else {
-            OptionalEnum(optional: self).topEncode(output: &output)
-        }
+        var resultNestedEncoded = MXBuffer()
+        self.depEncode(dest: &resultNestedEncoded)
+        
+        output.setBuffer(buffer: resultNestedEncoded)
     }
 }
 
-extension Optional: NestedEncode where Wrapped: MXCodable {
+extension Optional: NestedEncode where Wrapped: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O: NestedEncodeOutput {
-        OptionalEnum(optional: self).depEncode(dest: &dest)
-    }
-}
-
-extension Optional: TopDecode where Wrapped: MXCodable {
-    public init(topDecode input: MXBuffer) {
-        if input.count == 0 {
-            self = nil
+        if let self = self {
+            UInt8(1).depEncode(dest: &dest)
+            self.depEncode(dest: &dest)
         } else {
-            self = OptionalEnum<Wrapped>(topDecode: input).intoOptional()
+            UInt8(0).depEncode(dest: &dest)
         }
     }
 }
 
-extension Optional: TopDecodeMulti where Wrapped: MXCodable {
-    @inline(__always)
-    public static func topDecodeMulti<T>(input: inout T) -> Optional<Wrapped> where T: TopDecodeMultiInput {
-        return OptionalEnum<Wrapped>(topDecodeMulti: &input).intoOptional()
+extension Optional: TopDecode where Wrapped: NestedDecode {
+    public init(topDecode input: MXBuffer) {
+        guard !input.isEmpty else {
+            self = .none
+            return
+        }
+        
+        var nestedDecodeInput = BufferNestedDecodeInput(buffer: input)
+        
+        defer {
+            require(
+                !nestedDecodeInput.canDecodeMore(),
+                "Top decode error for Optional: input too large."
+             )
+        }
+        
+        self = Optional(depDecode: &nestedDecodeInput)
     }
 }
 
-extension Optional: NestedDecode where Wrapped: MXCodable {
+extension Optional: TopDecodeMulti where Wrapped: NestedDecode & TopDecodeMulti {}
+
+extension Optional: NestedDecode where Wrapped: NestedDecode {
     public init(depDecode input: inout some NestedDecodeInput) {
-        self = OptionalEnum<Wrapped>(depDecode: &input).intoOptional()
+        let discriminant = UInt8(depDecode: &input)
+        
+        if discriminant == 0 {
+            self = .none
+        } else if discriminant == 1 {
+            self = .some(Wrapped(depDecode: &input))
+        } else {
+            smartContractError(message: "Cannot decode Optional value: wrong discriminant")
+        }
     }
 }

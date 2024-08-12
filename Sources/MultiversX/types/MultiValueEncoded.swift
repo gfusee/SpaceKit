@@ -1,14 +1,29 @@
 // TODO: add tests
 
 public struct MultiValueEncoded<Item: MXCodable> {
-    private var rawBuffers: MXArray<MXBuffer> = MXArray()
+    private var rawBuffers: MXArray<MXBuffer>
     
     public var count: Int32 {
         self.rawBuffers.count
     }
     
+    public init() {
+        self.rawBuffers = MXArray()
+    }
+    
+    // unsafe
     package init(rawBuffers: MXArray<MXBuffer>) {
         self.rawBuffers = rawBuffers
+    }
+    
+    public init(items: MXArray<Item>) {
+        var result: MultiValueEncoded<Item> = MultiValueEncoded()
+        
+        items.forEach { item in
+            result = result.appended(value: item)
+        }
+        
+        self = result
     }
     
     public func appended(value: Item) -> MultiValueEncoded<Item> {

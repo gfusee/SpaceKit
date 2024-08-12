@@ -28,6 +28,10 @@ public struct UserMapper {
         return self.getUserIdMapper(address: address).get()
     }
     
+    public func getUserAddressUnchecked(id: UInt32) -> Address {
+        return self.getUserAddressMapper(id: id).get()
+    }
+    
     public func getUserAddress(id: UInt32) -> Address? {
         let mapper = self.getUserAddressMapper(id: id)
         

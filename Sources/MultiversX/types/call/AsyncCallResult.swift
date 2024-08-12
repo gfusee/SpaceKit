@@ -2,8 +2,8 @@ let SAME_SHARD_SUCCESS_CODE: UInt32 = 0
 let CROSS_SHARD_SUCCESS_CODE: UInt32 = 0x00006f6b // "ok"
 
 public struct AsyncCallError {
-    let errorCode: UInt32
-    let errorMessage: MXBuffer
+    public let errorCode: UInt32
+    public let errorMessage: MXBuffer
 }
 
 public enum AsyncCallResult<T: TopDecodeMulti> {

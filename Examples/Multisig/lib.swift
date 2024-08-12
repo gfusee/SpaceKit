@@ -86,10 +86,108 @@ import MultiversX
         )
         
         require(
-            self.getActionValidSignerCount(actionId: actionId) == 0,
+            StateModule.getActionValidSignerCount(actionId: actionId) == 0,
             "cannot discard action with valid signatures"
         )
         
-        self.clearAction(actionId: actionId)
+        PerformModule.clearAction(actionId: actionId)
+    }
+    
+    public func performAction(actionId: UInt32) -> OptionalArgument<Address> {
+        return PerformModule.performAction(actionId: actionId)
+    }
+    
+    public func proposeAddBoardMember(
+        boardMemberAddress: Address
+    ) -> UInt32 {
+        return ProposeModule.proposeAddBoardMember(boardMemberAddress: boardMemberAddress)
+    }
+    
+    public func proposeAddProposer(
+        proposerAddress: Address
+    ) -> UInt32 {
+        return ProposeModule.proposeAddProposer(proposerAddress: proposerAddress)
+    }
+    
+    public func proposeRemoveUser(
+        userAddress: Address
+    ) -> UInt32 {
+        return ProposeModule.proposeRemoveUser(userAddress: userAddress)
+    }
+    
+    public func proposeChangeQuorum(
+        newQuorum: UInt32
+    ) -> UInt32 {
+        return ProposeModule.proposeChangeQuorum(newQuorum: newQuorum)
+    }
+    
+    public func proposeTransferExecute(
+        to: Address,
+        egldAmount: BigUint,
+        functionName: OptionalArgument<MXBuffer>,
+        functionArguments: MultiValueEncoded<MXBuffer>
+    ) -> UInt32 {
+        return ProposeModule.proposeTransferExecute(
+            to: to,
+            egldAmount: egldAmount,
+            functionName: functionName.intoOptional() ?? MXBuffer(),
+            functionArguments: functionArguments
+        )
+    }
+    
+    public func proposeAsyncCall(
+        to: Address,
+        egldAmount: BigUint,
+        functionName: MXBuffer,
+        functionArguments: MultiValueEncoded<MXBuffer>
+    ) -> UInt32 {
+        return ProposeModule.proposeAsyncCall(
+            to: to,
+            egldAmount: egldAmount,
+            functionName: functionName,
+            functionArguments: functionArguments
+        )
+    }
+    
+    public func getQuorum() -> UInt32 {
+        return StorageModule.quorum
+    }
+    
+    public func getNumBoardMembers() -> UInt32 {
+        return StorageModule.numBoardMembers
+    }
+    
+    public func getActionSigners(actionId: UInt32) -> MXArray<Address> {
+        return StateModule.getActionSigners(actionId: actionId)
+    }
+    
+    public func getPendingActionFullInfo() -> MultiValueEncoded<ActionFullInfo> {
+        var resultArray: MXArray<ActionFullInfo> = MXArray()
+        
+        let actionLastIndex = StateModule.getActionLastIndex()
+        let actionMapper = StorageModule.getActionMapper()
+        
+        for actionId in 1...actionLastIndex {
+            let actionData = actionMapper.get(index: actionId)
+            if actionData.isPending {
+                resultArray = resultArray.appended(
+                    ActionFullInfo(
+                        actionId: actionId,
+                        actionData: actionData,
+                        signers: StateModule.getActionSigners(actionId: actionId)
+                    )
+                )
+            }
+        }
+        
+        return MultiValueEncoded(items: resultArray)
+    }
+    
+    public func getActionLastIndex() -> UInt32 {
+        return StateModule.getActionLastIndex()
+    }
+    
+    @Callback public func performAsyncCallCallback() {
+        PerformModule.performAsyncCallCallback()
     }
 }
