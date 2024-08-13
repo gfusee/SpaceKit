@@ -63,5 +63,9 @@ struct StateModule {
     package static func getActionLastIndex() -> UInt32 {
         return StorageModule.getActionMapper().count
     }
+    
+    package static func getActionData(actionId: UInt32) -> Action {
+        return StorageModule.getActionMapper().get(index: actionId)
+    }
 
 }

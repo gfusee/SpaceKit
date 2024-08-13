@@ -160,6 +160,36 @@ import MultiversX
         )
     }
     
+    public func proposeSCDeployFromSource(
+        amount: BigUint,
+        source: Address,
+        codeMetadata: CodeMetadata,
+        arguments: MultiValueEncoded<MXBuffer>
+    ) -> UInt32 {
+        return ProposeModule.proposeSCDeployFromSource(
+            amount: amount,
+            source: source,
+            codeMetadata: codeMetadata,
+            arguments: arguments
+        )
+    }
+    
+    public func proposeSCUpgradeFromSource(
+        scAddress: Address,
+        amount: BigUint,
+        source: Address,
+        codeMetadata: CodeMetadata,
+        arguments: MultiValueEncoded<MXBuffer>
+    ) -> UInt32 {
+        return ProposeModule.proposeSCUpgradeFromSource(
+            scAddress: scAddress, 
+            amount: amount,
+            source: source,
+            codeMetadata: codeMetadata,
+            arguments: arguments
+        )
+    }
+    
     public func getQuorum() -> UInt32 {
         return StorageModule.quorum
     }
@@ -192,6 +222,10 @@ import MultiversX
         }
         
         return MultiValueEncoded(items: resultArray)
+    }
+    
+    public func getActionData(actionId: UInt32) -> Action {
+        return StateModule.getActionData(actionId: actionId)
     }
     
     public func getActionLastIndex() -> UInt32 {

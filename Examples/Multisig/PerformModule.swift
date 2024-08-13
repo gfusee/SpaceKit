@@ -216,10 +216,50 @@ struct PerformModule {
             )
             
             result = .none
-        case .scDeployFromSource(_):
-            fatalError() // TODO: implement
-        case .scUpgradeFromSource(_):
-            fatalError() // TODO: implement
+        case .scDeployFromSource(let deployData):
+            let gas = Blockchain.getGasLeft()
+            
+            PerformDeployFromSource(
+                actionId: actionId,
+                egldValue: deployData.amount,
+                sourceAddress: deployData.source,
+                codeMetadata: deployData.codeMetadata,
+                gas: gas,
+                arguments: MultiValueEncoded(rawBuffers: deployData.arguments)
+            ).emit(data: IgnoreValue())
+            
+            let (newAddress, _) = Blockchain.deploySCFromSource(
+                gas: gas,
+                sourceAddress: deployData.source,
+                codeMetadata: deployData.codeMetadata,
+                value: deployData.amount,
+                arguments: ArgBuffer(rawArgs: deployData.arguments)
+            )
+            
+            result = .some(newAddress)
+        case .scUpgradeFromSource(let upgradeData):
+            let gas = Blockchain.getGasLeft()
+            
+            PerformUpgradeFromSource(
+                actionId: actionId,
+                targetAddress: upgradeData.scAddress,
+                egldValue: upgradeData.amount,
+                sourceAddress: upgradeData.source,
+                codeMetadata: upgradeData.codeMetadata,
+                gas: gas,
+                arguments: MultiValueEncoded(rawBuffers: upgradeData.arguments)
+            ).emit(data: IgnoreValue())
+            
+            let _ = Blockchain.upgradeSCFromSource(
+                contractAddress: upgradeData.scAddress,
+                gas: gas,
+                sourceAddress: upgradeData.source,
+                codeMetadata: upgradeData.codeMetadata,
+                value: upgradeData.amount,
+                arguments: ArgBuffer(rawArgs: upgradeData.arguments)
+            )
+            
+            result = .none
         }
         
         return result

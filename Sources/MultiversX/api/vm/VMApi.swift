@@ -230,6 +230,30 @@ func managedCreateAsyncCall(
     callbackClosureHandle: Int32
 ) -> Int32
 
+@_extern(wasm, module: "env", name: "managedDeployFromSourceContract")
+@_extern(c)
+func managedDeployFromSourceContract(
+    gas: Int64,
+    valueHandle: Int32,
+    addressHandle: Int32,
+    codeMetadataHandle: Int32,
+    argumentsHandle: Int32,
+    resultAddressHandle: Int32,
+    resultHandle: Int32
+) -> Int32
+
+@_extern(wasm, module: "env", name: "managedUpgradeFromSourceContract")
+@_extern(c)
+func managedUpgradeFromSourceContract(
+    dstHandle: Int32,
+    gas: Int64,
+    valueHandle: Int32,
+    addressHandle: Int32,
+    codeMetadataHandle: Int32,
+    argumentsHandle: Int32,
+    resultHandle: Int32
+)
+
 // MARK: Error-related OPCODES
 
 @_extern(wasm, module: "env", name: "managedSignalError")
@@ -545,6 +569,46 @@ extension VMApi: SendApiProtocol {
             gas: gas,
             extraGasForCallback: extraGasForCallback,
             callbackClosureHandle: callbackClosureHandle
+        )
+    }
+    
+    mutating func managedDeployFromSourceContract(
+        gas: Int64,
+        valueHandle: Int32,
+        addressHandle: Int32,
+        codeMetadataHandle: Int32,
+        argumentsHandle: Int32,
+        resultAddressHandle: Int32,
+        resultHandle: Int32
+    ) -> Int32 {
+        return MultiversX.managedDeployFromSourceContract(
+            gas: gas,
+            valueHandle: valueHandle,
+            addressHandle: addressHandle,
+            codeMetadataHandle: codeMetadataHandle,
+            argumentsHandle: argumentsHandle,
+            resultAddressHandle: resultAddressHandle,
+            resultHandle: resultHandle
+        )
+    }
+    
+    mutating func managedUpgradeFromSourceContract(
+        dstHandle: Int32,
+        gas: Int64,
+        valueHandle: Int32,
+        addressHandle: Int32,
+        codeMetadataHandle: Int32,
+        argumentsHandle: Int32,
+        resultHandle: Int32
+    ) {
+        return MultiversX.managedUpgradeFromSourceContract(
+            dstHandle: dstHandle,
+            gas: gas,
+            valueHandle: valueHandle,
+            addressHandle: addressHandle,
+            codeMetadataHandle: codeMetadataHandle,
+            argumentsHandle: argumentsHandle,
+            resultHandle: resultHandle
         )
     }
 }

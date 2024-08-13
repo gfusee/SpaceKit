@@ -17,7 +17,7 @@ func generateEnumConformance(
     let discriminantsAndCases = getDiscriminantForCase(cases: cases)
     
     return [
-        try generateTopEncodeExtension(enumName: enumName),
+        try generateTopEncodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
         try generateTopEncodeMultiExtension(enumName: enumName),
         try generateNestedEncodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
         try generateTopDecodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
@@ -27,7 +27,22 @@ func generateEnumConformance(
     ]
 }
 
-fileprivate func generateTopEncodeExtension(enumName: TokenSyntax) throws -> ExtensionDeclSyntax {
+fileprivate func generateTopEncodeExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> ExtensionDeclSyntax {
+    let firstCase = discriminantsAndCases[0].1
+    let guardFirstCase = if shouldTopEncodeEmptyWhenFirstCase(firstCase: firstCase) {
+        """
+        switch self {
+        case .\(firstCase.name.trimmed):
+            nestedEncoded.topEncode(output: &output)
+            return
+        default:
+            break
+        }
+        """
+    } else {
+        ""
+    }
+        
     return ExtensionDeclSyntax(
         extendedType: IdentifierTypeSyntax(name: enumName),
         memberBlock: """
@@ -35,6 +50,7 @@ fileprivate func generateTopEncodeExtension(enumName: TokenSyntax) throws -> Ext
             @inline(__always)
             public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
                 var nestedEncoded = MXBuffer()
+                \(raw: guardFirstCase)
                 self.depEncode(dest: &nestedEncoded)
                 nestedEncoded.topEncode(output: &output)
             }
@@ -321,6 +337,11 @@ fileprivate func getDiscriminantForCase(cases: [EnumCaseDeclSyntax]) -> [(UInt8,
     }
     
     return result
+}
+
+fileprivate func shouldTopEncodeEmptyWhenFirstCase(firstCase: EnumCaseElementSyntax) -> Bool {
+    // TODO: add tests
+    return firstCase.parameterClause == nil
 }
 
 fileprivate func getTopDecodeWhenEmptyIfPossible(enumName: TokenSyntax, firstCase: EnumCaseElementSyntax) -> String {

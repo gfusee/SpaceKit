@@ -46,3 +46,24 @@ import MultiversX
     let errorCode: UInt32
     let errorMessage: MXBuffer
 }
+
+// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
+@Event(dataType: IgnoreValue) struct PerformDeployFromSource {
+    let actionId: UInt32
+    let egldValue: BigUint
+    let sourceAddress: Address
+    let codeMetadata: CodeMetadata
+    let gas: UInt64
+    let arguments: MultiValueEncoded<MXBuffer>
+}
+
+// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
+@Event(dataType: IgnoreValue) struct PerformUpgradeFromSource {
+    let actionId: UInt32
+    let targetAddress: Address
+    let egldValue: BigUint
+    let sourceAddress: Address
+    let codeMetadata: CodeMetadata
+    let gas: UInt64
+    let arguments: MultiValueEncoded<MXBuffer>
+}

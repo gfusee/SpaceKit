@@ -37,4 +37,14 @@ public protocol SendApiProtocol {
         extraGasForCallback: Int64,
         callbackClosureHandle: Int32
     ) -> Int32
+    
+    mutating func managedDeployFromSourceContract(
+        gas: Int64,
+        valueHandle: Int32,
+        addressHandle: Int32,
+        codeMetadataHandle: Int32,
+        argumentsHandle: Int32,
+        resultAddressHandle: Int32,
+        resultHandle: Int32
+    ) -> Int32
 }

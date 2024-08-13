@@ -85,4 +85,54 @@ public struct Blockchain {
         
         return EsdtLocalRoles(flags: flags)
     }
+    
+    public static func deploySCFromSource(
+        gas: UInt64,
+        sourceAddress: Address,
+        codeMetadata: CodeMetadata,
+        value: BigUint = 0,
+        arguments: ArgBuffer = ArgBuffer()
+    ) -> (newAddress: Address, results: MXArray<MXBuffer>) {
+        // TODO: add tests
+        let resultAddress = Address()
+        let resultBuffers: MXArray<MXBuffer> = MXArray()
+        
+        let codeMetadataBuffer = MXBuffer(data: codeMetadata.getFlag().asBigEndianBytes())
+        
+        let _ = API.managedDeployFromSourceContract(
+            gas: Int64(gas), // TODO: Is this cast safe?
+            valueHandle: value.handle,
+            addressHandle: sourceAddress.buffer.handle,
+            codeMetadataHandle: codeMetadataBuffer.handle,
+            argumentsHandle: arguments.buffers.buffer.handle,
+            resultAddressHandle: resultAddress.buffer.handle,
+            resultHandle: resultBuffers.buffer.handle
+        )
+        
+        return (newAddress: resultAddress, results: resultBuffers)
+    }
+    
+    public static func upgradeSCFromSource(
+        contractAddress: Address,
+        gas: UInt64,
+        sourceAddress: Address,
+        codeMetadata: CodeMetadata,
+        value: BigUint = 0,
+        arguments: ArgBuffer = ArgBuffer()
+    ) -> MXArray<MXBuffer> {
+        let resultBuffers: MXArray<MXBuffer> = MXArray()
+        let codeMetadataBuffer = MXBuffer(data: codeMetadata.getFlag().asBigEndianBytes())
+        
+        let _ = API.managedUpgradeFromSourceContract(
+            dstHandle: contractAddress.buffer.handle,
+            gas: Int64(gas), // TODO: Is this cast safe?
+            valueHandle: value.handle,
+            addressHandle: sourceAddress.buffer.handle,
+            codeMetadataHandle: codeMetadataBuffer.handle,
+            argumentsHandle: arguments.buffers.buffer.handle,
+            resultHandle: resultBuffers.buffer.handle
+        )
+        
+        return resultBuffers
+    }
 }

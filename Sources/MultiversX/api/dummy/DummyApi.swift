@@ -621,6 +621,30 @@ extension DummyApi: SendApiProtocol {
     ) -> Int32 {
         fatalError() // TODO: implement and test
     }
+    
+    public func managedDeployFromSourceContract(
+        gas: Int64,
+        valueHandle: Int32,
+        addressHandle: Int32,
+        codeMetadataHandle: Int32,
+        argumentsHandle: Int32,
+        resultAddressHandle: Int32,
+        resultHandle: Int32
+    ) -> Int32 {
+        fatalError() // TODO: implement and test
+    }
+    
+    public func managedUpgradeFromSourceContract(
+        dstHandle: Int32,
+        gas: Int64,
+        valueHandle: Int32,
+        addressHandle: Int32,
+        codeMetadataHandle: Int32,
+        argumentsHandle: Int32,
+        resultHandle: Int32
+    ) {
+        fatalError() // TODO: implement and test
+    }
 }
 
 extension DummyApi: ErrorApiProtocol {

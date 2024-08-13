@@ -95,4 +95,42 @@ struct ProposeModule {
         
         return ProposeModule.proposeAction(action: .sendAsyncCall(callData))
     }
+    
+    package static func proposeSCDeployFromSource(
+        amount: BigUint,
+        source: Address,
+        codeMetadata: CodeMetadata,
+        arguments: MultiValueEncoded<MXBuffer>
+    ) -> UInt32 {
+        ProposeModule.proposeAction(action:
+            .scDeployFromSource(
+                DeployFromSourceActionData(
+                    amount: amount,
+                    source: source,
+                    codeMetadata: codeMetadata,
+                    arguments: arguments.toArray()
+                )
+            )
+        )
+    }
+    
+    package static func proposeSCUpgradeFromSource(
+        scAddress: Address,
+        amount: BigUint,
+        source: Address,
+        codeMetadata: CodeMetadata,
+        arguments: MultiValueEncoded<MXBuffer>
+    ) -> UInt32 {
+        ProposeModule.proposeAction(action:
+            .scUpgradeFromSource(
+                UpgradeFromSourceActionData(
+                    scAddress: scAddress,
+                    amount: amount,
+                    source: source,
+                    codeMetadata: codeMetadata,
+                    arguments: arguments.toArray()
+                )
+            )
+        )
+    }
 }
