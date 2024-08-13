@@ -94,6 +94,17 @@ import MultiversX
     }
     
     public func performAction(actionId: UInt32) -> OptionalArgument<Address> {
+        let (_, callerRole) = StateModule.getCallerIdAndRole()
+        
+        require(
+            callerRole.canPerformAction(),
+            "only board members and proposers can perform actions"
+        )
+        require(
+            self.quorumReached(actionId: actionId),
+            "quorum has not been reached"
+        )
+        
         return PerformModule.performAction(actionId: actionId)
     }
     
@@ -185,6 +196,47 @@ import MultiversX
     
     public func getActionLastIndex() -> UInt32 {
         return StateModule.getActionLastIndex()
+    }
+    
+    public func getActionSignerCount(actionId: UInt32) -> UInt32 {
+        StorageModule.getActionSignerIdsMapper(actionId: actionId).count
+    }
+    
+    public func getActionValidSignerCount(actionId: UInt32) -> UInt32 {
+        return StateModule.getActionValidSignerCount(actionId: actionId)
+    }
+    
+    public func quorumReached(actionId: UInt32) -> Bool {
+        return PerformModule.quorumReached(actionId: actionId)
+    }
+    
+    public func getAllBoardMembers() -> MultiValueEncoded<Address> {
+        return self.getAllUsersWithRole(role: .boardMember)
+    }
+    
+    public func getAllProposers() -> MultiValueEncoded<Address> {
+        return self.getAllUsersWithRole(role: .proposer)
+    }
+    
+    func getAllUsersWithRole(role: UserRole) -> MultiValueEncoded<Address> {
+        var result: MultiValueEncoded<Address> = MultiValueEncoded()
+        let numUsers = StorageModule.userMapper.getUserCount()
+        
+        guard numUsers > 0 else {
+            return result
+        }
+        
+        let userMapper = StorageModule.userMapper
+        
+        for userId in 1...numUsers {
+            if StorageModule.userIdToRole[userId] == role {
+                if let address = userMapper.getUserAddress(id: userId) {
+                    result = result.appended(value: address)
+                }
+            }
+        }
+        
+        return result
     }
     
     @Callback public func performAsyncCallCallback() {

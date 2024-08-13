@@ -190,7 +190,7 @@
                     "nonce": "0",
                     "balance": "0",
                     "storage": {},
-                    "code": "mxsc:../test-contracts/factorial.mxsc.json"
+                    "code": "mxsc:test-contracts/factorial.mxsc.json"
                 },
                 "+": ""
             }

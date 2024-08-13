@@ -31,7 +31,7 @@ public struct MultiValueEncoded<Item: MXCodable> {
         
         value.multiEncode(output: &newRawBuffers)
         
-        return MultiValueEncoded(rawBuffers: rawBuffers)
+        return MultiValueEncoded(rawBuffers: newRawBuffers)
     }
     
     public func get(_ index: Int32) -> Item {

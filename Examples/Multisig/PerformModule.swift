@@ -1,7 +1,8 @@
 import MultiversX
 
 fileprivate let PERFORM_ACTION_FINISH_GAS: UInt64 = 500_000
-fileprivate let PERFORM_ASYNC_CALLBACK_GAS: UInt64 = 300_000
+fileprivate let PERFORM_ASYNC_CALL_ACTION_FINISH_GAS: UInt64 = 10_000_000
+fileprivate let PERFORM_ASYNC_CALLBACK_GAS: UInt64 = 1_000_000
 
 fileprivate func addSignedInt32ToUnsignedInt32(value: UInt32, delta: Int32) -> UInt32 {
     return if delta == 0 {
@@ -27,7 +28,7 @@ struct PerformModule {
     package static func getGasForAsyncCall() -> UInt64 {
         let gasLeft = Blockchain.getGasLeft()
         
-        let gasToKeep = PERFORM_ACTION_FINISH_GAS + PERFORM_ASYNC_CALLBACK_GAS
+        let gasToKeep = PERFORM_ASYNC_CALL_ACTION_FINISH_GAS + PERFORM_ASYNC_CALLBACK_GAS
         
         if gasLeft <= gasToKeep {
             smartContractError(message: "insufficient gas for async call")
@@ -56,7 +57,6 @@ struct PerformModule {
         }
         
         let userIdToRoleMapper = StorageModule.$userIdToRole[userId]
-        TEST_DEBUG = true
         let oldRole = userIdToRoleMapper.get()
         userIdToRoleMapper.set(newRole)
         
@@ -191,7 +191,7 @@ struct PerformModule {
             
             result = .none
         case .sendAsyncCall(let callData):
-            let gas = PerformModule.getGasForTransferExec()
+            let gas = PerformModule.getGasForAsyncCall()
             
             PerformAsyncCall(
                 actionId: actionId,
@@ -238,5 +238,12 @@ struct PerformModule {
                 errorMessage: error.errorMessage
             ).emit(data: IgnoreValue())
         }
+    }
+    
+    package static func quorumReached(actionId: UInt32) -> Bool {
+        let quorum = StorageModule.quorum
+        let validSignersCount = StateModule.getActionValidSignerCount(actionId: actionId)
+        
+        return validSignersCount >= quorum
     }
 }

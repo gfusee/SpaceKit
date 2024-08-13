@@ -226,16 +226,16 @@ public struct MXBuffer {
             smartContractError(message: "Negative slice length.")
         }
         
-        let resultHandle = getNextHandle()
+        let result = MXBuffer()
         
         let _ = API.bufferCopyByteSlice(
             sourceHandle: self.handle,
             startingPosition: startIndex,
             sliceLength: length,
-            destinationHandle: resultHandle
+            destinationHandle: result.handle
         )
         
-        return MXBuffer(handle: resultHandle)
+        return result
     }
     
     public func toHexadecimalBuffer() -> MXBuffer {

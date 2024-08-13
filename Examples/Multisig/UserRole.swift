@@ -1,6 +1,8 @@
 import MultiversX
 
-@Codable public enum UserRole {
+
+// TODO: use @Codable
+@Codable public enum UserRole: Equatable {
     case none
     case proposer
     case boardMember
@@ -17,5 +19,9 @@ extension UserRole {
     
     func canPropose() -> Bool {
         return self == .boardMember || self == .proposer
+    }
+    
+    func canPerformAction() -> Bool {
+        return self.canPropose()
     }
 }

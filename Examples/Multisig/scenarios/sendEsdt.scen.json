@@ -166,7 +166,7 @@
                         "address": "sc:multisig",
                         "endpoint": "str:performAction",
                         "topics": [
-                            "str:startPerformAction"
+                            "str:StartPerformAction"
                         ],
                         "data": "*"
                     },
@@ -174,7 +174,7 @@
                         "address": "sc:multisig",
                         "endpoint": "str:performAction",
                         "topics": [
-                            "str:performAsyncCall",
+                            "str:PerformAsyncCall",
                             "3",
                             "sc:multisig",
                             "0",
@@ -220,15 +220,15 @@
                         ],
                         "data": [
                             "str:AsyncCallback",
-                            "str:callBack",
+                            "str:performAsyncCallCallback",
                             "0x00"
                         ]
                     },
                     {
                         "address": "sc:multisig",
-                        "endpoint": "str:callBack",
+                        "endpoint": "str:performAsyncCallCallback",
                         "topics": [
-                            "str:asyncCallSuccess"
+                            "str:AsyncCallSuccess"
                         ],
                         "data": "*"
                     }

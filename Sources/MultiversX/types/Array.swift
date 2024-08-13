@@ -246,11 +246,7 @@ extension MXArray: TopEncode {
     }
 }
 
-extension MXArray: TopEncodeMulti {
-    public func multiEncode<O>(output: inout O) where O : TopEncodeMultiOutput {
-        self.forEach { output.pushSingleValue(arg: $0) }
-    }
-}
+extension MXArray: TopEncodeMulti {}
 
 extension MXArray: TopEncodeMultiOutput where T == MXBuffer {
     public mutating func pushSingleValue<TE>(arg: TE) where TE : TopEncode {
