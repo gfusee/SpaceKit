@@ -301,6 +301,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "TokenRelease",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/TokenRelease",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "MultiversX",
             dependencies: libraryDependencies,
             swiftSettings: [
