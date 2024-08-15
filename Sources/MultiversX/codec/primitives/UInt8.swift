@@ -5,8 +5,13 @@ private let intSize: Int32 = 1
 extension UInt8: TopEncode {
     @inline(__always)
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
-        MXBuffer(data: self)
-            .topEncode(output: &output)
+        if self == 0 {
+            MXBuffer()
+                .topEncode(output: &output)
+        } else {
+            MXBuffer(data: self)
+                .topEncode(output: &output)
+        }
     }
 }
 
@@ -21,8 +26,14 @@ extension UInt8: NestedEncode {
 
 extension UInt8: TopDecode {
     public init(topDecode input: MXBuffer) {
-        if input.count > intSize {
+        let inputCount = input.count
+        if  inputCount > intSize {
             smartContractError(message: "Cannot decode UInt8: input too large.")
+        }
+        
+        guard inputCount > 0 else {
+            self = 0
+            return
         }
         
         let byte = input.toBigEndianBytes8().7

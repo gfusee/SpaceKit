@@ -1,6 +1,6 @@
 set -e
 
-TARGET="Multisig"
+TARGET="TokenRelease"
 SWIFT_BIN_FOLDER="/Library/Developer/Toolchains/swift-6.0-DEVELOPMENT-SNAPSHOT-2024-07-16-a.xctoolchain/usr/bin/"
 SCENARIO_JSON_EXECUTABLE="/Users/quentin/multiversx-sdk/vmtools/v1.5.24/mx-chain-vm-go-1.5.24/cmd/test/test"
 

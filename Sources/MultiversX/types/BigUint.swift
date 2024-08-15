@@ -6,6 +6,10 @@ public struct BigUint {
     }
     
     public init(value: Int64) {
+        if value < 0 {
+            smartContractError(message: "Cannot convert negative Int64 to BigUint.")
+        }
+        
         let handle = getNextHandle()
         API.bigIntSetInt64(destination: handle, value: value)
         self.handle = handle
@@ -16,6 +20,10 @@ public struct BigUint {
     }
     
     public init(value: Int32) {
+        if value < 0 {
+            smartContractError(message: "Cannot convert negative Int64 to BigUint.")
+        }
+        
         self.init(value: value.toBytes8())
     }
     

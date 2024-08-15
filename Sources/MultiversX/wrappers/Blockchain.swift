@@ -1,3 +1,6 @@
+fileprivate let ESDT_LOCAL_MINT_FUNC_NAME: StaticString = "ESDTLocalMint"
+fileprivate let ESDT_NFT_ADD_QUANTITY_FUNC_NAME: StaticString = "ESDTNFTAddQuantity"
+
 public struct Blockchain {
     private init() {}
     
@@ -134,5 +137,34 @@ public struct Blockchain {
         )
         
         return resultBuffers
+    }
+    
+    public static func mintTokens(
+        tokenIdentifier: MXBuffer, // TODO: use TokenIdentifier type when implemented
+        nonce: UInt64,
+        amount: BigUint
+    ) {
+        if nonce == 0 {
+            var argBuffer = ArgBuffer()
+            argBuffer.pushArg(arg: tokenIdentifier)
+            argBuffer.pushArg(arg: amount)
+            
+            let _: IgnoreValue = ContractCall(
+                receiver: Blockchain.getSCAddress(),
+                endpointName: MXBuffer(stringLiteral: ESDT_LOCAL_MINT_FUNC_NAME),
+                argBuffer: argBuffer
+            ).call()
+        } else {
+            var argBuffer = ArgBuffer()
+            argBuffer.pushArg(arg: tokenIdentifier)
+            argBuffer.pushArg(arg: nonce)
+            argBuffer.pushArg(arg: amount)
+            
+            let _: IgnoreValue = ContractCall(
+                receiver: Blockchain.getSCAddress(),
+                endpointName: MXBuffer(stringLiteral: ESDT_NFT_ADD_QUANTITY_FUNC_NAME),
+                argBuffer: argBuffer
+            ).call()
+        }
     }
 }
