@@ -25,6 +25,10 @@ public struct Address {
         self.buffer = buffer
     }
     
+    package init(bytes: Bytes32) {
+        self.buffer = MXBuffer(data: bytes)
+    }
+    
     public func isZero() -> Bool {
         self == Address()
     }

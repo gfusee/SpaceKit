@@ -301,6 +301,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "NftMinter",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/NftMinter",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "TokenRelease",
             dependencies: [
                 "MultiversX"

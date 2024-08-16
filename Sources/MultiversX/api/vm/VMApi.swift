@@ -270,6 +270,10 @@ func managedWriteLog(topicsHandle: Int32, dataHandle: Int32)
 @_extern(c)
 func managedVerifyEd25519(keyHandle: Int32, messageHandle: Int32, sigHandle: Int32) -> Int32
 
+@_extern(wasm, module: "env", name: "managedSha256")
+@_extern(c)
+func managedSha256(inputHandle: Int32, outputHandle: Int32) -> Int32
+
 struct VMApi {}
 
 // MARK: BufferApi Implementation
@@ -634,6 +638,10 @@ extension VMApi: LogApiProtocol {
 extension VMApi: CryptoApiProtocol {
     mutating func managedVerifyEd25519(keyHandle: Int32, messageHandle: Int32, sigHandle: Int32) -> Int32 {
         return MultiversX.managedVerifyEd25519(keyHandle: keyHandle, messageHandle: messageHandle, sigHandle: sigHandle)
+    }
+    
+    mutating func managedSha256(inputHandle: Int32, outputHandle: Int32) -> Int32 {
+        return MultiversX.managedSha256(inputHandle: inputHandle, outputHandle: outputHandle)
     }
 }
 

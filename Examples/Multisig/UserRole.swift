@@ -1,7 +1,5 @@
 import MultiversX
 
-
-// TODO: use @Codable
 @Codable public enum UserRole: Equatable {
     case none
     case proposer

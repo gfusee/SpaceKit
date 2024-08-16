@@ -1,5 +1,14 @@
 fileprivate let ESDT_LOCAL_MINT_FUNC_NAME: StaticString = "ESDTLocalMint"
 fileprivate let ESDT_NFT_ADD_QUANTITY_FUNC_NAME: StaticString = "ESDTNFTAddQuantity"
+fileprivate let ESDT_NFT_CREATE_FUNC_NAME: StaticString = "ESDTNFTCreate"
+
+fileprivate let ISSUE_FUNGIBLE_ENDPOINT_NAME: StaticString = "issue"
+fileprivate let ISSUE_NON_FUNGIBLE_ENDPOINT_NAME: StaticString = "issueNonFungible"
+fileprivate let ISSUE_SEMI_FUNGIBLE_ENDPOINT_NAME: StaticString = "issueSemiFungible"
+fileprivate let REGISTER_META_ESDT_ENDPOINT_NAME: StaticString = "registerMetaESDT"
+fileprivate let ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME: StaticString = "registerAndSetAllRoles"
+
+fileprivate let ESDT_SYSTEM_SC_ADDRESS_BYTES: Bytes32 = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 255, 255)
 
 public struct Blockchain {
     private init() {}
@@ -166,5 +175,107 @@ public struct Blockchain {
                 argBuffer: argBuffer
             ).call()
         }
+    }
+    
+    public static func createNft<T: TopEncode>(
+        tokenIdentifier: MXBuffer,
+        amount: BigUint,
+        name: MXBuffer,
+        royalties: BigUint,
+        hash: MXBuffer,
+        attributes: T,
+        uris: MXArray<MXBuffer>
+    ) -> UInt64 {
+        var argBuffer = ArgBuffer()
+        argBuffer.pushSingleValue(arg: tokenIdentifier)
+        argBuffer.pushSingleValue(arg: amount)
+        argBuffer.pushSingleValue(arg: name)
+        argBuffer.pushSingleValue(arg: royalties)
+        argBuffer.pushSingleValue(arg: hash)
+        argBuffer.pushSingleValue(arg: attributes)
+        
+        if uris.isEmpty {
+            // Rust framework's note: at least one URI is required, so we push an empty one
+            argBuffer.pushArg(arg: MXBuffer())
+        } else {
+            // Rust framework's note: The API function has the last argument as variadic,
+            // so we top-encode each and send as separate argument
+            
+            uris.forEach { uri in
+                argBuffer.pushArg(arg: uri)
+            }
+        }
+        
+        return ContractCall(
+            receiver: Blockchain.getSCAddress(),
+            endpointName: MXBuffer(stringLiteral: ESDT_NFT_CREATE_FUNC_NAME),
+            argBuffer: argBuffer
+        ).call(
+            gas: Blockchain.getGasLeft(),
+            value: 0
+        )
+    }
+    
+    private static func issueToken(
+        issueCost: BigUint,
+        tokenType: TokenType,
+        tokenDisplayName: MXBuffer,
+        tokenTicker: MXBuffer,
+        initialSupply: BigUint,
+        properties: TokenProperties
+    ) -> ContractCall {
+        let esdtSystemScAddress = Address(bytes: ESDT_SYSTEM_SC_ADDRESS_BYTES)
+        
+        let endpointName: StaticString = switch tokenType {
+        case .fungible:
+            ISSUE_FUNGIBLE_ENDPOINT_NAME
+        case .nonFungible:
+            ISSUE_NON_FUNGIBLE_ENDPOINT_NAME
+        case .semiFungible:
+            ISSUE_SEMI_FUNGIBLE_ENDPOINT_NAME
+        case .meta:
+            REGISTER_META_ESDT_ENDPOINT_NAME
+        case .invalid:
+            ""
+        }
+        
+        var argBuffer = ArgBuffer()
+        
+        argBuffer.pushArg(arg: tokenDisplayName)
+        argBuffer.pushArg(arg: tokenTicker)
+        
+        if tokenType == .fungible {
+            argBuffer.pushArg(arg: initialSupply)
+            argBuffer.pushArg(arg: properties.numDecimals)
+        } else if tokenType == .meta {
+            argBuffer.pushArg(arg: properties.numDecimals)
+        }
+        
+        var tokenPropArgs = TokenPropertiesArgument(
+            canFreeze: properties.canFreeze,
+            canWipe: properties.canWipe,
+            canPause: properties.canPause,
+            canTransferCreateRole: nil,
+            canMint: nil,
+            canBurn: nil,
+            canChangeOwner: properties.canChangeOwner,
+            canUpgrade: properties.canUpgrade,
+            canAddSpecialRoles: properties.canAddSpecialRoles
+        )
+        
+        if tokenType == .fungible {
+            tokenPropArgs.canMint = properties.canMint
+            tokenPropArgs.canBurn = properties.canBurn
+        } else {
+            tokenPropArgs.canTransferCreateRole = properties.canTransferCreateRole
+        }
+        
+        tokenPropArgs.multiEncode(output: &argBuffer)
+        
+        return ContractCall(
+            receiver: esdtSystemScAddress,
+            endpointName: MXBuffer(stringLiteral: endpointName),
+            argBuffer: argBuffer
+        )
     }
 }

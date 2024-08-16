@@ -90,6 +90,25 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
                     esdtTransfers: esdtTransfers
                 )
             }
+        
+            public func registerPromise(
+                callbackName: StaticString,
+                gas: UInt64,
+                gasForCallback: UInt64,
+                callbackArgs: ArgBuffer,
+                value: BigUint = 0
+            ) {
+                ContractCall(
+                    receiver: receiver,
+                    endpointName: _endpointName,
+                    argBuffer: _argBuffer
+                ).call(
+                    callbackName: callbackName,
+                    gas: gas,
+                    gasForCallback: gasForCallback,
+                    value: value
+                )
+            }
         }
         """
     )

@@ -12,4 +12,15 @@ public struct Crypto {
         )
     }
     
+    public static func getSha256Hash(of value: MXBuffer) -> MXBuffer {
+        var result = MXBuffer()
+        
+        let _ = API.managedSha256(
+            inputHandle: value.handle,
+            outputHandle: result.handle
+        )
+        
+        return result
+    }
+    
 }
