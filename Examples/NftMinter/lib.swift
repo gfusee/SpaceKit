@@ -58,10 +58,19 @@ import MultiversX
             nonce: tokenNonce,
             claimDestination: caller
         ).registerPromise(
-            callbackName: "",
+            receiver: marketplaceAddress,
+            callbackName: "", // TODO: no callback
             gas: Blockchain.getGasLeft(),
             gasForCallback: 0,
             callbackArgs: ArgBuffer()
         )
+    }
+    
+    public func buyNft(nftNonce: UInt64) {
+        NftModule.buyNft(nftNonce: nftNonce)
+    }
+    
+    @Callback public func issueCallback() {
+        NftModule.issueCallback()
     }
 }

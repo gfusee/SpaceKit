@@ -645,6 +645,10 @@ extension DummyApi: SendApiProtocol {
     ) {
         fatalError() // TODO: implement and test
     }
+    
+    public func cleanReturnData() {
+        fatalError() // TODO: implement and test
+    }
 }
 
 extension DummyApi: ErrorApiProtocol {

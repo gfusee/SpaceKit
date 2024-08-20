@@ -217,13 +217,13 @@ public struct Blockchain {
     }
     
     private static func issueToken(
-        issueCost: BigUint,
         tokenType: TokenType,
         tokenDisplayName: MXBuffer,
         tokenTicker: MXBuffer,
         initialSupply: BigUint,
         properties: TokenProperties
-    ) -> ContractCall {
+    ) -> AsyncContractCall {
+        // TODO: add tests
         let esdtSystemScAddress = Address(bytes: ESDT_SYSTEM_SC_ADDRESS_BYTES)
         
         let endpointName: StaticString = switch tokenType {
@@ -272,10 +272,61 @@ public struct Blockchain {
         
         tokenPropArgs.multiEncode(output: &argBuffer)
         
-        return ContractCall(
+        let contractCall = ContractCall(
             receiver: esdtSystemScAddress,
             endpointName: MXBuffer(stringLiteral: endpointName),
             argBuffer: argBuffer
         )
+        
+        return AsyncContractCall(contractCall: contractCall)
+    }
+    
+    public static func issueNonFungibleToken(
+        tokenDisplayName: MXBuffer,
+        tokenTicker: MXBuffer,
+        properties: NonFungibleTokenProperties
+    ) -> AsyncContractCall {
+        // TODO: add tests
+        return Blockchain.issueToken(
+            tokenType: .nonFungible,
+            tokenDisplayName: tokenDisplayName,
+            tokenTicker: tokenTicker,
+            initialSupply: 0,
+            properties: TokenProperties(
+                numDecimals: 0,
+                canFreeze: properties.canFreeze,
+                canWipe: properties.canWipe,
+                canPause: properties.canPause,
+                canTransferCreateRole: properties.canTransferCreateRole,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: properties.canChangeOwner,
+                canUpgrade: properties.canUpgrade,
+                canAddSpecialRoles: properties.canAddSpecialRoles
+            )
+        )
+    }
+    
+    public static func setTokenRoles(
+        for address: Address,
+        tokenIdentifier: MXBuffer,
+        roles: EsdtLocalRoles
+    ) -> AsyncContractCall {
+        var argBuffer = ArgBuffer()
+        
+        argBuffer.pushArg(arg: tokenIdentifier)
+        argBuffer.pushArg(arg: address)
+        
+        roles.forEachFlag { flag in
+            argBuffer.pushArg(arg: flag.getRoleName())
+        }
+        
+        let contractCall = ContractCall(
+            receiver: Address(bytes: ESDT_SYSTEM_SC_ADDRESS_BYTES),
+            endpointName: "setSpecialRoles",
+            argBuffer: argBuffer
+        )
+        
+        return AsyncContractCall(contractCall: contractCall)
     }
 }

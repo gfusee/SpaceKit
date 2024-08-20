@@ -55,6 +55,8 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
     
     let calls = callsList.joined(separator: "\n")
     
+    // TODO: use the esdtTransfers parameter for both call, callAndIgnoreResult and registerPromise
+    
     return ExtensionDeclSyntax(
         extendedType: IdentifierTypeSyntax(name: enumName),
         memberBlock: """
@@ -62,13 +64,9 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
             public func call<T: TopDecodeMulti>(
                 receiver: Address,
                 egldValue: BigUint = 0,
-                esdtTransfers: MXArray<TokenPayment> = []
+                esdtTransfers: MXArray<TokenPayment> = MXArray()
             ) -> T {
-                var _argBuffer = ArgBuffer()
-                let _endpointName: MXBuffer
-                switch self {
-                    \(raw: calls)
-                }
+                let (_endpointName, _argBuffer) = self._getEndpointNameAndArgs()
         
                 return ContractCall(
                     receiver: receiver,
@@ -82,7 +80,7 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
             public func callAndIgnoreResult(
                 receiver: Address,
                 egldValue: BigUint = 0,
-                esdtTransfers: MXArray<TokenPayment> = []
+                esdtTransfers: MXArray<TokenPayment> = MXArray()
             ) {
                 let _: IgnoreValue = self.call(
                     receiver: receiver,
@@ -92,22 +90,37 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
             }
         
             public func registerPromise(
+                receiver: Address,
                 callbackName: StaticString,
                 gas: UInt64,
                 gasForCallback: UInt64,
                 callbackArgs: ArgBuffer,
-                value: BigUint = 0
+                egldValue: BigUint = 0,
+                esdtTransfers: MXArray<TokenPayment> = MXArray()
             ) {
+                let (_endpointName, _argBuffer) = self._getEndpointNameAndArgs()
+        
                 ContractCall(
                     receiver: receiver,
                     endpointName: _endpointName,
                     argBuffer: _argBuffer
-                ).call(
+                ).registerPromise(
                     callbackName: callbackName,
                     gas: gas,
                     gasForCallback: gasForCallback,
-                    value: value
+                    callbackArgs: callbackArgs,
+                    value: egldValue
                 )
+            }
+        
+            private func _getEndpointNameAndArgs() -> (MXBuffer, ArgBuffer) {
+                let _endpointName: MXBuffer
+                var _argBuffer = ArgBuffer()
+                switch self {
+                    \(raw: calls)
+                }
+        
+                return (_endpointName, _argBuffer)
             }
         }
         """

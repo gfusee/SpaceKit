@@ -47,4 +47,6 @@ public protocol SendApiProtocol {
         resultAddressHandle: Int32,
         resultHandle: Int32
     ) -> Int32
+    
+    mutating func cleanReturnData()
 }

@@ -11,6 +11,39 @@
     let canAddSpecialRoles: Bool
 }
 
+@Codable public struct NonFungibleTokenProperties {
+    var canFreeze: Bool
+    var canWipe: Bool
+    var canPause: Bool
+    var canTransferCreateRole: Bool
+    var canChangeOwner: Bool
+    var canUpgrade: Bool
+    var canAddSpecialRoles: Bool
+}
+
+extension NonFungibleTokenProperties {
+    // TODO: remove once @Codable creates a public default init
+    public static func new(
+        canFreeze: Bool,
+        canWipe: Bool,
+        canPause: Bool,
+        canTransferCreateRole: Bool,
+        canChangeOwner: Bool,
+        canUpgrade: Bool,
+        canAddSpecialRoles: Bool
+    ) -> NonFungibleTokenProperties {
+        return NonFungibleTokenProperties(
+            canFreeze: canFreeze,
+            canWipe: canWipe,
+            canPause: canPause,
+            canTransferCreateRole: canTransferCreateRole,
+            canChangeOwner: canChangeOwner,
+            canUpgrade: canUpgrade,
+            canAddSpecialRoles: canAddSpecialRoles
+        )
+    }
+}
+
 public struct TokenPropertiesArgument {
     let canFreeze: Bool?
     let canWipe: Bool?

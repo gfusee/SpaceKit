@@ -41,6 +41,8 @@ public struct ContractCall {
             resultHandle: resultBuffers.buffer.handle
         )
         
+        API.cleanReturnData()
+        
         return ReturnType(topDecodeMulti: &resultBuffers)
     }
     
@@ -66,5 +68,31 @@ public struct ContractCall {
             extraGasForCallback: Int64(gasForCallback), // TODO: Is this cast safe?
             callbackClosureHandle: callbackArgs.buffers.buffer.handle
         )
+    }
+}
+
+/// A wrapper around the ContractCall structure which marks the call as async only.
+/// For example, token issuance calls should not be done synchronously.
+public struct AsyncContractCall {
+    private let contractCall: ContractCall
+    
+    package init(contractCall: ContractCall) {
+        self.contractCall = contractCall
+    }
+    
+    public func registerPromise(
+        callbackName: StaticString,
+        gas: UInt64,
+        gasForCallback: UInt64,
+        callbackArgs: ArgBuffer,
+        value: BigUint = 0
+    ) {
+        self.contractCall
+            .registerPromise(
+                callbackName: callbackName,
+                gas: gas,
+                gasForCallback: gasForCallback,
+                callbackArgs: callbackArgs
+            )
     }
 }

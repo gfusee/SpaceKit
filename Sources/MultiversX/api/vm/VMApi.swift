@@ -254,6 +254,10 @@ func managedUpgradeFromSourceContract(
     resultHandle: Int32
 )
 
+@_extern(wasm, module: "env", name: "cleanReturnData")
+@_extern(c)
+func cleanReturnData()
+
 // MARK: Error-related OPCODES
 
 @_extern(wasm, module: "env", name: "managedSignalError")
@@ -614,6 +618,10 @@ extension VMApi: SendApiProtocol {
             argumentsHandle: argumentsHandle,
             resultHandle: resultHandle
         )
+    }
+    
+    mutating func cleanReturnData() {
+        return MultiversX.cleanReturnData()
     }
 }
 

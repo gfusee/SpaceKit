@@ -51,3 +51,21 @@ extension Bool: NestedDecode {
         }
     }
 }
+
+extension Bool: ArrayItem {
+    public static var payloadSize: Int32 {
+        UInt8.payloadSize
+    }
+    
+    public static func decodeArrayPayload(payload: MXBuffer) -> Bool {
+        return Bool(topDecode: payload)
+    }
+    
+    public func intoArrayPayload() -> MXBuffer {
+        var payload = MXBuffer()
+        
+        self.depEncode(dest: &payload)
+        
+        return payload
+    }
+}
