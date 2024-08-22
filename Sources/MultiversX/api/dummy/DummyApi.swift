@@ -433,6 +433,10 @@ extension DummyApi: BlockchainApiProtocol {
         fatalError() // TODO: implement and test
     }
     
+    public func getBlockEpoch() -> Int64 {
+        fatalError() // TODO: implement and test
+    }
+    
     public func bigIntGetExternalBalance(addressPtr: UnsafeRawPointer, dest: Int32) {
         let addressData = Data(bytes: addressPtr, count: 32)
         

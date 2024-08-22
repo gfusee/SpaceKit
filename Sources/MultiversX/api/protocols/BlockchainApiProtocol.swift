@@ -5,6 +5,8 @@ public protocol BlockchainApiProtocol {
     
     mutating func getBlockRound() -> Int64
     
+    mutating func getBlockEpoch() -> Int64
+    
     mutating func bigIntGetExternalBalance(addressPtr: UnsafeRawPointer, dest: Int32)
     
     mutating func bigIntGetESDTExternalBalance(

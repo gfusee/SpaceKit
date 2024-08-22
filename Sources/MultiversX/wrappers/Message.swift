@@ -20,6 +20,7 @@ public struct Message {
     }
     
     public static var egldOrSingleEsdtTransfer: TokenPayment {
+        // TODO: add caching
         let allEsdtTransfers = self.allEsdtTransfers
         let allEsdtTransfersCount = allEsdtTransfers.count
         
@@ -36,6 +37,29 @@ public struct Message {
             
             return allEsdtTransfers.get(0)
         }
+    }
+    
+    public static var singleEsdt: TokenPayment {
+        // TODO: add caching
+        
+        let egldOrSingleEsdtTransfer = Message.egldOrSingleEsdtTransfer
+        
+        // TODO: no hardcoded EGLD
+        guard egldOrSingleEsdtTransfer.tokenIdentifier != "EGLD" else {
+            smartContractError(message: "incorrect number of ESDT transfers")
+        }
+        
+        return egldOrSingleEsdtTransfer
+    }
+    
+    public static var singleFungibleEsdt: TokenPayment {
+        let singleEsdt = Message.singleEsdt
+        
+        guard singleEsdt.nonce == 0 else {
+            smartContractError(message: "fungible ESDT token expected")
+        }
+        
+        return singleEsdt
     }
     
     public static var caller: Address {

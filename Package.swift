@@ -311,6 +311,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "OrderBookPair",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/OrderBookPair",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "TokenRelease",
             dependencies: [
                 "MultiversX"

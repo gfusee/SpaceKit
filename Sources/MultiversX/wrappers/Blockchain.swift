@@ -30,6 +30,10 @@ public struct Blockchain {
         return toBigEndianUInt64(from: API.getBlockRound().toBytes8()) // TODO: super tricky, we should ensure it works
     }
     
+    public static func getBlockEpoch() -> UInt64 { // TODO: add tests
+        return toBigEndianUInt64(from: API.getBlockEpoch().toBytes8()) // TODO: super tricky, we should ensure it works
+    }
+    
     public static func getBalance(
         address: Address
     ) -> BigUint {

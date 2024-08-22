@@ -143,6 +143,10 @@ func getBlockTimestamp() -> Int64
 @_extern(c)
 func getBlockRound() -> Int64
 
+@_extern(wasm, module: "env", name: "getBlockEpoch")
+@_extern(c)
+func getBlockEpoch() -> Int64
+
 @_extern(wasm, module: "env", name: "bigIntGetExternalBalance")
 @_extern(c)
 func bigIntGetExternalBalance(address_ptr: UnsafeRawPointer, dest: Int32)
@@ -445,6 +449,10 @@ extension VMApi: BlockchainApiProtocol {
     
     mutating func getBlockRound() -> Int64 {
         return MultiversX.getBlockRound()
+    }
+    
+    mutating func getBlockEpoch() -> Int64 {
+        return MultiversX.getBlockEpoch()
     }
     
     mutating func bigIntGetExternalBalance(addressPtr: UnsafeRawPointer, dest: Int32) {
