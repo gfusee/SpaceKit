@@ -6,7 +6,12 @@ let FEE_PENALTY_INCREASE_PERCENT: UInt64 = 1_000
 
 @Codable struct Payment {
     let tokenIdentifier: MXBuffer
-    let amount: BigUint
+    var amount: BigUint
+}
+
+@Codable struct Transfer {
+    let to: Address
+    var payment: Payment
 }
 
 @Codable struct Order {
@@ -85,5 +90,13 @@ struct CommonModule {
         feeConfig: FeeConfig
     ) -> BigUint {
         return amount - CommonModule.calculateFeeAmount(amount: amount, feeConfig: feeConfig)
+    }
+    
+    static func ruleOfThree(
+        part: BigUint,
+        total: BigUint,
+        value: BigUint
+    ) -> BigUint {
+        return part * value / total
     }
 }

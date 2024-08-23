@@ -84,6 +84,41 @@ struct ValidationModule {
         )
     }
     
+    static func requireValidSellPayment() -> Payment {
+        let payment = Message.singleFungibleEsdt
+        let firstTokenIdentifier = StorageModule.firstTokenIdentifier
+        
+        require(
+            payment.tokenIdentifier == firstTokenIdentifier,
+            "Token in and first token id should be the same"
+        )
+        
+        return Payment(
+            tokenIdentifier: firstTokenIdentifier,
+            amount: payment.amount
+        )
+    }
+    
+    static func requireValidMatchInputOrderIds(orderIds: MXArray<UInt64>) {
+        require(
+            orderIds.count > 2,
+            "Should be at least two order ids"
+        )
+    }
+    
+    static func requireMatchProviderEmptyOrCaller(orders: MXArray<Order>) {
+        let caller = Message.caller
+        
+        orders.forEach { order in
+            if !order.matchProvider.isZero() {
+                require(
+                    order.matchProvider == caller,
+                    "Caller is not matched order id"
+                )
+            }
+        }
+    }
+    
     static func requireNotMaxSize(addressOrderIds: MXArray<UInt64>) {
         require(
             addressOrderIds.count < MAX_ORDERS_PER_USER,
