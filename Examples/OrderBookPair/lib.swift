@@ -42,4 +42,36 @@ import MultiversX
         
         OrdersModule.matchOrders(orderIds: orderIds)
     }
+    
+    public func cancelOrders(orderIds: MultiValueEncoded<UInt64>) {
+        let orderIds = orderIds.toArray()
+        
+        GlobalOperationModule.requireGlobalOperationNotOngoing()
+        ValidationModule.requireOrderIdsNotEmpty(orderIds: orderIds)
+        
+        OrdersModule.cancelOrders(orderIds: orderIds)
+    }
+    
+    public func cancelAllOrders() {
+        GlobalOperationModule.requireGlobalOperationNotOngoing()
+        
+        OrdersModule.cancelAllOrders()
+    }
+    
+    public func freeOrders(orderIds: MultiValueEncoded<UInt64>) {
+        let orderIds = orderIds.toArray()
+        
+        GlobalOperationModule.requireGlobalOperationNotOngoing()
+        ValidationModule.requireOrderIdsNotEmpty(orderIds: orderIds)
+        
+        OrdersModule.freeOrders(orderIds: orderIds)
+    }
+    
+    public func getAddressOrderIds(address: Address) -> MultiValueEncoded<UInt64> {
+        return MultiValueEncoded(items: OrdersModule.getAddressOrderIds(address: address))
+    }
+    
+    public func getOrderById(id: UInt64) -> Order {
+        return StorageModule.orderForId[id]
+    }
 }

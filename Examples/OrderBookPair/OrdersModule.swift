@@ -43,6 +43,161 @@ struct OrdersModule {
         EventsModule.emitMatchOrderEvents(orders: orders)
     }
     
+    static func freeOrders(orderIds: MXArray<UInt64>) {
+        let caller = Message.caller
+        let addressOrderIds = OrdersModule.getAddressOrderIds(address: caller)
+        
+        ValidationModule.requireContainsNone(baseArray: addressOrderIds, items: orderIds)
+        
+        let firstTokenIdentifier = StorageModule.firstTokenIdentifier
+        let secondTokenIdentifier = StorageModule.secondTokenIdentifier
+        let epoch = Blockchain.getBlockEpoch()
+        
+        var orderIdsNotEmpty: MXArray<UInt64> = MXArray()
+        orderIds.forEach { orderId in
+            if !StorageModule.$orderForId[orderId].isEmpty() {
+                orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
+            }
+        }
+        
+        var orders: MXArray<Order> = MXArray()
+        orderIdsNotEmpty.forEach { orderId in
+            let order = OrdersModule.freeOrder(
+                orderId: orderId,
+                caller: caller,
+                firstTokenIdentifier: firstTokenIdentifier,
+                secondTokenIdentifier: secondTokenIdentifier,
+                epoch: epoch
+            )
+            orders = orders.appended(order)
+        }
+        
+        EventsModule.emitFreeOrderEvents(orders: orders)
+    }
+    
+    static func cancelAllOrders() {
+        let caller = Message.caller
+        let addressOrderIds = OrdersModule.getAddressOrderIds(address: caller)
+        
+        var orderIdsNotEmpty: MXArray<UInt64> = MXArray()
+        addressOrderIds.forEach { orderId in
+            if !StorageModule.$orderForId[orderId].isEmpty() {
+                orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
+            }
+        }
+        
+        self.cancelOrders(orderIds: orderIdsNotEmpty)
+    }
+    
+    static func freeOrder(
+        orderId: UInt64,
+        caller: Address,
+        firstTokenIdentifier: MXBuffer,
+        secondTokenIdentifier: MXBuffer,
+        epoch: UInt64
+    ) -> Order {
+        let orderMapper = StorageModule.$orderForId[orderId]
+        let order = orderMapper.get()
+        
+        let tokenIdentifier = switch order.orderType {
+        case .buy:
+            secondTokenIdentifier
+        case .sell:
+            firstTokenIdentifier
+        }
+        
+        let penaltyCount = (BigUint(value: epoch) - BigUint(value: order.createEpoch)) / BigUint(value: FEE_PENALTY_INCREASE_EPOCH)
+        
+        require(
+            penaltyCount >= BigUint(value: FREE_ORDER_FROM_STORAGE_MIN_PENALTIES),
+            "Too early to free order"
+        )
+        
+        let penaltyPercent = penaltyCount * BigUint(value: FEE_PENALTY_INCREASE_PERCENT)
+        let penaltyAmount = CommonModule.ruleOfThree(
+            part: penaltyPercent,
+            total: BigUint(value: PERCENT_BASE_POINTS),
+            value: order.inputAmount
+        )
+        let amount = order.inputAmount - penaltyAmount
+        
+        let creatorTransfer = Transfer(
+            to: order.creator,
+            payment: Payment(
+                tokenIdentifier: tokenIdentifier,
+                amount: amount
+            )
+        )
+        let callerTransfer = Transfer(
+            to: caller,
+            payment: Payment(
+                tokenIdentifier: tokenIdentifier,
+                amount: penaltyAmount
+            )
+        )
+        
+        orderMapper.clear()
+        var transfers = MXArray(singleItem: creatorTransfer)
+        transfers = transfers.appended(callerTransfer)
+        OrdersModule.executeTransfers(transfers: transfers)
+        
+        return order
+    }
+    
+    static func cancelOrders(orderIds: MXArray<UInt64>) {
+        let caller = Message.caller
+        let addressOrderIds = OrdersModule.getAddressOrderIds(address: caller)
+        ValidationModule.requireContainsAll(
+            baseArray: addressOrderIds,
+            items: orderIds
+        )
+        
+        let firstTokenIdentifier = StorageModule.firstTokenIdentifier
+        let secondTokenIdentifier = StorageModule.secondTokenIdentifier
+        let epoch = Blockchain.getBlockEpoch()
+        
+        var orderIdsNotEmpty: MXArray<UInt64> = MXArray()
+        orderIds.forEach { orderId in
+            if !StorageModule.$orderForId[orderId].isEmpty() {
+                orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
+            }
+        }
+        
+        var orders: MXArray<Order> = MXArray()
+        var finalCallerOrders: MXArray<UInt64> = MXArray()
+        
+        let addressOrderIdsCount = addressOrderIds.count
+        
+        orderIdsNotEmpty.forEach { orderId in
+            let order = OrdersModule.cancelOrder(
+                orderId: orderId,
+                caller: caller,
+                firstTokenIdentifier: firstTokenIdentifier,
+                secondTokenIdentifier: secondTokenIdentifier,
+                epoch: epoch
+            )
+            
+            var checkOrderToDelete = false
+            for checkOrderIdIndex in 0..<addressOrderIdsCount {
+                let checkOrderId = addressOrderIds[checkOrderIdIndex]
+                
+                if checkOrderId == orderId {
+                    checkOrderToDelete = true
+                    break
+                }
+            }
+            
+            if !checkOrderToDelete {
+                finalCallerOrders = finalCallerOrders.appended(orderId)
+            }
+            
+            orders = orders.appended(order)
+        }
+        
+        StorageModule.orderIdsForAddress[caller] = finalCallerOrders
+        EventsModule.emitCancelOrderEvents(orders: orders)
+    }
+    
     static func loadOrders(orderIds: MXArray<UInt64>) -> MXArray<Order> {
         var ordersArray: MXArray<Order> = MXArray()
         
@@ -55,6 +210,47 @@ struct OrdersModule {
         }
         
         return ordersArray
+    }
+    
+    static func cancelOrder(
+        orderId: UInt64,
+        caller: Address,
+        firstTokenIdentifier: MXBuffer,
+        secondTokenIdentifier: MXBuffer,
+        epoch: UInt64
+    ) -> Order {
+        let orderMapper = StorageModule.$orderForId[orderId]
+        let order = orderMapper.get()
+        
+        let tokenIdentifier = switch order.orderType {
+        case .buy:
+            secondTokenIdentifier
+        case .sell:
+            firstTokenIdentifier
+        }
+        
+        let penaltyCount = (BigUint(value: epoch) - BigUint(value: order.createEpoch)) / BigUint(value: FEE_PENALTY_INCREASE_EPOCH)
+        let penaltyPercent = penaltyCount * BigUint(value: FEE_PENALTY_INCREASE_PERCENT)
+        let penaltyAmount = CommonModule.ruleOfThree(
+            part: penaltyPercent,
+            total: BigUint(value: PERCENT_BASE_POINTS),
+            value: order.inputAmount
+        )
+        let amount = order.inputAmount - penaltyAmount
+        
+        let transfer = Transfer(
+            to: caller,
+            payment: Payment(
+                tokenIdentifier: tokenIdentifier,
+                amount: amount
+            )
+        )
+        
+        orderMapper.clear()
+        let transfers = MXArray(singleItem: transfer)
+        OrdersModule.executeTransfers(transfers: transfers)
+        
+        return order
     }
     
     static func createTransfers(orders: MXArray<Order>) -> MXArray<Transfer> {

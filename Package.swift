@@ -221,6 +221,27 @@ let package = Package(
             ]
         ),
         .target(
+            name: "CryptoKittiesCommon",
+            dependencies: [
+                "MultiversX",
+                "CryptoKittiesRandom"
+            ],
+            path: "Examples/CryptoKitties/Common",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
+            name: "CryptoKittiesRandom",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/CryptoKitties/Random",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "DigitalCash",
             dependencies: [
                 "MultiversX"

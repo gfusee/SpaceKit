@@ -101,7 +101,7 @@ struct ValidationModule {
     
     static func requireValidMatchInputOrderIds(orderIds: MXArray<UInt64>) {
         require(
-            orderIds.count > 2,
+            orderIds.count >= 2,
             "Should be at least two order ids"
         )
     }
@@ -116,6 +116,67 @@ struct ValidationModule {
                     "Caller is not matched order id"
                 )
             }
+        }
+    }
+    
+    static func requireOrderIdsNotEmpty(orderIds: MXArray<UInt64>) {
+        require(
+            !orderIds.isEmpty,
+            "Order ids vec is empty"
+        )
+    }
+    
+    static func requireContainsAll(
+        baseArray: MXArray<UInt64>,
+        items: MXArray<UInt64>
+    ) {
+        let baseArrayCount = baseArray.count
+        let itemsCount = items.count
+        
+        for itemIndex in 0..<itemsCount {
+            let item = items[itemIndex]
+            var checkItem = false
+            
+            for baseIndex in 0..<itemsCount {
+                let base = baseArray[baseIndex]
+                
+                if item == base {
+                    checkItem = true
+                    break
+                }
+            }
+            
+            require(
+                checkItem,
+                "Base vec does not contain item"
+            )
+        }
+    }
+    
+    static func requireContainsNone(
+        baseArray: MXArray<UInt64>,
+        items: MXArray<UInt64>
+    ) {
+        let baseArrayCount = baseArray.count
+        let itemsCount = items.count
+        
+        for itemIndex in 0..<itemsCount {
+            let item = items[itemIndex]
+            var checkItem = false
+            
+            for baseIndex in 0..<baseArrayCount {
+                let base = baseArray[baseIndex]
+                
+                if item == base {
+                    checkItem = true
+                    break
+                }
+            }
+            
+            require(
+                !checkItem,
+                "Base vec contains item"
+            )
         }
     }
     

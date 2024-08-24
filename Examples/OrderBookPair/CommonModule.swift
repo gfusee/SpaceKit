@@ -3,6 +3,8 @@ import MultiversX
 let MAX_ORDERS_PER_USER: UInt32 = 100
 let PERCENT_BASE_POINTS: UInt64 = 100_000
 let FEE_PENALTY_INCREASE_PERCENT: UInt64 = 1_000
+let FEE_PENALTY_INCREASE_EPOCH: UInt64 = 5
+let FREE_ORDER_FROM_STORAGE_MIN_PENALTIES: UInt64 = 6
 
 @Codable struct Payment {
     let tokenIdentifier: MXBuffer
