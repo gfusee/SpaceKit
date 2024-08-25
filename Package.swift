@@ -242,6 +242,30 @@ let package = Package(
             ]
         ),
         .target(
+            name: "CryptoKittiesGeneticAlg",
+            dependencies: [
+                "MultiversX",
+                "CryptoKittiesCommon",
+                "CryptoKittiesRandom"
+            ],
+            path: "Examples/CryptoKitties/GeneticAlg",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
+            name: "CryptoKittiesOwnership",
+            dependencies: [
+                "MultiversX",
+                "CryptoKittiesCommon",
+                "CryptoKittiesRandom"
+            ],
+            path: "Examples/CryptoKitties/Ownership",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "DigitalCash",
             dependencies: [
                 "MultiversX"

@@ -147,6 +147,14 @@ func getBlockRound() -> Int64
 @_extern(c)
 func getBlockEpoch() -> Int64
 
+@_extern(wasm, module: "env", name: "managedGetBlockRandomSeed")
+@_extern(c)
+func managedGetBlockRandomSeed(resultHandle: Int32)
+
+@_extern(wasm, module: "env", name: "managedGetOriginalTxHash")
+@_extern(c)
+func managedGetOriginalTxHash(resultHandle: Int32)
+
 @_extern(wasm, module: "env", name: "bigIntGetExternalBalance")
 @_extern(c)
 func bigIntGetExternalBalance(address_ptr: UnsafeRawPointer, dest: Int32)
@@ -453,6 +461,14 @@ extension VMApi: BlockchainApiProtocol {
     
     mutating func getBlockEpoch() -> Int64 {
         return MultiversX.getBlockEpoch()
+    }
+    
+    mutating func managedGetBlockRandomSeed(resultHandle: Int32) {
+        MultiversX.managedGetBlockRandomSeed(resultHandle: resultHandle)
+    }
+    
+    mutating func managedGetOriginalTxHash(resultHandle: Int32) {
+        return MultiversX.managedGetOriginalTxHash(resultHandle: resultHandle)
     }
     
     mutating func bigIntGetExternalBalance(addressPtr: UnsafeRawPointer, dest: Int32) {

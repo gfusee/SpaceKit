@@ -7,6 +7,10 @@ public protocol BlockchainApiProtocol {
     
     mutating func getBlockEpoch() -> Int64
     
+    mutating func managedGetBlockRandomSeed(resultHandle: Int32)
+    
+    mutating func managedGetOriginalTxHash(resultHandle: Int32)
+    
     mutating func bigIntGetExternalBalance(addressPtr: UnsafeRawPointer, dest: Int32)
     
     mutating func bigIntGetESDTExternalBalance(

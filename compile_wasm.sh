@@ -1,11 +1,12 @@
 set -e
 
-TARGET="OrderBookPair"
+TARGET="CryptoKittiesGeneticAlg"
+TARGET_PACKAGE_PATH="$(pwd)/Examples/CryptoKitties/GeneticAlg"
+# TARGET_PACKAGE_PATH="$(pwd)/Examples/$TARGET"
 SWIFT_BIN_FOLDER="/Library/Developer/Toolchains/swift-6.0-DEVELOPMENT-SNAPSHOT-2024-07-16-a.xctoolchain/usr/bin/"
 SCENARIO_JSON_EXECUTABLE="/Users/quentin/multiversx-sdk/vmtools/v1.5.24/mx-chain-vm-go-1.5.24/cmd/test/test"
 
 # Do not edit the below variables
-TARGET_PACKAGE_PATH="$(pwd)/Examples/$TARGET"
 TARGET_PACKAGE_OUTPUT_PATH="$TARGET_PACKAGE_PATH/output"
 OBJECT_FILE_PATH="$(pwd)/$TARGET.o"
 WASM_BUILT_FILE_PATH="$(pwd)/$TARGET.wasm"

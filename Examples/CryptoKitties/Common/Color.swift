@@ -8,6 +8,22 @@ import CryptoKittiesRandom
 }
 
 extension Color {
+    public static func getDefault() -> Color {
+        return Color(
+            red: 0,
+            green: 0,
+            blue: 0
+        )
+    }
+    
+    public static func getRandom(random: inout Random) -> Color {
+        return Color(
+            red: random.nextU8(),
+            green: random.nextU8(),
+            blue: random.nextU8()
+        )
+    }
+    
     public func mixWith(otherColor: Color, ratioFirst: UInt8, ratioSecond: UInt8) -> Color {
         let ratioFirst = UInt16(ratioFirst)
         let ratioSecond = UInt16(ratioSecond)
@@ -29,14 +45,6 @@ extension Color {
             red: red,
             green: green,
             blue: blue
-        )
-    }
-    
-    public static func getRandom(random: inout Random) -> Color {
-        return Color(
-            red: random.nextU8(),
-            green: random.nextU8(),
-            blue: random.nextU8()
         )
     }
     

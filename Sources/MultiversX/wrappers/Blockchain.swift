@@ -10,6 +10,8 @@ fileprivate let ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME: StaticString = "registerA
 
 fileprivate let ESDT_SYSTEM_SC_ADDRESS_BYTES: Bytes32 = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 255, 255)
 
+// TODO: add caching when needed (and turn related function into computed variables)
+
 public struct Blockchain {
     private init() {}
     
@@ -32,6 +34,15 @@ public struct Blockchain {
     
     public static func getBlockEpoch() -> UInt64 { // TODO: add tests
         return toBigEndianUInt64(from: API.getBlockEpoch().toBytes8()) // TODO: super tricky, we should ensure it works
+    }
+    
+    public static func getBlockRandomSeed() -> MXBuffer {
+        // TODO: add tests
+        let result = MXBuffer()
+        
+        API.managedGetBlockRandomSeed(resultHandle: result.handle)
+        
+        return result
     }
     
     public static func getBalance(

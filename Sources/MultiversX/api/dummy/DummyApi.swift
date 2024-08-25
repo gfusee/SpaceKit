@@ -437,6 +437,14 @@ extension DummyApi: BlockchainApiProtocol {
         fatalError() // TODO: implement and test
     }
     
+    public func managedGetBlockRandomSeed(resultHandle: Int32) {
+        fatalError() // TODO: implement and test
+    }
+    
+    public func managedGetOriginalTxHash(resultHandle: Int32) {
+        fatalError() // TODO: implement and test
+    }
+    
     public func bigIntGetExternalBalance(addressPtr: UnsafeRawPointer, dest: Int32) {
         let addressData = Data(bytes: addressPtr, count: 32)
         

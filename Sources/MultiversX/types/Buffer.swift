@@ -362,6 +362,10 @@ public struct BufferInterpolationMatcher: StringInterpolationProtocol {
     public mutating func appendInterpolation(_ value: BigUint) {
         self.buffer = self.buffer + value.toBuffer()
     }
+    
+    public mutating func appendInterpolation(_ value: Address) {
+        self.buffer = self.buffer + value.buffer // TODO: Is this the correct implementation?
+    }
 }
 
 extension MXBuffer: ExpressibleByStringInterpolation {}

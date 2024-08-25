@@ -79,4 +79,13 @@ public struct Message {
         
         return AsyncCallResult(topDecodeMulti: &endpointArgumentLoader)
     }
+    
+    public static var transactionHash: MXBuffer {
+        // TODO: add caching
+        var result = MXBuffer()
+        
+        API.managedGetOriginalTxHash(resultHandle: result.handle)
+        
+        return result
+    }
 }
