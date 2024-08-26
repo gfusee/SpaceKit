@@ -3,10 +3,17 @@ public struct CallbackClosureLoader {
     let count: Int32
     let argBuffer: ArgBuffer
     
-    init() {
-        var argBuffer = ArgBuffer()
+    public init() {
+        var bufferSerialized = MXBuffer()
         
-        API.managedGetCallbackClosure(callbackClosureHandle: argBuffer.buffers.buffer.handle)
+        API.managedGetCallbackClosure(callbackClosureHandle: bufferSerialized.handle)
+        
+        var argBuffer = ArgBuffer()
+        var nestedDecodeInput = BufferNestedDecodeInput(buffer: bufferSerialized)
+        
+        while nestedDecodeInput.canDecodeMore() {
+            argBuffer.pushArg(arg: nestedDecodeInput.readNextBufferOfDynamicLength())
+        }
         
         self.argBuffer = argBuffer
         self.index = 0

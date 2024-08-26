@@ -15,6 +15,8 @@ let unsafeFlags = isWasm ? [
     "Embedded",
     "-Xcc",
     "-fdeclspec",
+    "-Xcc",
+    "-static",
     "-whole-module-optimization",
     "-D",
     "WASM",
@@ -216,6 +218,16 @@ let package = Package(
                 "MultiversX"
             ],
             path: "Examples/CryptoBubbles",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
+            name: "CryptoKittiesAuction",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/CryptoKitties/Auction",
             swiftSettings: [
                 .unsafeFlags(unsafeFlags)
             ]

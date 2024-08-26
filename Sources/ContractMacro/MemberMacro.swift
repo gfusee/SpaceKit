@@ -392,19 +392,26 @@ fileprivate func getEndpointVariablesDeclarations(
         let variableName = parameter.secondName ?? parameter.firstName
         let variableType = parameter.type
         
-        if isCallback {
-            if argumentDeclarationsList.isEmpty {
-                argumentDeclarationsList.append("let _ = CallbackClosureLoader()") // We need this so the exported function fails in case of direct (non-callback) call
-            } else {
-                argumentDeclarationsList.append("var _argsLoader = CallbackClosureLoader()")
-            }
-        } else if argumentDeclarationsList.isEmpty {
-            argumentDeclarationsList.append("var _argsLoader = EndpointArgumentsLoader()")
-        }
-        
         argumentDeclarationsList.append("let \(variableName) = \(variableType)(topDecodeMulti: &_argsLoader)")
         
         contractFunctionCallArgumentsList.append("\(variableName): \(variableName)")
+    }
+    
+    var loaderDeclaration: String?
+    if isCallback {
+        if argumentDeclarationsList.isEmpty {
+            // TODO: add tests for this, if a callback is not properly protected it would lead to desastrous consequences
+            loaderDeclaration = "let _ = CallbackClosureLoader()" // We need this so the exported function fails in case of direct (non-callback) call
+        } else {
+            loaderDeclaration = "var _argsLoader = CallbackClosureLoader()"
+        }
+    } else if !argumentDeclarationsList.isEmpty {
+        loaderDeclaration = "var _argsLoader = EndpointArgumentsLoader()"
+    }
+    
+    if let loaderDeclaration = loaderDeclaration {
+        // We have to add the loader declaration at the start of the argumentDeclarationsList array
+        argumentDeclarationsList.insert(loaderDeclaration, at: 0)
     }
     
     let argumentDeclarations = argumentDeclarationsList.joined(separator: "\n")

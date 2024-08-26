@@ -405,15 +405,17 @@ import CryptoKittiesRandom
         
         let geneScienceContractAddress = self.getGeneScienceContractAddressOrDefault()
         if !geneScienceContractAddress.isZero() {
+            // TODO: should be typed, but a bug in the embedded Swift compile mode deters to implement the feature
             var callbackArgs = ArgBuffer()
             callbackArgs.pushArg(arg: matronId)
             callbackArgs.pushArg(arg: Message.caller)
             
-            let gasLeft = BigUint(value: Blockchain.getGasLeft())
+            // TODO: removing 10_000_000 is huge
+            let gasLeft = BigUint(value: Blockchain.getGasLeft()) - 10_000_000
             let gasForCallbackRaw: UInt64 = 20_000_000
             let gasForCallback = BigUint(value: gasForCallbackRaw)
             
-            // TODO: UInt64 comparison causes invalid contract code, there is another TODO in another contract example detailing why
+            // TODO: UInt64 operations causes invalid contract code, there is another TODO in another contract example detailing why
             // TODO: super tricky operations
             let gasForExecution = UInt64((gasLeft - gasForCallback).toInt64()!)
             
@@ -504,7 +506,7 @@ import CryptoKittiesRandom
         
         if !from.isZero() {
             var numberOwnedFromMapper = self.$numberOfOwnedKittiesForAddress[from]
-            let newNumberOwnedFrom = numberOwnedFromMapper.get() + 1
+            let newNumberOwnedFrom = numberOwnedFromMapper.get() - 1
             
             numberOwnedFromMapper.set(newNumberOwnedFrom)
             self.$sireAllowedAddressForId[kittyId].clear()
@@ -521,12 +523,16 @@ import CryptoKittiesRandom
         ).emit(data: IgnoreValue())
     }
     
-    func triggerCooldown(kitty: inout Kitty) {
+    func triggerCooldown(kitty: Kitty) -> Kitty {
+        var kitty = kitty
+        
         let cooldown = kitty.getNextCooldownTime()
         
         // TODO: UInt64 comparison causes invalid contract code, there is another TODO in another contract example detailing why
         // TODO: super tricky operations
         kitty.cooldownEnd = UInt64((BigUint(value: Blockchain.getBlockTimestamp()) + BigUint(value: cooldown)).toInt64()!)
+        
+        return kitty
     }
     
     mutating func breed(
@@ -538,8 +544,8 @@ import CryptoKittiesRandom
         
         matron.siringWithId = sireId
         
-        self.triggerCooldown(kitty: &matron)
-        self.triggerCooldown(kitty: &sire)
+        matron = self.triggerCooldown(kitty: matron)
+        sire = self.triggerCooldown(kitty: sire)
         
         self.$sireAllowedAddressForId[matronId].clear()
         self.$sireAllowedAddressForId[sireId].clear()
@@ -644,6 +650,52 @@ import CryptoKittiesRandom
             Address()
         } else {
             allowedAddressMapper.get()
+        }
+    }
+    
+    @Callback public mutating func generateKittyGenesCallback(
+        matronId: UInt32,
+        originalCaller: Address
+    ) {
+        let result: AsyncCallResult<KittyGenes> = Message.asyncCallResult()
+        
+        switch result {
+        case .success(let genes):
+            let matronMapper = self.$kittyForId[matronId]
+            var matron = matronMapper.get()
+            
+            let sireId = matron.siringWithId
+            let sireMapper = self.$kittyForId[sireId]
+            var sire = sireMapper.get()
+            
+            let newKittyGeneration = max(matron.generation, sire.generation) + 1
+            
+            // new kitty goes to the owner of the matron
+            let newKittyOwner = self.kittyOwnerForId[matronId]
+            let newKittyId = self.createNewKitty(
+                matronId: matronId,
+                sireId: sireId,
+                generation: newKittyGeneration,
+                genes: genes,
+                owner: newKittyOwner
+            )
+            
+            // update matron kitty
+            matron.siringWithId = 0
+            matron.numberOfChildren += 1
+            matronMapper.set(matron)
+            
+            // update sire kitty
+            sire.numberOfChildren += 1
+            sireMapper.set(sire)
+            
+            // send birth fee to caller
+            let fee = self.birthFee
+            originalCaller.send(egldValue: fee)
+        case .error(_):
+            // this can only fail if the kitty_genes contract address is invalid
+            // in which case, the only thing we can do is call this again later
+            break
         }
     }
 }

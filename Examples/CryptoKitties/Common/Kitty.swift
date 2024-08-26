@@ -11,7 +11,7 @@ let MAX_TIREDNESS: UInt16 = 20
     public let matronId: UInt32
     public let sireId: UInt32
     public var siringWithId: UInt32
-    public let numberOfChildren: UInt16
+    public var numberOfChildren: UInt16
     public let generation: UInt16
     
     public static func new(

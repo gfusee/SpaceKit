@@ -55,6 +55,12 @@ public struct ContractCall {
     ) {
         let callbackNameLength = Int32(callbackName.utf8CodeUnitCount)
         let callbackName = callbackName.utf8Start
+        
+        var callbackClosureSerialized = MXBuffer()
+        callbackArgs.buffers.forEach { buffer in
+            buffer.depEncode(dest: &callbackClosureSerialized)
+        }
+        
         let _ = API.managedCreateAsyncCall(
             dstHandle: self.receiver.buffer.handle,
             valueHandle: value.handle,
@@ -66,7 +72,7 @@ public struct ContractCall {
             errorLength: callbackNameLength,
             gas: Int64(gas), // TODO: Is this cast safe?
             extraGasForCallback: Int64(gasForCallback), // TODO: Is this cast safe?
-            callbackClosureHandle: callbackArgs.buffers.buffer.handle
+            callbackClosureHandle: callbackClosureSerialized.handle
         )
     }
 }
