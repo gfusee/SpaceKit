@@ -39,4 +39,13 @@ public struct SingleValueMapper<V: TopEncode & TopDecode> {
         
         let _ = API.bufferStorageStore(keyHandle: self.key.handle, bufferHandle: output.handle)
     }
+    
+    public func update<R>(_ operations: (inout V) -> R) -> R {
+        // TODO: add tests, especially on the inout part
+        var value = self.get()
+        let result = operations(&value)
+        self.set(value)
+        
+        return result
+    }
 }

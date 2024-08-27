@@ -1,0 +1,293 @@
+import MultiversX
+
+
+struct UserEndpointsModule {
+    // The "dummy" parameter is useless, I'm just a lazy developer that wants the Swift compiler to stop complaining
+    // Don't try this at home
+    static func sellToken<T: CurveFunction & MXCodable & Default & Equatable>(dummy: @autoclosure () -> T) {
+        let offeredPayment = Message.singleEsdt
+        
+        self.checkTokenExists(issuedToken: offeredPayment.tokenIdentifier)
+        
+        let (calculatedPrice, paymentToken) = StorageModule.$bondingCurveForTokenIdentifier[offeredPayment.tokenIdentifier]
+            .update { buffer in
+                var bondingCurve = BondingCurve<T>(topDecode: buffer)
+                
+                let _ = UserEndpointsModule.checkOwnedReturnPaymentToken(
+                    bondingCurve: bondingCurve,
+                    amount: offeredPayment.amount
+                )
+                
+                require(
+                    bondingCurve.sellAvailability,
+                    "Selling is not available on this token"
+                )
+                
+                let price = UserEndpointsModule.computeSellPrice(
+                    bondingCurve: bondingCurve,
+                    amount: offeredPayment.amount
+                )
+                
+                bondingCurve.payment.amount = bondingCurve.payment.amount - price
+                bondingCurve.arguments.balance = bondingCurve.arguments.balance + offeredPayment.amount
+                
+                let paymentToken = bondingCurve.payment.tokenIdentifier
+                
+                var bondingCurveTopEncoded = MXBuffer()
+                bondingCurve.topEncode(output: &bondingCurveTopEncoded)
+                
+                buffer = bondingCurveTopEncoded
+                
+                return (price, paymentToken)
+            }
+        
+        let caller = Message.caller
+        
+        StorageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: offeredPayment.tokenIdentifier, nonce: offeredPayment.nonce)]
+            .update { val in
+                val = val + offeredPayment.amount
+            }
+        
+        caller.send(
+            tokenIdentifier: paymentToken,
+            nonce: 0,
+            amount: calculatedPrice
+        )
+        
+        StorageModule.$tokenDetailsForTokenIdentifier[offeredPayment.tokenIdentifier]
+            .update { details in
+                details.addNonce(nonce: offeredPayment.nonce)
+            }
+        
+        SellTokenEvent(
+            user: caller,
+            amount: calculatedPrice
+        ).emit(data: IgnoreValue())
+    }
+    
+    // The "dummy" parameter is useless, I'm just a lazy developer that wants the Swift compiler to stop complaining
+    // Don't try this at home
+    static func buyToken<T: CurveFunction & MXCodable & Default & Equatable>(
+        requestedAmount: BigUint,
+        requestedToken: MXBuffer,
+        requestedNonce: UInt64?,
+        dummy: @autoclosure () -> T
+    ) {
+        let offeredPayment = Message.singleEsdt
+        
+        self.checkTokenExists(issuedToken: requestedToken)
+        
+        let calculatedPrice = StorageModule.$bondingCurveForTokenIdentifier[requestedToken]
+            .update { buffer in
+                var bondingCurve = BondingCurve<T>(topDecode: buffer)
+                
+                let paymentToken = UserEndpointsModule.checkOwnedReturnPaymentToken(
+                    bondingCurve: bondingCurve,
+                    amount: offeredPayment.amount
+                )
+                
+                self.checkGivenToken(
+                    acceptedToken: paymentToken,
+                    givenToken: offeredPayment.tokenIdentifier
+                )
+                
+                let price = self.computeBuyPrice(bondingCurve: bondingCurve, amount: requestedAmount)
+                require(
+                    price <= offeredPayment.amount,
+                    "The payment provided is not enough for the transaction"
+                )
+                
+                bondingCurve.payment.amount = bondingCurve.payment.amount + price
+                bondingCurve.arguments.balance = bondingCurve.arguments.balance - requestedAmount
+                
+                var bondingCurveTopEncoded = MXBuffer()
+                bondingCurve.topEncode(output: &bondingCurveTopEncoded)
+                
+                buffer = bondingCurveTopEncoded
+                
+                return price
+            }
+        
+        let caller = Message.caller
+        
+        if let requestedNonce = requestedNonce {
+            caller.send(
+                tokenIdentifier: requestedToken,
+                nonce: requestedNonce,
+                amount: requestedAmount
+            )
+            
+            let nonceAmountMapper = StorageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: requestedToken, nonce: requestedNonce)]
+            let nonceAmount = nonceAmountMapper.get()
+            let diff = nonceAmount - requestedAmount
+            
+            if diff > 0 {
+                nonceAmountMapper.set(diff)
+            } else {
+                nonceAmountMapper.clear()
+                StorageModule.$tokenDetailsForTokenIdentifier[requestedToken]
+                    .update { details in
+                        details.removeNonce(nonce: requestedNonce)
+                    }
+            }
+        } else {
+            self.sendNextAvailableTokens(
+                caller: caller,
+                token: requestedToken,
+                amount: requestedAmount
+            )
+        }
+        
+        caller.send(
+            tokenIdentifier: offeredPayment.tokenIdentifier,
+            nonce: 0,
+            amount: offeredPayment.amount - calculatedPrice
+        )
+        
+        BuyTokenEvent(
+            user: caller,
+            amount: calculatedPrice
+        ).emit(data: IgnoreValue())
+    }
+    
+    // TODO: use TokenIdentifier type once implemented
+    static func checkOwnedReturnPaymentToken<T: CurveFunction & MXCodable & Default & Equatable>(
+        bondingCurve: BondingCurve<T>,
+        amount: BigUint
+    ) -> MXBuffer {
+        bondingCurve.requireIsSet()
+        require(
+            amount > 0,
+            "Must pay more than 0 tokens!"
+        )
+        
+        return bondingCurve.payment.tokenIdentifier
+    }
+    
+    // TODO: use TokenIdentifier type once implemented
+    static func checkTokenExists(issuedToken: MXBuffer) {
+        require(
+            !StorageModule.$bondingCurveForTokenIdentifier[issuedToken].isEmpty(),
+            "Token is not issued yet!"
+        )
+    }
+    
+    // TODO: use TokenIdentifier type once implemented
+    static func computeBuyPrice<T: CurveFunction & MXCodable & Default & Equatable>(
+        bondingCurve: BondingCurve<T>,
+        amount: BigUint
+    ) -> BigUint {
+        let arguments = bondingCurve.arguments
+        let functionSelector = bondingCurve.curve
+        
+        let tokenStart = arguments.getFirstTokenAvailable()
+        
+        return functionSelector.calculatePrice(
+            tokenStart: tokenStart,
+            amount: amount,
+            arguments: arguments
+        )
+    }
+    
+    // TODO: use TokenIdentifier type once implemented
+    static func computeSellPrice<T: CurveFunction & MXCodable & Default & Equatable>(
+        bondingCurve: BondingCurve<T>,
+        amount: BigUint
+    ) -> BigUint {
+        let arguments = bondingCurve.arguments
+        let functionSelector = bondingCurve.curve
+        
+        let tokenStart = arguments.getFirstTokenAvailable() - amount
+        
+        return functionSelector.calculatePrice(
+            tokenStart: tokenStart,
+            amount: amount,
+            arguments: arguments
+        )
+    }
+    
+    static func sendNextAvailableTokens(
+        caller: Address,
+        token: MXBuffer,
+        amount: BigUint
+    ) {
+        let tokenDetailsMapper = StorageModule.$tokenDetailsForTokenIdentifier[token]
+        var nonces = tokenDetailsMapper.get().tokenNonces
+        var totalAmount = amount
+        var tokensToSend: MXArray<TokenPayment> = MXArray()
+        
+        while true {
+            require(
+                !nonces.isEmpty,
+                "Insufficient balance"
+            )
+            
+            let nonce = nonces.get(0)
+            let nonceAmountMapper = StorageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: token, nonce: nonce)]
+            let availableAmount = nonceAmountMapper.get()
+            
+            let amountToSend: BigUint
+            if availableAmount <= totalAmount {
+                amountToSend = availableAmount
+                totalAmount = totalAmount - amountToSend
+                nonceAmountMapper.clear()
+                nonces = nonces.removed(0)
+            } else {
+                nonceAmountMapper.update { val in
+                    val = val - totalAmount
+                }
+                amountToSend = totalAmount
+                totalAmount = 0
+            }
+            
+            tokensToSend = tokensToSend.appended(
+                TokenPayment.new(
+                    tokenIdentifier: token,
+                    nonce: nonce,
+                    amount: amountToSend
+                )
+            )
+            
+            if totalAmount == 0 {
+                break
+            }
+        }
+        
+        caller.send(payments: tokensToSend)
+        
+        tokenDetailsMapper.update { details in
+            details.tokenNonces = nonces
+        }
+    }
+    
+    static func getTokenAvailability(
+        identifier: MXBuffer
+    ) -> MultiValueEncoded<MXBuffer> { // TODO: No MultiValue2 at the moment, so let's do it by hand
+        let tokenNonces = StorageModule.tokenDetailsForTokenIdentifier[identifier].tokenNonces
+        var availability: MultiValueEncoded<MXBuffer> = MultiValueEncoded()
+        
+        tokenNonces.forEach { currentCheckNonce in
+            var currentCheckNonceTopEncoded = MXBuffer()
+            currentCheckNonce.topEncode(output: &currentCheckNonceTopEncoded)
+            
+            var nonceAmountTopEncoded = MXBuffer()
+            StorageModule.nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: identifier, nonce: currentCheckNonce)]
+                .topEncode(output: &nonceAmountTopEncoded)
+            
+            availability = availability.appended(value: currentCheckNonceTopEncoded)
+            availability = availability.appended(value: nonceAmountTopEncoded)
+        }
+        
+        return availability
+    }
+    
+    static func checkGivenToken(
+        acceptedToken: MXBuffer,
+        givenToken: MXBuffer
+    ) {
+        require(
+            givenToken == acceptedToken,
+            "Only \(acceptedToken) tokens accepted"
+        )
+    }
+}

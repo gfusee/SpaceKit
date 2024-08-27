@@ -193,6 +193,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "BondingCurve",
+            dependencies: [
+                "MultiversX"
+            ],
+            path: "Examples/BondingCurve",
+            swiftSettings: [
+                .unsafeFlags(unsafeFlags)
+            ]
+        ),
+        .target(
             name: "CheckPause",
             dependencies: [
                 "MultiversX"

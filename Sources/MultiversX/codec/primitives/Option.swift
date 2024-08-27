@@ -3,6 +3,12 @@
 extension Optional: TopEncode where Wrapped: NestedEncode {
     @inline(__always)
     public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
+        // We can topEncode nil as an empty buffer,
+        // but we still have to append the 01 when there is a value in order to differentiate the cases
+        guard self != nil else {
+            output.setBuffer(buffer: MXBuffer())
+            return
+        }
         var resultNestedEncoded = MXBuffer()
         self.depEncode(dest: &resultNestedEncoded)
         

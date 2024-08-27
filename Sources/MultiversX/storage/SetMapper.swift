@@ -24,6 +24,10 @@ public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
         return SingleValueMapper(key: self.buildNamedValueKey(name: MXBuffer(stringLiteral: NODE_ID_IDENTIFIER), value: value))
     }
     
+    public func isEmpty() -> Bool {
+        return self.queueMapper.isEmpty()
+    }
+    
     public func contains(value: V) -> Bool {
         return self.getNodeIdMapper(value: value).get() != NULL_ENTRY
     }

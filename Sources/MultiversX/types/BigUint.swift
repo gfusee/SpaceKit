@@ -90,6 +90,10 @@ extension BigUint {
     }
     
     public static func - (lhs: BigUint, rhs: BigUint) -> BigUint {
+        guard lhs >= rhs else {
+            smartContractError(message: MXBuffer(stringLiteral: BIG_UINT_SUB_NEGATIVE))
+        }
+        
         let handle = getNextHandle()
         API.bigIntSub(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         
@@ -104,6 +108,7 @@ extension BigUint {
     }
     
     public static func / (lhs: BigUint, rhs: BigUint) -> BigUint {
+        // TODO: be sure rhs == 0 throws an error on the SpaceVM (critical)
         let handle = getNextHandle()
         API.bigIntTDiv(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         
@@ -111,6 +116,7 @@ extension BigUint {
     }
     
     public static func % (lhs: BigUint, rhs: BigUint) -> BigUint {
+        // TODO: be sure rhs == 0 throws an error on the SpaceVM (critical)
         let handle = getNextHandle()
         API.bigIntTMod(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         

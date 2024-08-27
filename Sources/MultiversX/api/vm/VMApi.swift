@@ -1,5 +1,7 @@
 #if WASM
 
+// TODO: /!\ CRITICAL /!\ Handle all possible errors from the Int32 status code. For example substracting two BigUint A - B, where A < B, DOESN'T throw an error in the VM
+
 // MARK: Buffer-related OPCODES
 @_extern(wasm, module: "env", name: "mBufferSetBytes")
 @_extern(c)

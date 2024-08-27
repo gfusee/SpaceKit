@@ -154,6 +154,32 @@ public struct MXArray<T: MXArrayType> {
         return MXArray(buffer: sliceBuffer)
     }
     
+    public func contains(_ element: T) -> Bool where T: Equatable {
+        let count = self.count
+        for index in 0..<count {
+            let value = self.get(index)
+            
+            if value == element {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    public func index(of element: T) -> Int32? where T: Equatable {
+        let count = self.count
+        for index in 0..<count {
+            let value = self.get(index)
+            
+            if value == element {
+                return index
+            }
+        }
+        
+        return nil
+    }
+    
     public subscript(_ index: Int32) -> T {
         get {
             self.get(index)

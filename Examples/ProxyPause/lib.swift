@@ -37,7 +37,7 @@ import MultiversX
     public func pause() {
         self.requireOwner()
         
-        for contract in self.allContracts {
+        self.allOwners.forEach { contract in
             PausableProxy.pause.callAndIgnoreResult(receiver: contract)
         }
     }
@@ -45,7 +45,7 @@ import MultiversX
     public func unpause() {
         self.requireOwner()
         
-        for contract in self.allContracts {
+        self.allOwners.forEach { contract in
             PausableProxy.unpause.callAndIgnoreResult(receiver: contract)
         }
     }
@@ -60,7 +60,7 @@ import MultiversX
     
     func requireOwner() {
         require(
-            self.allOwners.contains(Message.caller),
+            self.allOwners.contains(value: Message.caller),
             "caller is not an owner"
         )
     }

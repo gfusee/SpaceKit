@@ -100,6 +100,13 @@ public struct QueueMapper<V: TopEncode & TopDecode> {
         return newNodeId
     }
     
+    public func isEmpty() -> Bool {
+        let infoMapper = self.getInfoMapper()
+        var info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
+        
+        return info.len == 0
+    }
+    
     public func pushFront(value: V) {
         let infoMapper = self.getInfoMapper()
         var info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
