@@ -2,7 +2,7 @@ import Space
 
 @Codable public struct DepositInfo {
     var depositorAddress: Address
-    var esdtFunds: MXArray<TokenPayment>
+    var esdtFunds: Vector<TokenPayment>
     var egldFunds: BigUint
     var valability: UInt64
     var expirationRound: UInt64

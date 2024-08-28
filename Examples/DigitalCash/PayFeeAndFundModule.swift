@@ -43,7 +43,7 @@ struct PayFeeAndFundModule {
         let caller = Message.caller
         
         HelpersModule().updateFees(callerAddress: caller, address: address, payment: fee)
-        HelpersModule().makeFunds(egldPayment: fund, esdtPayments: MXArray(), address: address, valability: valability)
+        HelpersModule().makeFunds(egldPayment: fund, esdtPayments: Vector(), address: address, valability: valability)
     }
     
     func fund(

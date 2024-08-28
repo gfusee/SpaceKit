@@ -19,7 +19,7 @@ struct HelpersModule {
     
     func getNumTokenTransfers(
         egldValue: BigUint,
-        esdtTransfers: MXArray<TokenPayment>
+        esdtTransfers: Vector<TokenPayment>
     ) -> Int32 {
         var amount = esdtTransfers.count
         
@@ -38,7 +38,7 @@ struct HelpersModule {
     
     func makeFunds(
         egldPayment: BigUint,
-        esdtPayments: MXArray<TokenPayment>,
+        esdtPayments: Vector<TokenPayment>,
         address: Address,
         valability: UInt64
     ) {
@@ -110,7 +110,7 @@ struct HelpersModule {
         
         let newDeposit = DepositInfo(
             depositorAddress: callerAddress,
-            esdtFunds: MXArray(),
+            esdtFunds: Vector(),
             egldFunds: 0,
             valability: 0,
             expirationRound: 0,

@@ -4,14 +4,14 @@ import Space
     let to: Address
     let egldAmount: BigUint
     let endpointName: Buffer
-    let arguments: MXArray<Buffer>
+    let arguments: Vector<Buffer>
 }
 
 @Codable public struct DeployFromSourceActionData {
     let amount: BigUint
     let source: Address
     let codeMetadata: CodeMetadata
-    let arguments: MXArray<Buffer>
+    let arguments: Vector<Buffer>
 }
 
 @Codable public struct UpgradeFromSourceActionData {
@@ -19,7 +19,7 @@ import Space
     let amount: BigUint
     let source: Address
     let codeMetadata: CodeMetadata
-    let arguments: MXArray<Buffer>
+    let arguments: Vector<Buffer>
 }
 
 @Codable public enum Action {
@@ -47,5 +47,5 @@ extension Action {
 @Codable public struct ActionFullInfo {
     let actionId: UInt32
     let actionData: Action
-    let signers: MXArray<Address>
+    let signers: Vector<Address>
 }

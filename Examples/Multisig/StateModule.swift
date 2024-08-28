@@ -1,7 +1,7 @@
 import Space
 
 struct StateModule {
-    package static func addMultipleBoardMembers(newBoardMembers: MXArray<Address>) -> UInt32 {
+    package static func addMultipleBoardMembers(newBoardMembers: Vector<Address>) -> UInt32 {
         let userMapper = StorageModule.userMapper
         
         newBoardMembers.forEach { newBoardMember in
@@ -48,10 +48,10 @@ struct StateModule {
         return result
     }
     
-    package static func getActionSigners(actionId: UInt32) -> MXArray<Address> {
+    package static func getActionSigners(actionId: UInt32) -> Vector<Address> {
         let signerIdsMapper = StorageModule.getActionSignerIdsMapper(actionId: actionId)
         let userMapper = StorageModule.userMapper
-        var signers: MXArray<Address> = MXArray()
+        var signers: Vector<Address> = Vector()
         
         signerIdsMapper.forEach { signerId in
             signers = signers.appended(userMapper.getUserAddressUnchecked(id: signerId))

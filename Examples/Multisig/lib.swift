@@ -198,12 +198,12 @@ import Space
         return StorageModule.numBoardMembers
     }
     
-    public func getActionSigners(actionId: UInt32) -> MXArray<Address> {
+    public func getActionSigners(actionId: UInt32) -> Vector<Address> {
         return StateModule.getActionSigners(actionId: actionId)
     }
     
     public func getPendingActionFullInfo() -> MultiValueEncoded<ActionFullInfo> {
-        var resultArray: MXArray<ActionFullInfo> = MXArray()
+        var resultArray: Vector<ActionFullInfo> = Vector()
         
         let actionLastIndex = StateModule.getActionLastIndex()
         let actionMapper = StorageModule.getActionMapper()

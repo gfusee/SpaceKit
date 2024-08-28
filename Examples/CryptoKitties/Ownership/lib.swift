@@ -182,7 +182,7 @@ import CryptoKittiesRandom
         let numberOwnedKitties = self.numberOfOwnedKittiesForAddress[address]
         let totalKitties = self.totalKitties
         
-        var kittyArray: MXArray<UInt32> = MXArray()
+        var kittyArray: Vector<UInt32> = Vector()
         var arrayCount: UInt32 = 0 // Note from the Rust code: more efficient than calling the API over and over
         
         for kittyId in 1..<(totalKitties + 1) {

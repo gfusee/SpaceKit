@@ -119,10 +119,10 @@ public struct Blockchain {
         codeMetadata: CodeMetadata,
         value: BigUint = 0,
         arguments: ArgBuffer = ArgBuffer()
-    ) -> (newAddress: Address, results: MXArray<Buffer>) {
+    ) -> (newAddress: Address, results: Vector<Buffer>) {
         // TODO: add tests
         let resultAddress = Address()
-        let resultBuffers: MXArray<Buffer> = MXArray()
+        let resultBuffers: Vector<Buffer> = Vector()
         
         let codeMetadataBuffer = Buffer(data: codeMetadata.getFlag().asBigEndianBytes())
         
@@ -146,8 +146,8 @@ public struct Blockchain {
         codeMetadata: CodeMetadata,
         value: BigUint = 0,
         arguments: ArgBuffer = ArgBuffer()
-    ) -> MXArray<Buffer> {
-        let resultBuffers: MXArray<Buffer> = MXArray()
+    ) -> Vector<Buffer> {
+        let resultBuffers: Vector<Buffer> = Vector()
         let codeMetadataBuffer = Buffer(data: codeMetadata.getFlag().asBigEndianBytes())
         
         let _ = API.managedUpgradeFromSourceContract(
@@ -199,7 +199,7 @@ public struct Blockchain {
         royalties: BigUint,
         hash: Buffer,
         attributes: T,
-        uris: MXArray<Buffer>
+        uris: Vector<Buffer>
     ) -> UInt64 {
         var argBuffer = ArgBuffer()
         argBuffer.pushSingleValue(arg: tokenIdentifier)

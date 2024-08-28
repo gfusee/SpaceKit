@@ -135,7 +135,7 @@ struct NftModule {
         attributes.topEncode(output: &serializedAttributes)
         
         let attributesHash = Crypto.getSha256Hash(of: serializedAttributes)
-        let uris = MXArray(singleItem: uri)
+        let uris = Vector(singleItem: uri)
         let nftNonce = Blockchain.createNft(
             tokenIdentifier: nftTokenId,
             amount: BigUint(value: NFT_AMOUNT),

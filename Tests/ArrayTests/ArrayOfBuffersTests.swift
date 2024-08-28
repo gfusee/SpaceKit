@@ -4,7 +4,7 @@ import XCTest
 @Contract struct ArrayOfBuffersTestsContract {
     
     public func testGetOutOfRangeShouldFail() {
-        let array: MXArray<Buffer> = ["Hey!"]
+        let array: Vector<Buffer> = ["Hey!"]
         
         _ = array[1]
     }
@@ -12,11 +12,11 @@ import XCTest
     public func testTopDecodeInputTooLarge() {
         let input = Buffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal))
         
-        _ = MXArray<Buffer>(topDecode: input)
+        _ = Vector<Buffer>(topDecode: input)
     }
     
     public func testReplacedOutOfRangeShouldFail() {
-        let array: MXArray<Buffer> = ["Hey!"]
+        let array: Vector<Buffer> = ["Hey!"]
         
         _ = array.replaced(at: 1, value: "test")
     }
@@ -32,7 +32,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testEmptyArray() throws {
-        let array: MXArray<Buffer> = MXArray()
+        let array: Vector<Buffer> = Vector()
         
         let count = array.count
         
@@ -41,7 +41,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testAppendedOneElementArray() throws {
-        var array: MXArray<Buffer> = MXArray()
+        var array: Vector<Buffer> = Vector()
         array = array.appended("Hey!")
         
         let count = array.count
@@ -53,7 +53,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testAppendedTwoElementsArray() throws {
-        var array: MXArray<Buffer> = MXArray()
+        var array: Vector<Buffer> = Vector()
         array = array.appended("Hey!")
         array = array.appended("How's it going?")
         
@@ -68,7 +68,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testTwoElementsArrayThroughLiteralAssign() throws {
-        let array: MXArray<Buffer> = ["Hey!", "How's it going?"]
+        let array: Vector<Buffer> = ["Hey!", "How's it going?"]
         
         let count = array.count
         let firstElement = array.get(0)
@@ -81,11 +81,11 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testAppendedContentsOf() throws {
-        var array1: MXArray<Buffer> = MXArray()
+        var array1: Vector<Buffer> = Vector()
         array1 = array1.appended("Hey!")
         array1 = array1.appended("How's it going?")
         
-        var array2: MXArray<Buffer> = MXArray()
+        var array2: Vector<Buffer> = Vector()
         array2 = array2.appended("I hope")
         array2 = array2.appended("you're enjoying")
         array2 = array2.appended("the SwiftSDK!")
@@ -103,32 +103,32 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testEquatableWhenEqual() throws {
-        let array1: MXArray<Buffer> = ["Hey!", "How's it going?"]
-        let array2: MXArray<Buffer> = ["Hey!", "How's it going?"]
+        let array1: Vector<Buffer> = ["Hey!", "How's it going?"]
+        let array2: Vector<Buffer> = ["Hey!", "How's it going?"]
         
         XCTAssertEqual(array1, array2)
     }
     
     func testEquatableWhenDifferentCount() throws {
-        let array1: MXArray<Buffer> = ["Hey!", "How's it going?"]
-        let array2: MXArray<Buffer> = ["Hey!"]
+        let array1: Vector<Buffer> = ["Hey!", "How's it going?"]
+        let array2: Vector<Buffer> = ["Hey!"]
         
         XCTAssertNotEqual(array1, array2)
     }
     
     func testEquatableWhenDifferentValues() throws {
-        let array1: MXArray<Buffer> = ["Hey!", "How's it going?"]
-        let array2: MXArray<Buffer> = ["Hey!", "???"]
+        let array1: Vector<Buffer> = ["Hey!", "How's it going?"]
+        let array2: Vector<Buffer> = ["Hey!", "???"]
         
         XCTAssertNotEqual(array1, array2)
     }
     
     func testPlusOperator() throws {
-        var array1: MXArray<Buffer> = MXArray()
+        var array1: Vector<Buffer> = Vector()
         array1 = array1.appended("Hey!")
         array1 = array1.appended("How's it going?")
         
-        var array2: MXArray<Buffer> = MXArray()
+        var array2: Vector<Buffer> = Vector()
         array2 = array2.appended("I hope")
         array2 = array2.appended("you're enjoying")
         array2 = array2.appended("the SwiftSDK!")
@@ -146,7 +146,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testAppendedTwoElementsArrayUsingSubscript() throws {
-        var array: MXArray<Buffer> = MXArray()
+        var array: Vector<Buffer> = Vector()
         array = array.appended("Hey!")
         array = array.appended("How's it going?")
         
@@ -170,20 +170,20 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testForLoopZeroElement() throws {
-        let array: MXArray<Buffer> = MXArray()
+        let array: Vector<Buffer> = Vector()
         
         array.forEach { _ in XCTFail() }
     }
     
     func testForLoopOneElement() throws {
-        var array: MXArray<Buffer> = MXArray()
+        var array: Vector<Buffer> = Vector()
         array = array.appended("Hey!")
         
         array.forEach { XCTAssertEqual($0, "Hey!") }
     }
     
     func testForLoopTwoElements() throws {
-        var array: MXArray<Buffer> = MXArray()
+        var array: Vector<Buffer> = Vector()
         array = array.appended("Hey!")
         array = array.appended("How's it going?")
         
@@ -197,7 +197,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testTopEncodeZeroElement() throws {
-        let array: MXArray<Buffer> = MXArray()
+        let array: Vector<Buffer> = Vector()
         
         var output = Buffer()
         array.topEncode(output: &output)
@@ -208,7 +208,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testTopEncodeOneElement() throws {
-        var array: MXArray<Buffer> = MXArray()
+        var array: Vector<Buffer> = Vector()
         array = array.appended("a")
         
         var output = Buffer()
@@ -220,7 +220,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testTopEncodeTwoElements() throws {
-        var array: MXArray<Buffer> = MXArray()
+        var array: Vector<Buffer> = Vector()
         array = array.appended("a")
         array = array.appended("Hello World! How's it going? I hope you're enjoying the SwiftSDK!")
         
@@ -233,7 +233,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testNestedEncodeZeroElement() throws {
-        let array: MXArray<Buffer> = MXArray()
+        let array: Vector<Buffer> = Vector()
         
         var output = Buffer()
         array.depEncode(dest: &output)
@@ -244,7 +244,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testNestedEncodeOneElement() throws {
-        var array: MXArray<Buffer> = MXArray()
+        var array: Vector<Buffer> = Vector()
         array = array.appended("a")
         
         var output = Buffer()
@@ -256,7 +256,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testNestedEncodeTwoElements() throws {
-        var array: MXArray<Buffer> = MXArray()
+        var array: Vector<Buffer> = Vector()
         array = array.appended("a")
         array = array.appended("Hello World! How's it going? I hope you're enjoying the SwiftSDK!")
         
@@ -271,7 +271,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testTopDecodeZeroElement() throws {
         let input = Buffer(data: Array("".hexadecimal))
         
-        let array = MXArray<Buffer>(topDecode: input).toArray()
+        let array = Vector<Buffer>(topDecode: input).toArray()
         let expected: [Buffer] = []
         
         XCTAssertEqual(array, expected)
@@ -280,7 +280,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testTopDecodeOneElement() throws {
         let input = Buffer(data: Array("0000000161".hexadecimal))
         
-        let array = MXArray<Buffer>(topDecode: input).toArray()
+        let array = Vector<Buffer>(topDecode: input).toArray()
         let expected: [Buffer] = ["a"]
         
         XCTAssertEqual(array, expected)
@@ -289,7 +289,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testTopDecodeTwoElements() throws {
         let input = Buffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal))
         
-        let array = MXArray<Buffer>(topDecode: input).toArray()
+        let array = Vector<Buffer>(topDecode: input).toArray()
         let expected: [Buffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
         
         XCTAssertEqual(array, expected)
@@ -298,7 +298,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeZeroElement() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000000".hexadecimal)))
         
-        let array = MXArray<Buffer>(depDecode: &input).toArray()
+        let array = Vector<Buffer>(depDecode: &input).toArray()
         let expected: [Buffer] = []
         
         XCTAssertEqual(array, expected)
@@ -307,7 +307,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeOneElement() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000010000000161".hexadecimal)))
         
-        let array = MXArray<Buffer>(depDecode: &input).toArray()
+        let array = Vector<Buffer>(depDecode: &input).toArray()
         let expected: [Buffer] = ["a"]
         
         XCTAssertEqual(array, expected)
@@ -316,7 +316,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeTwoElements() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("0000000200000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
         
-        let array = MXArray<Buffer>(depDecode: &input).toArray()
+        let array = Vector<Buffer>(depDecode: &input).toArray()
         let expected: [Buffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
         
         XCTAssertEqual(array, expected)
@@ -325,7 +325,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     func testNestedDecodeTwoElementsAndInputLarger() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("0000000200000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal)))
         
-        let array = MXArray<Buffer>(depDecode: &input).toArray()
+        let array = Vector<Buffer>(depDecode: &input).toArray()
         let expected: [Buffer] = ["a", "Hello World! How's it going? I hope you're enjoying the SwiftSDK!"]
         
         XCTAssertEqual(array, expected)
@@ -333,7 +333,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testReplaceFirstElement() throws {
-        let array: MXArray<Buffer> = [
+        let array: Vector<Buffer> = [
             "first",
             "second",
             "third"
@@ -341,7 +341,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
         
         let replaced = array.replaced(at: 0, value: "replaced value")
         
-        let expected: MXArray<Buffer> = [
+        let expected: Vector<Buffer> = [
             "replaced value",
             "second",
             "third"
@@ -351,7 +351,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testReplaceSecondElement() throws {
-        let array: MXArray<Buffer> = [
+        let array: Vector<Buffer> = [
             "first",
             "second",
             "third"
@@ -359,7 +359,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
         
         let replaced = array.replaced(at: 1, value: "replaced value")
         
-        let expected: MXArray<Buffer> = [
+        let expected: Vector<Buffer> = [
             "first",
             "replaced value",
             "third"
@@ -369,7 +369,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     }
     
     func testReplaceThirdElement() throws {
-        let array: MXArray<Buffer> = [
+        let array: Vector<Buffer> = [
             "first",
             "second",
             "third"
@@ -377,7 +377,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
         
         let replaced = array.replaced(at: 2, value: "replaced value")
         
-        let expected: MXArray<Buffer> = [
+        let expected: Vector<Buffer> = [
             "first",
             "second",
             "replaced value"

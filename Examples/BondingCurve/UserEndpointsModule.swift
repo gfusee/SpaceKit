@@ -214,7 +214,7 @@ struct UserEndpointsModule {
         let tokenDetailsMapper = StorageModule.$tokenDetailsForTokenIdentifier[token]
         var nonces = tokenDetailsMapper.get().tokenNonces
         var totalAmount = amount
-        var tokensToSend: MXArray<TokenPayment> = MXArray()
+        var tokensToSend: Vector<TokenPayment> = Vector()
         
         while true {
             require(

@@ -509,7 +509,7 @@ extension DummyApi: CallValueApiProtocol {
     public func managedGetMultiESDTCallValue(resultHandle: Int32) {
         let payments = self.getCurrentContainer().getEsdtValue()
 
-        var array: MXArray<TokenPayment> = []
+        var array: Vector<TokenPayment> = []
         for payment in payments {
             array = array.appended(
                 TokenPayment.new(
@@ -590,7 +590,7 @@ extension DummyApi: SendApiProtocol {
         let value = currentTransactionContainer.getBigIntData(handle: valueHandle)
         let function = currentTransactionContainer.getBufferData(handle: functionHandle)
         
-        let argumentsArray: MXArray<Buffer> = MXArray(handle: argumentsHandle)
+        let argumentsArray: Vector<Buffer> = Vector(handle: argumentsHandle)
         var arguments: [Data] = []
         
         argumentsArray.forEach { arguments.append(Data($0.toBytes())) }
@@ -607,7 +607,7 @@ extension DummyApi: SendApiProtocol {
             )
         )
         
-        var resultsArray: MXArray<Buffer> = MXArray()
+        var resultsArray: Vector<Buffer> = Vector()
         
         for result in results {
             resultsArray = resultsArray.appended(Buffer(data: Array(result)))

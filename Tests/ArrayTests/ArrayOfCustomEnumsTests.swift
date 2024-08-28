@@ -10,9 +10,9 @@ import XCTest
 @Contract struct ArrayOfCustomEnumsTestsContract {
     
     public func testGetOutOfRangeShouldFail() {
-        let array: MXArray<MXString> = ["Hello!", "Bonjour!", "¡Hola!"]
+        let array: Vector<MXString> = ["Hello!", "Bonjour!", "¡Hola!"]
         
-        let array2: MXArray<CustomCodableEnum> = [
+        let array2: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -27,11 +27,11 @@ import XCTest
     public func testTopDecodeInputTooLarge() {
         let input = Buffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal))
         
-        _ = MXArray<CustomCodableEnum>(topDecode: input)
+        _ = Vector<CustomCodableEnum>(topDecode: input)
     }
     
     public func testReplacedOutOfRangeShouldFail() {
-        let array: MXArray<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -62,7 +62,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testEmptyArray() throws {
-        let array: MXArray<CustomCodableEnum> = MXArray()
+        let array: Vector<CustomCodableEnum> = Vector()
         
         let count = array.count
         
@@ -71,7 +71,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testAppendedOneElementArray() throws {
-        var array: MXArray<CustomCodableEnum> = MXArray()
+        var array: Vector<CustomCodableEnum> = Vector()
         array = array.appended(
             CustomCodableEnum.first(
                 "Hey!",
@@ -96,7 +96,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testAppendedTwoElementsArray() throws {
-        var array: MXArray<CustomCodableEnum> = MXArray()
+        var array: Vector<CustomCodableEnum> = Vector()
         array = array.appended(
             CustomCodableEnum.first(
                 "Hey!",
@@ -139,7 +139,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testTwoElementsArrayThroughLiteralAssign() throws {
-        let array: MXArray<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -179,7 +179,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testThreeDifferentCasesArray() throws {
-        let array: MXArray<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -212,7 +212,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testAppendedContentsOf() throws {
-        let array1: MXArray<CustomCodableEnum> = [
+        let array1: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -227,7 +227,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         ]
         
-        let array2: MXArray<CustomCodableEnum> = [
+        let array2: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "test3",
                 1,
@@ -243,7 +243,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
         ]
         
         let array = array1.appended(contentsOf: array2)
-        let expected: MXArray<CustomCodableEnum> = [
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -274,7 +274,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testEquatableWhenEqual() throws {
-        let array1: MXArray<CustomCodableEnum> = [
+        let array1: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -289,7 +289,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         ]
         
-        let array2: MXArray<CustomCodableEnum> = [
+        let array2: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -308,7 +308,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testEquatableWhenDifferentCount() throws {
-        let array1: MXArray<CustomCodableEnum> = [
+        let array1: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -322,7 +322,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
                 "test2"
             )
         ]
-        let array2: MXArray<CustomCodableEnum> = [
+        let array2: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -335,7 +335,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testEquatableWhenDifferentValues() throws {
-        let array1: MXArray<CustomCodableEnum> = [
+        let array1: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -350,7 +350,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         ]
         
-        let array2: MXArray<CustomCodableEnum> = [
+        let array2: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 99,
@@ -370,7 +370,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     
     func testPlusOperator() throws { // TODO: ???????? why tf there is a nested function
         func testAppendedContentsOf() throws {
-            let array1: MXArray<CustomCodableEnum> = [
+            let array1: Vector<CustomCodableEnum> = [
                 CustomCodableEnum.first(
                     "Hey!",
                     10,
@@ -385,7 +385,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
                 )
             ]
             
-            let array2: MXArray<CustomCodableEnum> = [
+            let array2: Vector<CustomCodableEnum> = [
                 CustomCodableEnum.first(
                     "test3",
                     1,
@@ -401,7 +401,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             ]
             
             let array = array1 + array2
-            let expected: MXArray<CustomCodableEnum> = [
+            let expected: Vector<CustomCodableEnum> = [
                 CustomCodableEnum.first(
                     "Hey!",
                     10,
@@ -433,7 +433,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testAppendedTwoElementsArrayThroughSubscript() throws {
-        var array: MXArray<CustomCodableEnum> = MXArray()
+        var array: Vector<CustomCodableEnum> = Vector()
         array = array.appended(
             CustomCodableEnum.first(
                 "Hey!",
@@ -486,13 +486,13 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testForLoopZeroElement() throws {
-        let array: MXArray<CustomCodableEnum> = MXArray()
+        let array: Vector<CustomCodableEnum> = Vector()
         
         array.forEach { _ in XCTFail() }
     }
     
     func testForLoopOneElement() throws {
-        var array: MXArray<CustomCodableEnum> = MXArray()
+        var array: Vector<CustomCodableEnum> = Vector()
         array = array.appended(
             CustomCodableEnum.first(
                 "Hey!",
@@ -516,7 +516,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testForLoopTwoElements() throws {
-        var array: MXArray<CustomCodableEnum> = MXArray()
+        var array: Vector<CustomCodableEnum> = Vector()
         array = array.appended(
             CustomCodableEnum.first(
                 "Hey!",
@@ -557,7 +557,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testTopEncodeZeroElement() throws {
-        let array: MXArray<CustomCodableEnum> = MXArray()
+        let array: Vector<CustomCodableEnum> = Vector()
         
         var output = Buffer()
         array.topEncode(output: &output)
@@ -568,7 +568,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testTopEncodeOneElement() throws {
-        var array: MXArray<CustomCodableEnum> = MXArray()
+        var array: Vector<CustomCodableEnum> = Vector()
         array = array.appended(
             CustomCodableEnum.first(
                 "Hey!",
@@ -587,7 +587,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testTopEncodeTwoElements() throws {
-        var array: MXArray<CustomCodableEnum> = MXArray()
+        var array: Vector<CustomCodableEnum> = Vector()
         array = array.appended(
             CustomCodableEnum.first(
                 "Hey!",
@@ -614,7 +614,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testTopEncodeThreeDifferentCases() throws {
-        let array: MXArray<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -634,7 +634,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedEncodeZeroElement() throws {
-        let array: MXArray<CustomCodableEnum> = MXArray()
+        let array: Vector<CustomCodableEnum> = Vector()
         
         var output = Buffer()
         array.depEncode(dest: &output)
@@ -645,7 +645,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedEncodeOneElement() throws {
-        var array: MXArray<CustomCodableEnum> = MXArray()
+        var array: Vector<CustomCodableEnum> = Vector()
         array = array.appended(
             CustomCodableEnum.first(
                 "Hey!",
@@ -664,7 +664,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedEncodeTwoElements() throws {
-        var array: MXArray<CustomCodableEnum> = MXArray()
+        var array: Vector<CustomCodableEnum> = Vector()
         array = array.appended(
             CustomCodableEnum.first(
                 "Hey!",
@@ -691,7 +691,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedEncodeThreeDifferentCases() throws {
-        var array: MXArray<CustomCodableEnum> = [
+        var array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -713,8 +713,8 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testTopDecodeZeroElement() throws {
         let input = Buffer(data: Array("".hexadecimal))
         
-        let array = MXArray<CustomCodableEnum>(topDecode: input)
-        let expected: MXArray<CustomCodableEnum> = []
+        let array = Vector<CustomCodableEnum>(topDecode: input)
+        let expected: Vector<CustomCodableEnum> = []
         
         XCTAssertEqual(array, expected)
     }
@@ -722,8 +722,8 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testTopDecodeOneElement() throws {
         let input = Buffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
-        let array = MXArray<CustomCodableEnum>(topDecode: input)
-        let expected: MXArray<CustomCodableEnum> = [
+        let array = Vector<CustomCodableEnum>(topDecode: input)
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -738,8 +738,8 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testTopDecodeTwoElements() throws {
         let input = Buffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
-        let array = MXArray<CustomCodableEnum>(topDecode: input)
-        let expected: MXArray<CustomCodableEnum> = [
+        let array = Vector<CustomCodableEnum>(topDecode: input)
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -760,8 +760,8 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testTopDecodeThreeDifferentCases() throws {
         let input = Buffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal))
         
-        let array = MXArray<CustomCodableEnum>(topDecode: input)
-        let expected: MXArray<CustomCodableEnum> = [
+        let array = Vector<CustomCodableEnum>(topDecode: input)
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -778,8 +778,8 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testNestedDecodeZeroElement() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000000".hexadecimal)))
         
-        let array = MXArray<CustomCodableEnum>(depDecode: &input)
-        let expected: MXArray<CustomCodableEnum> = []
+        let array = Vector<CustomCodableEnum>(depDecode: &input)
+        let expected: Vector<CustomCodableEnum> = []
         
         XCTAssertEqual(array, expected)
     }
@@ -787,8 +787,8 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testNestedDecodeOneElement() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000001000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal)))
         
-        let array = MXArray<CustomCodableEnum>(depDecode: &input)
-        let expected: MXArray<CustomCodableEnum> = [
+        let array = Vector<CustomCodableEnum>(depDecode: &input)
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -803,8 +803,8 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testNestedDecodeTwoElements() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000002000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal)))
         
-        let array = MXArray<CustomCodableEnum>(depDecode: &input)
-        let expected: MXArray<CustomCodableEnum> = [
+        let array = Vector<CustomCodableEnum>(depDecode: &input)
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -825,8 +825,8 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testNestedDecodeTwoElementsAndInputLarger() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000002000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e000000000000000500000005746573743201".hexadecimal)))
         
-        let array = MXArray<CustomCodableEnum>(depDecode: &input)
-        let expected: MXArray<CustomCodableEnum> = [
+        let array = Vector<CustomCodableEnum>(depDecode: &input)
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -848,8 +848,8 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testNestedDecodeThreeDifferentCases() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000003000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0100000000000000320201".hexadecimal)))
         
-        let array = MXArray<CustomCodableEnum>(depDecode: &input)
-        let expected: MXArray<CustomCodableEnum> = [
+        let array = Vector<CustomCodableEnum>(depDecode: &input)
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -867,8 +867,8 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testNestedDecodeThreeDifferentCasesLargerBuffer() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000003000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal)))
         
-        let array = MXArray<CustomCodableEnum>(depDecode: &input)
-        let expected: MXArray<CustomCodableEnum> = [
+        let array = Vector<CustomCodableEnum>(depDecode: &input)
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -883,7 +883,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testReplaceFirstElement() throws {
-        let array: MXArray<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -914,7 +914,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         )
         
-        let expected: MXArray<CustomCodableEnum> = [
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "replaced value 1",
                 10,
@@ -939,7 +939,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testReplaceSecondElement() throws {
-        let array: MXArray<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -970,7 +970,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         )
         
-        let expected: MXArray<CustomCodableEnum> = [
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -995,7 +995,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testReplaceThirdElement() throws {
-        let array: MXArray<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -1026,7 +1026,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         )
         
-        let expected: MXArray<CustomCodableEnum> = [
+        let expected: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,

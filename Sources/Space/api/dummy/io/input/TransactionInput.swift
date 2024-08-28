@@ -5,12 +5,12 @@ import BigInt
 public struct ContractCallTransactionInput {
     public let callerAddress: String?
     public let egldValue: BigUint
-    public let esdtValue: MXArray<TokenPayment>
+    public let esdtValue: Vector<TokenPayment>
     
     public init(
         callerAddress: String? = nil,
         egldValue: BigUint = 0,
-        esdtValue: MXArray<TokenPayment> = MXArray()
+        esdtValue: Vector<TokenPayment> = Vector()
     ) {
         self.callerAddress = callerAddress
         self.egldValue = egldValue
@@ -68,7 +68,7 @@ public struct TransactionInput {
         self.arguments = arguments
     }
     
-    public mutating func withArguments(args: MXArray<Buffer>) {
+    public mutating func withArguments(args: Vector<Buffer>) {
         var argumentsData: [Data] = []
         
         args.forEach { argumentsData.append(Data($0.toBytes())) }

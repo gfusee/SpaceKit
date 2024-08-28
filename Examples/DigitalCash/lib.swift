@@ -79,7 +79,7 @@ import Space
         
         let feeTokensMapper = StorageModule().allTimeFeeTokens
         let caller = Message.caller
-        var collectedEsdtFees: MXArray<TokenPayment> = MXArray()
+        var collectedEsdtFees: Vector<TokenPayment> = Vector()
         
         feeTokensMapper.forEach { token in
             let fee = StorageModule().$collectedFeesForToken[token].take()

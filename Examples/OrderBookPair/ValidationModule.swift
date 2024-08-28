@@ -97,14 +97,14 @@ struct ValidationModule {
         )
     }
     
-    static func requireValidMatchInputOrderIds(orderIds: MXArray<UInt64>) {
+    static func requireValidMatchInputOrderIds(orderIds: Vector<UInt64>) {
         require(
             orderIds.count >= 2,
             "Should be at least two order ids"
         )
     }
     
-    static func requireMatchProviderEmptyOrCaller(orders: MXArray<Order>) {
+    static func requireMatchProviderEmptyOrCaller(orders: Vector<Order>) {
         let caller = Message.caller
         
         orders.forEach { order in
@@ -117,7 +117,7 @@ struct ValidationModule {
         }
     }
     
-    static func requireOrderIdsNotEmpty(orderIds: MXArray<UInt64>) {
+    static func requireOrderIdsNotEmpty(orderIds: Vector<UInt64>) {
         require(
             !orderIds.isEmpty,
             "Order ids vec is empty"
@@ -125,8 +125,8 @@ struct ValidationModule {
     }
     
     static func requireContainsAll(
-        baseArray: MXArray<UInt64>,
-        items: MXArray<UInt64>
+        baseArray: Vector<UInt64>,
+        items: Vector<UInt64>
     ) {
         let baseArrayCount = baseArray.count
         let itemsCount = items.count
@@ -152,8 +152,8 @@ struct ValidationModule {
     }
     
     static func requireContainsNone(
-        baseArray: MXArray<UInt64>,
-        items: MXArray<UInt64>
+        baseArray: Vector<UInt64>,
+        items: Vector<UInt64>
     ) {
         let baseArrayCount = baseArray.count
         let itemsCount = items.count
@@ -178,7 +178,7 @@ struct ValidationModule {
         }
     }
     
-    static func requireNotMaxSize(addressOrderIds: MXArray<UInt64>) {
+    static func requireNotMaxSize(addressOrderIds: Vector<UInt64>) {
         require(
             addressOrderIds.count < MAX_ORDERS_PER_USER,
             "Cannot place more orders"

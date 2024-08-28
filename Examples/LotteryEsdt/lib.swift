@@ -15,8 +15,8 @@ let MAX_TICKETS: UInt32 = 800
         optTotalTickets: UInt32?,
         optDeadline: UInt64?,
         optMaxEntriesPerUser: UInt32?,
-        optPrizeDistribution: MXArray<UInt8>?,
-        optWhitelist: MXArray<Address>?,
+        optPrizeDistribution: Vector<UInt8>?,
+        optWhitelist: Vector<Address>?,
         optBurnPercentage: OptionalArgument<BigUint>
     ) {
         self.startLottery(
@@ -39,8 +39,8 @@ let MAX_TICKETS: UInt32 = 800
         optTotalTickets: UInt32?,
         optDeadline: UInt64?,
         optMaxEntriesPerUser: UInt32?,
-        optPrizeDistribution: MXArray<UInt8>?,
-        optWhitelist: MXArray<Address>?,
+        optPrizeDistribution: Vector<UInt8>?,
+        optWhitelist: Vector<Address>?,
         optBurnPercentage: OptionalArgument<BigUint>
     ) {
         require(
@@ -52,7 +52,7 @@ let MAX_TICKETS: UInt32 = 800
         let totalTickets = optTotalTickets ?? MAX_TICKETS
         let deadline = optDeadline ?? (timestamp + THIRTY_DAYS_IN_SECONDS)
         let maxEntriesPerUser = optMaxEntriesPerUser ?? MAX_TICKETS
-        let prizeDistribution = optPrizeDistribution ?? MXArray(singleItem: UInt8(PERCENTAGE_TOTAL))
+        let prizeDistribution = optPrizeDistribution ?? Vector(singleItem: UInt8(PERCENTAGE_TOTAL))
         
         require(
             self.status(lotteryName: lotteryName) == .inactive,
@@ -138,8 +138,8 @@ let MAX_TICKETS: UInt32 = 800
         optTotalTickets: UInt32?,
         optDeadline: UInt64?,
         optMaxEntriesPerUser: UInt32?,
-        optPrizeDistribution: MXArray<UInt8>?,
-        optWhitelist: MXArray<Address>?,
+        optPrizeDistribution: Vector<UInt8>?,
+        optWhitelist: Vector<Address>?,
         optBurnPercentage: OptionalArgument<BigUint>
     ) {
         self.startLottery(
@@ -308,7 +308,7 @@ let MAX_TICKETS: UInt32 = 800
         return .running
     }
     
-    func sumArray(array: MXArray<UInt8>) -> UInt32 {
+    func sumArray(array: Vector<UInt8>) -> UInt32 {
         var sum: UInt32 = 0
         
         array.forEach { item in
@@ -326,8 +326,8 @@ let MAX_TICKETS: UInt32 = 800
         min: UInt32,
         max: UInt32,
         amount: UInt32
-    ) -> MXArray<UInt32> {
-        var randNumbers: MXArray<UInt32> = MXArray()
+    ) -> Vector<UInt32> {
+        var randNumbers: Vector<UInt32> = Vector()
         
         for number in min...max {
             randNumbers = randNumbers.appended(number)

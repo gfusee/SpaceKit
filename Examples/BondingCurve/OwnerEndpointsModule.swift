@@ -22,7 +22,7 @@ struct OwnerEndpointsModule {
         let tokenDetailsMapper = StorageModule.$tokenDetailsForTokenIdentifier[payment.tokenIdentifier]
         
         if tokenDetailsMapper.isEmpty() {
-            let nonces = MXArray(singleItem: payment.nonce)
+            let nonces = Vector(singleItem: payment.nonce)
             
             tokenDetailsMapper.set(
                 TokenOwnershipData(
@@ -67,7 +67,7 @@ struct OwnerEndpointsModule {
             "You have nothing to claim"
         )
         
-        var tokensToClaim: MXArray<TokenPayment> = MXArray()
+        var tokensToClaim: Vector<TokenPayment> = Vector()
         var egldToClaim: BigUint = 0
         
         ownedTokensMapper.forEach { token in

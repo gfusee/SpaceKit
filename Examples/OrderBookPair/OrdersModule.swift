@@ -20,13 +20,13 @@ struct OrdersModule {
         )
         StorageModule.orderForId[order.id] = order
         
-        let addressOrders = MXArray(singleItem: order.id)
+        let addressOrders = Vector(singleItem: order.id)
         StorageModule.orderIdsForAddress[caller] = addressOrders
         
         EventsModule.emitOrderEvent(order: order)
     }
     
-    static func matchOrders(orderIds: MXArray<UInt64>) {
+    static func matchOrders(orderIds: Vector<UInt64>) {
         let orders = OrdersModule.loadOrders(orderIds: orderIds)
         
         require(
@@ -43,7 +43,7 @@ struct OrdersModule {
         EventsModule.emitMatchOrderEvents(orders: orders)
     }
     
-    static func freeOrders(orderIds: MXArray<UInt64>) {
+    static func freeOrders(orderIds: Vector<UInt64>) {
         let caller = Message.caller
         let addressOrderIds = OrdersModule.getAddressOrderIds(address: caller)
         
@@ -53,14 +53,14 @@ struct OrdersModule {
         let secondTokenIdentifier = StorageModule.secondTokenIdentifier
         let epoch = Blockchain.getBlockEpoch()
         
-        var orderIdsNotEmpty: MXArray<UInt64> = MXArray()
+        var orderIdsNotEmpty: Vector<UInt64> = Vector()
         orderIds.forEach { orderId in
             if !StorageModule.$orderForId[orderId].isEmpty() {
                 orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
             }
         }
         
-        var orders: MXArray<Order> = MXArray()
+        var orders: Vector<Order> = Vector()
         orderIdsNotEmpty.forEach { orderId in
             let order = OrdersModule.freeOrder(
                 orderId: orderId,
@@ -79,7 +79,7 @@ struct OrdersModule {
         let caller = Message.caller
         let addressOrderIds = OrdersModule.getAddressOrderIds(address: caller)
         
-        var orderIdsNotEmpty: MXArray<UInt64> = MXArray()
+        var orderIdsNotEmpty: Vector<UInt64> = Vector()
         addressOrderIds.forEach { orderId in
             if !StorageModule.$orderForId[orderId].isEmpty() {
                 orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
@@ -137,14 +137,14 @@ struct OrdersModule {
         )
         
         orderMapper.clear()
-        var transfers = MXArray(singleItem: creatorTransfer)
+        var transfers = Vector(singleItem: creatorTransfer)
         transfers = transfers.appended(callerTransfer)
         OrdersModule.executeTransfers(transfers: transfers)
         
         return order
     }
     
-    static func cancelOrders(orderIds: MXArray<UInt64>) {
+    static func cancelOrders(orderIds: Vector<UInt64>) {
         let caller = Message.caller
         let addressOrderIds = OrdersModule.getAddressOrderIds(address: caller)
         ValidationModule.requireContainsAll(
@@ -156,15 +156,15 @@ struct OrdersModule {
         let secondTokenIdentifier = StorageModule.secondTokenIdentifier
         let epoch = Blockchain.getBlockEpoch()
         
-        var orderIdsNotEmpty: MXArray<UInt64> = MXArray()
+        var orderIdsNotEmpty: Vector<UInt64> = Vector()
         orderIds.forEach { orderId in
             if !StorageModule.$orderForId[orderId].isEmpty() {
                 orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
             }
         }
         
-        var orders: MXArray<Order> = MXArray()
-        var finalCallerOrders: MXArray<UInt64> = MXArray()
+        var orders: Vector<Order> = Vector()
+        var finalCallerOrders: Vector<UInt64> = Vector()
         
         let addressOrderIdsCount = addressOrderIds.count
         
@@ -198,8 +198,8 @@ struct OrdersModule {
         EventsModule.emitCancelOrderEvents(orders: orders)
     }
     
-    static func loadOrders(orderIds: MXArray<UInt64>) -> MXArray<Order> {
-        var ordersArray: MXArray<Order> = MXArray()
+    static func loadOrders(orderIds: Vector<UInt64>) -> Vector<Order> {
+        var ordersArray: Vector<Order> = Vector()
         
         orderIds.forEach { orderId in
             let orderMapper = StorageModule.$orderForId[orderId]
@@ -247,14 +247,14 @@ struct OrdersModule {
         )
         
         orderMapper.clear()
-        let transfers = MXArray(singleItem: transfer)
+        let transfers = Vector(singleItem: transfer)
         OrdersModule.executeTransfers(transfers: transfers)
         
         return order
     }
     
-    static func createTransfers(orders: MXArray<Order>) -> MXArray<Transfer> {
-        var transfers: MXArray<Transfer> = MXArray()
+    static func createTransfers(orders: Vector<Order>) -> Vector<Transfer> {
+        var transfers: Vector<Transfer> = Vector()
         let firstTokenIdentifier = StorageModule.firstTokenIdentifier
         let secondTokenIdentifier = StorageModule.secondTokenIdentifier
         
@@ -310,8 +310,8 @@ struct OrdersModule {
         return id
     }
     
-    static func getAddressOrderIds(address: Address) -> MXArray<UInt64> {
-        var ordersArray: MXArray<UInt64> = MXArray()
+    static func getAddressOrderIds(address: Address) -> Vector<UInt64> {
+        var ordersArray: Vector<UInt64> = Vector()
         
         StorageModule.orderIdsForAddress[address].forEach { order in
             if !StorageModule.$orderForId[order].isEmpty() {
@@ -323,10 +323,10 @@ struct OrdersModule {
     }
     
     static func getOrdersWithType(
-        orders: MXArray<Order>,
+        orders: Vector<Order>,
         orderType: OrderType
-    ) -> MXArray<Order> {
-        var result: MXArray<Order> = MXArray()
+    ) -> Vector<Order> {
+        var result: Vector<Order> = Vector()
         
         orders.forEach { order in
             if order.orderType == orderType {
@@ -338,7 +338,7 @@ struct OrdersModule {
     }
     
     static func getOrdersSumUp(
-        orders: MXArray<Order>
+        orders: Vector<Order>
     ) -> (amountPaid: BigUint, amountRequested: BigUint) {
         var amountPaid: BigUint = 0
         var amountRequest: BigUint = 0
@@ -354,12 +354,12 @@ struct OrdersModule {
     
     // TODO: use the TokenIdentifier type once available
     static func calculateTransfers(
-        orders: MXArray<Order>,
+        orders: Vector<Order>,
         totalPaid: BigUint,
         tokenRequested: Buffer,
         leftover: BigUint
-    ) -> MXArray<Transfer> {
-        var transfers: MXArray<Transfer> = MXArray()
+    ) -> Vector<Transfer> {
+        var transfers: Vector<Transfer> = Vector()
         
         var matchProviderTransfer = Transfer(
             to: Message.caller,
@@ -406,7 +406,7 @@ struct OrdersModule {
         return transfers
     }
     
-    static func executeTransfers(transfers: MXArray<Transfer>) {
+    static func executeTransfers(transfers: Vector<Transfer>) {
         transfers.forEach { transfer in
             if transfer.payment.amount > 0 {
                 transfer.to.send(
@@ -418,7 +418,7 @@ struct OrdersModule {
         }
     }
     
-    static func clearOrders(orderIds: MXArray<UInt64>) {
+    static func clearOrders(orderIds: Vector<UInt64>) {
         orderIds.forEach { orderId in
             StorageModule.$orderForId[orderId].clear()
         }

@@ -36,7 +36,7 @@ import Space
         )
     }
     
-    public func matchOrders(orderIds: MXArray<UInt64>) {
+    public func matchOrders(orderIds: Vector<UInt64>) {
         GlobalOperationModule.requireGlobalOperationNotOngoing()
         ValidationModule.requireValidMatchInputOrderIds(orderIds: orderIds)
         

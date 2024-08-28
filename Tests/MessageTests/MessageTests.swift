@@ -21,7 +21,7 @@ import Space
         return Message.egldValue
     }
 
-    public func getAllEsdtTransfers() -> MXArray<TokenPayment> {
+    public func getAllEsdtTransfers() -> Vector<TokenPayment> {
         return Message.allEsdtTransfers
     }
 }
@@ -141,7 +141,7 @@ final class MessageTests: ContractTestCase {
             )
         )
 
-        let expected: MXArray<TokenPayment> = [
+        let expected: Vector<TokenPayment> = [
             TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
             TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
             TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)

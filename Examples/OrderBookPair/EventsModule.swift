@@ -41,7 +41,7 @@ struct EventsModule {
         ).emit(data: order)
     }
     
-    static func emitMatchOrderEvents(orders: MXArray<Order>) {
+    static func emitMatchOrderEvents(orders: Vector<Order>) {
         let caller = Message.caller
         let epoch = Blockchain.getBlockEpoch()
         
@@ -56,7 +56,7 @@ struct EventsModule {
         }
     }
     
-    static func emitFreeOrderEvents(orders: MXArray<Order>) {
+    static func emitFreeOrderEvents(orders: Vector<Order>) {
         let caller = Message.caller
         let epoch = Blockchain.getBlockEpoch()
         
@@ -71,7 +71,7 @@ struct EventsModule {
         }
     }
     
-    static func emitCancelOrderEvents(orders: MXArray<Order>) {
+    static func emitCancelOrderEvents(orders: Vector<Order>) {
         let caller = Message.caller
         let epoch = Blockchain.getBlockEpoch()
         

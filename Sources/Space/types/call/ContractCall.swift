@@ -30,7 +30,7 @@ public struct ContractCall {
         gas: UInt64 = Blockchain.getGasLeft(),
         value: BigUint = 0
     ) -> ReturnType {
-        var resultBuffers = MXArray<Buffer>()
+        var resultBuffers = Vector<Buffer>()
         
         let _ = API.managedExecuteOnDestContext(
             gas: Int64(gas), // TODO: Is this cast safe?

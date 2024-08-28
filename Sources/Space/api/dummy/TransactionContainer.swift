@@ -290,7 +290,7 @@ package class TransactionContainer {
     }
     
     package func writeLog(topicsHandle: Int32, dataHandle: Int32) {
-        let topicsArray: MXArray<Buffer> = MXArray(buffer: Buffer(data: Array(self.getBufferData(handle: topicsHandle))))
+        let topicsArray: Vector<Buffer> = Vector(buffer: Buffer(data: Array(self.getBufferData(handle: topicsHandle))))
         let data = self.getBufferData(handle: dataHandle)
         
         var topics: [Data] = []

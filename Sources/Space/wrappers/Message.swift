@@ -10,13 +10,13 @@ public struct Message {
         return BigUint(handle: valueHandle)
     }
 
-    public static var allEsdtTransfers: MXArray<TokenPayment> {
+    public static var allEsdtTransfers: Vector<TokenPayment> {
         // TODO: add caching
         let resultHandle = getNextHandle()
         
         API.managedGetMultiESDTCallValue(resultHandle: resultHandle)
         
-        return MXArray(handle: resultHandle)
+        return Vector(handle: resultHandle)
     }
     
     public static var egldOrSingleEsdtTransfer: TokenPayment {

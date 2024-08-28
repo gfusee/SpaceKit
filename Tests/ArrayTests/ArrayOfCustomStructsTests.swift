@@ -11,9 +11,9 @@ import XCTest
 @Contract struct ArrayOfCustomStructsTestsContract {
     
     public func testGetOutOfRangeShouldFail() {
-        let array: MXArray<MXString> = ["Hello!", "Bonjour!", "¡Hola!"]
+        let array: Vector<MXString> = ["Hello!", "Bonjour!", "¡Hola!"]
         
-        let array2: MXArray<CustomCodableStruct> = [
+        let array2: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -28,11 +28,11 @@ import XCTest
     public func testTopDecodeInputTooLarge() {
         let input = Buffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal))
         
-        _ = MXArray<CustomCodableStruct>(topDecode: input)
+        _ = Vector<CustomCodableStruct>(topDecode: input)
     }
     
     public func testReplacedOutOfRangeShouldFail() {
-        let array: MXArray<CustomCodableStruct> = [
+        let array: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -63,7 +63,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testEmptyArray() throws {
-        let array: MXArray<CustomCodableStruct> = MXArray()
+        let array: Vector<CustomCodableStruct> = Vector()
         
         let count = array.count
         
@@ -72,7 +72,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testAppendedOneElementArray() throws {
-        var array: MXArray<CustomCodableStruct> = MXArray()
+        var array: Vector<CustomCodableStruct> = Vector()
         array = array.appended(
             CustomCodableStruct(
                 firstElement: "Hey!",
@@ -97,7 +97,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testAppendedTwoElementsArray() throws {
-        var array: MXArray<CustomCodableStruct> = MXArray()
+        var array: Vector<CustomCodableStruct> = Vector()
         array = array.appended(
             CustomCodableStruct(
                 firstElement: "Hey!",
@@ -140,7 +140,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testTwoElementsArrayThroughLiteralAssign() throws {
-        var array: MXArray<CustomCodableStruct> = [
+        var array: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -180,7 +180,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testAppendedContentsOf() throws {
-        var array1: MXArray<CustomCodableStruct> = [
+        var array1: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -195,7 +195,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         ]
         
-        var array2: MXArray<CustomCodableStruct> = [
+        var array2: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "test3",
                 secondElement: 1,
@@ -211,7 +211,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
         ]
         
         let array = array1.appended(contentsOf: array2)
-        let expected: MXArray<CustomCodableStruct> = [
+        let expected: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -242,7 +242,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testEquatableWhenEqual() throws {
-        let array1: MXArray<CustomCodableStruct> = [
+        let array1: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -257,7 +257,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         ]
         
-        let array2: MXArray<CustomCodableStruct> = [
+        let array2: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -276,7 +276,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testEquatableWhenDifferentCount() throws {
-        let array1: MXArray<CustomCodableStruct> = [
+        let array1: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -290,7 +290,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
                 fourthElement: "test2"
             )
         ]
-        let array2: MXArray<CustomCodableStruct> = [
+        let array2: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -303,7 +303,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testEquatableWhenDifferentValues() throws {
-        let array1: MXArray<CustomCodableStruct> = [
+        let array1: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -318,7 +318,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         ]
         
-        let array2: MXArray<CustomCodableStruct> = [
+        let array2: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 99,
@@ -338,7 +338,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testPlusOperator() throws {
         func testAppendedContentsOf() throws {
-            let array1: MXArray<CustomCodableStruct> = [
+            let array1: Vector<CustomCodableStruct> = [
                 CustomCodableStruct(
                     firstElement: "Hey!",
                     secondElement: 10,
@@ -353,7 +353,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
                 )
             ]
             
-            let array2: MXArray<CustomCodableStruct> = [
+            let array2: Vector<CustomCodableStruct> = [
                 CustomCodableStruct(
                     firstElement: "test3",
                     secondElement: 1,
@@ -369,7 +369,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             ]
             
             let array = array1 + array2
-            let expected: MXArray<CustomCodableStruct> = [
+            let expected: Vector<CustomCodableStruct> = [
                 CustomCodableStruct(
                     firstElement: "Hey!",
                     secondElement: 10,
@@ -401,7 +401,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testAppendedTwoElementsArrayThroughSubscript() throws {
-        var array: MXArray<CustomCodableStruct> = MXArray()
+        var array: Vector<CustomCodableStruct> = Vector()
         array = array.appended(
             CustomCodableStruct(
                 firstElement: "Hey!",
@@ -454,13 +454,13 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testForLoopZeroElement() throws {
-        let array: MXArray<CustomCodableStruct> = MXArray()
+        let array: Vector<CustomCodableStruct> = Vector()
         
         array.forEach { _ in XCTFail() }
     }
     
     func testForLoopOneElement() throws {
-        var array: MXArray<CustomCodableStruct> = MXArray()
+        var array: Vector<CustomCodableStruct> = Vector()
         array = array.appended(
             CustomCodableStruct(
                 firstElement: "Hey!",
@@ -484,7 +484,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testForLoopTwoElements() throws {
-        var array: MXArray<CustomCodableStruct> = MXArray()
+        var array: Vector<CustomCodableStruct> = Vector()
         array = array.appended(
             CustomCodableStruct(
                 firstElement: "Hey!",
@@ -525,7 +525,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testTopEncodeZeroElement() throws {
-        let array: MXArray<CustomCodableStruct> = MXArray()
+        let array: Vector<CustomCodableStruct> = Vector()
         
         var output = Buffer()
         array.topEncode(output: &output)
@@ -536,7 +536,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testTopEncodeOneElement() throws {
-        var array: MXArray<CustomCodableStruct> = MXArray()
+        var array: Vector<CustomCodableStruct> = Vector()
         array = array.appended(
             CustomCodableStruct(
                 firstElement: "Hey!",
@@ -555,7 +555,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testTopEncodeTwoElements() throws {
-        var array: MXArray<CustomCodableStruct> = MXArray()
+        var array: Vector<CustomCodableStruct> = Vector()
         array = array.appended(
             CustomCodableStruct(
                 firstElement: "Hey!",
@@ -582,7 +582,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testNestedEncodeZeroElement() throws {
-        let array: MXArray<CustomCodableStruct> = MXArray()
+        let array: Vector<CustomCodableStruct> = Vector()
         
         var output = Buffer()
         array.depEncode(dest: &output)
@@ -593,7 +593,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testNestedEncodeOneElement() throws {
-        var array: MXArray<CustomCodableStruct> = MXArray()
+        var array: Vector<CustomCodableStruct> = Vector()
         array = array.appended(
             CustomCodableStruct(
                 firstElement: "Hey!",
@@ -612,7 +612,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testNestedEncodeTwoElements() throws {
-        var array: MXArray<CustomCodableStruct> = MXArray()
+        var array: Vector<CustomCodableStruct> = Vector()
         array = array.appended(
             CustomCodableStruct(
                 firstElement: "Hey!",
@@ -641,8 +641,8 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testTopDecodeZeroElement() throws {
         let input = Buffer(data: Array("".hexadecimal))
         
-        let array = MXArray<CustomCodableStruct>(topDecode: input)
-        let expected: MXArray<CustomCodableStruct> = []
+        let array = Vector<CustomCodableStruct>(topDecode: input)
+        let expected: Vector<CustomCodableStruct> = []
         
         XCTAssertEqual(array, expected)
     }
@@ -650,8 +650,8 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testTopDecodeOneElement() throws {
         let input = Buffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
-        let array = MXArray<CustomCodableStruct>(topDecode: input)
-        let expected: MXArray<CustomCodableStruct> = [
+        let array = Vector<CustomCodableStruct>(topDecode: input)
+        let expected: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -666,8 +666,8 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testTopDecodeTwoElements() throws {
         let input = Buffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
-        let array = MXArray<CustomCodableStruct>(topDecode: input)
-        let expected: MXArray<CustomCodableStruct> = [
+        let array = Vector<CustomCodableStruct>(topDecode: input)
+        let expected: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -688,8 +688,8 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testNestedDecodeZeroElement() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000000".hexadecimal)))
         
-        let array = MXArray<CustomCodableStruct>(depDecode: &input)
-        let expected: MXArray<CustomCodableStruct> = []
+        let array = Vector<CustomCodableStruct>(depDecode: &input)
+        let expected: Vector<CustomCodableStruct> = []
         
         XCTAssertEqual(array, expected)
     }
@@ -697,8 +697,8 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testNestedDecodeOneElement() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000010000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal)))
         
-        let array = MXArray<CustomCodableStruct>(depDecode: &input)
-        let expected: MXArray<CustomCodableStruct> = [
+        let array = Vector<CustomCodableStruct>(depDecode: &input)
+        let expected: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -713,8 +713,8 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testNestedDecodeTwoElements() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal)))
         
-        let array = MXArray<CustomCodableStruct>(depDecode: &input)
-        let expected: MXArray<CustomCodableStruct> = [
+        let array = Vector<CustomCodableStruct>(depDecode: &input)
+        let expected: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -735,8 +735,8 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testNestedDecodeTwoElementsAndInputLarger() throws {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e000000000000000500000005746573743201".hexadecimal)))
         
-        let array = MXArray<CustomCodableStruct>(depDecode: &input)
-        let expected: MXArray<CustomCodableStruct> = [
+        let array = Vector<CustomCodableStruct>(depDecode: &input)
+        let expected: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -756,7 +756,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testReplaceFirstElement() throws {
-        let array: MXArray<CustomCodableStruct> = [
+        let array: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -787,7 +787,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         )
         
-        let expected: MXArray<CustomCodableStruct> = [
+        let expected: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "replaced value 1",
                 secondElement: 10,
@@ -812,7 +812,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testReplaceSecondElement() throws {
-        let array: MXArray<CustomCodableStruct> = [
+        let array: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -843,7 +843,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         )
         
-        let expected: MXArray<CustomCodableStruct> = [
+        let expected: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -868,7 +868,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testReplaceThirdElement() throws {
-        let array: MXArray<CustomCodableStruct> = [
+        let array: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -899,7 +899,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         )
         
-        let expected: MXArray<CustomCodableStruct> = [
+        let expected: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,

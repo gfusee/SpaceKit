@@ -28,7 +28,7 @@ extension BondingCurve {
 }
 
 @Codable struct TokenOwnershipData {
-    var tokenNonces: MXArray<UInt64>
+    var tokenNonces: Vector<UInt64>
     let owner: Address
 }
 

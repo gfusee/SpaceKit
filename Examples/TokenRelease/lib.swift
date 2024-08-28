@@ -9,7 +9,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
     @Storage(key: "setupPeriodStatus") var setupPeriodStatus: Bool
     @Mapping<Address, Address>(key: "addressChangeRequest") var addressChangeRequestForAddress
     @Mapping<Buffer, Schedule>(key: "groupSchedule") var groupScheduleForGroupIdentifier
-    @Mapping<Address, MXArray<Buffer>>(key: "userGroups") var userGroupsForAddress
+    @Mapping<Address, Vector<Buffer>>(key: "userGroups") var userGroupsForAddress
     @Mapping<Buffer, UInt64>(key: "usersInGroup") var usersInGroupForGroupIdentifier
     @Mapping<Address, BigUint>(key: "claimedBalance") var claimedBalanceForAddress
     

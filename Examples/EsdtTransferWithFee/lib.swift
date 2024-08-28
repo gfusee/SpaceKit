@@ -40,7 +40,7 @@ import Space
         assertOwner()
         
         let paidFeesMapper = self.getPaidFeesMapper()
-        var fees: MXArray<TokenPayment> = MXArray()
+        var fees: Vector<TokenPayment> = Vector()
         
         paidFeesMapper.forEach { key, amount in
             fees = fees.appended(
@@ -64,7 +64,7 @@ import Space
         )
         
         let payments = Message.allEsdtTransfers
-        var newPayments: MXArray<TokenPayment> = MXArray()
+        var newPayments: Vector<TokenPayment> = Vector()
         
         let paymentsCount = payments.count
         var index: Int32 = 0

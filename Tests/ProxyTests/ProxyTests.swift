@@ -52,7 +52,7 @@ import XCTest
         return Message.egldValue
     }
     
-    public mutating func returnAllEsdtTransfers() -> MXArray<TokenPayment> {
+    public mutating func returnAllEsdtTransfers() -> Vector<TokenPayment> {
         return Message.allEsdtTransfers
     }
     
@@ -94,7 +94,7 @@ import XCTest
         return CalleeProxy.returnEgldValue.call(receiver: calleeAddress, egldValue: egldValue)
     }
     
-    public mutating func callReturnAllEsdtTransfers(calleeAddress: Address, esdtTransfers: MXArray<TokenPayment>) -> MXArray<TokenPayment> {
+    public mutating func callReturnAllEsdtTransfers(calleeAddress: Address, esdtTransfers: Vector<TokenPayment>) -> Vector<TokenPayment> {
         return CalleeProxy.returnAllEsdtTransfers.call(receiver: calleeAddress, esdtTransfers: esdtTransfers)
     }
     

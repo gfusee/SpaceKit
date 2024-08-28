@@ -51,8 +51,8 @@ public struct Address {
         if tokenIdentifier == "EGLD" { // TODO: no hardcoded EGLD
             self.send(egldValue: amount)
         } else {
-            // TODO: instantiating a MXArray<TokenPayment> through a literal expression causes heap allocation, while instantiating some other types, such as MXArray<UInt64> doesn't. I should investigate on this
-            let payments: MXArray<TokenPayment> = MXArray()
+            // TODO: instantiating a Vector<TokenPayment> through a literal expression causes heap allocation, while instantiating some other types, such as Vector<UInt64> doesn't. I should investigate on this
+            let payments: Vector<TokenPayment> = Vector()
                 .appended(TokenPayment.new(
                     tokenIdentifier: tokenIdentifier,
                     nonce: nonce,
@@ -62,7 +62,7 @@ public struct Address {
         }
     }
 
-    public func send(payments: MXArray<TokenPayment>) {
+    public func send(payments: Vector<TokenPayment>) {
         // TODO: add tests
         let emptyBuffer = Buffer()
 

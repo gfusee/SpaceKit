@@ -1,6 +1,6 @@
-public typealias MXArrayType = TopDecode & TopEncode & NestedDecode & NestedEncode & ArrayItem
+public typealias VectorType = TopDecode & TopEncode & NestedDecode & NestedEncode & ArrayItem
 
-public struct MXArray<T: MXArrayType> {
+public struct Vector<T: VectorType> {
     public let buffer: Buffer
     
     public init() {
@@ -16,7 +16,7 @@ public struct MXArray<T: MXArrayType> {
     }
     
     public init(singleItem: T) {
-        var array = MXArray()
+        var array = Vector()
         array = array.appended(singleItem)
         
         self = array
@@ -30,19 +30,19 @@ public struct MXArray<T: MXArrayType> {
         return self.count == 0
     }
     
-    public func appended(_ item: T) -> MXArray<T>{
+    public func appended(_ item: T) -> Vector<T>{
         let payload = item.intoArrayPayload()
         let newBuffer = self.buffer + payload
         
-        return MXArray(buffer: newBuffer)
+        return Vector(buffer: newBuffer)
     }
     
-    public func clone() -> MXArray<T> {
-        MXArray(buffer: self.buffer.clone())
+    public func clone() -> Vector<T> {
+        Vector(buffer: self.buffer.clone())
     }
     
-    public func appended(contentsOf newElements: MXArray<T>) -> MXArray<T> {
-        var newArray = MXArray(buffer: self.buffer.clone())
+    public func appended(contentsOf newElements: Vector<T>) -> Vector<T> {
+        var newArray = Vector(buffer: self.buffer.clone())
         
         newElements.forEach { newArray = newArray.appended($0) }
         
@@ -63,7 +63,7 @@ public struct MXArray<T: MXArrayType> {
         return T.decodeArrayPayload(payload: data)
     }
     
-    public func replaced(at index: Int32, value: T) -> MXArray<T> {
+    public func replaced(at index: Int32, value: T) -> Vector<T> {
         guard index < self.count else {
             smartContractError(message: "Index out of range.") // TODO: use the same message than the Rust SDK
         }
@@ -74,10 +74,10 @@ public struct MXArray<T: MXArrayType> {
             with: value.intoArrayPayload()
         )
         
-        return MXArray(buffer: newBuffer)
+        return Vector(buffer: newBuffer)
     }
     
-    public func popFirst() -> (MXArray<T>, T) {
+    public func popFirst() -> (Vector<T>, T) {
         // TODO: use self.slice?
         // TODO: add tests
         let count = self.count
@@ -98,10 +98,10 @@ public struct MXArray<T: MXArrayType> {
         let newBufferLength = bufferCount - T.payloadSize
         let newBuffer = self.buffer.getSubBuffer(startIndex: startIndex, length: newBufferLength)
         
-        return (MXArray(buffer: newBuffer), self.get(0))
+        return (Vector(buffer: newBuffer), self.get(0))
     }
     
-    public func popLast() -> (MXArray<T>, T) {
+    public func popLast() -> (Vector<T>, T) {
         // TODO: use self.slice?
         // TODO: add tests
         let count = self.count
@@ -114,10 +114,10 @@ public struct MXArray<T: MXArrayType> {
         let newBufferLength = bufferCount - T.payloadSize
         let newBuffer = self.buffer.getSubBuffer(startIndex: 0, length: newBufferLength)
         
-        return (MXArray(buffer: newBuffer), self.get(count - 1))
+        return (Vector(buffer: newBuffer), self.get(count - 1))
     }
     
-    public func removed(_ index: Int32) -> MXArray<T> {
+    public func removed(_ index: Int32) -> Vector<T> {
         // TODO: add tests
         let count = self.count
         
@@ -125,25 +125,25 @@ public struct MXArray<T: MXArrayType> {
             smartContractError(message: "Index out of range.") // TODO: use the same message than the Rust SDK
         }
         
-        let partBefore: MXArray<T>
+        let partBefore: Vector<T>
         if index > 0 {
             partBefore = self.slice(startIndex: 0, endIndex: index - 1)
         } else {
-            partBefore = MXArray()
+            partBefore = Vector()
         }
         
-        let partAfter: MXArray<T>
+        let partAfter: Vector<T>
         if index < count {
             partAfter = self.slice(startIndex: index + 1, endIndex: count - 1)
         } else {
-            partAfter = MXArray()
+            partAfter = Vector()
         }
         
         return partBefore.appended(contentsOf: partAfter)
     }
     
-    /// Returns a new `MXArray`, containing the [start_index, end_index] range of elements.
-    public func slice(startIndex: Int32, endIndex: Int32) -> MXArray<T> {
+    /// Returns a new `Vector`, containing the [start_index, end_index] range of elements.
+    public func slice(startIndex: Int32, endIndex: Int32) -> Vector<T> {
         // TODO: add tests
         // TODO: ensure indexes are correct? Or is using the getSubBuffer's checks enough
         let startPosition = startIndex * T.payloadSize
@@ -151,7 +151,7 @@ public struct MXArray<T: MXArrayType> {
         
         let sliceBuffer = self.buffer.getSubBuffer(startIndex: startPosition, length: endPosition - startPosition)
         
-        return MXArray(buffer: sliceBuffer)
+        return Vector(buffer: sliceBuffer)
     }
     
     public func contains(_ element: T) -> Bool where T: Equatable {
@@ -197,19 +197,19 @@ public struct MXArray<T: MXArrayType> {
     #endif
 }
 
-extension MXArray where T == Buffer {
+extension Vector where T == Buffer {
     public func toArgBuffer() -> ArgBuffer {
         return ArgBuffer(rawArgs: self)
     }
 }
 
-extension MXArray {
-    public static func + (lhs: MXArray<T>, rhs: MXArray<T>) -> MXArray<T> {
+extension Vector {
+    public static func + (lhs: Vector<T>, rhs: Vector<T>) -> Vector<T> {
         return lhs.appended(contentsOf: rhs)
     }
 }
 
-extension MXArray: MXSequence {
+extension Vector: MXSequence {
     public func forEach(_ operations: (T) throws -> Void) rethrows {
         let count = self.count
         var index: Int32 = 0
@@ -223,8 +223,8 @@ extension MXArray: MXSequence {
     }
 }
 
-extension MXArray: Equatable where T: Equatable {
-    public static func == (lhs: MXArray, rhs: MXArray) -> Bool {
+extension Vector: Equatable where T: Equatable {
+    public static func == (lhs: Vector, rhs: Vector) -> Bool {
         let lhsCount = lhs.count
         let rhsCount = rhs.count
         
@@ -247,11 +247,11 @@ extension MXArray: Equatable where T: Equatable {
 }
 
 #if !WASM
-extension MXArray: ExpressibleByArrayLiteral {
+extension Vector: ExpressibleByArrayLiteral {
     public typealias ArrayLiteralElement = T
     
     public init(arrayLiteral elements: T...) {
-        var tempArray = MXArray()
+        var tempArray = Vector()
         
         for element in elements {
             tempArray = tempArray.appended(element)
@@ -262,7 +262,7 @@ extension MXArray: ExpressibleByArrayLiteral {
 }
 #endif
 
-extension MXArray: TopEncode {
+extension Vector: TopEncode {
     public func topEncode<O>(output: inout O) where O : TopEncodeOutput {
         var encodedItems = Buffer()
         
@@ -272,9 +272,9 @@ extension MXArray: TopEncode {
     }
 }
 
-extension MXArray: TopEncodeMulti {}
+extension Vector: TopEncodeMulti {}
 
-extension MXArray: TopEncodeMultiOutput where T == Buffer {
+extension Vector: TopEncodeMultiOutput where T == Buffer {
     public mutating func pushSingleValue<TE>(arg: TE) where TE : TopEncode {
         var buffer = Buffer()
         arg.topEncode(output: &buffer)
@@ -283,7 +283,7 @@ extension MXArray: TopEncodeMultiOutput where T == Buffer {
     }
 }
 
-extension MXArray: NestedEncode {
+extension Vector: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         var countEncoded = Buffer()
@@ -296,7 +296,7 @@ extension MXArray: NestedEncode {
     }
 }
 
-extension MXArray: TopDecode {
+extension Vector: TopDecode {
     public init(topDecode input: Buffer) {
         var nestedDecodeInput = BufferNestedDecodeInput(buffer: input)
         
@@ -310,9 +310,9 @@ extension MXArray: TopDecode {
     }
 }
 
-extension MXArray: TopDecodeMulti {}
+extension Vector: TopDecodeMulti {}
 
-extension MXArray: TopDecodeMultiInput where T == Buffer {
+extension Vector: TopDecodeMultiInput where T == Buffer {
     public func hasNext() -> Bool {
         return self.count > 0
     }
@@ -325,7 +325,7 @@ extension MXArray: TopDecodeMultiInput where T == Buffer {
     }
 }
 
-extension MXArray: NestedDecode {
+extension Vector: NestedDecode {
     public init(depDecode input: inout some NestedDecodeInput) {
         let count = Int(depDecode: &input)
         
@@ -339,15 +339,15 @@ extension MXArray: NestedDecode {
     }
 }
 
-extension MXArray: ArrayItem {
+extension Vector: ArrayItem {
     
     // TODO: add tests
     public static var payloadSize: Int32 {
         Buffer.payloadSize
     }
     
-    public static func decodeArrayPayload(payload: Buffer) -> MXArray<T> {
-        return MXArray(buffer: Buffer.decodeArrayPayload(payload: payload))
+    public static func decodeArrayPayload(payload: Buffer) -> Vector<T> {
+        return Vector(buffer: Buffer.decodeArrayPayload(payload: payload))
     }
     
     public func intoArrayPayload() -> Buffer {
@@ -357,7 +357,7 @@ extension MXArray: ArrayItem {
 }
 
 #if !WASM
-extension MXArray: CustomDebugStringConvertible where T: CustomDebugStringConvertible {
+extension Vector: CustomDebugStringConvertible where T: CustomDebugStringConvertible {
     public var debugDescription: String {
         var itemDebugDescriptions: [String] = []
         

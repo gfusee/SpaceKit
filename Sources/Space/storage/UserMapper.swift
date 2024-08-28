@@ -48,10 +48,10 @@ public struct UserMapper {
         return mapper.get()
     }
     
-    public func getAllAddresses() -> MXArray<Address> {
+    public func getAllAddresses() -> Vector<Address> {
         let userCount = self.getUserCount()
         
-        var result = MXArray<Address>()
+        var result = Vector<Address>()
         
         for i in 1..<(1 + userCount) {
             result = result.appended(self.getUserAddress(id: i) ?? Address())
