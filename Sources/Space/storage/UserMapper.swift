@@ -3,25 +3,25 @@ fileprivate let ID_TO_ADDRESS_SUFFIX: StaticString = "_id_to_address"
 fileprivate let COUNT_SUFFIX: StaticString = "_count"
 
 public struct UserMapper {
-    let baseKey: MXBuffer
+    let baseKey: Buffer
     
-    public init(baseKey: MXBuffer) {
+    public init(baseKey: Buffer) {
         self.baseKey = baseKey
     }
     
     private func getUserIdMapper(address: Address) -> SingleValueMapper<UInt32> {
-        return SingleValueMapper(key: self.baseKey + MXBuffer(stringLiteral: ADDRESS_TO_ID_SUFFIX) + address.buffer)
+        return SingleValueMapper(key: self.baseKey + Buffer(stringLiteral: ADDRESS_TO_ID_SUFFIX) + address.buffer)
     }
     
     private func getUserAddressMapper(id: UInt32) -> SingleValueMapper<Address> {
-        var idBuffer = MXBuffer()
+        var idBuffer = Buffer()
         id.depEncode(dest: &idBuffer)
         
-        return SingleValueMapper(key: self.baseKey + MXBuffer(stringLiteral: ID_TO_ADDRESS_SUFFIX) + idBuffer)
+        return SingleValueMapper(key: self.baseKey + Buffer(stringLiteral: ID_TO_ADDRESS_SUFFIX) + idBuffer)
     }
     
     private func getUserCountMapper() -> SingleValueMapper<UInt32> {
-        return SingleValueMapper(key: self.baseKey + MXBuffer(stringLiteral: COUNT_SUFFIX))
+        return SingleValueMapper(key: self.baseKey + Buffer(stringLiteral: COUNT_SUFFIX))
     }
     
     public func getUserId(address: Address) -> UInt32 {

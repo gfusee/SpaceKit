@@ -1,19 +1,19 @@
 import Space
 
 @Codable struct PaidFeesMapperKey {
-    let tokenIdentifier: MXBuffer
+    let tokenIdentifier: Buffer
     let nonce: UInt64
 }
 
 @Contract struct EsdtTransferWithFee {
     
-    @Mapping<MXBuffer, Fee>(key: "token_fee") var tokenFeeForToken
+    @Mapping<Buffer, Fee>(key: "token_fee") var tokenFeeForToken
     
     // TODO: use TokenIdentifier type
     public mutating func setExactValueFee(
-        feeToken: MXBuffer,
+        feeToken: Buffer,
         feeAmount: BigUint,
-        token: MXBuffer
+        token: Buffer
     ) {
         assertOwner()
         
@@ -29,7 +29,7 @@ import Space
     // TODO: use TokenIdentifier type
     public mutating func setPercentageFee(
         fee: UInt32,
-        token: MXBuffer
+        token: Buffer
     ) {
         assertOwner()
         

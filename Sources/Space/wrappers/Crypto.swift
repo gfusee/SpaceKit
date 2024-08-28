@@ -1,9 +1,9 @@
 public struct Crypto {
     
     public static func verifyEd25519(
-        key: MXBuffer,
-        message: MXBuffer,
-        signature: MXBuffer
+        key: Buffer,
+        message: Buffer,
+        signature: Buffer
     ) {
         let _ = API.managedVerifyEd25519(
             keyHandle: key.handle,
@@ -12,8 +12,8 @@ public struct Crypto {
         )
     }
     
-    public static func getSha256Hash(of value: MXBuffer) -> MXBuffer {
-        var result = MXBuffer()
+    public static func getSha256Hash(of value: Buffer) -> Buffer {
+        var result = Buffer()
         
         let _ = API.managedSha256(
             inputHandle: value.handle,

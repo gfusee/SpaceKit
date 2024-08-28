@@ -1,7 +1,7 @@
 public struct SingleValueMapper<V: TopEncode & TopDecode> {
-    private let key: MXBuffer
+    private let key: Buffer
     
-    public init(key: MXBuffer) {
+    public init(key: Buffer) {
         self.key = key
     }
 
@@ -22,11 +22,11 @@ public struct SingleValueMapper<V: TopEncode & TopDecode> {
         return value
     }
     
-    private func getRawBuffer() -> MXBuffer {
+    private func getRawBuffer() -> Buffer {
         let storedValueBufferHandle = getNextHandle()
         let _ = API.bufferStorageLoad(keyHandle: self.key.handle, bufferHandle: storedValueBufferHandle)
         
-        return MXBuffer(handle: storedValueBufferHandle)
+        return Buffer(handle: storedValueBufferHandle)
     }
     
     public func get() -> V {
@@ -34,7 +34,7 @@ public struct SingleValueMapper<V: TopEncode & TopDecode> {
     }
     
     public func set(_ newValue: V) {
-        var output = MXBuffer()
+        var output = Buffer()
         newValue.topEncode(output: &output)
         
         let _ = API.bufferStorageStore(keyHandle: self.key.handle, bufferHandle: output.handle)

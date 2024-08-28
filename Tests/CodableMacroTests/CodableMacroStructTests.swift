@@ -104,7 +104,7 @@ final class CodableMacroStructTests: XCTestCase {
         extension TokenPayment: TopEncode {
             @inline(__always)
     public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
-                var nestedEncoded = MXBuffer()
+                var nestedEncoded = Buffer()
                 self.depEncode(dest: &nestedEncoded)
                 nestedEncoded.topEncode(output: &output)
             }
@@ -118,7 +118,7 @@ final class CodableMacroStructTests: XCTestCase {
 
         extension TokenPayment: TopDecode {
             @inline(__always)
-    public static func topDecode(input: MXBuffer) -> TokenPayment {
+    public static func topDecode(input: Buffer) -> TokenPayment {
                 var input = BufferNestedDecodeInput(buffer: input)
         
                 defer {
@@ -169,7 +169,7 @@ final class CodableMacroStructTests: XCTestCase {
         extension TokenPayment: TopEncode {
             @inline(__always)
     public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
-                var nestedEncoded = MXBuffer()
+                var nestedEncoded = Buffer()
                 self.depEncode(dest: &nestedEncoded)
                 nestedEncoded.topEncode(output: &output)
             }
@@ -184,7 +184,7 @@ final class CodableMacroStructTests: XCTestCase {
 
         extension TokenPayment: TopDecode {
             @inline(__always)
-    public static func topDecode(input: MXBuffer) -> TokenPayment {
+    public static func topDecode(input: Buffer) -> TokenPayment {
                 var input = BufferNestedDecodeInput(buffer: input)
         
                 defer {

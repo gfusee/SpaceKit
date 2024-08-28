@@ -3,17 +3,17 @@ import Space
 
 @Contract struct UInt8TestsContract {
     public func testTopDecodeUInt8TooLargeBufferShouldFail() {
-        let input = MXBuffer(data: Array("0000".hexadecimal))
+        let input = Buffer(data: Array("0000".hexadecimal))
         let _ = UInt8(topDecode: input)
     }
     
     public func testNestedDecodeUInt8EmptyBufferShouldFail() {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("".hexadecimal)))
         let _ = UInt8(depDecode: &input)
     }
     
     public func testNestedDecodeTwoUInt8sTooSmallBufferShouldFail() {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("03".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("03".hexadecimal)))
         let _ = UInt8(depDecode: &input)
         let _ = UInt8(depDecode: &input)
     }
@@ -28,7 +28,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testTopEncodeUInt8Zero() throws {
-        var output = MXBuffer()
+        var output = Buffer()
         let value: UInt8 = 0
         
         value.topEncode(output: &output)
@@ -39,7 +39,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testTopEncodeUInt8One() throws {
-        var output = MXBuffer()
+        var output = Buffer()
         let value: UInt8 = 1
         
         value.topEncode(output: &output)
@@ -50,7 +50,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testTopEncodeUInt8Ten() throws {
-        var output = MXBuffer()
+        var output = Buffer()
         let value: UInt8 = 10
         
         value.topEncode(output: &output)
@@ -61,7 +61,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testTopEncodeUInt8Max() throws {
-        var output = MXBuffer()
+        var output = Buffer()
         let value = UInt8.max
         
         value.topEncode(output: &output)
@@ -72,7 +72,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testNestedEncodeUInt8Zero() throws {
-        var output = MXBuffer()
+        var output = Buffer()
         let value: UInt8 = 0
         
         value.depEncode(dest: &output)
@@ -83,7 +83,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testNestedEncodeUInt8One() throws {
-        var output = MXBuffer()
+        var output = Buffer()
         let value: UInt8 = 1
         
         value.depEncode(dest: &output)
@@ -94,7 +94,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testNestedEncodeUInt8Ten() throws {
-        var output = MXBuffer()
+        var output = Buffer()
         let value: UInt8 = 10
         
         value.depEncode(dest: &output)
@@ -105,7 +105,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testNestedEncodeUInt8Max() throws {
-        var output = MXBuffer()
+        var output = Buffer()
         let value = UInt8.max
         
         value.depEncode(dest: &output)
@@ -116,7 +116,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testTopDecodeUInt8EmptyBuffer() throws {
-        let input = MXBuffer(data: Array("00".hexadecimal))
+        let input = Buffer(data: Array("00".hexadecimal))
         let result = UInt8(topDecode: input)
         
         let expected: UInt8 = 0
@@ -125,7 +125,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testTopDecodeUInt8Zero() throws {
-        let input = MXBuffer(data: Array("00".hexadecimal))
+        let input = Buffer(data: Array("00".hexadecimal))
         let result = UInt8(topDecode: input)
         
         let expected: UInt8 = 0
@@ -134,7 +134,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testTopDecodeUInt8One() throws {
-        let input = MXBuffer(data: Array("01".hexadecimal))
+        let input = Buffer(data: Array("01".hexadecimal))
         let result = UInt8(topDecode: input)
         
         let expected: UInt8 = 1
@@ -143,7 +143,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testTopDecodeUInt8Max() throws {
-        let input = MXBuffer(data: Array("ff".hexadecimal))
+        let input = Buffer(data: Array("ff".hexadecimal))
         let result = UInt8(topDecode: input)
         
         let expected = UInt8.max
@@ -162,7 +162,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testNestedDecodeUInt8Zero() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00".hexadecimal)))
         let result = UInt8(depDecode: &input)
         
         let expected: UInt8 = 0
@@ -171,7 +171,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testNestedDecodeUInt8One() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("01".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("01".hexadecimal)))
         let result = UInt8(depDecode: &input)
         
         let expected: UInt8 = 1
@@ -180,7 +180,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testNestedDecodeUInt8Max() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("ff".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("ff".hexadecimal)))
         let result = UInt8(depDecode: &input)
         
         let expected = UInt8.max
@@ -199,7 +199,7 @@ final class UInt8Tests: ContractTestCase {
     }
     
     func testNestedDecodeTwoUInt8s() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0364".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("0364".hexadecimal)))
         let result1 = UInt8(depDecode: &input)
         let result2 = UInt8(depDecode: &input)
         

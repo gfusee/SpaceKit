@@ -12,11 +12,11 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode, 
 ) throws(TransactionError) -> ReturnType {
     // Pushing a container makes the previous handles invalid.
     // Thus, we have to inject the data into the new container.
-    var concatenatedInputArgsArray: MXArray<MXBuffer> = MXArray()
-    var concatenatedInputArgsBuffer =  MXBuffer() // We don't want the same encoding as MXArray, since we will dep decode multiple types, the same way as a struct
+    var concatenatedInputArgsArray: MXArray<Buffer> = MXArray()
+    var concatenatedInputArgsBuffer =  Buffer() // We don't want the same encoding as MXArray, since we will dep decode multiple types, the same way as a struct
     for value in repeat each args {
-        var argTopEncodedBuffer = MXBuffer()
-        var argNestedEncodedBuffer = MXBuffer()
+        var argTopEncodedBuffer = Buffer()
+        var argNestedEncodedBuffer = Buffer()
         value.topEncode(output: &argTopEncodedBuffer)
         value.depEncode(dest: &argNestedEncodedBuffer)
         
@@ -24,7 +24,7 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode, 
         concatenatedInputArgsBuffer = concatenatedInputArgsBuffer + argNestedEncodedBuffer
     }
     
-    var concatenatedInputArgsTopEncoded = MXBuffer()
+    var concatenatedInputArgsTopEncoded = Buffer()
     concatenatedInputArgsArray.topEncode(output: &concatenatedInputArgsTopEncoded)
     
     let concatenatedInputArgsBufferBytes = concatenatedInputArgsBuffer.toBytes()
@@ -35,16 +35,16 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode, 
         transactionInput: transactionInput,
         transactionOutput: transactionOutput
     ) {
-        var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
+        var injectedInputBuffer = BufferNestedDecodeInput(buffer: Buffer(data: concatenatedInputArgsBufferBytes))
         
         let result = operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
         
-        var bytesDataBuffer = MXBuffer()
+        var bytesDataBuffer = Buffer()
         result.topEncode(output: &bytesDataBuffer)
         bytesData = bytesDataBuffer.toBytes() // We have to extract the bytes from the transaction context...
     }
     
-    let extractedResultBuffer = MXBuffer(data: bytesData) // ...and reinject it in the root context
+    let extractedResultBuffer = Buffer(data: bytesData) // ...and reinject it in the root context
     let extractedResult = ReturnType(topDecode: extractedResultBuffer)
     
     return extractedResult
@@ -60,11 +60,11 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode>(
 ) throws(TransactionError) {
     // Pushing a container makes the previous handles invalid.
     // Thus, we have to inject the data into the new container.
-    var concatenatedInputArgsArray: MXArray<MXBuffer> = MXArray()
-    var concatenatedInputArgsBuffer =  MXBuffer() // We don't want the same encoding as MXArray, since we will dep decode multiple types, the same way as a struct
+    var concatenatedInputArgsArray: MXArray<Buffer> = MXArray()
+    var concatenatedInputArgsBuffer =  Buffer() // We don't want the same encoding as MXArray, since we will dep decode multiple types, the same way as a struct
     for value in repeat each args {
-        var argTopEncodedBuffer = MXBuffer()
-        var argNestedEncodedBuffer = MXBuffer()
+        var argTopEncodedBuffer = Buffer()
+        var argNestedEncodedBuffer = Buffer()
         value.topEncode(output: &argTopEncodedBuffer)
         value.depEncode(dest: &argNestedEncodedBuffer)
         
@@ -72,7 +72,7 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode>(
         concatenatedInputArgsBuffer = concatenatedInputArgsBuffer + argNestedEncodedBuffer
     }
     
-    var concatenatedInputArgsTopEncoded = MXBuffer()
+    var concatenatedInputArgsTopEncoded = Buffer()
     concatenatedInputArgsArray.topEncode(output: &concatenatedInputArgsTopEncoded)
     
     let concatenatedInputArgsBufferBytes = concatenatedInputArgsBuffer.toBytes()
@@ -81,7 +81,7 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode>(
         transactionInput: transactionInput,
         transactionOutput: transactionOutput
     ) {
-        var injectedInputBuffer = BufferNestedDecodeInput(buffer: MXBuffer(data: concatenatedInputArgsBufferBytes))
+        var injectedInputBuffer = BufferNestedDecodeInput(buffer: Buffer(data: concatenatedInputArgsBufferBytes))
         
         operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
     }

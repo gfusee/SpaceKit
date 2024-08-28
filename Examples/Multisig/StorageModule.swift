@@ -14,7 +14,7 @@ struct StorageModule {
     
     // TODO: this is not developer friendly
     static func getActionSignerIdsMapper(actionId: UInt32) -> UnorderedSetMapper<UInt32> {
-        var actionIdNestedEncoded = MXBuffer()
+        var actionIdNestedEncoded = Buffer()
         actionId.depEncode(dest: &actionIdNestedEncoded)
         
         return UnorderedSetMapper(baseKey: "action_signer_ids" + actionIdNestedEncoded)

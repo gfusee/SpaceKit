@@ -68,7 +68,7 @@ extension CodeMetadata: NestedEncode {
 }
 
 extension CodeMetadata: TopDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         self = CodeMetadata(flag: UInt16(topDecode: input))
     }
 }
@@ -86,11 +86,11 @@ extension CodeMetadata: ArrayItem {
         UInt16.payloadSize
     }
     
-    public static func decodeArrayPayload(payload: MXBuffer) -> CodeMetadata {
+    public static func decodeArrayPayload(payload: Buffer) -> CodeMetadata {
         return CodeMetadata(flag: UInt16.decodeArrayPayload(payload: payload))
     }
     
-    public func intoArrayPayload() -> MXBuffer {
+    public func intoArrayPayload() -> Buffer {
         return self.getFlag().intoArrayPayload()
     }
     

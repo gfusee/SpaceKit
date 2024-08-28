@@ -3,7 +3,7 @@ import XCTest
 
 @Contract struct ErrorContract {
     
-    public func throwError(errorMessage: MXBuffer) {
+    public func throwError(errorMessage: Buffer) {
         smartContractError(message: errorMessage)
     }
     

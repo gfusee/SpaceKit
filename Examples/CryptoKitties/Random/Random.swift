@@ -1,18 +1,18 @@
 import Space
 
-// WARNING: to anyone reading this code. This is a reproduction of the Rust example, however the below Swift code is not a good practice in its current state. This is because of all the bytes manipulations done in MXBuffer instead of static arrays, which are not available in Swift at the moment.
+// WARNING: to anyone reading this code. This is a reproduction of the Rust example, however the below Swift code is not a good practice in its current state. This is because of all the bytes manipulations done in Buffer instead of static arrays, which are not available in Swift at the moment.
 
 let SEED_SIZE: UInt32 = 48
 let SALT_SIZE: UInt32 = 32
 let BYTE_MAX: UInt16 = UInt16(UInt8.max) + 1
 
 public struct Random {
-    private(set) var data: MXBuffer
+    private(set) var data: Buffer
     private(set) var currentIndex: UInt32
     
     public init(
-        seed: MXBuffer,
-        salt: MXBuffer
+        seed: Buffer,
+        salt: Buffer
     ) {
         require(
             seed.count == SEED_SIZE,
@@ -24,8 +24,8 @@ public struct Random {
             "Wrong salt size"
         )
         
-        let bufferOfSize8 = MXBuffer(data: getZeroedBytes8())
-        var randomSource = MXBuffer(data: getZeroedBytes32()) + bufferOfSize8 + bufferOfSize8
+        let bufferOfSize8 = Buffer(data: getZeroedBytes8())
+        var randomSource = Buffer(data: getZeroedBytes32()) + bufferOfSize8 + bufferOfSize8
         
         // Read the warning on top of this file before reading this function
         for i in 0..<SEED_SIZE {
@@ -34,7 +34,7 @@ public struct Random {
             let saltByte = salt.getSubBuffer(startIndex: Int32(i % SALT_SIZE), length: 1).toBigEndianBytes8().7
             let sum = UInt16(seedByte) + UInt16(saltByte)
             
-            randomSource = randomSource.withReplaced(startingPosition: Int32(i), with: MXBuffer(data: UInt8(sum % BYTE_MAX)))
+            randomSource = randomSource.withReplaced(startingPosition: Int32(i), with: Buffer(data: UInt8(sum % BYTE_MAX)))
         }
         
         self.data = randomSource
@@ -74,7 +74,7 @@ public struct Random {
             
             let res: UInt16 = iByte + iPlusOneByte + 1
             
-            self.data = self.data.withReplaced(startingPosition: Int32(i), with: MXBuffer(data: UInt8(res % BYTE_MAX)))
+            self.data = self.data.withReplaced(startingPosition: Int32(i), with: Buffer(data: UInt8(res % BYTE_MAX)))
         }
     }
 }

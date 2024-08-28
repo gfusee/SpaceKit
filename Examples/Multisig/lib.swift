@@ -135,13 +135,13 @@ import Space
     public func proposeTransferExecute(
         to: Address,
         egldAmount: BigUint,
-        functionName: OptionalArgument<MXBuffer>,
-        functionArguments: MultiValueEncoded<MXBuffer>
+        functionName: OptionalArgument<Buffer>,
+        functionArguments: MultiValueEncoded<Buffer>
     ) -> UInt32 {
         return ProposeModule.proposeTransferExecute(
             to: to,
             egldAmount: egldAmount,
-            functionName: functionName.intoOptional() ?? MXBuffer(),
+            functionName: functionName.intoOptional() ?? Buffer(),
             functionArguments: functionArguments
         )
     }
@@ -149,8 +149,8 @@ import Space
     public func proposeAsyncCall(
         to: Address,
         egldAmount: BigUint,
-        functionName: MXBuffer,
-        functionArguments: MultiValueEncoded<MXBuffer>
+        functionName: Buffer,
+        functionArguments: MultiValueEncoded<Buffer>
     ) -> UInt32 {
         return ProposeModule.proposeAsyncCall(
             to: to,
@@ -164,7 +164,7 @@ import Space
         amount: BigUint,
         source: Address,
         codeMetadata: CodeMetadata,
-        arguments: MultiValueEncoded<MXBuffer>
+        arguments: MultiValueEncoded<Buffer>
     ) -> UInt32 {
         return ProposeModule.proposeSCDeployFromSource(
             amount: amount,
@@ -179,7 +179,7 @@ import Space
         amount: BigUint,
         source: Address,
         codeMetadata: CodeMetadata,
-        arguments: MultiValueEncoded<MXBuffer>
+        arguments: MultiValueEncoded<Buffer>
     ) -> UInt32 {
         return ProposeModule.proposeSCUpgradeFromSource(
             scAddress: scAddress, 

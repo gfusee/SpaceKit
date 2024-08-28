@@ -113,8 +113,8 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
                 )
             }
         
-            private func _getEndpointNameAndArgs() -> (MXBuffer, ArgBuffer) {
-                let _endpointName: MXBuffer
+            private func _getEndpointNameAndArgs() -> (Buffer, ArgBuffer) {
+                let _endpointName: Buffer
                 var _argBuffer = ArgBuffer()
                 switch self {
                     \(raw: calls)

@@ -1,6 +1,6 @@
 @propertyWrapper public struct Mapping<K: NestedEncode, T: TopEncode & TopDecode> {
     
-    private let key: MXBuffer
+    private let key: Buffer
     
     public var wrappedValue: StorageMap<K, T> {
         get {
@@ -15,7 +15,7 @@
     }
     
     public init(
-        key: MXBuffer
+        key: Buffer
     ) {
         self.key = key
     }

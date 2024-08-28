@@ -1,5 +1,5 @@
 public struct Randomness {
-    public static var buffer = MXBuffer()
+    public static var buffer = Buffer()
     
     private init() {}
     

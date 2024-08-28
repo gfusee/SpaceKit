@@ -3,7 +3,7 @@ import XCTest
 
 @Contract struct CodableMacroStructImplTestsContract {
     public func testTopDecodeForCustomInputTooLargeError() {
-        let input = MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a000000016400".hexadecimal))
+        let input = Buffer(data: Array("0000000a5346542d616263646566000000000000000a000000016400".hexadecimal))
         let _ = TokenPayment(topDecode: input)
     }
 }
@@ -18,7 +18,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
     
     func testTopEncodeForCustomStruct() throws {
         let tokenPayment = TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
-        var result = MXBuffer()
+        var result = Buffer()
         tokenPayment.topEncode(output: &result)
         
         let expected = "0000000a5346542d616263646566000000000000000a0000000164"
@@ -28,7 +28,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
     
     func testNestedEncodeForCustomStruct() throws {
         let tokenPayment = TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
-        var result = MXBuffer()
+        var result = Buffer()
         tokenPayment.depEncode(dest: &result)
         
         let expected = "0000000a5346542d616263646566000000000000000a0000000164"
@@ -37,7 +37,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
     }
     
     func testTopDecodeForCustomStruct() throws {
-        let input = MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a0000000164".hexadecimal))
+        let input = Buffer(data: Array("0000000a5346542d616263646566000000000000000a0000000164".hexadecimal))
         let result = TokenPayment(topDecode: input)
         
         let expected = TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
@@ -56,7 +56,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
     }
     
     func testNestedDecodeForCustomStruct() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a0000000164".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("0000000a5346542d616263646566000000000000000a0000000164".hexadecimal)))
         let result = TokenPayment(depDecode: &input)
         
         let expected = TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 10, amount: 100)
@@ -65,7 +65,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
     }
     
     func testNestedDecodeForTwoCustomStructs() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000a5346542d616263646566000000000000000a00000001640000000a5346542d616263646566000000000000000a0000000203e8".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("0000000a5346542d616263646566000000000000000a00000001640000000a5346542d616263646566000000000000000a0000000203e8".hexadecimal)))
         let result1 = TokenPayment(depDecode: &input)
         let result2 = TokenPayment(depDecode: &input)
         

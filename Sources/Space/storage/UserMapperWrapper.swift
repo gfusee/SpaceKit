@@ -1,6 +1,6 @@
 @propertyWrapper public struct UserMapping {
     
-    private let key: MXBuffer
+    private let key: Buffer
     
     public var wrappedValue: UserMapper {
         get {
@@ -9,7 +9,7 @@
     }
     
     public init(
-        key: MXBuffer
+        key: Buffer
     ) {
         self.key = key
     }

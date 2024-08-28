@@ -2,7 +2,7 @@
 import XCTest
 
 @Codable enum CustomCodableEnum: Equatable {
-    case first(MXBuffer, UInt64, UInt64, MXBuffer)
+    case first(Buffer, UInt64, UInt64, Buffer)
     case second(UInt64)
     case third
 }
@@ -25,7 +25,7 @@ import XCTest
     }
     
     public func testTopDecodeInputTooLarge() {
-        let input = MXBuffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal))
+        let input = Buffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal))
         
         _ = MXArray<CustomCodableEnum>(topDecode: input)
     }
@@ -559,10 +559,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testTopEncodeZeroElement() throws {
         let array: MXArray<CustomCodableEnum> = MXArray()
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.topEncode(output: &output)
         
-        let expected: MXBuffer = ""
+        let expected: Buffer = ""
         
         XCTAssertEqual(output, expected)
     }
@@ -578,10 +578,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         )
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.topEncode(output: &output)
         
-        let expected = MXBuffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
+        let expected = Buffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -605,10 +605,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         )
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.topEncode(output: &output)
         
-        let expected = MXBuffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
+        let expected = Buffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -625,10 +625,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             CustomCodableEnum.third
         ]
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.topEncode(output: &output)
         
-        let expected = MXBuffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal))
+        let expected = Buffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -636,10 +636,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     func testNestedEncodeZeroElement() throws {
         let array: MXArray<CustomCodableEnum> = MXArray()
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("00000000".hexadecimal))
+        let expected = Buffer(data: Array("00000000".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -655,10 +655,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         )
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("00000001000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
+        let expected = Buffer(data: Array("00000001000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -682,10 +682,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             )
         )
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("00000002000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
+        let expected = Buffer(data: Array("00000002000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -702,16 +702,16 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
             CustomCodableEnum.third
         ]
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("00000003000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal))
+        let expected = Buffer(data: Array("00000003000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
     
     func testTopDecodeZeroElement() throws {
-        let input = MXBuffer(data: Array("".hexadecimal))
+        let input = Buffer(data: Array("".hexadecimal))
         
         let array = MXArray<CustomCodableEnum>(topDecode: input)
         let expected: MXArray<CustomCodableEnum> = []
@@ -720,7 +720,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testTopDecodeOneElement() throws {
-        let input = MXBuffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
+        let input = Buffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
         let array = MXArray<CustomCodableEnum>(topDecode: input)
         let expected: MXArray<CustomCodableEnum> = [
@@ -736,7 +736,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testTopDecodeTwoElements() throws {
-        let input = MXBuffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
+        let input = Buffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
         let array = MXArray<CustomCodableEnum>(topDecode: input)
         let expected: MXArray<CustomCodableEnum> = [
@@ -758,7 +758,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testTopDecodeThreeDifferentCases() throws {
-        let input = MXBuffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal))
+        let input = Buffer(data: Array("000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal))
         
         let array = MXArray<CustomCodableEnum>(topDecode: input)
         let expected: MXArray<CustomCodableEnum> = [
@@ -776,7 +776,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedDecodeZeroElement() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000000".hexadecimal)))
         
         let array = MXArray<CustomCodableEnum>(depDecode: &input)
         let expected: MXArray<CustomCodableEnum> = []
@@ -785,7 +785,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedDecodeOneElement() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000001000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000001000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal)))
         
         let array = MXArray<CustomCodableEnum>(depDecode: &input)
         let expected: MXArray<CustomCodableEnum> = [
@@ -801,7 +801,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedDecodeTwoElements() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000002000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000002000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal)))
         
         let array = MXArray<CustomCodableEnum>(depDecode: &input)
         let expected: MXArray<CustomCodableEnum> = [
@@ -823,7 +823,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedDecodeTwoElementsAndInputLarger() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000002000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e000000000000000500000005746573743201".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000002000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f000000000474657374000000000000001e000000000000000500000005746573743201".hexadecimal)))
         
         let array = MXArray<CustomCodableEnum>(depDecode: &input)
         let expected: MXArray<CustomCodableEnum> = [
@@ -846,7 +846,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedDecodeThreeDifferentCases() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000003000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0100000000000000320201".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000003000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0100000000000000320201".hexadecimal)))
         
         let array = MXArray<CustomCodableEnum>(depDecode: &input)
         let expected: MXArray<CustomCodableEnum> = [
@@ -865,7 +865,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedDecodeThreeDifferentCasesLargerBuffer() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000003000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000003000000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f01000000000000003202".hexadecimal)))
         
         let array = MXArray<CustomCodableEnum>(depDecode: &input)
         let expected: MXArray<CustomCodableEnum> = [

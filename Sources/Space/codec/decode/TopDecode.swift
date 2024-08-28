@@ -1,3 +1,3 @@
 public protocol TopDecode {
-    init(topDecode input: MXBuffer)
+    init(topDecode input: Buffer)
 }

@@ -33,7 +33,7 @@ struct UserEndpointsModule {
                 
                 let paymentToken = bondingCurve.payment.tokenIdentifier
                 
-                var bondingCurveTopEncoded = MXBuffer()
+                var bondingCurveTopEncoded = Buffer()
                 bondingCurve.topEncode(output: &bondingCurveTopEncoded)
                 
                 buffer = bondingCurveTopEncoded
@@ -69,7 +69,7 @@ struct UserEndpointsModule {
     // Don't try this at home
     static func buyToken<T: CurveFunction & MXCodable & Default & Equatable>(
         requestedAmount: BigUint,
-        requestedToken: MXBuffer,
+        requestedToken: Buffer,
         requestedNonce: UInt64?,
         dummy: @autoclosure () -> T
     ) {
@@ -100,7 +100,7 @@ struct UserEndpointsModule {
                 bondingCurve.payment.amount = bondingCurve.payment.amount + price
                 bondingCurve.arguments.balance = bondingCurve.arguments.balance - requestedAmount
                 
-                var bondingCurveTopEncoded = MXBuffer()
+                var bondingCurveTopEncoded = Buffer()
                 bondingCurve.topEncode(output: &bondingCurveTopEncoded)
                 
                 buffer = bondingCurveTopEncoded
@@ -154,7 +154,7 @@ struct UserEndpointsModule {
     static func checkOwnedReturnPaymentToken<T: CurveFunction & MXCodable & Default & Equatable>(
         bondingCurve: BondingCurve<T>,
         amount: BigUint
-    ) -> MXBuffer {
+    ) -> Buffer {
         bondingCurve.requireIsSet()
         require(
             amount > 0,
@@ -165,7 +165,7 @@ struct UserEndpointsModule {
     }
     
     // TODO: use TokenIdentifier type once implemented
-    static func checkTokenExists(issuedToken: MXBuffer) {
+    static func checkTokenExists(issuedToken: Buffer) {
         require(
             !StorageModule.$bondingCurveForTokenIdentifier[issuedToken].isEmpty(),
             "Token is not issued yet!"
@@ -208,7 +208,7 @@ struct UserEndpointsModule {
     
     static func sendNextAvailableTokens(
         caller: Address,
-        token: MXBuffer,
+        token: Buffer,
         amount: BigUint
     ) {
         let tokenDetailsMapper = StorageModule.$tokenDetailsForTokenIdentifier[token]
@@ -261,16 +261,16 @@ struct UserEndpointsModule {
     }
     
     static func getTokenAvailability(
-        identifier: MXBuffer
-    ) -> MultiValueEncoded<MXBuffer> { // TODO: No MultiValue2 at the moment, so let's do it by hand
+        identifier: Buffer
+    ) -> MultiValueEncoded<Buffer> { // TODO: No MultiValue2 at the moment, so let's do it by hand
         let tokenNonces = StorageModule.tokenDetailsForTokenIdentifier[identifier].tokenNonces
-        var availability: MultiValueEncoded<MXBuffer> = MultiValueEncoded()
+        var availability: MultiValueEncoded<Buffer> = MultiValueEncoded()
         
         tokenNonces.forEach { currentCheckNonce in
-            var currentCheckNonceTopEncoded = MXBuffer()
+            var currentCheckNonceTopEncoded = Buffer()
             currentCheckNonce.topEncode(output: &currentCheckNonceTopEncoded)
             
-            var nonceAmountTopEncoded = MXBuffer()
+            var nonceAmountTopEncoded = Buffer()
             StorageModule.nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: identifier, nonce: currentCheckNonce)]
                 .topEncode(output: &nonceAmountTopEncoded)
             
@@ -282,8 +282,8 @@ struct UserEndpointsModule {
     }
     
     static func checkGivenToken(
-        acceptedToken: MXBuffer,
-        givenToken: MXBuffer
+        acceptedToken: Buffer,
+        givenToken: Buffer
     ) {
         require(
             givenToken == acceptedToken,

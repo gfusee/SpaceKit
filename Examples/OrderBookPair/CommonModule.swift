@@ -7,7 +7,7 @@ let FEE_PENALTY_INCREASE_EPOCH: UInt64 = 5
 let FREE_ORDER_FROM_STORAGE_MIN_PENALTIES: UInt64 = 6
 
 @Codable struct Payment {
-    let tokenIdentifier: MXBuffer
+    let tokenIdentifier: Buffer
     var amount: BigUint
 }
 

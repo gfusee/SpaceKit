@@ -12,12 +12,12 @@ extension EndpointArgumentsLoader: TopDecodeMultiInput {
         self.numArguments > self.currentIndex
     }
     
-    public mutating func nextValueInput() -> MXBuffer {
+    public mutating func nextValueInput() -> Buffer {
         let bufferHandle = getNextHandle()
         let _ = API.bufferGetArgument(argId: self.currentIndex, bufferHandle: bufferHandle)
         
         self.currentIndex += 1
         
-        return MXBuffer(handle: bufferHandle)
+        return Buffer(handle: bufferHandle)
     }
 }

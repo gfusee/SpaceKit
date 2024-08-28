@@ -2,10 +2,10 @@
 import XCTest
 
 @Codable struct CustomCodableStruct: Equatable {
-    let firstElement: MXBuffer
+    let firstElement: Buffer
     let secondElement: UInt64
     let thirdElement: UInt64
-    let fourthElement: MXBuffer
+    let fourthElement: Buffer
 }
 
 @Contract struct ArrayOfCustomStructsTestsContract {
@@ -26,7 +26,7 @@ import XCTest
     }
     
     public func testTopDecodeInputTooLarge() {
-        let input = MXBuffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal))
+        let input = Buffer(data: Array("00000001610000004148656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b2101".hexadecimal))
         
         _ = MXArray<CustomCodableStruct>(topDecode: input)
     }
@@ -527,10 +527,10 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testTopEncodeZeroElement() throws {
         let array: MXArray<CustomCodableStruct> = MXArray()
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.topEncode(output: &output)
         
-        let expected: MXBuffer = ""
+        let expected: Buffer = ""
         
         XCTAssertEqual(output, expected)
     }
@@ -546,10 +546,10 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         )
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.topEncode(output: &output)
         
-        let expected = MXBuffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
+        let expected = Buffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -573,10 +573,10 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         )
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.topEncode(output: &output)
         
-        let expected = MXBuffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
+        let expected = Buffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -584,10 +584,10 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     func testNestedEncodeZeroElement() throws {
         let array: MXArray<CustomCodableStruct> = MXArray()
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("00000000".hexadecimal))
+        let expected = Buffer(data: Array("00000000".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -603,10 +603,10 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         )
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("000000010000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
+        let expected = Buffer(data: Array("000000010000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -630,16 +630,16 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         )
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
+        let expected = Buffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
     
     func testTopDecodeZeroElement() throws {
-        let input = MXBuffer(data: Array("".hexadecimal))
+        let input = Buffer(data: Array("".hexadecimal))
         
         let array = MXArray<CustomCodableStruct>(topDecode: input)
         let expected: MXArray<CustomCodableStruct> = []
@@ -648,7 +648,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testTopDecodeOneElement() throws {
-        let input = MXBuffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
+        let input = Buffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal))
         
         let array = MXArray<CustomCodableStruct>(topDecode: input)
         let expected: MXArray<CustomCodableStruct> = [
@@ -664,7 +664,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testTopDecodeTwoElements() throws {
-        let input = MXBuffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
+        let input = Buffer(data: Array("0000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal))
         
         let array = MXArray<CustomCodableStruct>(topDecode: input)
         let expected: MXArray<CustomCodableStruct> = [
@@ -686,7 +686,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testNestedDecodeZeroElement() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000000".hexadecimal)))
         
         let array = MXArray<CustomCodableStruct>(depDecode: &input)
         let expected: MXArray<CustomCodableStruct> = []
@@ -695,7 +695,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testNestedDecodeOneElement() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000010000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000010000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f".hexadecimal)))
         
         let array = MXArray<CustomCodableStruct>(depDecode: &input)
         let expected: MXArray<CustomCodableStruct> = [
@@ -711,7 +711,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testNestedDecodeTwoElements() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e0000000000000005000000057465737432".hexadecimal)))
         
         let array = MXArray<CustomCodableStruct>(depDecode: &input)
         let expected: MXArray<CustomCodableStruct> = [
@@ -733,7 +733,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testNestedDecodeTwoElementsAndInputLarger() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e000000000000000500000005746573743201".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000020000000448657921000000000000000a00000000000000640000000f486f77277320697420676f696e673f0000000474657374000000000000001e000000000000000500000005746573743201".hexadecimal)))
         
         let array = MXArray<CustomCodableStruct>(depDecode: &input)
         let expected: MXArray<CustomCodableStruct> = [

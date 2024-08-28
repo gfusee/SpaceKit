@@ -15,7 +15,7 @@ import Space
     
     public func getEsdtBalance(
         address: Address,
-        tokenIdentifier: MXBuffer,
+        tokenIdentifier: Buffer,
         nonce: UInt64
     ) -> BigUint {
         return Blockchain.getESDTBalance(address: address, tokenIdentifier: tokenIdentifier, nonce: nonce)

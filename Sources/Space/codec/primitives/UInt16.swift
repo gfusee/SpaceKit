@@ -22,7 +22,7 @@ extension UInt16: TopEncode {
             startEncodingIndex += 1
         }
         
-        MXBuffer(data: bigEndianBytes)
+        Buffer(data: bigEndianBytes)
             .getSubBuffer(startIndex: startEncodingIndex, length: intSize - startEncodingIndex)
             .topEncode(output: &output)
     }
@@ -33,12 +33,12 @@ extension UInt16: TopEncodeMulti {}
 extension UInt16: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        dest.write(buffer: MXBuffer(data: self.asBigEndianBytes()))
+        dest.write(buffer: Buffer(data: self.asBigEndianBytes()))
     }
 }
 
 extension UInt16: TopDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         if input.count > intSize {
             smartContractError(message: "Cannot decode UInt32: input too large.")
         }
@@ -65,7 +65,7 @@ extension UInt16: ArrayItem {
         intSize
     }
     
-    public static func decodeArrayPayload(payload: MXBuffer) -> UInt16 {
+    public static func decodeArrayPayload(payload: Buffer) -> UInt16 {
         var payloadInput = BufferNestedDecodeInput(buffer: payload)
         
         let result = UInt16(depDecode: &payloadInput)
@@ -77,7 +77,7 @@ extension UInt16: ArrayItem {
         return result
     }
     
-    public func intoArrayPayload() -> MXBuffer {
-        MXBuffer(data: self.asBigEndianBytes())
+    public func intoArrayPayload() -> Buffer {
+        Buffer(data: self.asBigEndianBytes())
     }
 }

@@ -75,7 +75,7 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
         }
     }
     
-    mutating func pongByUserId(userId: UInt32) -> MXBuffer? {
+    mutating func pongByUserId(userId: UInt32) -> Buffer? {
         let userStatus = self.userStatus[ifPresent: userId] ?? .new
         
         switch userStatus {

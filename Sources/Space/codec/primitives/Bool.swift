@@ -21,7 +21,7 @@ extension Bool: NestedEncode {
 }
 
 extension Bool: TopDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         let integer = UInt8(topDecode: input)
         
         switch integer {
@@ -57,12 +57,12 @@ extension Bool: ArrayItem {
         UInt8.payloadSize
     }
     
-    public static func decodeArrayPayload(payload: MXBuffer) -> Bool {
+    public static func decodeArrayPayload(payload: Buffer) -> Bool {
         return Bool(topDecode: payload)
     }
     
-    public func intoArrayPayload() -> MXBuffer {
-        var payload = MXBuffer()
+    public func intoArrayPayload() -> Buffer {
+        var payload = Buffer()
         
         self.depEncode(dest: &payload)
         

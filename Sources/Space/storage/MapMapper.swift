@@ -2,23 +2,23 @@ fileprivate let MAPPED_VALUE_IDENTIFIER: StaticString = ".mapped"
 
 public struct MapMapper<K: TopEncode & NestedEncode & TopDecode, V: TopEncode & NestedEncode & TopDecode> {
     // TODO: add tests
-    private let baseKey: MXBuffer
+    private let baseKey: Buffer
     private let keysSetMapper: SetMapper<K>
     
-    public init(baseKey: MXBuffer) {
+    public init(baseKey: Buffer) {
         self.baseKey = baseKey
         self.keysSetMapper = SetMapper(baseKey: baseKey)
     }
     
-    private func buildNamedKey(name: MXBuffer, key: K) -> MXBuffer {
-        var keyNestedEncoded = MXBuffer()
+    private func buildNamedKey(name: Buffer, key: K) -> Buffer {
+        var keyNestedEncoded = Buffer()
         key.depEncode(dest: &keyNestedEncoded)
         
         return self.baseKey + name + keyNestedEncoded
     }
     
     private func getMappedValueMapper(key: K) -> SingleValueMapper<V> {
-        return SingleValueMapper(key: self.buildNamedKey(name: MXBuffer(stringLiteral: MAPPED_VALUE_IDENTIFIER), key: key))
+        return SingleValueMapper(key: self.buildNamedKey(name: Buffer(stringLiteral: MAPPED_VALUE_IDENTIFIER), key: key))
     }
     
     public func get(_ key: K) -> V? {

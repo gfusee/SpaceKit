@@ -4,19 +4,19 @@ let NFT_AMOUNT: UInt32 = 1
 let ROYALTIES_MAX: UInt32 = 10_000
 
 @Codable struct PriceTag {
-    let token: MXBuffer
+    let token: Buffer
     let nonce: UInt64
     let amount: BigUint
 }
 
 struct NftModule {
     
-    @Storage(key: "nftTokenId") static var nftTokenId: MXBuffer // TODO: use TokenIdentifier type once implemented
+    @Storage(key: "nftTokenId") static var nftTokenId: Buffer // TODO: use TokenIdentifier type once implemented
     @Mapping<UInt64, PriceTag>(key: "priceTag") static var priceTagForNftNonce
     
     package static func issueToken(
-        tokenName: MXBuffer,
-        tokenTicker: MXBuffer
+        tokenName: Buffer,
+        tokenTicker: Buffer
     ) {
         require(
             NftModule.$nftTokenId.isEmpty(),
@@ -114,12 +114,12 @@ struct NftModule {
     }
     
     package static func createNftWithAttributes<T: TopEncode>(
-        name: MXBuffer,
+        name: Buffer,
         royalties: BigUint,
         attributes: T,
-        uri: MXBuffer,
+        uri: Buffer,
         sellingPrice: BigUint,
-        tokenUsedAsPayment: MXBuffer,
+        tokenUsedAsPayment: Buffer,
         tokenUsedAsPaymentNonce: UInt64
     ) -> UInt64 {
         NftModule.requireTokenIssued()
@@ -131,7 +131,7 @@ struct NftModule {
         
         let nftTokenId = self.nftTokenId
         
-        var serializedAttributes = MXBuffer()
+        var serializedAttributes = Buffer()
         attributes.topEncode(output: &serializedAttributes)
         
         let attributesHash = Crypto.getSha256Hash(of: serializedAttributes)
@@ -163,7 +163,7 @@ struct NftModule {
     }
     
     package static func issueCallback() {
-        let result: AsyncCallResult<MXBuffer> = Message.asyncCallResult() // TODO: use TokenIdentifier type once available
+        let result: AsyncCallResult<Buffer> = Message.asyncCallResult() // TODO: use TokenIdentifier type once available
         
         switch result {
         case .success(let tokenIdentifier):

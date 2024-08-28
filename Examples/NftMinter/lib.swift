@@ -8,16 +8,16 @@ import Space
     
     // TODO: use TokenIdentifier type once implemented
     public func createNft(
-        name: MXBuffer,
+        name: Buffer,
         royalties: BigUint,
-        uri: MXBuffer,
+        uri: Buffer,
         sellingPrice: BigUint,
-        optTokenUsedAsPayment: OptionalArgument<MXBuffer>,
+        optTokenUsedAsPayment: OptionalArgument<Buffer>,
         optTokenUsedAsPaymentNonce: OptionalArgument<UInt64>
     ) {
         assertOwner()
         
-        let tokenUsedAsPayment: MXBuffer = if let tokenUsedAsPayment = optTokenUsedAsPayment.intoOptional() {
+        let tokenUsedAsPayment: Buffer = if let tokenUsedAsPayment = optTokenUsedAsPayment.intoOptional() {
             tokenUsedAsPayment
         } else {
             "EGLD" // TODO: no hardcoded EGLD
@@ -46,7 +46,7 @@ import Space
     
     public func claimRoyaltiesFromMarketplace(
         marketplaceAddress: Address,
-        tokenIdentifier: MXBuffer,
+        tokenIdentifier: Buffer,
         tokenNonce: UInt64
     ) {
         assertOwner()

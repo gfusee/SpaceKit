@@ -1,4 +1,4 @@
-public typealias MXString = MXBuffer
+public typealias MXString = Buffer
 
 @inline(__always)
 fileprivate func initFromBytesPointer(handle: Int32, pointer: UnsafeMutableRawBufferPointer) {
@@ -9,7 +9,7 @@ fileprivate func initFromBytesPointer(handle: Int32, pointer: UnsafeMutableRawBu
     let _ = API.bufferSetBytes(handle: handle, bytePtr: baseAddress, byteLen: Int32(pointer.count))
 }
 
-public struct MXBuffer {
+public struct Buffer {
     public let handle: Int32
     
     public var count: Int32 {
@@ -110,7 +110,7 @@ public struct MXBuffer {
         self.handle = handle
     }
 
-    public func appended(_ other: Self) -> MXBuffer {
+    public func appended(_ other: Self) -> Buffer {
         var cloned = self.clone()
         cloned.appendUnsafe(other)
         
@@ -125,8 +125,8 @@ public struct MXBuffer {
         let _ = API.mBufferSetRandom(destinationHandle: self.handle, length: length)
     }
     
-    public func clone() -> MXBuffer {
-        let cloned = MXBuffer()
+    public func clone() -> Buffer {
+        let cloned = Buffer()
         let _ = API.bufferAppend(accumulatorHandle: cloned.handle, dataHandle: self.handle)
         
         return cloned
@@ -204,29 +204,29 @@ public struct MXBuffer {
         let _ = API.bufferFinish(handle: self.handle)
     }
     
-    package func withReplaced(startingPosition: Int32, with buffer: MXBuffer) -> MXBuffer {
+    package func withReplaced(startingPosition: Int32, with buffer: Buffer) -> Buffer {
         let bufferCount = buffer.count
         
         let sliceBeforeCount = startingPosition
-        let sliceBefore = sliceBeforeCount == 0 ? MXBuffer() : self.getSubBuffer(startIndex: 0, length: sliceBeforeCount)
+        let sliceBefore = sliceBeforeCount == 0 ? Buffer() : self.getSubBuffer(startIndex: 0, length: sliceBeforeCount)
         
         let endPosition = startingPosition + bufferCount
         let sliceAfterCount = self.count - bufferCount - sliceBeforeCount
-        let sliceAfter = sliceAfterCount == 0 ? MXBuffer() :  self.getSubBuffer(startIndex: endPosition, length: sliceAfterCount)
+        let sliceAfter = sliceAfterCount == 0 ? Buffer() :  self.getSubBuffer(startIndex: endPosition, length: sliceAfterCount)
         
         return sliceBefore + buffer + sliceAfter
     }
     
-    public func getSubBuffer(startIndex: Int32, length: Int32) -> MXBuffer {
+    public func getSubBuffer(startIndex: Int32, length: Int32) -> Buffer {
         guard length > 0 else {
             if length == 0 {
-                return MXBuffer()
+                return Buffer()
             }
             
             smartContractError(message: "Negative slice length.")
         }
         
-        let result = MXBuffer()
+        let result = Buffer()
         
         let _ = API.bufferCopyByteSlice(
             sourceHandle: self.handle,
@@ -238,45 +238,45 @@ public struct MXBuffer {
         return result
     }
     
-    public func toHexadecimalBuffer() -> MXBuffer {
+    public func toHexadecimalBuffer() -> Buffer {
         let resultHandle = getNextHandle()
         
         API.managedBufferToHex(sourceHandle: self.handle, destinationHandle: resultHandle)
         
-        return MXBuffer(handle: resultHandle)
+        return Buffer(handle: resultHandle)
     }
 }
 
-extension MXBuffer: TopDecode {
-    public init(topDecode input: MXBuffer) {
+extension Buffer: TopDecode {
+    public init(topDecode input: Buffer) {
         self = input.clone()
     }
 }
 
-extension MXBuffer: TopDecodeMulti {}
+extension Buffer: TopDecodeMulti {}
 
-extension MXBuffer: NestedDecode {
+extension Buffer: NestedDecode {
     public init(depDecode input: inout some NestedDecodeInput) {
         self = input.readNextBufferOfDynamicLength()
     }
 }
 
-extension MXBuffer: TopEncodeOutput {
-    public mutating func setBuffer(buffer: MXBuffer) {
+extension Buffer: TopEncodeOutput {
+    public mutating func setBuffer(buffer: Buffer) {
         self = buffer
     }
 }
 
-extension MXBuffer: TopEncode {
+extension Buffer: TopEncode {
     @inline(__always)
     public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
         output.setBuffer(buffer: self)
     }
 }
 
-extension MXBuffer: TopEncodeMulti {}
+extension Buffer: TopEncodeMulti {}
 
-extension MXBuffer: NestedEncode {
+extension Buffer: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
         Int(self.count).depEncode(dest: &dest)
@@ -284,18 +284,18 @@ extension MXBuffer: NestedEncode {
     }
 }
 
-extension MXBuffer: NestedEncodeOutput {
-    public mutating func write(buffer: MXBuffer) {
+extension Buffer: NestedEncodeOutput {
+    public mutating func write(buffer: Buffer) {
         self.appendUnsafe(buffer)
     }
 }
 
-extension MXBuffer: ArrayItem {
+extension Buffer: ArrayItem {
     public static var payloadSize: Int32 {
         return 4
     }
     
-    public static func decodeArrayPayload(payload: MXBuffer) -> MXBuffer {
+    public static func decodeArrayPayload(payload: Buffer) -> Buffer {
         var payloadInput = BufferNestedDecodeInput(buffer: payload)
         
         let handle = Int32(Int(depDecode: &payloadInput))
@@ -304,27 +304,27 @@ extension MXBuffer: ArrayItem {
             fatalError()
         }
         
-        return MXBuffer(handle: handle)
+        return Buffer(handle: handle)
     }
     
-    public func intoArrayPayload() -> MXBuffer {
-        return MXBuffer(data: self.handle.toBytes4())
+    public func intoArrayPayload() -> Buffer {
+        return Buffer(data: self.handle.toBytes4())
     }
 }
 
-extension MXBuffer: Equatable {
-    public static func == (lhs: MXBuffer, rhs: MXBuffer) -> Bool {
+extension Buffer: Equatable {
+    public static func == (lhs: Buffer, rhs: Buffer) -> Bool {
         return API.bufferEqual(handle1: lhs.handle, handle2: rhs.handle) > 0
     }
 }
 
-extension MXBuffer {
-    public static func + (lhs: MXBuffer, rhs: MXBuffer) -> MXBuffer {
+extension Buffer {
+    public static func + (lhs: Buffer, rhs: Buffer) -> Buffer {
         return lhs.appended(rhs)
     }
 }
 
-extension MXBuffer: ExpressibleByStringLiteral {
+extension Buffer: ExpressibleByStringLiteral {
     public init(stringInterpolation: BufferInterpolationMatcher) {
         self.handle = stringInterpolation.buffer.handle
     }
@@ -335,28 +335,28 @@ extension MXBuffer: ExpressibleByStringLiteral {
 }
 
 public struct BufferInterpolationMatcher: StringInterpolationProtocol {
-    var buffer: MXBuffer
+    var buffer: Buffer
 
     public init(literalCapacity: Int, interpolationCount: Int) {
-        self.buffer = MXBuffer()
+        self.buffer = Buffer()
     }
 
     public mutating func appendLiteral(_ literal: StaticString) {
-        self.buffer = self.buffer + MXBuffer(literal)
+        self.buffer = self.buffer + Buffer(literal)
     }
 
-    public mutating func appendInterpolation(_ value: MXBuffer) {
+    public mutating func appendInterpolation(_ value: Buffer) {
         self.buffer = self.buffer + value
     }
     
     #if !WASM
     public mutating func appendInterpolation(_ value: String) {
-        self.buffer = self.buffer + MXBuffer(value)
+        self.buffer = self.buffer + Buffer(value)
     }
     #endif
     
     public mutating func appendInterpolation(_ value: StaticString) {
-        self.buffer = self.buffer + MXBuffer(value)
+        self.buffer = self.buffer + Buffer(value)
     }
 
     public mutating func appendInterpolation(_ value: BigUint) {
@@ -368,10 +368,10 @@ public struct BufferInterpolationMatcher: StringInterpolationProtocol {
     }
 }
 
-extension MXBuffer: ExpressibleByStringInterpolation {}
+extension Buffer: ExpressibleByStringInterpolation {}
 
 #if !WASM
-extension MXBuffer: CustomDebugStringConvertible {
+extension Buffer: CustomDebugStringConvertible {
     public var debugDescription: String {
         var result = "0x\(self.hexDescription)"
         
@@ -383,7 +383,7 @@ extension MXBuffer: CustomDebugStringConvertible {
     }
 }
 
-extension MXBuffer {
+extension Buffer {
     public var utf8Description: String? {
         API.bufferToUTF8String(handle: self.handle)
     }

@@ -69,7 +69,7 @@ public struct Message {
         
         API.getCaller(resultOffset: &callerBytes)
         
-        return Address(buffer: MXBuffer(data: callerBytes))
+        return Address(buffer: Buffer(data: callerBytes))
     }
     
     // TODO: maybe rename this func to getAsyncCallResult?
@@ -81,9 +81,9 @@ public struct Message {
         return AsyncCallResult(topDecodeMulti: &endpointArgumentLoader)
     }
     
-    public static var transactionHash: MXBuffer {
+    public static var transactionHash: Buffer {
         // TODO: add caching
-        var result = MXBuffer()
+        var result = Buffer()
         
         API.managedGetOriginalTxHash(resultHandle: result.handle)
         

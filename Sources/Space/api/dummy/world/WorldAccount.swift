@@ -35,11 +35,11 @@ public struct WorldAccount {
     }
     
     public func toAddress() -> Address {
-        Address(buffer: MXBuffer(data: Array(self.addressData)))
+        Address(buffer: Buffer(data: Array(self.addressData)))
     }
     
     public func getBalance() -> BigUint {
-        return BigUint(bigEndianBuffer: MXBuffer(data: Array(self.balance.toBigEndianUnsignedData())))
+        return BigUint(bigEndianBuffer: Buffer(data: Array(self.balance.toBigEndianUnsignedData())))
     }
 
     public func getEsdtBalance(tokenIdentifier: String, nonce: UInt64) -> BigUint {
@@ -51,7 +51,7 @@ public struct WorldAccount {
             return 0
         }
 
-        return BigUint(bigEndianBuffer: MXBuffer(data: Array(balance.balance.toBigEndianUnsignedData())))
+        return BigUint(bigEndianBuffer: Buffer(data: Array(balance.balance.toBigEndianUnsignedData())))
     }
 }
 

@@ -1,3 +1,3 @@
 public protocol TopEncodeOutput {
-    mutating func setBuffer(buffer: MXBuffer)
+    mutating func setBuffer(buffer: Buffer)
 }

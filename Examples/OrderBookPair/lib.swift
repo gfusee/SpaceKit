@@ -3,8 +3,8 @@ import Space
 @Contract struct Pair {
     // TODO: use TokenIdentifier when available
     init(
-        firstTokenIdentifier: MXBuffer,
-        secondTokenIdentifier: MXBuffer
+        firstTokenIdentifier: Buffer,
+        secondTokenIdentifier: Buffer
     ) {
         StorageModule.firstTokenIdentifier = firstTokenIdentifier
         StorageModule.secondTokenIdentifier = secondTokenIdentifier

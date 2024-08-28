@@ -1,7 +1,7 @@
 import Space
 
 @Contract struct DigitalCash {
-    init(fee: BigUint, token: MXBuffer) {
+    init(fee: BigUint, token: Buffer) {
         self.whitelistFeeTokenLogic(fee: fee, token: token)
     }
     
@@ -36,7 +36,7 @@ import Space
     
     public func claim(
         address: Address,
-        signature: MXBuffer
+        signature: Buffer
     ) {
         SignatureOperationsModule().claim(address: address, signature: signature)
     }
@@ -44,14 +44,14 @@ import Space
     public func forward(
         address: Address,
         forwardAddress: Address,
-        signature: MXBuffer
+        signature: Buffer
     ) {
         SignatureOperationsModule().forward(address: address, forwardAddress: forwardAddress, signature: signature)
     }
     
     public mutating func whitelistFeeToken(
         fee: BigUint,
-        token: MXBuffer
+        token: Buffer
     ) {
         assertOwner()
         
@@ -59,7 +59,7 @@ import Space
     }
     
     public mutating func blacklistFeeToken(
-        token: MXBuffer
+        token: Buffer
     ) {
         assertOwner()
         
@@ -108,7 +108,7 @@ import Space
 
     public func getAmount(
         address: Address,
-        token: MXBuffer,
+        token: Buffer,
         nonce: UInt64
     ) -> BigUint {
         let depositMapper = StorageModule().$depositForDonor[address]
@@ -137,7 +137,7 @@ import Space
     
     func whitelistFeeTokenLogic(
         fee: BigUint,
-        token: MXBuffer
+        token: Buffer
     ) {
         let feeForTokenMapper = StorageModule().$feeForToken[token]
         

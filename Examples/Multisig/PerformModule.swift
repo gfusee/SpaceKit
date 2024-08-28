@@ -266,7 +266,7 @@ struct PerformModule {
     }
     
     package static func performAsyncCallCallback() {
-        let result: AsyncCallResult<MultiValueEncoded<MXBuffer>> = Message.asyncCallResult()
+        let result: AsyncCallResult<MultiValueEncoded<Buffer>> = Message.asyncCallResult()
         
         switch result {
         case .success(let data):

@@ -4,12 +4,12 @@ import Space
     @Storage(key: "target") var target: BigUint
     @Storage(key: "deadline") var deadline: UInt64
     @Mapping(key: "deposit") var depositForDonor: StorageMap<Address, BigUint>
-    @Storage(key: "tokenIdentifier") var tokenIdentifier: MXBuffer
+    @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
 
     init(
         target: BigUint,
         deadline: UInt64,
-        tokenIdentifier: MXBuffer
+        tokenIdentifier: Buffer
     ) {
         require(target > 0, "Target must be more than 0")
         self.target = target

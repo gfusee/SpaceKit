@@ -2,7 +2,7 @@ import Space
 
 @Proxy enum NftMarketplaceProxy {
     case claimTokens(
-        tokenId: MXBuffer,
+        tokenId: Buffer,
         nonce: UInt64,
         claimDestination: Address
     )

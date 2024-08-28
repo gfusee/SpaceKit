@@ -36,9 +36,9 @@ public struct Blockchain {
         return toBigEndianUInt64(from: API.getBlockEpoch().toBytes8()) // TODO: super tricky, we should ensure it works
     }
     
-    public static func getBlockRandomSeed() -> MXBuffer {
+    public static func getBlockRandomSeed() -> Buffer {
         // TODO: add tests
-        let result = MXBuffer()
+        let result = Buffer()
         
         API.managedGetBlockRandomSeed(resultHandle: result.handle)
         
@@ -62,7 +62,7 @@ public struct Blockchain {
     
     public static func getESDTBalance(
         address: Address,
-        tokenIdentifier: MXBuffer,
+        tokenIdentifier: Buffer,
         nonce: UInt64
     ) -> BigUint {
         var addressBytes = address.buffer.to32BytesStackArray()
@@ -96,7 +96,7 @@ public struct Blockchain {
     
     private static func getEGLDOrESDTBalance(
         address: Address,
-        tokenIdentifier: MXBuffer,
+        tokenIdentifier: Buffer,
         nonce: UInt64
     ) -> BigUint {
         switch tokenIdentifier {
@@ -107,7 +107,7 @@ public struct Blockchain {
         }
     }
     
-    public static func getESDTLocalRoles(tokenIdentifier: MXBuffer) -> EsdtLocalRoles { // TODO: use TokenIdentifier type
+    public static func getESDTLocalRoles(tokenIdentifier: Buffer) -> EsdtLocalRoles { // TODO: use TokenIdentifier type
         let flags = API.getESDTLocalRoles(tokenIdHandle: tokenIdentifier.handle)
         
         return EsdtLocalRoles(flags: flags)
@@ -119,12 +119,12 @@ public struct Blockchain {
         codeMetadata: CodeMetadata,
         value: BigUint = 0,
         arguments: ArgBuffer = ArgBuffer()
-    ) -> (newAddress: Address, results: MXArray<MXBuffer>) {
+    ) -> (newAddress: Address, results: MXArray<Buffer>) {
         // TODO: add tests
         let resultAddress = Address()
-        let resultBuffers: MXArray<MXBuffer> = MXArray()
+        let resultBuffers: MXArray<Buffer> = MXArray()
         
-        let codeMetadataBuffer = MXBuffer(data: codeMetadata.getFlag().asBigEndianBytes())
+        let codeMetadataBuffer = Buffer(data: codeMetadata.getFlag().asBigEndianBytes())
         
         let _ = API.managedDeployFromSourceContract(
             gas: Int64(gas), // TODO: Is this cast safe?
@@ -146,9 +146,9 @@ public struct Blockchain {
         codeMetadata: CodeMetadata,
         value: BigUint = 0,
         arguments: ArgBuffer = ArgBuffer()
-    ) -> MXArray<MXBuffer> {
-        let resultBuffers: MXArray<MXBuffer> = MXArray()
-        let codeMetadataBuffer = MXBuffer(data: codeMetadata.getFlag().asBigEndianBytes())
+    ) -> MXArray<Buffer> {
+        let resultBuffers: MXArray<Buffer> = MXArray()
+        let codeMetadataBuffer = Buffer(data: codeMetadata.getFlag().asBigEndianBytes())
         
         let _ = API.managedUpgradeFromSourceContract(
             dstHandle: contractAddress.buffer.handle,
@@ -164,7 +164,7 @@ public struct Blockchain {
     }
     
     public static func mintTokens(
-        tokenIdentifier: MXBuffer, // TODO: use TokenIdentifier type when implemented
+        tokenIdentifier: Buffer, // TODO: use TokenIdentifier type when implemented
         nonce: UInt64,
         amount: BigUint
     ) {
@@ -175,7 +175,7 @@ public struct Blockchain {
             
             let _: IgnoreValue = ContractCall(
                 receiver: Blockchain.getSCAddress(),
-                endpointName: MXBuffer(stringLiteral: ESDT_LOCAL_MINT_FUNC_NAME),
+                endpointName: Buffer(stringLiteral: ESDT_LOCAL_MINT_FUNC_NAME),
                 argBuffer: argBuffer
             ).call()
         } else {
@@ -186,20 +186,20 @@ public struct Blockchain {
             
             let _: IgnoreValue = ContractCall(
                 receiver: Blockchain.getSCAddress(),
-                endpointName: MXBuffer(stringLiteral: ESDT_NFT_ADD_QUANTITY_FUNC_NAME),
+                endpointName: Buffer(stringLiteral: ESDT_NFT_ADD_QUANTITY_FUNC_NAME),
                 argBuffer: argBuffer
             ).call()
         }
     }
     
     public static func createNft<T: TopEncode>(
-        tokenIdentifier: MXBuffer,
+        tokenIdentifier: Buffer,
         amount: BigUint,
-        name: MXBuffer,
+        name: Buffer,
         royalties: BigUint,
-        hash: MXBuffer,
+        hash: Buffer,
         attributes: T,
-        uris: MXArray<MXBuffer>
+        uris: MXArray<Buffer>
     ) -> UInt64 {
         var argBuffer = ArgBuffer()
         argBuffer.pushSingleValue(arg: tokenIdentifier)
@@ -211,7 +211,7 @@ public struct Blockchain {
         
         if uris.isEmpty {
             // Rust framework's note: at least one URI is required, so we push an empty one
-            argBuffer.pushArg(arg: MXBuffer())
+            argBuffer.pushArg(arg: Buffer())
         } else {
             // Rust framework's note: The API function has the last argument as variadic,
             // so we top-encode each and send as separate argument
@@ -223,7 +223,7 @@ public struct Blockchain {
         
         return ContractCall(
             receiver: Blockchain.getSCAddress(),
-            endpointName: MXBuffer(stringLiteral: ESDT_NFT_CREATE_FUNC_NAME),
+            endpointName: Buffer(stringLiteral: ESDT_NFT_CREATE_FUNC_NAME),
             argBuffer: argBuffer
         ).call(
             gas: Blockchain.getGasLeft(),
@@ -233,8 +233,8 @@ public struct Blockchain {
     
     private static func issueToken(
         tokenType: TokenType,
-        tokenDisplayName: MXBuffer,
-        tokenTicker: MXBuffer,
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
         initialSupply: BigUint,
         properties: TokenProperties
     ) -> AsyncContractCall {
@@ -289,7 +289,7 @@ public struct Blockchain {
         
         let contractCall = ContractCall(
             receiver: esdtSystemScAddress,
-            endpointName: MXBuffer(stringLiteral: endpointName),
+            endpointName: Buffer(stringLiteral: endpointName),
             argBuffer: argBuffer
         )
         
@@ -297,8 +297,8 @@ public struct Blockchain {
     }
     
     public static func issueNonFungibleToken(
-        tokenDisplayName: MXBuffer,
-        tokenTicker: MXBuffer,
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
         properties: NonFungibleTokenProperties
     ) -> AsyncContractCall {
         // TODO: add tests
@@ -324,7 +324,7 @@ public struct Blockchain {
     
     public static func setTokenRoles(
         for address: Address,
-        tokenIdentifier: MXBuffer,
+        tokenIdentifier: Buffer,
         roles: EsdtLocalRoles
     ) -> AsyncContractCall {
         var argBuffer = ArgBuffer()

@@ -1,7 +1,7 @@
 public protocol ArrayItem {
     static var payloadSize: Int32 { get }
     
-    static func decodeArrayPayload(payload: MXBuffer) -> Self
+    static func decodeArrayPayload(payload: Buffer) -> Self
     
-    func intoArrayPayload() -> MXBuffer
+    func intoArrayPayload() -> Buffer
 }

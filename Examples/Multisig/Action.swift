@@ -3,15 +3,15 @@ import Space
 @Codable public struct CallActionData {
     let to: Address
     let egldAmount: BigUint
-    let endpointName: MXBuffer
-    let arguments: MXArray<MXBuffer>
+    let endpointName: Buffer
+    let arguments: MXArray<Buffer>
 }
 
 @Codable public struct DeployFromSourceActionData {
     let amount: BigUint
     let source: Address
     let codeMetadata: CodeMetadata
-    let arguments: MXArray<MXBuffer>
+    let arguments: MXArray<Buffer>
 }
 
 @Codable public struct UpgradeFromSourceActionData {
@@ -19,7 +19,7 @@ import Space
     let amount: BigUint
     let source: Address
     let codeMetadata: CodeMetadata
-    let arguments: MXArray<MXBuffer>
+    let arguments: MXArray<Buffer>
 }
 
 @Codable public enum Action {

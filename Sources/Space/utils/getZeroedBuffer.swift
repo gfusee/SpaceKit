@@ -1,9 +1,9 @@
-public func getZeroedBuffer(count: Int32) -> MXBuffer {
-    var buffer = MXBuffer()
+public func getZeroedBuffer(count: Int32) -> Buffer {
+    var buffer = Buffer()
     
     var remaining = count
     
-    let zeros = MXBuffer(data: getZeroedBytes32())
+    let zeros = Buffer(data: getZeroedBytes32())
     
     while remaining > 0 {
         let usedZeros: Int32

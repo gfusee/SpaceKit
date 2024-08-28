@@ -4,7 +4,7 @@ public struct CallbackClosureLoader {
     let argBuffer: ArgBuffer
     
     public init() {
-        var bufferSerialized = MXBuffer()
+        var bufferSerialized = Buffer()
         
         API.managedGetCallbackClosure(callbackClosureHandle: bufferSerialized.handle)
         
@@ -26,7 +26,7 @@ extension CallbackClosureLoader: TopDecodeMultiInput {
         self.index < self.count
     }
     
-    public mutating func nextValueInput() -> MXBuffer {
+    public mutating func nextValueInput() -> Buffer {
         let buffer = self.argBuffer.buffers.get(self.index)
         
         self.index += 1

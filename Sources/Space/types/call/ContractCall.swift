@@ -1,11 +1,11 @@
 public struct ContractCall {
     let receiver: Address
-    let endpointName: MXBuffer
+    let endpointName: Buffer
     let argBuffer: ArgBuffer
     
     public init(
         receiver: Address,
-        endpointName: MXBuffer,
+        endpointName: Buffer,
         argBuffer: ArgBuffer
     ) {
         self.receiver = receiver
@@ -30,7 +30,7 @@ public struct ContractCall {
         gas: UInt64 = Blockchain.getGasLeft(),
         value: BigUint = 0
     ) -> ReturnType {
-        var resultBuffers = MXArray<MXBuffer>()
+        var resultBuffers = MXArray<Buffer>()
         
         let _ = API.managedExecuteOnDestContext(
             gas: Int64(gas), // TODO: Is this cast safe?
@@ -56,7 +56,7 @@ public struct ContractCall {
         let callbackNameLength = Int32(callbackName.utf8CodeUnitCount)
         let callbackName = callbackName.utf8Start
         
-        var callbackClosureSerialized = MXBuffer()
+        var callbackClosureSerialized = Buffer()
         callbackArgs.buffers.forEach { buffer in
             buffer.depEncode(dest: &callbackClosureSerialized)
         }

@@ -13,7 +13,7 @@ extension Int32: TopEncode {
             startEncodingIndex += 1
         }
         
-        MXBuffer(data: bigEndianBytes)
+        Buffer(data: bigEndianBytes)
             .getSubBuffer(startIndex: startEncodingIndex, length: intSize - startEncodingIndex)
             .topEncode(output: &output)
     }
@@ -24,12 +24,12 @@ extension Int32: TopEncodeMulti {}
 extension Int32: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        dest.write(buffer: MXBuffer(data: self.toBytes4()))
+        dest.write(buffer: Buffer(data: self.toBytes4()))
     }
 }
 
 extension Int32: TopDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         let count = input.count
         if count > intSize {
             smartContractError(message: "Cannot decode Int: input too large.")

@@ -7,7 +7,7 @@ import Space
     
     public func buyToken(
         requestedAmount: BigUint,
-        requestedToken: MXBuffer,
+        requestedToken: Buffer,
         requestedNonce: OptionalArgument<UInt64>
     ) {
         UserEndpointsModule.buyToken(
@@ -18,7 +18,7 @@ import Space
         )
     }
     
-    public func deposit(paymentToken: OptionalArgument<MXBuffer>) {
+    public func deposit(paymentToken: OptionalArgument<Buffer>) {
         OwnerEndpointsModule.deposit(
             paymentToken: paymentToken.intoOptional(),
             dummy: FunctionSelector.none
@@ -32,7 +32,7 @@ import Space
     }
     
     public func setBondingCurve(
-        identifier: MXBuffer,
+        identifier: Buffer,
         function: FunctionSelector,
         sellAvailability: Bool
     ) {
@@ -44,8 +44,8 @@ import Space
     }
     
     public func getTokenAvailability(
-        identifier: MXBuffer
-    ) -> MultiValueEncoded<MXBuffer> {
+        identifier: Buffer
+    ) -> MultiValueEncoded<Buffer> {
         return UserEndpointsModule.getTokenAvailability(identifier: identifier)
     }
 }

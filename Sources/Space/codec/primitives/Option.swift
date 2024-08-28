@@ -6,10 +6,10 @@ extension Optional: TopEncode where Wrapped: NestedEncode {
         // We can topEncode nil as an empty buffer,
         // but we still have to append the 01 when there is a value in order to differentiate the cases
         guard self != nil else {
-            output.setBuffer(buffer: MXBuffer())
+            output.setBuffer(buffer: Buffer())
             return
         }
-        var resultNestedEncoded = MXBuffer()
+        var resultNestedEncoded = Buffer()
         self.depEncode(dest: &resultNestedEncoded)
         
         output.setBuffer(buffer: resultNestedEncoded)
@@ -29,7 +29,7 @@ extension Optional: NestedEncode where Wrapped: NestedEncode {
 }
 
 extension Optional: TopDecode where Wrapped: NestedDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         guard !input.isEmpty else {
             self = .none
             return

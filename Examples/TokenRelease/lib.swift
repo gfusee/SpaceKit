@@ -4,17 +4,17 @@ let PERCENTAGE_TOTAL: UInt64 = 100
 
 @Contract struct TokenRelease {
     @Storage(key: "activationTimestamp") var activationTimestamp: UInt64
-    @Storage(key: "tokenIdentifier") var tokenIdentifier: MXBuffer
+    @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
     @Storage(key: "tokenTotalSupply") var tokenTotalSupply: BigUint
     @Storage(key: "setupPeriodStatus") var setupPeriodStatus: Bool
     @Mapping<Address, Address>(key: "addressChangeRequest") var addressChangeRequestForAddress
-    @Mapping<MXBuffer, Schedule>(key: "groupSchedule") var groupScheduleForGroupIdentifier
-    @Mapping<Address, MXArray<MXBuffer>>(key: "userGroups") var userGroupsForAddress
-    @Mapping<MXBuffer, UInt64>(key: "usersInGroup") var usersInGroupForGroupIdentifier
+    @Mapping<Buffer, Schedule>(key: "groupSchedule") var groupScheduleForGroupIdentifier
+    @Mapping<Address, MXArray<Buffer>>(key: "userGroups") var userGroupsForAddress
+    @Mapping<Buffer, UInt64>(key: "usersInGroup") var usersInGroupForGroupIdentifier
     @Mapping<Address, BigUint>(key: "claimedBalance") var claimedBalanceForAddress
     
     // TODO: use TokenIdentifier type once implemented
-    init(tokenIdentifier: MXBuffer) {
+    init(tokenIdentifier: Buffer) {
         // TODO: add a require to check that the token identifier is valid (same as the Rust contract)
         
         self.tokenIdentifier = tokenIdentifier
@@ -22,7 +22,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
     }
     
     public mutating func addFixedAmountGroup(
-        groupIdentifier: MXBuffer,
+        groupIdentifier: Buffer,
         groupTotalAmount: BigUint,
         periodUnlockAmount: BigUint,
         releasePeriod: UInt64,
@@ -74,7 +74,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
     }
     
     public mutating func addPercentageBasedGroup(
-        groupIdentifier: MXBuffer,
+        groupIdentifier: Buffer,
         groupTotalAmount: BigUint,
         periodUnlockPercentage: UInt8,
         releasePeriod: UInt64,
@@ -126,7 +126,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
         groupScheduleMapper.set(newSchedule)
     }
     
-    public mutating func removeGroup(groupIdentifier: MXBuffer) {
+    public mutating func removeGroup(groupIdentifier: Buffer) {
         assertOwner()
         
         self.requireSetupPeriodLive()
@@ -146,7 +146,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
     
     public mutating func addUserGroup(
         address: Address,
-        groupIdentifier: MXBuffer
+        groupIdentifier: Buffer
     ) {
         assertOwner()
         
@@ -334,7 +334,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
     }
     
     func sendTokens(
-        tokenIdentifier: MXBuffer,
+        tokenIdentifier: Buffer,
         address: Address,
         amount: BigUint
     ) {
@@ -342,7 +342,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
     }
     
     func mintAllTokens(
-        tokenIdentifier: MXBuffer,
+        tokenIdentifier: Buffer,
         amount: BigUint
     ) {
         Blockchain.mintTokens(

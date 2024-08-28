@@ -45,9 +45,9 @@ fileprivate func generateEmitExtension(
         memberBlock: """
         {
             public func emit(data: \(raw: dataTypeName)) {
-                var _indexedArgs: MXArray<MXBuffer> = MXArray()
+                var _indexedArgs: MXArray<Buffer> = MXArray()
                 _indexedArgs = _indexedArgs.appended("\(structName)")
-                var _encodedData = MXBuffer()
+                var _encodedData = Buffer()
                 data.topEncode(output: &_encodedData)
         
                 \(raw: nestedEncodeFieldsCalls)

@@ -33,7 +33,7 @@ fileprivate func generateTopEncodeExtension(structName: TokenSyntax) throws -> E
         : TopEncode {
             @inline(__always)
             public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
-                var nestedEncoded = MXBuffer()
+                var nestedEncoded = Buffer()
                 self.depEncode(dest: &nestedEncoded)
                 nestedEncoded.topEncode(output: &output)
             }
@@ -79,7 +79,7 @@ fileprivate func generateTopDecodeExtension(structName: TokenSyntax, fields: [Va
         memberBlock: """
         : TopDecode {
             @inline(__always)
-            public init(topDecode input: MXBuffer) {
+            public init(topDecode input: Buffer) {
                 var input = BufferNestedDecodeInput(buffer: input)
         
                 defer {
@@ -170,7 +170,7 @@ fileprivate func generateArrayItemExtension(structName: TokenSyntax, fields: [Va
             }
             
             @inline(__always)
-            public static func decodeArrayPayload(payload: MXBuffer) -> \(structName) {
+            public static func decodeArrayPayload(payload: Buffer) -> \(structName) {
                 var payloadInput = BufferNestedDecodeInput(buffer: payload)
                 
                 \(raw: payloadInputsDeclarations)
@@ -185,8 +185,8 @@ fileprivate func generateArrayItemExtension(structName: TokenSyntax, fields: [Va
             }
               
             @inline(__always)
-            public func intoArrayPayload() -> MXBuffer {
-                var totalPayload = MXBuffer()
+            public func intoArrayPayload() -> Buffer {
+                var totalPayload = Buffer()
         
                 \(raw: intoArrayPayloadInitArgs)
         

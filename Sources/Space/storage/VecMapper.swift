@@ -6,12 +6,12 @@ fileprivate let LEN_SUFFIX: StaticString = ".len"
 
 public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     // TODO: add tests
-    private let baseKey: MXBuffer
-    private let lenKey: MXBuffer
+    private let baseKey: Buffer
+    private let lenKey: Buffer
     
-    public init(baseKey: MXBuffer) {
+    public init(baseKey: Buffer) {
         self.baseKey = baseKey
-        self.lenKey = baseKey + MXBuffer(stringLiteral: LEN_SUFFIX)
+        self.lenKey = baseKey + Buffer(stringLiteral: LEN_SUFFIX)
     }
     
     public var count: UInt32 {
@@ -23,10 +23,10 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
     
     private func getItemMapper(index: UInt32) -> SingleValueMapper<V> {
-        var itemEncoded = MXBuffer()
+        var itemEncoded = Buffer()
         index.depEncode(dest: &itemEncoded)
         
-        return SingleValueMapper(key: self.baseKey + MXBuffer(stringLiteral: ITEM_SUFFIX) + itemEncoded)
+        return SingleValueMapper(key: self.baseKey + Buffer(stringLiteral: ITEM_SUFFIX) + itemEncoded)
     }
     
     private func getLenMapper() -> SingleValueMapper<UInt32> {
@@ -35,7 +35,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     
     public func get(index: UInt32) -> V {
         guard index != 0 && index <= self.count else {
-            smartContractError(message: MXBuffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
+            smartContractError(message: Buffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
         }
         
         return self.getUnchecked(index: index)
@@ -55,7 +55,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     
     public func set(index: UInt32, item: V) {
         guard index != 0 && index <= self.count else {
-            smartContractError(message: MXBuffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
+            smartContractError(message: Buffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
         }
         
         self.setUnchecked(index: index, item: item)
@@ -77,7 +77,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
     
     public func clearEntry(index: UInt32) {
         guard index != 0 && index <= self.count else {
-            smartContractError(message: MXBuffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
+            smartContractError(message: Buffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
         }
         
         let _ = self.clearEntryUnchecked(index: index)
@@ -95,7 +95,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
         let lastItemIndex = self.count
         
         guard index != 0 && index <= lastItemIndex else {
-            smartContractError(message: MXBuffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
+            smartContractError(message: Buffer(stringLiteral: INDEX_OUT_OF_RANGE_ERROR))
         }
         
         var lastItemOptional: V? = nil

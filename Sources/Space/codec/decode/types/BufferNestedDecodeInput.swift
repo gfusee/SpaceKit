@@ -1,9 +1,9 @@
 public struct BufferNestedDecodeInput {
-    let buffer: MXBuffer
+    let buffer: Buffer
     var decodeIndex: Int32
     public let bufferCount: Int32
     
-    public init(buffer: MXBuffer) {
+    public init(buffer: Buffer) {
         let cloned = buffer.clone()
         self.buffer = cloned
         self.decodeIndex = 0
@@ -12,18 +12,18 @@ public struct BufferNestedDecodeInput {
 }
 
 extension BufferNestedDecodeInput: NestedDecodeInput {
-    public func getEntireBuffer() -> MXBuffer {
+    public func getEntireBuffer() -> Buffer {
         return self.buffer.clone()
     }
     
-    public mutating func readNextBuffer(length: Int32) -> MXBuffer {
+    public mutating func readNextBuffer(length: Int32) -> Buffer {
         let subBuffer = self.buffer.getSubBuffer(startIndex: self.decodeIndex, length: length)
         self.decodeIndex += length
         
         return subBuffer
     }
     
-    public mutating func readNextBufferOfDynamicLength() -> MXBuffer {
+    public mutating func readNextBufferOfDynamicLength() -> Buffer {
         let length = Int32(depDecode: &self)
         let buffer = self.readNextBuffer(length: length)
         

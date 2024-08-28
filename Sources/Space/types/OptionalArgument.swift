@@ -47,7 +47,7 @@ extension OptionalArgument: NestedEncode {
 }
 
 extension OptionalArgument: TopDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         self = Self(optional: Optional<Wrapped>(topDecode: input))   
     }
 }

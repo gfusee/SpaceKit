@@ -5,23 +5,23 @@ fileprivate let NODE_ID_IDENTIFIER: StaticString = ".node_id"
 
 public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
     // TODO: add tests
-    private let baseKey: MXBuffer
+    private let baseKey: Buffer
     private let queueMapper: QueueMapper<V>
     
-    public init(baseKey: MXBuffer) {
+    public init(baseKey: Buffer) {
         self.baseKey = baseKey
         self.queueMapper = QueueMapper(baseKey: baseKey)
     }
     
-    private func buildNamedValueKey(name: MXBuffer, value: V) -> MXBuffer {
-        var valueNestedEncoded = MXBuffer()
+    private func buildNamedValueKey(name: Buffer, value: V) -> Buffer {
+        var valueNestedEncoded = Buffer()
         value.depEncode(dest: &valueNestedEncoded)
         
         return self.baseKey + name + valueNestedEncoded
     }
     
     private func getNodeIdMapper(value: V) -> SingleValueMapper<UInt32> {
-        return SingleValueMapper(key: self.buildNamedValueKey(name: MXBuffer(stringLiteral: NODE_ID_IDENTIFIER), value: value))
+        return SingleValueMapper(key: self.buildNamedValueKey(name: Buffer(stringLiteral: NODE_ID_IDENTIFIER), value: value))
     }
     
     public func isEmpty() -> Bool {

@@ -1,6 +1,6 @@
 @propertyWrapper public struct Storage<T: TopEncode & TopDecode> {
     
-    private let key: MXBuffer
+    private let key: Buffer
     
     public var wrappedValue: T {
         get {
@@ -16,7 +16,7 @@
     }
     
     public init(
-        key: MXBuffer
+        key: Buffer
     ) {
         self.key = key
     }

@@ -1,14 +1,14 @@
 public struct ArgBuffer {
-    package var buffers: MXArray<MXBuffer> = MXArray()
+    package var buffers: MXArray<Buffer> = MXArray()
     
     public init() {}
     
-    public init(rawArgs: MXArray<MXBuffer>) {
+    public init(rawArgs: MXArray<Buffer>) {
         // push* methods are unsafe, we have to clone the rawArgs to make sure it won't be mutated later
         self.buffers = rawArgs.clone()
     }
     
-    public func getRawArgs() -> MXArray<MXBuffer> {
+    public func getRawArgs() -> MXArray<Buffer> {
         return self.buffers.clone()
     }
     

@@ -24,7 +24,7 @@ extension UInt32: TopEncode {
             startEncodingIndex += 1
         }
         
-        MXBuffer(data: bigEndianBytes)
+        Buffer(data: bigEndianBytes)
             .getSubBuffer(startIndex: startEncodingIndex, length: intSize - startEncodingIndex)
             .topEncode(output: &output)
     }
@@ -35,12 +35,12 @@ extension UInt32: TopEncodeMulti {}
 extension UInt32: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        dest.write(buffer: MXBuffer(data: self.asBigEndianBytes()))
+        dest.write(buffer: Buffer(data: self.asBigEndianBytes()))
     }
 }
 
 extension UInt32: TopDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         if input.count > intSize {
             smartContractError(message: "Cannot decode UInt32: input too large.")
         }
@@ -67,7 +67,7 @@ extension UInt32: ArrayItem {
         intSize
     }
     
-    public static func decodeArrayPayload(payload: MXBuffer) -> UInt32 {
+    public static func decodeArrayPayload(payload: Buffer) -> UInt32 {
         var payloadInput = BufferNestedDecodeInput(buffer: payload)
         
         let result = UInt32(depDecode: &payloadInput)
@@ -79,8 +79,8 @@ extension UInt32: ArrayItem {
         return result
     }
     
-    public func intoArrayPayload() -> MXBuffer {
-        MXBuffer(data: self.asBigEndianBytes())
+    public func intoArrayPayload() -> Buffer {
+        Buffer(data: self.asBigEndianBytes())
     }
     
 }

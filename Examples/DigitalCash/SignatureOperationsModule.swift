@@ -45,7 +45,7 @@ struct SignatureOperationsModule {
     
     func claim(
         address: Address,
-        signature: MXBuffer
+        signature: Buffer
     ) {
         let depositMapper = StorageModule().$depositForDonor[address]
         
@@ -104,7 +104,7 @@ struct SignatureOperationsModule {
     func forward(
         address: Address,
         forwardAddress: Address,
-        signature: MXBuffer
+        signature: Buffer
     ) {
         let paidFee = Message.egldOrSingleEsdtTransfer
         let caller = Message.caller
@@ -171,7 +171,7 @@ struct SignatureOperationsModule {
     func requireSignature(
         address: Address,
         callerAddress: Address,
-        signature: MXBuffer
+        signature: Buffer
     ) {
         Crypto.verifyEd25519(
             key: address.buffer,

@@ -3,13 +3,13 @@ import Space
 struct OwnerEndpointsModule {
     // TODO: use TokenIdentifier type once implemented
     static func deposit<T: CurveFunction & MXCodable & Default & Equatable>(
-        paymentToken: MXBuffer?,
+        paymentToken: Buffer?,
         dummy: @autoclosure () -> T
     ) {
         let payment = Message.egldOrSingleEsdtTransfer
         let caller = Message.caller
         
-        var setPayment: MXBuffer = "EGLD" // TODO: no hardcoded EGLD
+        var setPayment: Buffer = "EGLD" // TODO: no hardcoded EGLD
         
         if StorageModule.$bondingCurveForTokenIdentifier[payment.tokenIdentifier].isEmpty() {
             if let paymentToken = paymentToken {
@@ -111,7 +111,7 @@ struct OwnerEndpointsModule {
     
     // TODO: use TokenIdentifier type once implemented
     static func setBondingCurve<T: CurveFunction & MXCodable & Default & Equatable>(
-        identifier: MXBuffer,
+        identifier: Buffer,
         function: T,
         sellAvailability: Bool
     ) {
@@ -138,7 +138,7 @@ struct OwnerEndpointsModule {
                 bondingCurve.curve = function
                 bondingCurve.sellAvailability = sellAvailability
                 
-                var bondingCurveEncoded = MXBuffer()
+                var bondingCurveEncoded = Buffer()
                 bondingCurve.topEncode(output: &bondingCurveEncoded)
                 
                 buffer = bondingCurveEncoded
@@ -147,9 +147,9 @@ struct OwnerEndpointsModule {
     
     // TODO: use TokenIdentifier type once implemented
     static func setCurveStorage<T: CurveFunction & MXCodable & Default & Equatable>(
-        identifier: MXBuffer,
+        identifier: Buffer,
         amount: BigUint,
-        paymentTokenIdentifier: MXBuffer,
+        paymentTokenIdentifier: Buffer,
         dummy: @autoclosure () -> T
     ) {
         var curve = T(default: ())
@@ -181,7 +181,7 @@ struct OwnerEndpointsModule {
             sellAvailability = bondingCurve.sellAvailability
         }
         
-        var encodedCurve = MXBuffer()
+        var encodedCurve = Buffer()
         BondingCurve(
             curve: curve,
             arguments: arguments,

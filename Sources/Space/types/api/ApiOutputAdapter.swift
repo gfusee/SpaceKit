@@ -3,7 +3,7 @@ public struct ApiOutputAdapter {
 }
 
 extension ApiOutputAdapter: TopEncodeOutput {
-    public mutating func setBuffer(buffer: MXBuffer) {
+    public mutating func setBuffer(buffer: Buffer) {
         let _ = API.bufferFinish(handle: buffer.handle) // TODO: handle error?
     }
 }

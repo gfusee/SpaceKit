@@ -29,33 +29,33 @@ fileprivate func  getDefaultInfo() -> QueueMapperInfo {
 }
 
 public struct QueueMapper<V: TopEncode & TopDecode> {
-    private let baseKey: MXBuffer
+    private let baseKey: Buffer
     
-    public init(baseKey: MXBuffer) {
+    public init(baseKey: Buffer) {
         self.baseKey = baseKey
     }
     
-    private func buildNameKey(name: MXBuffer) -> MXBuffer {
+    private func buildNameKey(name: Buffer) -> Buffer {
         return self.baseKey + name
     }
     
-    private func buildNodeIdNamedKey(name: MXBuffer, nodeId: UInt32) -> MXBuffer {
-        var nodeIdNestedEncoded = MXBuffer()
+    private func buildNodeIdNamedKey(name: Buffer, nodeId: UInt32) -> Buffer {
+        var nodeIdNestedEncoded = Buffer()
         nodeId.depEncode(dest: &nodeIdNestedEncoded)
         
         return self.baseKey + name + nodeIdNestedEncoded
     }
     
     package func getInfoMapper() -> SingleValueMapper<QueueMapperInfo> {
-        return SingleValueMapper(key: self.buildNameKey(name: MXBuffer(stringLiteral: INFO_IDENTIFIER)))
+        return SingleValueMapper(key: self.buildNameKey(name: Buffer(stringLiteral: INFO_IDENTIFIER)))
     }
     
     package func getNodeMapper(nodeId: UInt32) -> SingleValueMapper<Node> {
-        return SingleValueMapper(key: self.buildNodeIdNamedKey(name: MXBuffer(stringLiteral: NODE_IDENTIFIER), nodeId: nodeId))
+        return SingleValueMapper(key: self.buildNodeIdNamedKey(name: Buffer(stringLiteral: NODE_IDENTIFIER), nodeId: nodeId))
     }
     
     package func getValueMapper(nodeId: UInt32) -> SingleValueMapper<V> {
-        return SingleValueMapper(key: self.buildNodeIdNamedKey(name: MXBuffer(stringLiteral: VALUE_IDENTIFIER), nodeId: nodeId))
+        return SingleValueMapper(key: self.buildNodeIdNamedKey(name: Buffer(stringLiteral: VALUE_IDENTIFIER), nodeId: nodeId))
     }
     
     package func getValue(nodeId: UInt32) -> V {

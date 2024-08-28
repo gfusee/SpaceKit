@@ -1,7 +1,7 @@
 // TODO: add tests
 
 public struct MultiValueEncoded<Item: MXCodable> {
-    private var rawBuffers: MXArray<MXBuffer>
+    private var rawBuffers: MXArray<Buffer>
     
     public var count: Int32 {
         self.rawBuffers.count
@@ -12,7 +12,7 @@ public struct MultiValueEncoded<Item: MXCodable> {
     }
     
     // unsafe
-    package init(rawBuffers: MXArray<MXBuffer>) {
+    package init(rawBuffers: MXArray<Buffer>) {
         self.rawBuffers = rawBuffers
     }
     
@@ -69,7 +69,7 @@ extension MultiValueEncoded: TopEncodeMulti {
 
 extension MultiValueEncoded: TopDecodeMulti {
     public init(topDecodeMulti input: inout some TopDecodeMultiInput) {
-        var rawBuffersField: MXArray<MXBuffer> = MXArray()
+        var rawBuffersField: MXArray<Buffer> = MXArray()
         
         while input.hasNext() {
             rawBuffersField = rawBuffersField.appended(input.nextValueInput())

@@ -1,17 +1,17 @@
 public typealias MXArrayType = TopDecode & TopEncode & NestedDecode & NestedEncode & ArrayItem
 
 public struct MXArray<T: MXArrayType> {
-    public let buffer: MXBuffer
+    public let buffer: Buffer
     
     public init() {
-        self.buffer = MXBuffer()
+        self.buffer = Buffer()
     }
     
     init(handle: Int32) {
-        self.buffer = MXBuffer(handle: handle)
+        self.buffer = Buffer(handle: handle)
     }
     
-    public init(buffer: MXBuffer) {
+    public init(buffer: Buffer) {
         self.buffer = buffer.clone()
     }
     
@@ -197,7 +197,7 @@ public struct MXArray<T: MXArrayType> {
     #endif
 }
 
-extension MXArray where T == MXBuffer {
+extension MXArray where T == Buffer {
     public func toArgBuffer() -> ArgBuffer {
         return ArgBuffer(rawArgs: self)
     }
@@ -264,7 +264,7 @@ extension MXArray: ExpressibleByArrayLiteral {
 
 extension MXArray: TopEncode {
     public func topEncode<O>(output: inout O) where O : TopEncodeOutput {
-        var encodedItems = MXBuffer()
+        var encodedItems = Buffer()
         
         self.forEach { $0.depEncode(dest: &encodedItems) }
         
@@ -274,9 +274,9 @@ extension MXArray: TopEncode {
 
 extension MXArray: TopEncodeMulti {}
 
-extension MXArray: TopEncodeMultiOutput where T == MXBuffer {
+extension MXArray: TopEncodeMultiOutput where T == Buffer {
     public mutating func pushSingleValue<TE>(arg: TE) where TE : TopEncode {
-        var buffer = MXBuffer()
+        var buffer = Buffer()
         arg.topEncode(output: &buffer)
         
         self = self.appended(buffer)
@@ -286,10 +286,10 @@ extension MXArray: TopEncodeMultiOutput where T == MXBuffer {
 extension MXArray: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        var countEncoded = MXBuffer()
+        var countEncoded = Buffer()
         Int(self.count).depEncode(dest: &countEncoded)
         
-        var selfTopEncoded = MXBuffer()
+        var selfTopEncoded = Buffer()
         self.topEncode(output: &selfTopEncoded)
         
         dest.write(buffer: countEncoded + selfTopEncoded)
@@ -297,10 +297,10 @@ extension MXArray: NestedEncode {
 }
 
 extension MXArray: TopDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         var nestedDecodeInput = BufferNestedDecodeInput(buffer: input)
         
-        var buffer = MXBuffer()
+        var buffer = Buffer()
         while nestedDecodeInput.canDecodeMore() {
             let item = T(depDecode: &nestedDecodeInput)
             buffer = buffer + item.intoArrayPayload()
@@ -312,12 +312,12 @@ extension MXArray: TopDecode {
 
 extension MXArray: TopDecodeMulti {}
 
-extension MXArray: TopDecodeMultiInput where T == MXBuffer {
+extension MXArray: TopDecodeMultiInput where T == Buffer {
     public func hasNext() -> Bool {
         return self.count > 0
     }
     
-    public mutating func nextValueInput() -> MXBuffer {
+    public mutating func nextValueInput() -> Buffer {
         let (newSelf, firstElement) = self.popFirst()
         
         self = newSelf
@@ -329,7 +329,7 @@ extension MXArray: NestedDecode {
     public init(depDecode input: inout some NestedDecodeInput) {
         let count = Int(depDecode: &input)
         
-        var buffer = MXBuffer()
+        var buffer = Buffer()
         for _ in 0..<count {
             let item = T(depDecode: &input)
             buffer = buffer + item.intoArrayPayload()
@@ -343,14 +343,14 @@ extension MXArray: ArrayItem {
     
     // TODO: add tests
     public static var payloadSize: Int32 {
-        MXBuffer.payloadSize
+        Buffer.payloadSize
     }
     
-    public static func decodeArrayPayload(payload: MXBuffer) -> MXArray<T> {
-        return MXArray(buffer: MXBuffer.decodeArrayPayload(payload: payload))
+    public static func decodeArrayPayload(payload: Buffer) -> MXArray<T> {
+        return MXArray(buffer: Buffer.decodeArrayPayload(payload: payload))
     }
     
-    public func intoArrayPayload() -> MXBuffer {
+    public func intoArrayPayload() -> Buffer {
         return self.buffer.intoArrayPayload()
     }
     

@@ -5,11 +5,11 @@ struct BalanceKeeperContract {
     @Storage(key: "totalBalance") var totalBalance: BigUint
     @Mapping(key: "balance") var balanceForUser: StorageMap<Address, BigUint>
     
-    public mutating func increaseBalanceOfUser(userAddress: Address, value: BigUint, test: MXBuffer) -> MXBuffer {
+    public mutating func increaseBalanceOfUser(userAddress: Address, value: BigUint, test: Buffer) -> Buffer {
         self.balanceForUser[userAddress] += value
         self.totalBalance += value
         
-        return MXBuffer()
+        return Buffer()
     }
     
     public func getBalanceOfUser(userAddress: Address) -> BigUint {

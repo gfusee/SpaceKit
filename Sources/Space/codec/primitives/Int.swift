@@ -8,12 +8,12 @@ extension Int: TopEncodeMulti {}
 
 extension Int: NestedEncode {
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        dest.write(buffer: MXBuffer(data: Int32(self).toBytes4())) // TODO: check that this cast is safe
+        dest.write(buffer: Buffer(data: Int32(self).toBytes4())) // TODO: check that this cast is safe
     }
 }
 
 extension Int: TopDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         self = Int(Int32(topDecode: input)) // TODO: check that this cast is safe
     }
 }

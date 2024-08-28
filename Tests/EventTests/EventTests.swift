@@ -1,7 +1,7 @@
 import XCTest
 import Space
 
-@Event(dataType: MXBuffer) struct TestSingleIndexedFieldMXBufferDataEvent {
+@Event(dataType: Buffer) struct TestSingleIndexedFieldBufferDataEvent {
     let address: Address
 }
 
@@ -9,16 +9,16 @@ import Space
     let address: Address
 }
 
-@Event(dataType: MXBuffer) struct TestMultipleIndexedFieldEvent {
+@Event(dataType: Buffer) struct TestMultipleIndexedFieldEvent {
     let address: Address
     let number: BigUint
-    let buffer: MXBuffer
+    let buffer: Buffer
 }
 
 @Contract struct EventTestsContract {
     init() {
-        let data: MXBuffer = "Hello World!"
-        TestSingleIndexedFieldMXBufferDataEvent(address: Message.caller).emit(data: data)
+        let data: Buffer = "Hello World!"
+        TestSingleIndexedFieldBufferDataEvent(address: Message.caller).emit(data: data)
         
         TestMultipleIndexedFieldEvent(
             address: Message.caller,
@@ -32,12 +32,12 @@ import Space
     }
     
     public func emitSingleIndexedFieldEventNoData() {
-        TestSingleIndexedFieldMXBufferDataEvent(address: Message.caller).emit(data: "")
+        TestSingleIndexedFieldBufferDataEvent(address: Message.caller).emit(data: "")
     }
     
     public func emitSingleIndexedFieldEventWithBufferData() {
-        let data: MXBuffer = "Hello World!"
-        TestSingleIndexedFieldMXBufferDataEvent(address: Message.caller).emit(data: data)
+        let data: Buffer = "Hello World!"
+        TestSingleIndexedFieldBufferDataEvent(address: Message.caller).emit(data: data)
     }
     
     public func emitSingleIndexedFieldEventWithBigUintData() {
@@ -54,8 +54,8 @@ import Space
     }
     
     public func emitMultipleEvents() {
-        let data: MXBuffer = "Hello World!"
-        TestSingleIndexedFieldMXBufferDataEvent(address: Message.caller).emit(data: data)
+        let data: Buffer = "Hello World!"
+        TestSingleIndexedFieldBufferDataEvent(address: Message.caller).emit(data: data)
         
         TestMultipleIndexedFieldEvent(
             address: Message.caller,
@@ -67,8 +67,8 @@ import Space
     public func emitEventFromArgs(
         addressTopic: Address,
         numberTopic: BigUint,
-        bufferTopic: MXBuffer,
-        data: MXBuffer
+        bufferTopic: Buffer,
+        data: Buffer
     ) {
         TestMultipleIndexedFieldEvent(
             address: addressTopic,

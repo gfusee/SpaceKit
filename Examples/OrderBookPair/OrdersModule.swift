@@ -92,8 +92,8 @@ struct OrdersModule {
     static func freeOrder(
         orderId: UInt64,
         caller: Address,
-        firstTokenIdentifier: MXBuffer,
-        secondTokenIdentifier: MXBuffer,
+        firstTokenIdentifier: Buffer,
+        secondTokenIdentifier: Buffer,
         epoch: UInt64
     ) -> Order {
         let orderMapper = StorageModule.$orderForId[orderId]
@@ -215,8 +215,8 @@ struct OrdersModule {
     static func cancelOrder(
         orderId: UInt64,
         caller: Address,
-        firstTokenIdentifier: MXBuffer,
-        secondTokenIdentifier: MXBuffer,
+        firstTokenIdentifier: Buffer,
+        secondTokenIdentifier: Buffer,
         epoch: UInt64
     ) -> Order {
         let orderMapper = StorageModule.$orderForId[orderId]
@@ -356,7 +356,7 @@ struct OrdersModule {
     static func calculateTransfers(
         orders: MXArray<Order>,
         totalPaid: BigUint,
-        tokenRequested: MXBuffer,
+        tokenRequested: Buffer,
         leftover: BigUint
     ) -> MXArray<Transfer> {
         var transfers: MXArray<Transfer> = MXArray()

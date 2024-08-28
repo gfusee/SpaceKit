@@ -4,7 +4,7 @@ fileprivate let NULL_ENTRY: UInt32 = 0
 fileprivate let ITEM_INDEX: StaticString = ".index"
 
 public struct UnorderedSetMapper<V: TopEncode & NestedEncode & TopDecode> {
-    private let baseKey: MXBuffer
+    private let baseKey: Buffer
     private let vecMapper: VecMapper<V>
     
     public var count: UInt32 {
@@ -15,16 +15,16 @@ public struct UnorderedSetMapper<V: TopEncode & NestedEncode & TopDecode> {
         self.vecMapper.isEmpty
     }
     
-    public init(baseKey: MXBuffer) {
+    public init(baseKey: Buffer) {
         self.baseKey = baseKey
         self.vecMapper = VecMapper(baseKey: baseKey)
     }
     
     private func getItemIndexMapper(value: V) -> SingleValueMapper<UInt32> {
-        var valueEncoded = MXBuffer()
+        var valueEncoded = Buffer()
         value.depEncode(dest: &valueEncoded)
         
-        return SingleValueMapper(key: self.baseKey + MXBuffer(stringLiteral: ITEM_INDEX) + valueEncoded)
+        return SingleValueMapper(key: self.baseKey + Buffer(stringLiteral: ITEM_INDEX) + valueEncoded)
     }
     
     private func getIndex(value: V) -> UInt32 {

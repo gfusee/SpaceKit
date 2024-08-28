@@ -22,8 +22,8 @@ import Space
     let to: Address
     let egldValue: BigUint
     let gas: UInt64
-    let endpoint: MXBuffer
-    let arguments: MultiValueEncoded<MXBuffer>
+    let endpoint: Buffer
+    let arguments: MultiValueEncoded<Buffer>
 }
 
 // TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
@@ -32,19 +32,19 @@ import Space
     let to: Address
     let egldValue: BigUint
     let gas: UInt64
-    let endpoint: MXBuffer
-    let arguments: MultiValueEncoded<MXBuffer>
+    let endpoint: Buffer
+    let arguments: MultiValueEncoded<Buffer>
 }
 
 // TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
 @Event(dataType: IgnoreValue) struct AsyncCallSuccess {
-    let results: MultiValueEncoded<MXBuffer>
+    let results: MultiValueEncoded<Buffer>
 }
 
 // TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
 @Event(dataType: IgnoreValue) struct AsyncCallError {
     let errorCode: UInt32
-    let errorMessage: MXBuffer
+    let errorMessage: Buffer
 }
 
 // TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
@@ -54,7 +54,7 @@ import Space
     let sourceAddress: Address
     let codeMetadata: CodeMetadata
     let gas: UInt64
-    let arguments: MultiValueEncoded<MXBuffer>
+    let arguments: MultiValueEncoded<Buffer>
 }
 
 // TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
@@ -65,5 +65,5 @@ import Space
     let sourceAddress: Address
     let codeMetadata: CodeMetadata
     let gas: UInt64
-    let arguments: MultiValueEncoded<MXBuffer>
+    let arguments: MultiValueEncoded<Buffer>
 }

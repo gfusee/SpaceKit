@@ -1,4 +1,4 @@
-package func clearStorage(key: MXBuffer) {
-    let emptyBuffer = MXBuffer()
+package func clearStorage(key: Buffer) {
+    let emptyBuffer = Buffer()
     let _ = API.bufferStorageStore(keyHandle: key.handle, bufferHandle: emptyBuffer.handle)
 }

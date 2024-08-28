@@ -15,7 +15,7 @@ extension IgnoreValue: NestedEncode {
 }
 
 extension IgnoreValue: TopDecode {
-    public init(topDecode input: MXBuffer) {}
+    public init(topDecode input: Buffer) {}
 }
 
 extension IgnoreValue: TopDecodeMulti {

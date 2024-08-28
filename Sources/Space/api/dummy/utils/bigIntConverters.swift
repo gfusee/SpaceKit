@@ -22,7 +22,7 @@ extension BigInt {
 
 extension BigUint {
     init(bigInt: BigInt) {
-        self = BigUint(bigEndianBuffer: MXBuffer(data: Array(bigInt.toBigEndianUnsignedData())))
+        self = BigUint(bigEndianBuffer: Buffer(data: Array(bigInt.toBigEndianUnsignedData())))
     }
 }
 #endif

@@ -68,7 +68,7 @@ public struct TransactionInput {
         self.arguments = arguments
     }
     
-    public mutating func withArguments(args: MXArray<MXBuffer>) {
+    public mutating func withArguments(args: MXArray<Buffer>) {
         var argumentsData: [Data] = []
         
         args.forEach { argumentsData.append(Data($0.toBytes())) }

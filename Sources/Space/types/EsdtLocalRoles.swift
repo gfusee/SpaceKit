@@ -9,7 +9,7 @@ public enum EsdtLocalRolesFlag: Int64 {
     case nftUpdateAttributes = 0b01000000
     case transfer = 0b10000000
     
-    public func getRoleName() -> MXBuffer {
+    public func getRoleName() -> Buffer {
         return switch self {
         case .none:
             ""

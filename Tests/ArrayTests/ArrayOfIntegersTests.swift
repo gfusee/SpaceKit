@@ -10,7 +10,7 @@ import XCTest
     }
     
     public func testTopDecodeInputTooLarge() {
-        let input = MXBuffer(data: Array("000000000000000a01".hexadecimal))
+        let input = Buffer(data: Array("000000000000000a01".hexadecimal))
         
         _ = MXArray<UInt64>(topDecode: input)
     }
@@ -196,10 +196,10 @@ final class ArrayOfIntegersTests: ContractTestCase {
     func testTopEncodeZeroElement() throws {
         let array: MXArray<UInt64> = MXArray()
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.topEncode(output: &output)
         
-        let expected: MXBuffer = ""
+        let expected: Buffer = ""
         
         XCTAssertEqual(output, expected)
     }
@@ -207,10 +207,10 @@ final class ArrayOfIntegersTests: ContractTestCase {
     func testTopEncodeOneElement() throws {
         let array: MXArray<UInt64> = [10]
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.topEncode(output: &output)
         
-        let expected = MXBuffer(data: Array("000000000000000a".hexadecimal))
+        let expected = Buffer(data: Array("000000000000000a".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -218,10 +218,10 @@ final class ArrayOfIntegersTests: ContractTestCase {
     func testTopEncodeTwoElements() throws {
         let array: MXArray<UInt64> = [10, 100]
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.topEncode(output: &output)
         
-        let expected = MXBuffer(data: Array("000000000000000a0000000000000064".hexadecimal))
+        let expected = Buffer(data: Array("000000000000000a0000000000000064".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -229,10 +229,10 @@ final class ArrayOfIntegersTests: ContractTestCase {
     func testNestedEncodeZeroElement() throws {
         let array: MXArray<UInt64> = MXArray()
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("00000000".hexadecimal))
+        let expected = Buffer(data: Array("00000000".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -240,10 +240,10 @@ final class ArrayOfIntegersTests: ContractTestCase {
     func testNestedEncodeOneElement() throws {
         let array: MXArray<UInt64> = [10]
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("00000001000000000000000a".hexadecimal))
+        let expected = Buffer(data: Array("00000001000000000000000a".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
@@ -251,16 +251,16 @@ final class ArrayOfIntegersTests: ContractTestCase {
     func testNestedEncodeTwoElements() throws {
         let array: MXArray<UInt64> = [10, 100]
         
-        var output = MXBuffer()
+        var output = Buffer()
         array.depEncode(dest: &output)
         
-        let expected = MXBuffer(data: Array("00000002000000000000000a0000000000000064".hexadecimal))
+        let expected = Buffer(data: Array("00000002000000000000000a0000000000000064".hexadecimal))
         
         XCTAssertEqual(output, expected)
     }
     
     func testTopDecodeZeroElement() throws {
-        let input = MXBuffer(data: Array("".hexadecimal))
+        let input = Buffer(data: Array("".hexadecimal))
         
         let array = MXArray<UInt64>(topDecode: input).toArray()
         let expected: [UInt64] = []
@@ -269,7 +269,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     }
     
     func testTopDecodeOneElement() throws {
-        let input = MXBuffer(data: Array("000000000000000a".hexadecimal))
+        let input = Buffer(data: Array("000000000000000a".hexadecimal))
         
         let array = MXArray<UInt64>(topDecode: input)
         let expected: MXArray<UInt64> = [10]
@@ -278,7 +278,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     }
     
     func testTopDecodeTwoElements() throws {
-        let input = MXBuffer(data: Array("000000000000000a0000000000000064".hexadecimal))
+        let input = Buffer(data: Array("000000000000000a0000000000000064".hexadecimal))
         
         let array = MXArray<UInt64>(topDecode: input)
         let expected: MXArray<UInt64> = [10, 100]
@@ -287,7 +287,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     }
     
     func testNestedDecodeZeroElement() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000000".hexadecimal)))
         
         let array = MXArray<UInt64>(depDecode: &input)
         let expected: MXArray<UInt64> = []
@@ -296,7 +296,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     }
     
     func testNestedDecodeOneElement() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000001000000000000000a".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000001000000000000000a".hexadecimal)))
         
         let array = MXArray<UInt64>(depDecode: &input)
         let expected: MXArray<UInt64> = [10]
@@ -305,7 +305,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     }
     
     func testNestedDecodeTwoElements() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000002000000000000000a0000000000000064".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000002000000000000000a0000000000000064".hexadecimal)))
         
         let array = MXArray<UInt64>(depDecode: &input)
         let expected: MXArray<UInt64> = [10, 100]
@@ -314,7 +314,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     }
     
     func testNestedDecodeTwoElementsAndInputLarger() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000002000000000000000a000000000000006401".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000002000000000000000a000000000000006401".hexadecimal)))
         
         let array = MXArray<UInt64>(depDecode: &input)
         let expected: MXArray<UInt64> = [10, 100]

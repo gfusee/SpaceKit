@@ -48,8 +48,8 @@ struct ProposeModule {
     package static func prepareCallData(
         to: Address,
         egldAmount: BigUint,
-        functionName: MXBuffer,
-        functionArguments: MultiValueEncoded<MXBuffer>
+        functionName: Buffer,
+        functionArguments: MultiValueEncoded<Buffer>
     ) -> CallActionData {
         require(
             egldAmount > 0 || !functionName.isEmpty,
@@ -67,8 +67,8 @@ struct ProposeModule {
     package static func proposeTransferExecute(
         to: Address,
         egldAmount: BigUint,
-        functionName: MXBuffer,
-        functionArguments: MultiValueEncoded<MXBuffer>
+        functionName: Buffer,
+        functionArguments: MultiValueEncoded<Buffer>
     ) -> UInt32 {
         let callData = ProposeModule.prepareCallData(
             to: to,
@@ -83,8 +83,8 @@ struct ProposeModule {
     package static func proposeAsyncCall(
         to: Address,
         egldAmount: BigUint,
-        functionName: MXBuffer,
-        functionArguments: MultiValueEncoded<MXBuffer>
+        functionName: Buffer,
+        functionArguments: MultiValueEncoded<Buffer>
     ) -> UInt32 {
         let callData = ProposeModule.prepareCallData(
             to: to,
@@ -100,7 +100,7 @@ struct ProposeModule {
         amount: BigUint,
         source: Address,
         codeMetadata: CodeMetadata,
-        arguments: MultiValueEncoded<MXBuffer>
+        arguments: MultiValueEncoded<Buffer>
     ) -> UInt32 {
         ProposeModule.proposeAction(action:
             .scDeployFromSource(
@@ -119,7 +119,7 @@ struct ProposeModule {
         amount: BigUint,
         source: Address,
         codeMetadata: CodeMetadata,
-        arguments: MultiValueEncoded<MXBuffer>
+        arguments: MultiValueEncoded<Buffer>
     ) -> UInt32 {
         ProposeModule.proposeAction(action:
             .scUpgradeFromSource(

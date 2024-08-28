@@ -170,7 +170,7 @@ final class CodableMacroEnumTests: XCTestCase {
         extension PaymentType: TopEncode {
             @inline(__always)
     public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
-                var nestedEncoded = MXBuffer()
+                var nestedEncoded = Buffer()
                 self.depEncode(dest: &nestedEncoded)
                 nestedEncoded.topEncode(output: &output)
             }
@@ -191,7 +191,7 @@ final class CodableMacroEnumTests: XCTestCase {
         
         extension PaymentType: TopDecode {
             @inline(__always)
-    public static func topDecode(input: MXBuffer) -> PaymentType {
+    public static func topDecode(input: Buffer) -> PaymentType {
                 var input = BufferNestedDecodeInput(buffer: input)
 
                 defer {
@@ -238,20 +238,20 @@ final class CodableMacroEnumTests: XCTestCase {
         @Codable
         enum SinglePayment: Equatable {
             case egld(BigUint)
-            case esdt(MXBuffer, UInt64, BigUint), none
+            case esdt(Buffer, UInt64, BigUint), none
         }
         """
         
         let expected = """
         enum SinglePayment: Equatable {
             case egld(BigUint)
-            case esdt(MXBuffer, UInt64, BigUint), none
+            case esdt(Buffer, UInt64, BigUint), none
         }
         
         extension SinglePayment: TopEncode {
             @inline(__always)
     public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
-                var nestedEncoded = MXBuffer()
+                var nestedEncoded = Buffer()
                 self.depEncode(dest: &nestedEncoded)
                 nestedEncoded.topEncode(output: &output)
             }
@@ -276,7 +276,7 @@ final class CodableMacroEnumTests: XCTestCase {
         
         extension SinglePayment: TopDecode {
             @inline(__always)
-    public static func topDecode(input: MXBuffer) -> SinglePayment {
+    public static func topDecode(input: Buffer) -> SinglePayment {
                 var input = BufferNestedDecodeInput(buffer: input)
 
                 defer {
@@ -303,7 +303,7 @@ final class CodableMacroEnumTests: XCTestCase {
                     )
                 case 1:
                     return .esdt(
-                        MXBuffer(depDecode: &input),
+                        Buffer(depDecode: &input),
                         UInt64(depDecode: &input),
                         BigUint(depDecode: &input)
                     )

@@ -3,7 +3,7 @@ let CROSS_SHARD_SUCCESS_CODE: UInt32 = 0x00006f6b // "ok"
 
 public struct AsyncCallError {
     public let errorCode: UInt32
-    public let errorMessage: MXBuffer
+    public let errorMessage: Buffer
 }
 
 public enum AsyncCallResult<T: TopDecodeMulti> {
@@ -21,7 +21,7 @@ extension AsyncCallResult: TopDecodeMulti {
             let errorMessage = if input.hasNext() {
                 input.nextValueInput()
             } else { // The absence of error message seems to be possible and due to a bug at the protocol level
-                MXBuffer()
+                Buffer()
             }
             
             self = .error(

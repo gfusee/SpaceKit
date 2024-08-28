@@ -1,22 +1,22 @@
 private let ADDRESS_LENGTH: Int32 = 32
 
 public struct Address {
-    public let buffer: MXBuffer
+    public let buffer: Buffer
     
     public init() {
         // Literal arrays avoid the use of heap allocations
         let emptyBytes: Bytes32 = getZeroedBytes32()
         
-        self.buffer = MXBuffer(data: emptyBytes)
+        self.buffer = Buffer(data: emptyBytes)
     }
     
     public init(handle: Int32) {
-        let buffer = MXBuffer(handle: handle)
+        let buffer = Buffer(handle: handle)
         
         self.init(buffer: buffer)
     }
     
-    public init(buffer: MXBuffer) {
+    public init(buffer: Buffer) {
         // TODO: for endpoint's argument decode, this doesn't tell which parameter cannot be decoded (this todo is not restricted to the Address type)
         if buffer.count != ADDRESS_LENGTH {
             smartContractError(message: "Cannot decode address: bad array length")
@@ -26,7 +26,7 @@ public struct Address {
     }
     
     package init(bytes: Bytes32) {
-        self.buffer = MXBuffer(data: bytes)
+        self.buffer = Buffer(data: bytes)
     }
     
     public func isZero() -> Bool {
@@ -34,7 +34,7 @@ public struct Address {
     }
     
     public func send(egldValue: BigUint) {
-        let emptyBuffer = MXBuffer()
+        let emptyBuffer = Buffer()
         
         let _ = API.managedTransferValueExecute( // TODO: do something with the result
             dstHandle: self.buffer.handle,
@@ -46,7 +46,7 @@ public struct Address {
     }
 
     // TODO: use the TokenIdentifier type once implemented
-    public func send(tokenIdentifier: MXBuffer, nonce: UInt64, amount: BigUint) {
+    public func send(tokenIdentifier: Buffer, nonce: UInt64, amount: BigUint) {
         // TODO: add tests
         if tokenIdentifier == "EGLD" { // TODO: no hardcoded EGLD
             self.send(egldValue: amount)
@@ -64,7 +64,7 @@ public struct Address {
 
     public func send(payments: MXArray<TokenPayment>) {
         // TODO: add tests
-        let emptyBuffer = MXBuffer()
+        let emptyBuffer = Buffer()
 
         let _ = API.managedMultiTransferESDTNFTExecute( // TODO: do something with the result
             dstHandle: self.buffer.handle,
@@ -92,8 +92,8 @@ extension Address: TopEncode { // TODO: add tests
 extension Address: TopEncodeMulti {}
 
 extension Address: TopDecode { // TODO: add tests
-    public init(topDecode input: MXBuffer) {
-        let buffer = MXBuffer(topDecode: input)
+    public init(topDecode input: Buffer) {
+        let buffer = Buffer(topDecode: input)
         
         self = Self(buffer: buffer)
     }
@@ -118,14 +118,14 @@ extension Address: NestedDecode {
 
 extension Address: ArrayItem {
     public static var payloadSize: Int32 {
-        MXBuffer.payloadSize
+        Buffer.payloadSize
     }
     
-    public static func decodeArrayPayload(payload: MXBuffer) -> Address {
-        return Address(buffer: MXBuffer.decodeArrayPayload(payload: payload))
+    public static func decodeArrayPayload(payload: Buffer) -> Address {
+        return Address(buffer: Buffer.decodeArrayPayload(payload: payload))
     }
     
-    public func intoArrayPayload() -> MXBuffer {
+    public func intoArrayPayload() -> Buffer {
         self.buffer.intoArrayPayload()
     }
 }
@@ -133,7 +133,7 @@ extension Address: ArrayItem {
 #if !WASM
 extension Address: ExpressibleByStringLiteral {
     public init(stringLiteral value: StaticString) {
-        self.init(buffer: MXBuffer(data: Array("\(value)".toAddressData())))
+        self.init(buffer: Buffer(data: Array("\(value)".toAddressData())))
     }
 }
 

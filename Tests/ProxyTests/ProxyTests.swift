@@ -3,13 +3,13 @@ import XCTest
 
 @Proxy enum CalleeProxy {
     case endpointWithoutParameter
-    case endpointWithOneParameter(arg: BigUint), endpointOnTheSameLine(arg: MXBuffer)
-    case endpointWithMultipleParameters(firstArg: Int32, secondArg: MXBuffer)
-    case endpointWithNonNamedParameters(Int32, MXBuffer)
+    case endpointWithOneParameter(arg: BigUint), endpointOnTheSameLine(arg: Buffer)
+    case endpointWithMultipleParameters(firstArg: Int32, secondArg: Buffer)
+    case endpointWithNonNamedParameters(Int32, Buffer)
     case throwError
     case returnEgldValue
     case returnAllEsdtTransfers
-    case callEndpointWithMultipleParameters(calleeAddress: Address, firstArg: Int32, secondArg: MXBuffer)
+    case callEndpointWithMultipleParameters(calleeAddress: Address, firstArg: Int32, secondArg: Buffer)
     case callThrowError(calleeAddress: Address)
 }
 
@@ -20,12 +20,12 @@ import XCTest
         return arg
     }
     
-    public mutating func endpointOnTheSameLine(arg: MXBuffer) -> MXBuffer {
+    public mutating func endpointOnTheSameLine(arg: Buffer) -> Buffer {
         return arg
     }
     
-    public mutating func endpointWithMultipleParameters(firstArg: Int32, secondArg: MXBuffer) -> MXBuffer {
-        var result = MXBuffer()
+    public mutating func endpointWithMultipleParameters(firstArg: Int32, secondArg: Buffer) -> Buffer {
+        var result = Buffer()
         
         for _ in 0...firstArg {
             result = result + secondArg
@@ -34,8 +34,8 @@ import XCTest
         return result
     }
     
-    public mutating func endpointWithNonNamedParameters(firstArg: Int32, secondArg: MXBuffer) -> MXBuffer {
-        var result = MXBuffer()
+    public mutating func endpointWithNonNamedParameters(firstArg: Int32, secondArg: Buffer) -> Buffer {
+        var result = Buffer()
         
         for _ in 0...firstArg {
             result = result + secondArg
@@ -56,7 +56,7 @@ import XCTest
         return Message.allEsdtTransfers
     }
     
-    public mutating func callEndpointWithMultipleParameters(calleeAddress: Address, firstArg: Int32, secondArg: MXBuffer) -> MXBuffer {
+    public mutating func callEndpointWithMultipleParameters(calleeAddress: Address, firstArg: Int32, secondArg: Buffer) -> Buffer {
         return CalleeProxy.endpointWithMultipleParameters(firstArg: firstArg, secondArg: secondArg).call(receiver: calleeAddress)
     }
     
@@ -74,15 +74,15 @@ import XCTest
         return CalleeProxy.endpointWithOneParameter(arg: arg).call(receiver: calleeAddress)
     }
     
-    public mutating func callEndpointOnTheSameLine(calleeAddress: Address, arg: MXBuffer) -> MXBuffer {
+    public mutating func callEndpointOnTheSameLine(calleeAddress: Address, arg: Buffer) -> Buffer {
         return CalleeProxy.endpointOnTheSameLine(arg: arg).call(receiver: calleeAddress)
     }
     
-    public mutating func callEndpointWithMultipleParameters(calleeAddress: Address, firstArg: Int32, secondArg: MXBuffer) -> MXBuffer {
+    public mutating func callEndpointWithMultipleParameters(calleeAddress: Address, firstArg: Int32, secondArg: Buffer) -> Buffer {
         return CalleeProxy.endpointWithMultipleParameters(firstArg: firstArg, secondArg: secondArg).call(receiver: calleeAddress)
     }
     
-    public mutating func callEndpointWithMultipleParametersNonNamed(calleeAddress: Address, firstArg: Int32, secondArg: MXBuffer) -> MXBuffer {
+    public mutating func callEndpointWithMultipleParametersNonNamed(calleeAddress: Address, firstArg: Int32, secondArg: Buffer) -> Buffer {
         return CalleeProxy.endpointWithNonNamedParameters(firstArg, secondArg).call(receiver: calleeAddress)
     }
     
@@ -98,7 +98,7 @@ import XCTest
         return CalleeProxy.returnAllEsdtTransfers.call(receiver: calleeAddress, esdtTransfers: esdtTransfers)
     }
     
-    public mutating func callNestedCallEndpointWithMultipleParameters(calleeAddress: Address, secondCalleeAddress: Address, firstArg: Int32, secondArg: MXBuffer) -> MXBuffer {
+    public mutating func callNestedCallEndpointWithMultipleParameters(calleeAddress: Address, secondCalleeAddress: Address, firstArg: Int32, secondArg: Buffer) -> Buffer {
         return CalleeProxy.callEndpointWithMultipleParameters(calleeAddress: secondCalleeAddress, firstArg: firstArg, secondArg: secondArg).call(receiver: calleeAddress)
     }
     

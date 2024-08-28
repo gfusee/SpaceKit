@@ -120,7 +120,7 @@ struct HelpersModule {
         depositMapper.set(newDeposit)
     }
     
-    func getFeeForToken(token: MXBuffer) -> BigUint {
+    func getFeeForToken(token: Buffer) -> BigUint {
         require(
             StorageModule().whitelistedFeeTokens.contains(value: token),
             "invalid fee token provided"

@@ -41,7 +41,7 @@ public struct BigUint {
         self.handle = handle
     }
     
-    public init(bigEndianBuffer: MXBuffer) {
+    public init(bigEndianBuffer: Buffer) {
         let handle = getNextHandle()
         let _ = API.bufferToBigIntUnsigned(bufferHandle: bigEndianBuffer.handle, bigIntHandle: handle)
         
@@ -52,22 +52,22 @@ public struct BigUint {
         self.handle = handle
     }
 
-    public func toBuffer() -> MXBuffer {
+    public func toBuffer() -> Buffer {
         let destHandle = getNextHandle()
         API.bigIntToBuffer(bigIntHandle: self.handle, destHandle: destHandle)
 
-        return MXBuffer(handle: destHandle)
+        return Buffer(handle: destHandle)
     }
     
     public func toInt64() -> Int64? {
         return API.bigIntGetInt64(reference: self.handle)
     }
     
-    func toBytesBigEndianBuffer() -> MXBuffer {
+    func toBytesBigEndianBuffer() -> Buffer {
         let handle = getNextHandle()
         let _ = API.bufferFromBigIntUnsigned(bufferHandle: handle, bigIntHandle: self.handle)
         
-        return MXBuffer(handle: handle)
+        return Buffer(handle: handle)
     }
 }
 
@@ -91,7 +91,7 @@ extension BigUint {
     
     public static func - (lhs: BigUint, rhs: BigUint) -> BigUint {
         guard lhs >= rhs else {
-            smartContractError(message: MXBuffer(stringLiteral: BIG_UINT_SUB_NEGATIVE))
+            smartContractError(message: Buffer(stringLiteral: BIG_UINT_SUB_NEGATIVE))
         }
         
         let handle = getNextHandle()
@@ -143,7 +143,7 @@ extension BigUint {
 }
 
 extension BigUint: TopDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         self = Self(bigEndianBuffer: input)
     }
 }
@@ -152,7 +152,7 @@ extension BigUint: TopDecodeMulti {}
 
 extension BigUint: NestedDecode {
     public init(depDecode input: inout some NestedDecodeInput) {
-        let buffer = MXBuffer(depDecode: &input)
+        let buffer = Buffer(depDecode: &input)
         
         self = Self(topDecode: buffer)
     }
@@ -179,7 +179,7 @@ extension BigUint: ArrayItem {
         return 4
     }
     
-    public static func decodeArrayPayload(payload: MXBuffer) -> BigUint {
+    public static func decodeArrayPayload(payload: Buffer) -> BigUint {
         var payloadInput = BufferNestedDecodeInput(buffer: payload)
         
         let handle = Int32(Int(depDecode: &payloadInput))
@@ -191,8 +191,8 @@ extension BigUint: ArrayItem {
         return BigUint(handle: handle)
     }
     
-    public func intoArrayPayload() -> MXBuffer {
-        return MXBuffer(data: self.handle.toBytes4())
+    public func intoArrayPayload() -> Buffer {
+        return Buffer(data: self.handle.toBytes4())
     }
 }
 
@@ -217,7 +217,7 @@ extension BigUint {
     public var stringDescription: String {
         let handle = getNextHandle()
         API.bigIntToString(bigIntHandle: self.handle, destHandle: handle)
-        let utf8Buffer = MXBuffer(handle: handle)
+        let utf8Buffer = Buffer(handle: handle)
         
         guard let utf8Description = utf8Buffer.utf8Description else {
             fatalError()

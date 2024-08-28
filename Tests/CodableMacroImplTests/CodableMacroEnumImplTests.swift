@@ -8,12 +8,12 @@ import XCTest
 
 @Codable enum SinglePayment: Equatable {
     case egld(BigUint)
-    case esdt(MXBuffer, UInt64, BigUint), none
+    case esdt(Buffer, UInt64, BigUint), none
 }
 
 @Contract struct CodableMacroEnumImplTestsContract {
     public func testTopDecodeForEnumInputTooLargeError() {
-        let input = MXBuffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e800".hexadecimal))
+        let input = Buffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e800".hexadecimal))
         let _ = PaymentType(topDecode: input)
     }
 }
@@ -28,7 +28,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopEncodeForEnumWithoutAssociatedValue() throws {
         let tokenType = PaymentType.multiEsdts
-        var result = MXBuffer()
+        var result = Buffer()
         tokenType.topEncode(output: &result)
         
         let expected = "02"
@@ -38,7 +38,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopEncodeForEnumWithOneAssociatedValue() throws {
         let singlePayment = SinglePayment.egld(1000)
-        var result = MXBuffer()
+        var result = Buffer()
         singlePayment.topEncode(output: &result)
         
         let expected = "000000000203e8"
@@ -48,7 +48,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopEncodeForEnumWithMultipleAssociatedValues() throws {
         let singlePayment = SinglePayment.esdt("SFT-abcdef", 5, 1000)
-        var result = MXBuffer()
+        var result = Buffer()
         singlePayment.topEncode(output: &result)
         
         let expected = "010000000a5346542d61626364656600000000000000050000000203e8"
@@ -58,7 +58,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testNestedEncodeForEnumWithoutAssociatedValue() throws {
         let tokenType = PaymentType.multiEsdts
-        var result = MXBuffer()
+        var result = Buffer()
         tokenType.depEncode(dest: &result)
         
         let expected = "02"
@@ -68,7 +68,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testNestedEncodeForEnumWithOneAssociatedValue() throws {
         let singlePayment = SinglePayment.egld(1000)
-        var result = MXBuffer()
+        var result = Buffer()
         singlePayment.depEncode(dest: &result)
         
         let expected = "000000000203e8"
@@ -78,7 +78,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testNestedEncodeForEnumWithMultipleAssociatedValues() throws {
         let singlePayment = SinglePayment.esdt("SFT-abcdef", 5, 1000)
-        var result = MXBuffer()
+        var result = Buffer()
         singlePayment.depEncode(dest: &result)
         
         let expected = "010000000a5346542d61626364656600000000000000050000000203e8"
@@ -87,7 +87,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     }
     
     func testTopDecodeForEnumWithoutAssociatedValue() throws {
-        let input = MXBuffer(data: Array("01".hexadecimal))
+        let input = Buffer(data: Array("01".hexadecimal))
         let result = PaymentType(topDecode: input)
         
         let expected = PaymentType.esdt
@@ -96,7 +96,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     }
     
     func testTopDecodeForEnumWithOneAssociatedValue() throws {
-        let input = MXBuffer(data: Array("000000000203e8".hexadecimal))
+        let input = Buffer(data: Array("000000000203e8".hexadecimal))
         let result = SinglePayment(topDecode: input)
         
         let expected = SinglePayment.egld(1000)
@@ -105,7 +105,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     }
     
     func testTopDecodeForEnumWithMultipleAssociatedValues() throws {
-        let input = MXBuffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e8".hexadecimal))
+        let input = Buffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e8".hexadecimal))
         let result = SinglePayment(topDecode: input)
         
         let expected = SinglePayment.esdt("SFT-abcdef", 5, 1000)
@@ -124,7 +124,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     }
     
     func testNestedDecodeForEnumWithoutAssociatedValue() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("01".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("01".hexadecimal)))
         let result = PaymentType(depDecode: &input)
         
         let expected = PaymentType.esdt
@@ -133,7 +133,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     }
     
     func testNestedDecodeForEnumWithOneAssociatedValue() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000000203e8".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000000203e8".hexadecimal)))
         let result = SinglePayment(depDecode: &input)
         
         let expected = SinglePayment.egld(1000)
@@ -142,7 +142,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     }
     
     func testNestedDecodeForEnumWithMultipleAssociatedValues() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e8".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e8".hexadecimal)))
         let result = SinglePayment(depDecode: &input)
         
         let expected = SinglePayment.esdt("SFT-abcdef", 5, 1000)
@@ -151,7 +151,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     }
     
     func testNestedDecodeForThreeEnumsWithoutAssociatedValue() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e8000000000203e802".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e8000000000203e802".hexadecimal)))
         let result1 = SinglePayment(depDecode: &input)
         let result2 = SinglePayment(depDecode: &input)
         let result3 = SinglePayment(depDecode: &input)
@@ -166,7 +166,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     }
     
     func testNestedDecodeForThreeEnumsWithAssociatedValues() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("010002".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("010002".hexadecimal)))
         let result1 = PaymentType(depDecode: &input)
         let result2 = PaymentType(depDecode: &input)
         let result3 = PaymentType(depDecode: &input)

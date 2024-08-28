@@ -49,7 +49,7 @@ fileprivate func generateTopEncodeExtension(enumName: TokenSyntax, discriminants
         : TopEncode {
             @inline(__always)
             public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
-                var nestedEncoded = MXBuffer()
+                var nestedEncoded = Buffer()
                 \(raw: guardFirstCase)
                 self.depEncode(dest: &nestedEncoded)
                 nestedEncoded.topEncode(output: &output)
@@ -122,7 +122,7 @@ fileprivate func generateTopDecodeExtension(enumName: TokenSyntax, discriminants
         memberBlock: """
         : TopDecode {
             @inline(__always)
-            public init(topDecode input: MXBuffer) {
+            public init(topDecode input: Buffer) {
                 var nestedDecodeInput = BufferNestedDecodeInput(buffer: input)
         
                 if nestedDecodeInput.bufferCount == 0 {
@@ -291,7 +291,7 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
             }
             
             @inline(__always)
-            public static func decodeArrayPayload(payload: MXBuffer) -> \(enumName) {
+            public static func decodeArrayPayload(payload: Buffer) -> \(enumName) {
                 var payloadInput = BufferNestedDecodeInput(buffer: payload)
                 
                 let _discriminantPayload = payloadInput.readNextBuffer(length: 1)
@@ -304,8 +304,8 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
             }
               
             @inline(__always)
-            public func intoArrayPayload() -> MXBuffer {
-                var totalPayload = MXBuffer()
+            public func intoArrayPayload() -> Buffer {
+                var totalPayload = Buffer()
         
                 let currentCasePayloadSize: Int32
                 switch self {

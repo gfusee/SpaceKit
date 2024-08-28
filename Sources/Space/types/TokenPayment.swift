@@ -1,16 +1,16 @@
 let ESDT_LOCAL_BURN_FUNC_NAME: StaticString = "ESDTLocalBurn"
 let ESDT_NFT_BURN_FUNC_NAME: StaticString = "ESDTNFTBurn"
 
-// TODO: Use TokenIdentifier instead of MXBuffer for tokenIdentifier
+// TODO: Use TokenIdentifier instead of Buffer for tokenIdentifier
 @Codable public struct TokenPayment: Equatable {
-    public var tokenIdentifier: MXBuffer
+    public var tokenIdentifier: Buffer
     public var nonce: UInt64
     public var amount: BigUint
 }
 
 extension TokenPayment {
     // TODO: remove the below function once the default init is made public in the @Codable macro
-    public static func new(tokenIdentifier: MXBuffer, nonce: UInt64, amount: BigUint) -> TokenPayment {
+    public static func new(tokenIdentifier: Buffer, nonce: UInt64, amount: BigUint) -> TokenPayment {
         return TokenPayment(tokenIdentifier: tokenIdentifier, nonce: nonce, amount: amount)
     }
     
@@ -35,7 +35,7 @@ extension TokenPayment {
         
         let _: IgnoreValue = ContractCall(
             receiver: Blockchain.getSCAddress(),
-            endpointName: MXBuffer(stringLiteral: endpoint),
+            endpointName: Buffer(stringLiteral: endpoint),
             argBuffer: arguments
         ).call()
     }

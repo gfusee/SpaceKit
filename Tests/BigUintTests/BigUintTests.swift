@@ -261,7 +261,7 @@ final class BigUintTests: ContractTestCase {
     
     func testZeroBigUintTopEncode() throws {
         let bigUint: BigUint = 0
-        var output = MXBuffer()
+        var output = Buffer()
         
         bigUint.topEncode(output: &output)
         
@@ -270,7 +270,7 @@ final class BigUintTests: ContractTestCase {
     
     func testNonZeroBigUintTopEncode() throws {
         let bigUint: BigUint = 10
-        var output = MXBuffer()
+        var output = Buffer()
         
         bigUint.topEncode(output: &output)
         
@@ -279,7 +279,7 @@ final class BigUintTests: ContractTestCase {
     
     func testZeroBigUintNestedEncode() throws {
         let bigUint: BigUint = 0
-        var output = MXBuffer()
+        var output = Buffer()
         
         bigUint.depEncode(dest: &output)
         
@@ -288,7 +288,7 @@ final class BigUintTests: ContractTestCase {
     
     func testNonZeroBigUintNestedEncode() throws {
         let bigUint: BigUint = 1000
-        var output = MXBuffer()
+        var output = Buffer()
         
         bigUint.depEncode(dest: &output)
         
@@ -296,28 +296,28 @@ final class BigUintTests: ContractTestCase {
     }
     
     func testZeroBigUintTopDecodeFromEmptyInput() throws {
-        let input: MXBuffer = ""
+        let input: Buffer = ""
         let bigUint = BigUint(topDecode: input)
         
         XCTAssertEqual(bigUint, 0)
     }
     
     func testZeroBigUintTopDecodeFromNonEmptyInput() throws {
-        let input = MXBuffer(data: Array("00".hexadecimal))
+        let input = Buffer(data: Array("00".hexadecimal))
         let bigUint = BigUint(topDecode: input)
         
         XCTAssertEqual(bigUint, 0)
     }
     
     func testNonZeroBigUintTopDecode() throws {
-        let input = MXBuffer(data: Array("0a".hexadecimal))
+        let input = Buffer(data: Array("0a".hexadecimal))
         let bigUint = BigUint(topDecode: input)
         
         XCTAssertEqual(bigUint, 10)
     }
     
     func testZeroBigUintNestedDecodeFromNonEmptyInput() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("00000000".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("00000000".hexadecimal)))
         let bigUint = BigUint(depDecode: &input)
         
         let expected: BigUint = 0
@@ -326,7 +326,7 @@ final class BigUintTests: ContractTestCase {
     }
     
     func testOneBigUintNestedDecodeFromNonEmptyInput() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000101".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("0000000101".hexadecimal)))
         let bigUint = BigUint(depDecode: &input)
         
         let expected: BigUint = 1
@@ -335,7 +335,7 @@ final class BigUintTests: ContractTestCase {
     }
     
     func testTenBigUintNestedDecodeFromNonEmptyInput() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("000000010a".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000010a".hexadecimal)))
         let bigUint = BigUint(depDecode: &input)
         
         let expected: BigUint = 10
@@ -344,7 +344,7 @@ final class BigUintTests: ContractTestCase {
     }
     
     func testThousandBigUintNestedDecodeFromNonEmptyInput() throws {
-        var input = BufferNestedDecodeInput(buffer: MXBuffer(data: Array("0000000203e8".hexadecimal)))
+        var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("0000000203e8".hexadecimal)))
         let bigUint = BigUint(depDecode: &input)
         
         let expected: BigUint = 1000

@@ -1,7 +1,7 @@
 public struct StorageMap<K: NestedEncode, V: TopEncode & TopDecode> {
-    private let baseKey: MXBuffer
+    private let baseKey: Buffer
     
-    public init(baseKey: MXBuffer) {
+    public init(baseKey: Buffer) {
         self.baseKey = baseKey
     }
 
@@ -15,8 +15,8 @@ public struct StorageMap<K: NestedEncode, V: TopEncode & TopDecode> {
         return self.getSingleValueMapper(key: key).isEmpty()
     }
     
-    private func getKey(keyItem: K) -> MXBuffer {
-        var result = MXBuffer()
+    private func getKey(keyItem: K) -> Buffer {
+        var result = Buffer()
         keyItem.depEncode(dest: &result)
         
         return self.baseKey + result

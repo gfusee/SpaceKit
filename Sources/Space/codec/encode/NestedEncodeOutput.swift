@@ -1,3 +1,3 @@
 public protocol NestedEncodeOutput {
-    mutating func write(buffer: MXBuffer)
+    mutating func write(buffer: Buffer)
 }

@@ -6,10 +6,10 @@ extension UInt8: TopEncode {
     @inline(__always)
     public func topEncode<T>(output: inout T) where T : TopEncodeOutput {
         if self == 0 {
-            MXBuffer()
+            Buffer()
                 .topEncode(output: &output)
         } else {
-            MXBuffer(data: self)
+            Buffer(data: self)
                 .topEncode(output: &output)
         }
     }
@@ -20,12 +20,12 @@ extension UInt8: TopEncodeMulti {}
 extension UInt8: NestedEncode {
     @inline(__always)
     public func depEncode<O>(dest: inout O) where O : NestedEncodeOutput {
-        dest.write(buffer: MXBuffer(data: self))
+        dest.write(buffer: Buffer(data: self))
     }
 }
 
 extension UInt8: TopDecode {
-    public init(topDecode input: MXBuffer) {
+    public init(topDecode input: Buffer) {
         let inputCount = input.count
         if  inputCount > intSize {
             smartContractError(message: "Cannot decode UInt8: input too large.")
@@ -57,12 +57,12 @@ extension UInt8: ArrayItem {
         return 1
     }
     
-    public static func decodeArrayPayload(payload: MXBuffer) -> UInt8 {
+    public static func decodeArrayPayload(payload: Buffer) -> UInt8 {
         UInt8(topDecode: payload)
     }
     
-    public func intoArrayPayload() -> MXBuffer {
-        var payload = MXBuffer()
+    public func intoArrayPayload() -> Buffer {
+        var payload = Buffer()
         
         self.depEncode(dest: &payload)
         

@@ -513,7 +513,7 @@ extension DummyApi: CallValueApiProtocol {
         for payment in payments {
             array = array.appended(
                 TokenPayment.new(
-                    tokenIdentifier: MXBuffer(data: Array(payment.tokenIdentifier)),
+                    tokenIdentifier: Buffer(data: Array(payment.tokenIdentifier)),
                     nonce: payment.nonce,
                     amount: BigUint(bigInt: payment.amount)
                 )
@@ -536,7 +536,7 @@ extension DummyApi: SendApiProtocol {
         let sender = self.getCurrentContainer().getCurrentSCAccount()
         let receiver = self.getCurrentContainer().getBufferData(handle: dstHandle)
         
-        var tokenTransfersBufferInput = BufferNestedDecodeInput(buffer: MXBuffer(handle: tokenTransfersHandle).clone())
+        var tokenTransfersBufferInput = BufferNestedDecodeInput(buffer: Buffer(handle: tokenTransfersHandle).clone())
         while tokenTransfersBufferInput.canDecodeMore() { // TODO: use managed vec once implemented
             let tokenPayment = TokenPayment(depDecode: &tokenTransfersBufferInput)
             let tokenIdentifier = self.getCurrentContainer().getBufferData(handle: tokenPayment.tokenIdentifier.handle)
@@ -590,7 +590,7 @@ extension DummyApi: SendApiProtocol {
         let value = currentTransactionContainer.getBigIntData(handle: valueHandle)
         let function = currentTransactionContainer.getBufferData(handle: functionHandle)
         
-        let argumentsArray: MXArray<MXBuffer> = MXArray(handle: argumentsHandle)
+        let argumentsArray: MXArray<Buffer> = MXArray(handle: argumentsHandle)
         var arguments: [Data] = []
         
         argumentsArray.forEach { arguments.append(Data($0.toBytes())) }
@@ -607,10 +607,10 @@ extension DummyApi: SendApiProtocol {
             )
         )
         
-        var resultsArray: MXArray<MXBuffer> = MXArray()
+        var resultsArray: MXArray<Buffer> = MXArray()
         
         for result in results {
-            resultsArray = resultsArray.appended(MXBuffer(data: Array(result)))
+            resultsArray = resultsArray.appended(Buffer(data: Array(result)))
         }
         
         currentTransactionContainer.managedBuffersData[resultHandle] = Data(resultsArray.buffer.toBytes())
