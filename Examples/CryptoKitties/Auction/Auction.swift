@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Codable enum AuctionType {
     case selling

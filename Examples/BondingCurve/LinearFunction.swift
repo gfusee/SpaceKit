@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Codable struct LinearFunction: Equatable {
     let initialPrice: BigUint

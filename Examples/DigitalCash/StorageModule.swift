@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 struct StorageModule {
     @Mapping(key: "deposit") var depositForDonor: StorageMap<Address, DepositInfo>

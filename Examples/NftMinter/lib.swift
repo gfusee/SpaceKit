@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Codable struct ExampleAttributes {
     let creationTimestamp: UInt64

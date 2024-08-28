@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 let MAX_ORDERS_PER_USER: UInt32 = 100
 let PERCENT_BASE_POINTS: UInt64 = 100_000

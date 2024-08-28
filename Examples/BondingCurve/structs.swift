@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Codable struct CurveArguments {
     var availableSupply: BigUint

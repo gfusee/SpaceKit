@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Event(dataType: ActionFullInfo) struct StartPerformAction {}
 

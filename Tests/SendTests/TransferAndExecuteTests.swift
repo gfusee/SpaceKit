@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 import XCTest
 import BigInt
 

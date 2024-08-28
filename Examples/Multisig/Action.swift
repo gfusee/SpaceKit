@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Codable public struct CallActionData {
     let to: Address

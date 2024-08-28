@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 let PERCENTAGE_TOTAL: UInt32 = 100
 let THIRTY_DAYS_IN_SECONDS: UInt64 = 60 * 60 * 24 * 30

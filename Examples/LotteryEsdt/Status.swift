@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Codable enum Status {
     case inactive

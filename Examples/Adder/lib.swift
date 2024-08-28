@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Contract struct Adder {
     @Storage(key: "sum") var sum: BigUint

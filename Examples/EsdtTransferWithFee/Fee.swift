@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 let PERCENTAGE_DIVISOR: UInt32 = 10_000
 

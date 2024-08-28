@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 struct GlobalOperationModule {
     @Storage(key: "global_operation_ongoing") static var isGlobalOperationOngoing: Bool

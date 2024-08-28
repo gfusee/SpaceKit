@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 // TODO: use TokenIdentifier type
 @Codable struct LotteryInfo {

@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Contract struct CheckPause {
     @Storage(key: "isContractPaused") var isContractPaused: Bool

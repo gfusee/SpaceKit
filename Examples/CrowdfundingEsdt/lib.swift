@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Contract struct CrowdfundingEsdt {
     @Storage(key: "target") var target: BigUint

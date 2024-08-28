@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 protocol CurveFunction {
     func calculatePrice(

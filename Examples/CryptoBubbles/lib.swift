@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 // TODO: add tests to ensure non public func are not exported in the wasm
 

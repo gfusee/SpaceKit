@@ -1,5 +1,5 @@
 import XCTest
-import MultiversX
+import Space
 
 @Contract struct UInt8TestsContract {
     public func testTopDecodeUInt8TooLargeBufferShouldFail() {

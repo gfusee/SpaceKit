@@ -48,31 +48,31 @@ if !isWasm {
         .testTarget(
             name: "BufferTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "BigUintTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "IntTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "ContractStorageTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "TestEngineTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
@@ -96,62 +96,62 @@ if !isWasm {
         .testTarget(
             name: "CodableMacroImplTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "AdderTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "ArrayTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "EventTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "FactorialTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "BlockchainTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "MessageTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "ProxyTests",
             dependencies: [
-                "MultiversX"
+                "Space"
             ]
         ),
         .testTarget(
             name: "SendTests",
             dependencies: [
-                "MultiversX",
+                "Space",
                 "BigInt"
             ]
         ),
         .testTarget(
             name: "ErrorTests",
             dependencies: [
-                "MultiversX",
+                "Space",
                 "BigInt"
             ]
         ),
@@ -159,31 +159,22 @@ if !isWasm {
 }
 
 let package = Package(
-    name: "swift-mvx-contract",
+    name: "Space",
     platforms: [
         .macOS(.v14)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(name: "swift-mvx-contract", targets: ["swift-mvx-contract"])
+        .library(name: "Space", targets: ["Space"])
     ],
     dependencies: packageDependencies,
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "swift-mvx-contract",
-            dependencies: [
-                "MultiversX"
-            ],
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
-        ),
-        .target(
             name: "Adder",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/Adder",
             swiftSettings: [
@@ -193,7 +184,7 @@ let package = Package(
         .target(
             name: "BondingCurve",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/BondingCurve",
             swiftSettings: [
@@ -203,7 +194,7 @@ let package = Package(
         .target(
             name: "CheckPause",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/CheckPause",
             swiftSettings: [
@@ -213,7 +204,7 @@ let package = Package(
         .target(
             name: "CrowdfundingEsdt",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/CrowdfundingEsdt",
             swiftSettings: [
@@ -223,7 +214,7 @@ let package = Package(
         .target(
             name: "CryptoBubbles",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/CryptoBubbles",
             swiftSettings: [
@@ -233,7 +224,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesAuction",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/CryptoKitties/Auction",
             swiftSettings: [
@@ -243,7 +234,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesCommon",
             dependencies: [
-                "MultiversX",
+                "Space",
                 "CryptoKittiesRandom"
             ],
             path: "Examples/CryptoKitties/Common",
@@ -254,7 +245,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesRandom",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/CryptoKitties/Random",
             swiftSettings: [
@@ -264,7 +255,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesGeneticAlg",
             dependencies: [
-                "MultiversX",
+                "Space",
                 "CryptoKittiesCommon",
                 "CryptoKittiesRandom"
             ],
@@ -276,7 +267,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesOwnership",
             dependencies: [
-                "MultiversX",
+                "Space",
                 "CryptoKittiesCommon",
                 "CryptoKittiesRandom"
             ],
@@ -288,7 +279,7 @@ let package = Package(
         .target(
             name: "DigitalCash",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/DigitalCash",
             swiftSettings: [
@@ -298,7 +289,7 @@ let package = Package(
         .target(
             name: "Empty",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/Empty",
             swiftSettings: [
@@ -308,7 +299,7 @@ let package = Package(
         .target(
             name: "EsdtTransferWithFee",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/EsdtTransferWithFee",
             swiftSettings: [
@@ -318,7 +309,7 @@ let package = Package(
         .target(
             name: "Factorial",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/Factorial",
             swiftSettings: [
@@ -328,7 +319,7 @@ let package = Package(
         .target(
             name: "LotteryEsdt",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/LotteryEsdt",
             swiftSettings: [
@@ -338,7 +329,7 @@ let package = Package(
         .target(
             name: "PingPongEgld",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/PingPongEgld",
             swiftSettings: [
@@ -348,7 +339,7 @@ let package = Package(
         .target(
             name: "ProxyPause",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/ProxyPause",
             swiftSettings: [
@@ -358,7 +349,7 @@ let package = Package(
         .target(
             name: "Multisig",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/Multisig",
             swiftSettings: [
@@ -368,7 +359,7 @@ let package = Package(
         .target(
             name: "NftMinter",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/NftMinter",
             swiftSettings: [
@@ -378,7 +369,7 @@ let package = Package(
         .target(
             name: "OrderBookPair",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/OrderBookPair",
             swiftSettings: [
@@ -388,7 +379,7 @@ let package = Package(
         .target(
             name: "TokenRelease",
             dependencies: [
-                "MultiversX"
+                "Space"
             ],
             path: "Examples/TokenRelease",
             swiftSettings: [
@@ -396,7 +387,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "MultiversX",
+            name: "Space",
             dependencies: libraryDependencies,
             swiftSettings: [
                 .unsafeFlags(unsafeFlags)

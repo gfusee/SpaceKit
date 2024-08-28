@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Contract struct Multisig {
     init(

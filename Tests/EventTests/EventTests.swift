@@ -1,5 +1,5 @@
 import XCTest
-import MultiversX
+import Space
 
 @Event(dataType: MXBuffer) struct TestSingleIndexedFieldMXBufferDataEvent {
     let address: Address

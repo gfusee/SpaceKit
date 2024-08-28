@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 struct ProposeModule {
     package static func proposeAction(

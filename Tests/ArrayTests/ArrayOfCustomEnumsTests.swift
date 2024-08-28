@@ -1,4 +1,4 @@
-@testable import MultiversX
+@testable import Space
 import XCTest
 
 @Codable enum CustomCodableEnum: Equatable {

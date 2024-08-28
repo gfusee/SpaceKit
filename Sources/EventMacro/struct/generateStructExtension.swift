@@ -52,7 +52,7 @@ fileprivate func generateEmitExtension(
         
                 \(raw: nestedEncodeFieldsCalls)
         
-                MultiversX.emitEvent(topicsHandle: _indexedArgs.buffer.handle, dataHandle: _encodedData.handle)
+                Space.emitEvent(topicsHandle: _indexedArgs.buffer.handle, dataHandle: _encodedData.handle)
             }
         }
         """

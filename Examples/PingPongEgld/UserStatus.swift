@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Codable enum UserStatus {
     case new

@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Event(dataType: Order) struct OrderEvent {
     let caller: Address

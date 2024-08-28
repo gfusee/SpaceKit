@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 import CryptoKittiesRandom
 
 @Codable public struct Color {

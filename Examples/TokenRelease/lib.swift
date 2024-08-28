@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 let PERCENTAGE_TOTAL: UInt64 = 100
 

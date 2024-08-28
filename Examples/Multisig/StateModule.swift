@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 struct StateModule {
     package static func addMultipleBoardMembers(newBoardMembers: MXArray<Address>) -> UInt32 {

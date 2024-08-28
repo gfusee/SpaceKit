@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Proxy enum CryptoKittiesOwnershipProxy {
     case createGenZeroKitty

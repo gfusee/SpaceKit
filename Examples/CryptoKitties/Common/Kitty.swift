@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 let SECONDS_PER_MINUTE: UInt64 = 60
 let MAX_COOLDOWN: UInt64 = 60 * 60 * 24 * 7

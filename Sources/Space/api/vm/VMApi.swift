@@ -307,7 +307,7 @@ extension VMApi: BufferApiProtocol {
         dataLength: Int32,
         dataOffset: UnsafeRawPointer
     ) -> Int32 {
-        return MultiversX.mBufferSetByteSlice(
+        return Space.mBufferSetByteSlice(
             mBufferHandle: mBufferHandle,
             startingPosition: startingPosition,
             dataLength: dataLength,
@@ -316,7 +316,7 @@ extension VMApi: BufferApiProtocol {
     }
     
     mutating func mBufferAppendBytes(accumulatorHandle: Int32, byte_ptr: UnsafeRawPointer, byte_len: Int32) -> Int32 {
-        return MultiversX.mBufferAppendBytes(
+        return Space.mBufferAppendBytes(
             accumulatorHandle: accumulatorHandle,
             byte_ptr: byte_ptr,
             byte_len: byte_len
@@ -366,11 +366,11 @@ extension VMApi: BufferApiProtocol {
     }
     
     mutating func managedBufferToHex(sourceHandle: Int32, destinationHandle: Int32) {
-        MultiversX.managedBufferToHex(sourceHandle: sourceHandle, destinationHandle: destinationHandle)
+        Space.managedBufferToHex(sourceHandle: sourceHandle, destinationHandle: destinationHandle)
     }
     
     mutating func mBufferSetRandom(destinationHandle: Int32, length: Int32) -> Int32 {
-        return MultiversX.mBufferSetRandom(destinationHandle: destinationHandle, length: length)
+        return Space.mBufferSetRandom(destinationHandle: destinationHandle, length: length)
     }
 }
 
@@ -378,15 +378,15 @@ extension VMApi: BufferApiProtocol {
 
 extension VMApi: BigIntApiProtocol {
     mutating func bigIntSetInt64(destination: Int32, value: Int64) {
-        MultiversX.bigIntSetInt64(destination: destination, value: value)
+        Space.bigIntSetInt64(destination: destination, value: value)
     }
     
     mutating func bigIntIsInt64(reference: Int32) -> Int32 {
-        MultiversX.bigIntIsInt64(reference: reference)
+        Space.bigIntIsInt64(reference: reference)
     }
     
     mutating func bigIntGetInt64Unsafe(reference: Int32) -> Int64 {
-        MultiversX.bigIntGetInt64(reference: reference)
+        Space.bigIntGetInt64(reference: reference)
     }
 
     mutating func bigIntToBuffer(bigIntHandle: Int32, destHandle: Int32) {
@@ -398,27 +398,27 @@ extension VMApi: BigIntApiProtocol {
     }
     
     mutating func bigIntAdd(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        MultiversX.bigIntAdd(dest: destHandle, x: lhsHandle, y: rhsHandle)
+        Space.bigIntAdd(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
     mutating func bigIntSub(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        MultiversX.bigIntSub(dest: destHandle, x: lhsHandle, y: rhsHandle)
+        Space.bigIntSub(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
     mutating func bigIntMul(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        MultiversX.bigIntMul(dest: destHandle, x: lhsHandle, y: rhsHandle)
+        Space.bigIntMul(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
     mutating func bigIntTDiv(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        MultiversX.bigIntTDiv(dest: destHandle, x: lhsHandle, y: rhsHandle)
+        Space.bigIntTDiv(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
     mutating func bigIntTMod(destHandle: Int32, lhsHandle: Int32, rhsHandle: Int32) {
-        MultiversX.bigIntTMod(dest: destHandle, x: lhsHandle, y: rhsHandle)
+        Space.bigIntTMod(dest: destHandle, x: lhsHandle, y: rhsHandle)
     }
     
     public mutating func bigIntToString(bigIntHandle: Int32, destHandle: Int32) {
-        MultiversX.bigIntToString(bigIntHandle: bigIntHandle, destHandle: destHandle)
+        Space.bigIntToString(bigIntHandle: bigIntHandle, destHandle: destHandle)
     }
 }
 
@@ -434,15 +434,15 @@ extension VMApi: StorageApiProtocol {
 
 extension VMApi: EndpointApiProtocol {
     mutating func getNumArguments() -> Int32 {
-        return MultiversX.getNumArguments()
+        return Space.getNumArguments()
     }
     
     mutating func bufferGetArgument(argId: Int32, bufferHandle: Int32) -> Int32 {
-        return MultiversX.mBufferGetArgument(argId: argId, mBufferHandle: bufferHandle)
+        return Space.mBufferGetArgument(argId: argId, mBufferHandle: bufferHandle)
     }
     
     mutating func managedGetCallbackClosure(callbackClosureHandle: Int32) {
-        return MultiversX.managedGetCallbackClosure(callbackClosureHandle: callbackClosureHandle)
+        return Space.managedGetCallbackClosure(callbackClosureHandle: callbackClosureHandle)
     }
 }
 
@@ -450,31 +450,31 @@ extension VMApi: EndpointApiProtocol {
 
 extension VMApi: BlockchainApiProtocol {
     mutating func managedSCAddress(resultHandle: Int32) {
-        return MultiversX.managedSCAddress(resultHandle: resultHandle)
+        return Space.managedSCAddress(resultHandle: resultHandle)
     }
     
     mutating func getBlockTimestamp() -> Int64 {
-        return MultiversX.getBlockTimestamp()
+        return Space.getBlockTimestamp()
     }
     
     mutating func getBlockRound() -> Int64 {
-        return MultiversX.getBlockRound()
+        return Space.getBlockRound()
     }
     
     mutating func getBlockEpoch() -> Int64 {
-        return MultiversX.getBlockEpoch()
+        return Space.getBlockEpoch()
     }
     
     mutating func managedGetBlockRandomSeed(resultHandle: Int32) {
-        MultiversX.managedGetBlockRandomSeed(resultHandle: resultHandle)
+        Space.managedGetBlockRandomSeed(resultHandle: resultHandle)
     }
     
     mutating func managedGetOriginalTxHash(resultHandle: Int32) {
-        return MultiversX.managedGetOriginalTxHash(resultHandle: resultHandle)
+        return Space.managedGetOriginalTxHash(resultHandle: resultHandle)
     }
     
     mutating func bigIntGetExternalBalance(addressPtr: UnsafeRawPointer, dest: Int32) {
-        return MultiversX.bigIntGetExternalBalance(
+        return Space.bigIntGetExternalBalance(
             address_ptr: addressPtr,
             dest: dest
         )
@@ -487,7 +487,7 @@ extension VMApi: BlockchainApiProtocol {
         nonce: Int64,
         dest: Int32
     ) {
-        return MultiversX.bigIntGetESDTExternalBalance(
+        return Space.bigIntGetESDTExternalBalance(
             address_ptr: addressPtr,
             tokenIDOffset: tokenIDOffset,
             tokenIDLen: tokenIDLen,
@@ -497,19 +497,19 @@ extension VMApi: BlockchainApiProtocol {
     }
     
     mutating func getCaller(resultOffset: UnsafeRawPointer) {
-        return MultiversX.getCaller(resultOffset: resultOffset)
+        return Space.getCaller(resultOffset: resultOffset)
     }
 
     mutating func managedOwnerAddress(resultHandle: Int32) {
-        return MultiversX.managedOwnerAddress(resultHandle: resultHandle)
+        return Space.managedOwnerAddress(resultHandle: resultHandle)
     }
     
     mutating func getGasLeft() -> Int64 {
-        return MultiversX.getGasLeft()
+        return Space.getGasLeft()
     }
     
     mutating func getESDTLocalRoles(tokenIdHandle: Int32) -> Int64 {
-        return MultiversX.getESDTLocalRoles(tokenhandle: tokenIdHandle)
+        return Space.getESDTLocalRoles(tokenhandle: tokenIdHandle)
     }
 }
 
@@ -517,11 +517,11 @@ extension VMApi: BlockchainApiProtocol {
 
 extension VMApi: CallValueApiProtocol {
     mutating func bigIntGetCallValue(dest: Int32) {
-        return MultiversX.bigIntGetCallValue(dest: dest)
+        return Space.bigIntGetCallValue(dest: dest)
     }
 
     mutating func managedGetMultiESDTCallValue(resultHandle: Int32) {
-        return MultiversX.managedGetMultiESDTCallValue(resultHandle: resultHandle)
+        return Space.managedGetMultiESDTCallValue(resultHandle: resultHandle)
     }
 }
 
@@ -535,7 +535,7 @@ extension VMApi: SendApiProtocol {
         functionHandle: Int32,
         argumentsHandle: Int32
     ) -> Int32 {
-        return MultiversX.managedMultiTransferESDTNFTExecute(
+        return Space.managedMultiTransferESDTNFTExecute(
             dstHandle: dstHandle,
             tokenTransfersHandle: tokenTransfersHandle,
             gasLimit: gasLimit,
@@ -551,7 +551,7 @@ extension VMApi: SendApiProtocol {
         functionHandle: Int32,
         argumentsHandle: Int32
     ) -> Int32 {
-        return MultiversX.managedTransferValueExecute(
+        return Space.managedTransferValueExecute(
             dstHandle: dstHandle,
             valueHandle: valueHandle,
             gasLimit: gasLimit,
@@ -568,7 +568,7 @@ extension VMApi: SendApiProtocol {
         argumentsHandle: Int32,
         resultHandle: Int32
     ) -> Int32 {
-        return MultiversX.managedExecuteOnDestContext(
+        return Space.managedExecuteOnDestContext(
             gas: gas,
             addressHandle: addressHandle,
             valueHandle: valueHandle,
@@ -591,7 +591,7 @@ extension VMApi: SendApiProtocol {
         extraGasForCallback: Int64,
         callbackClosureHandle: Int32
     ) -> Int32 {
-        return MultiversX.managedCreateAsyncCall(
+        return Space.managedCreateAsyncCall(
             dstHandle: dstHandle,
             valueHandle: valueHandle,
             functionHandle: functionHandle,
@@ -615,7 +615,7 @@ extension VMApi: SendApiProtocol {
         resultAddressHandle: Int32,
         resultHandle: Int32
     ) -> Int32 {
-        return MultiversX.managedDeployFromSourceContract(
+        return Space.managedDeployFromSourceContract(
             gas: gas,
             valueHandle: valueHandle,
             addressHandle: addressHandle,
@@ -635,7 +635,7 @@ extension VMApi: SendApiProtocol {
         argumentsHandle: Int32,
         resultHandle: Int32
     ) {
-        return MultiversX.managedUpgradeFromSourceContract(
+        return Space.managedUpgradeFromSourceContract(
             dstHandle: dstHandle,
             gas: gas,
             valueHandle: valueHandle,
@@ -647,7 +647,7 @@ extension VMApi: SendApiProtocol {
     }
     
     mutating func cleanReturnData() {
-        return MultiversX.cleanReturnData()
+        return Space.cleanReturnData()
     }
 }
 
@@ -655,7 +655,7 @@ extension VMApi: SendApiProtocol {
 
 extension VMApi: ErrorApiProtocol {
     mutating func managedSignalError(messageHandle: Int32) -> Never {
-        MultiversX.managedSignalError(messageHandle: messageHandle)
+        Space.managedSignalError(messageHandle: messageHandle)
         fatalError()
     }
 }
@@ -664,18 +664,18 @@ extension VMApi: ErrorApiProtocol {
 
 extension VMApi: LogApiProtocol {
     mutating func managedWriteLog(topicsHandle: Int32, dataHandle: Int32) {
-        MultiversX.managedWriteLog(topicsHandle: topicsHandle, dataHandle: dataHandle)
+        Space.managedWriteLog(topicsHandle: topicsHandle, dataHandle: dataHandle)
     }
 }
 
 // MARK: CryptoApiProtocol implementation {
 extension VMApi: CryptoApiProtocol {
     mutating func managedVerifyEd25519(keyHandle: Int32, messageHandle: Int32, sigHandle: Int32) -> Int32 {
-        return MultiversX.managedVerifyEd25519(keyHandle: keyHandle, messageHandle: messageHandle, sigHandle: sigHandle)
+        return Space.managedVerifyEd25519(keyHandle: keyHandle, messageHandle: messageHandle, sigHandle: sigHandle)
     }
     
     mutating func managedSha256(inputHandle: Int32, outputHandle: Int32) -> Int32 {
-        return MultiversX.managedSha256(inputHandle: inputHandle, outputHandle: outputHandle)
+        return Space.managedSha256(inputHandle: inputHandle, outputHandle: outputHandle)
     }
 }
 

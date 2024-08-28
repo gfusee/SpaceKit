@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 struct OwnerEndpointsModule {
     // TODO: use TokenIdentifier type once implemented

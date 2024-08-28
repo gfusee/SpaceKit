@@ -1,4 +1,4 @@
-@testable import MultiversX
+@testable import Space
 import XCTest
 
 @Codable struct CustomCodableStruct: Equatable {

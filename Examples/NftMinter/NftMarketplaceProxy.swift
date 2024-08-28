@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Proxy enum NftMarketplaceProxy {
     case claimTokens(

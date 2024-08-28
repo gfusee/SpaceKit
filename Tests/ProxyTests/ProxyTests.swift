@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 import XCTest
 
 @Proxy enum CalleeProxy {

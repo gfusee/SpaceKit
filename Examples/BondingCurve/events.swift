@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 // TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
 @Event(dataType: IgnoreValue) struct SellTokenEvent {

@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Contract struct BondingCurveContract {
     public func sellToken() {

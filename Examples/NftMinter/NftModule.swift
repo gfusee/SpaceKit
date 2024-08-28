@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 let NFT_AMOUNT: UInt32 = 1
 let ROYALTIES_MAX: UInt32 = 10_000

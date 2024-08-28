@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Contract struct Pair {
     // TODO: use TokenIdentifier when available

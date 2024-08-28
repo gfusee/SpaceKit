@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 struct StorageModule {
     @Storage(key: "first_token_id") static var firstTokenIdentifier: MXBuffer

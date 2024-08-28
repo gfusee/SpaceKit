@@ -315,7 +315,7 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
                 let trailingZerosCount = \(enumName).payloadSize - currentCasePayloadSize
         
                 if trailingZerosCount > 0 {
-                    totalPayload = totalPayload + MultiversX.getZeroedBuffer(count: trailingZerosCount)
+                    totalPayload = totalPayload + Space.getZeroedBuffer(count: trailingZerosCount)
                 }
         
                 return totalPayload

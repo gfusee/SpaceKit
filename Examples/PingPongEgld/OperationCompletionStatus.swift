@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Codable public enum OperationCompletionStatus {
     case completed

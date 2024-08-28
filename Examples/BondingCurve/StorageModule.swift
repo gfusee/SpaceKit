@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 // TODO: use TokenIdentifier type once implemented
 @Codable struct NonceAmountMappingKey {

@@ -1,4 +1,4 @@
-import MultiversX
+import Space
 
 @Contract struct Factorial {
     public func factorial(value: BigUint) -> BigUint {
