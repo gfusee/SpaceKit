@@ -117,7 +117,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
 }
 
 
-extension VecMapper: MXSequence {
+extension VecMapper: SpaceSequence {
     public func forEach(_ operations: (V) throws -> Void) rethrows {
         let count = self.count
         var index: UInt32 = 1

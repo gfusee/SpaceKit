@@ -11,7 +11,7 @@ extension CurveArguments {
     }
 }
 
-@Codable struct BondingCurve<T: CurveFunction & MXCodable & Default & Equatable> {
+@Codable struct BondingCurve<T: CurveFunction & SpaceCodable & Default & Equatable> {
     var curve: T
     var arguments: CurveArguments
     var sellAvailability: Bool

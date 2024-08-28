@@ -209,7 +209,7 @@ extension Vector {
     }
 }
 
-extension Vector: MXSequence {
+extension Vector: SpaceSequence {
     public func forEach(_ operations: (T) throws -> Void) rethrows {
         let count = self.count
         var index: Int32 = 0

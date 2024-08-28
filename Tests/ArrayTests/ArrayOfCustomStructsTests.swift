@@ -11,7 +11,7 @@ import XCTest
 @Contract struct ArrayOfCustomStructsTestsContract {
     
     public func testGetOutOfRangeShouldFail() {
-        let array: Vector<MXString> = ["Hello!", "Bonjour!", "¡Hola!"]
+        let array: Vector<Buffer> = ["Hello!", "Bonjour!", "¡Hola!"]
         
         let array2: Vector<CustomCodableStruct> = [
             CustomCodableStruct(

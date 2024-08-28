@@ -10,7 +10,7 @@ import XCTest
 @Contract struct ArrayOfCustomEnumsTestsContract {
     
     public func testGetOutOfRangeShouldFail() {
-        let array: Vector<MXString> = ["Hello!", "Bonjour!", "¡Hola!"]
+        let array: Vector<Buffer> = ["Hello!", "Bonjour!", "¡Hola!"]
         
         let array2: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(

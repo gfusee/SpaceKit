@@ -43,7 +43,7 @@ public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
         return true
     }
     
-    public func extend<I: MXSequence>(iterable: I) where I.V == V {
+    public func extend<I: SpaceSequence>(iterable: I) where I.V == V {
         iterable.forEach { element in
             let _ = self.insert(value: element)
         }
@@ -63,7 +63,7 @@ public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
         return true
     }
     
-    public func removeAll<I: MXSequence>(iterable: I) where I.V == V {
+    public func removeAll<I: SpaceSequence>(iterable: I) where I.V == V {
         iterable.forEach { element in
             let _ = self.remove(value: element)
         }
@@ -104,7 +104,7 @@ public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
 }
 
-extension SetMapper: MXSequence {
+extension SetMapper: SpaceSequence {
     public func forEach(_ operations: (V) throws -> Void) rethrows {
         try self.queueMapper.forEach(operations)
     }

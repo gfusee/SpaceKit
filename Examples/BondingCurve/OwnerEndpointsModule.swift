@@ -2,7 +2,7 @@ import Space
 
 struct OwnerEndpointsModule {
     // TODO: use TokenIdentifier type once implemented
-    static func deposit<T: CurveFunction & MXCodable & Default & Equatable>(
+    static func deposit<T: CurveFunction & SpaceCodable & Default & Equatable>(
         paymentToken: Buffer?,
         dummy: @autoclosure () -> T
     ) {
@@ -56,7 +56,7 @@ struct OwnerEndpointsModule {
             }
     }
     
-    static func claim<T: CurveFunction & MXCodable & Default & Equatable>(
+    static func claim<T: CurveFunction & SpaceCodable & Default & Equatable>(
         dummy: @autoclosure () -> T
     ) {
         let caller = Message.caller
@@ -110,7 +110,7 @@ struct OwnerEndpointsModule {
     }
     
     // TODO: use TokenIdentifier type once implemented
-    static func setBondingCurve<T: CurveFunction & MXCodable & Default & Equatable>(
+    static func setBondingCurve<T: CurveFunction & SpaceCodable & Default & Equatable>(
         identifier: Buffer,
         function: T,
         sellAvailability: Bool
@@ -146,7 +146,7 @@ struct OwnerEndpointsModule {
     }
     
     // TODO: use TokenIdentifier type once implemented
-    static func setCurveStorage<T: CurveFunction & MXCodable & Default & Equatable>(
+    static func setCurveStorage<T: CurveFunction & SpaceCodable & Default & Equatable>(
         identifier: Buffer,
         amount: BigUint,
         paymentTokenIdentifier: Buffer,

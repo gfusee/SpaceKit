@@ -4,7 +4,7 @@ import Space
 struct UserEndpointsModule {
     // The "dummy" parameter is useless, I'm just a lazy developer that wants the Swift compiler to stop complaining
     // Don't try this at home
-    static func sellToken<T: CurveFunction & MXCodable & Default & Equatable>(dummy: @autoclosure () -> T) {
+    static func sellToken<T: CurveFunction & SpaceCodable & Default & Equatable>(dummy: @autoclosure () -> T) {
         let offeredPayment = Message.singleEsdt
         
         self.checkTokenExists(issuedToken: offeredPayment.tokenIdentifier)
@@ -67,7 +67,7 @@ struct UserEndpointsModule {
     
     // The "dummy" parameter is useless, I'm just a lazy developer that wants the Swift compiler to stop complaining
     // Don't try this at home
-    static func buyToken<T: CurveFunction & MXCodable & Default & Equatable>(
+    static func buyToken<T: CurveFunction & SpaceCodable & Default & Equatable>(
         requestedAmount: BigUint,
         requestedToken: Buffer,
         requestedNonce: UInt64?,
@@ -151,7 +151,7 @@ struct UserEndpointsModule {
     }
     
     // TODO: use TokenIdentifier type once implemented
-    static func checkOwnedReturnPaymentToken<T: CurveFunction & MXCodable & Default & Equatable>(
+    static func checkOwnedReturnPaymentToken<T: CurveFunction & SpaceCodable & Default & Equatable>(
         bondingCurve: BondingCurve<T>,
         amount: BigUint
     ) -> Buffer {
@@ -173,7 +173,7 @@ struct UserEndpointsModule {
     }
     
     // TODO: use TokenIdentifier type once implemented
-    static func computeBuyPrice<T: CurveFunction & MXCodable & Default & Equatable>(
+    static func computeBuyPrice<T: CurveFunction & SpaceCodable & Default & Equatable>(
         bondingCurve: BondingCurve<T>,
         amount: BigUint
     ) -> BigUint {
@@ -190,7 +190,7 @@ struct UserEndpointsModule {
     }
     
     // TODO: use TokenIdentifier type once implemented
-    static func computeSellPrice<T: CurveFunction & MXCodable & Default & Equatable>(
+    static func computeSellPrice<T: CurveFunction & SpaceCodable & Default & Equatable>(
         bondingCurve: BondingCurve<T>,
         amount: BigUint
     ) -> BigUint {

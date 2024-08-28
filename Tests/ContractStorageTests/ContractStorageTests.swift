@@ -15,7 +15,7 @@ struct CounterContract {
         smartContractError(message: "This is an user error.")
     }
     
-    public func getGlobalCounterValue() -> MXString {
+    public func getGlobalCounterValue() -> Buffer {
         "The global counter is: \(self.globalCounter)"
     }
 }

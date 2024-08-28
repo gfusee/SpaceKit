@@ -202,7 +202,7 @@ public struct QueueMapper<V: TopEncode & TopDecode> {
     }
 }
 
-extension QueueMapper: MXSequence {
+extension QueueMapper: SpaceSequence {
     public func forEach(_ operations: (V) throws -> Void) rethrows {
         let infoMapper = self.getInfoMapper()
         let info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()

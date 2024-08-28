@@ -91,7 +91,7 @@ public struct UnorderedSetMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
 }
 
-extension UnorderedSetMapper: MXSequence {
+extension UnorderedSetMapper: SpaceSequence {
     public func forEach(_ operations: (V) throws -> Void) rethrows {
         try self.vecMapper.forEach(operations)
     }

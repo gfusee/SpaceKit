@@ -1,6 +1,6 @@
 // TODO: add tests
 
-public struct MultiValueEncoded<Item: MXCodable> {
+public struct MultiValueEncoded<Item: SpaceCodable> {
     private var rawBuffers: Vector<Buffer>
     
     public var count: Int32 {
@@ -47,7 +47,7 @@ public struct MultiValueEncoded<Item: MXCodable> {
     }
 }
 
-extension MultiValueEncoded: MXSequence {
+extension MultiValueEncoded: SpaceSequence {
     public func forEach(_ operations: (Item) throws -> Void) rethrows {
         let count = self.count
         var index: Int32 = 0
