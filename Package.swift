@@ -6,20 +6,12 @@ import CompilerPluginSupport
 
 let isWasm = Context.environment["SWIFT_WASM"]?.lowercased() == "true"
 
-let unsafeFlags = isWasm ? [
-    "-gnone",
-    "-Osize",
-    "-enable-experimental-feature",
-    "Extern",
-    "-enable-experimental-feature",
-    "Embedded",
-    "-Xcc",
-    "-fdeclspec",
-    "-whole-module-optimization",
-    "-D",
-    "WASM",
-    "-disable-stack-protector"
+let swiftSettings: [SwiftSetting] = isWasm ? [
+    .enableExperimentalFeature("Extern"),
+    .enableExperimentalFeature("Embedded")
 ] : []
+
+let experimentalFeatures: [String] = []
 
 var packageDependencies: [Package.Dependency] = [
     .package(url: "https://github.com/apple/swift-syntax", from: "510.0.1")
@@ -177,9 +169,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/Adder",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "BondingCurve",
@@ -187,9 +177,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/BondingCurve",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CheckPause",
@@ -197,9 +185,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/CheckPause",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CrowdfundingEsdt",
@@ -207,9 +193,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/CrowdfundingEsdt",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CryptoBubbles",
@@ -217,9 +201,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/CryptoBubbles",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CryptoKittiesAuction",
@@ -227,9 +209,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/CryptoKitties/Auction",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CryptoKittiesCommon",
@@ -238,9 +218,7 @@ let package = Package(
                 "CryptoKittiesRandom"
             ],
             path: "Examples/CryptoKitties/Common",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CryptoKittiesRandom",
@@ -248,9 +226,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/CryptoKitties/Random",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CryptoKittiesGeneticAlg",
@@ -260,9 +236,7 @@ let package = Package(
                 "CryptoKittiesRandom"
             ],
             path: "Examples/CryptoKitties/GeneticAlg",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "CryptoKittiesOwnership",
@@ -272,9 +246,7 @@ let package = Package(
                 "CryptoKittiesRandom"
             ],
             path: "Examples/CryptoKitties/Ownership",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "DigitalCash",
@@ -282,9 +254,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/DigitalCash",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "Empty",
@@ -292,9 +262,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/Empty",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "EsdtTransferWithFee",
@@ -302,9 +270,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/EsdtTransferWithFee",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "Factorial",
@@ -312,9 +278,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/Factorial",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "LotteryEsdt",
@@ -322,9 +286,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/LotteryEsdt",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "PingPongEgld",
@@ -332,9 +294,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/PingPongEgld",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "ProxyPause",
@@ -342,9 +302,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/ProxyPause",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "Multisig",
@@ -352,9 +310,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/Multisig",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "NftMinter",
@@ -362,9 +318,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/NftMinter",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "OrderBookPair",
@@ -372,9 +326,7 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/OrderBookPair",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "TokenRelease",
@@ -382,16 +334,12 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/TokenRelease",
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .target(
             name: "Space",
             dependencies: libraryDependencies,
-            swiftSettings: [
-                .unsafeFlags(unsafeFlags)
-            ]
+            swiftSettings: swiftSettings
         ),
         .macro(
             name: "CallbackMacro",

@@ -44,7 +44,8 @@ for TARGET in "${(k)TARGETS[@]}"; do
     WASM_DEST_FILE_PATH="$TARGET_PACKAGE_OUTPUT_PATH/$TARGET.wasm"
     SCENARIOS_JSON_DIR="$TARGET_PACKAGE_PATH/scenarios"
 
-    SWIFT_WASM=true $SWIFT_BIN_FOLDER/swift build --target $TARGET --triple wasm32-unknown-none-wasm --disable-index-store -Xswiftc -Osize -Xswiftc -gnone
+    SWIFT_WASM=true $SWIFT_BIN_FOLDER/swift build --target $TARGET --triple wasm32-unknown-none-wasm --disable-index-store -Xswiftc -Osize -Xswiftc -gnone -Xswiftc -whole-module-optimization -Xswiftc -D -Xswiftc WASM -Xswiftc -disable-stack-protector -Xcc -fdeclspec
+    
     wasm-ld --no-entry --allow-undefined $OBJECT_FILE_PATH "$MEMCPY_OBJECT_FILE_PATH" "$MULTI3_OBJECT_FILE_PATH" -o $WASM_BUILT_FILE_PATH
     wasm-opt -Os -o $WASM_OPT_FILE_PATH $WASM_BUILT_FILE_PATH
 
