@@ -1,3 +1,5 @@
+// TODO: this is critical, so it has to be audited
+
 #include <stddef.h>
 
 void* memcpy(void* dest, const void* src, size_t n) {

@@ -411,13 +411,10 @@ import CryptoKittiesRandom
             callbackArgs.pushArg(arg: Message.caller)
             
             // TODO: removing 10_000_000 is huge
-            let gasLeft = BigUint(value: Blockchain.getGasLeft()) - 10_000_000
-            let gasForCallbackRaw: UInt64 = 20_000_000
-            let gasForCallback = BigUint(value: gasForCallbackRaw)
+            let gasLeft = Blockchain.getGasLeft() - 10_000_000
+            let gasForCallback: UInt64 = 20_000_000
             
-            // TODO: UInt64 operations causes invalid contract code, there is another TODO in another contract example detailing why
-            // TODO: super tricky operations
-            let gasForExecution = UInt64((gasLeft - gasForCallback).toInt64()!)
+            let gasForExecution = gasLeft - gasForCallback
             
             CryptoKittiesGeneticAlgProxy.generateKittyGenes(
                 matron: matron,
@@ -427,7 +424,7 @@ import CryptoKittiesRandom
                 receiver: geneScienceContractAddress,
                 callbackName: "generateKittyGenesCallback",
                 gas: gasForExecution,
-                gasForCallback: gasForCallbackRaw,
+                gasForCallback: gasForCallback,
                 callbackArgs: callbackArgs
             )
         } else {
@@ -528,9 +525,7 @@ import CryptoKittiesRandom
         
         let cooldown = kitty.getNextCooldownTime()
         
-        // TODO: UInt64 comparison causes invalid contract code, there is another TODO in another contract example detailing why
-        // TODO: super tricky operations
-        kitty.cooldownEnd = UInt64((BigUint(value: Blockchain.getBlockTimestamp()) + BigUint(value: cooldown)).toInt64()!)
+        kitty.cooldownEnd = Blockchain.getBlockTimestamp() + cooldown
         
         return kitty
     }

@@ -15,8 +15,6 @@ let unsafeFlags = isWasm ? [
     "Embedded",
     "-Xcc",
     "-fdeclspec",
-    "-Xcc",
-    "-static",
     "-whole-module-optimization",
     "-D",
     "WASM",

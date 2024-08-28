@@ -101,9 +101,8 @@ let PERCENTAGE_TOTAL: UInt64 = 100
             "The schedule must have a positive number of total tokens released"
         )
         
-        // TODO: UInt64 mul operations result in an undefined import: __multi3
         require(
-            BigUint(value: periodUnlockPercentage) * BigUint(value: releaseTicks) == BigUint(value: PERCENTAGE_TOTAL),
+            UInt64(periodUnlockPercentage) * releaseTicks == PERCENTAGE_TOTAL,
             "The final percentage is invalid"
         )
         

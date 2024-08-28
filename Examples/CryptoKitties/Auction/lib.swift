@@ -47,13 +47,10 @@ import MultiversX
         )
         
         // TODO: removing 10_000_000 is huge
-        let gasLeft = BigUint(value: Blockchain.getGasLeft()) - 10_000_000
-        let gasForCallbackRaw: UInt64 = 20_000_000
-        let gasForCallback = BigUint(value: gasForCallbackRaw)
+        let gasLeft = Blockchain.getGasLeft() - 10_000_000
+        let gasForCallback: UInt64 = 20_000_000
         
-        // TODO: UInt64 operations causes invalid contract code, there is another TODO in another contract example detailing why
-        // TODO: super tricky operations
-        let gasForExecution = UInt64((gasLeft - gasForCallback).toInt64()!)
+        let gasForExecution = gasLeft - gasForCallback
         
         CryptoKittiesOwnershipProxy
             .createGenZeroKitty
@@ -61,7 +58,7 @@ import MultiversX
                 receiver: kittyOwnershipContractAddress,
                 callbackName: "createGenZeroKittyCallback",
                 gas: gasForExecution,
-                gasForCallback: gasForCallbackRaw,
+                gasForCallback: gasForCallback,
                 callbackArgs: ArgBuffer()
             )
     }
@@ -273,13 +270,10 @@ import MultiversX
         let kittyOwnershipContractAddress = self.getKittyOwnershipContractAddress()
         if !kittyOwnershipContractAddress.isZero() {
             // TODO: removing 10_000_000 is huge
-            let gasLeft = BigUint(value: Blockchain.getGasLeft()) - 10_000_000
-            let gasForCallbackRaw: UInt64 = 20_000_000
-            let gasForCallback = BigUint(value: gasForCallbackRaw)
+            let gasLeft = Blockchain.getGasLeft() - 10_000_000
+            let gasForCallback: UInt64 = 20_000_000
             
-            // TODO: UInt64 operations causes invalid contract code, there is another TODO in another contract example detailing why
-            // TODO: super tricky operations
-            let gasForExecution = UInt64((gasLeft - gasForCallback).toInt64()!)
+            let gasForExecution = gasLeft - gasForCallback
             
             var callbackArgs = ArgBuffer()
             callbackArgs.pushArg(arg: auctionType)
@@ -299,7 +293,7 @@ import MultiversX
                     receiver: kittyOwnershipContractAddress,
                     callbackName: "allowAuctioningCallback",
                     gas: gasForExecution,
-                    gasForCallback: gasForCallbackRaw,
+                    gasForCallback: gasForCallback,
                     callbackArgs: callbackArgs
                 )
         }
@@ -323,13 +317,10 @@ import MultiversX
         
         if !kittyOwnershipContractAddress.isZero() {
             // TODO: removing 10_000_000 is huge
-            let gasLeft = BigUint(value: Blockchain.getGasLeft()) - 10_000_000
-            let gasForCallbackRaw: UInt64 = 20_000_000
-            let gasForCallback = BigUint(value: gasForCallbackRaw)
+            let gasLeft = Blockchain.getGasLeft() - 10_000_000
+            let gasForCallback: UInt64 = 20_000_000
             
-            // TODO: UInt64 operations causes invalid contract code, there is another TODO in another contract example detailing why
-            // TODO: super tricky operations
-            let gasForExecution = UInt64((gasLeft - gasForCallback).toInt64()!)
+            let gasForExecution = gasLeft - gasForCallback
             
             var callbackArgs = ArgBuffer()
             callbackArgs.pushArg(arg: kittyId)
@@ -343,7 +334,7 @@ import MultiversX
                     receiver: kittyOwnershipContractAddress,
                     callbackName: "transferCallback",
                     gas: gasForExecution,
-                    gasForCallback: gasForCallbackRaw,
+                    gasForCallback: gasForCallback,
                     callbackArgs: callbackArgs
                 )
         }
@@ -358,13 +349,10 @@ import MultiversX
         
         if !kittyOwnershipContractAddress.isZero() {
             // TODO: removing 10_000_000 is huge
-            let gasLeft = BigUint(value: Blockchain.getGasLeft()) - 10_000_000
-            let gasForCallbackRaw: UInt64 = 20_000_000
-            let gasForCallback = BigUint(value: gasForCallbackRaw)
+            let gasLeft = Blockchain.getGasLeft() - 10_000_000
+            let gasForCallback: UInt64 = 20_000_000
             
-            // TODO: UInt64 operations causes invalid contract code, there is another TODO in another contract example detailing why
-            // TODO: super tricky operations
-            let gasForExecution = UInt64((gasLeft - gasForCallback).toInt64()!)
+            let gasForExecution = gasLeft - gasForCallback
             
             var callbackArgs = ArgBuffer()
             callbackArgs.pushArg(arg: kittyId)
@@ -379,7 +367,7 @@ import MultiversX
                     receiver: kittyOwnershipContractAddress,
                     callbackName: "transferCallback", // not a mistake, same callback for transfer and approveSiringAndReturnKitty
                     gas: gasForExecution,
-                    gasForCallback: gasForCallbackRaw,
+                    gasForCallback: gasForCallback,
                     callbackArgs: callbackArgs
                 )
         }

@@ -43,9 +43,8 @@ struct ValidationModule {
                 "Invalid fee config fixed amount"
             )
         case .percent:
-            // TODO: UInt64 comparison causes invalid contract code, there is another TODO in another contract example detailing why
             require(
-                BigUint(value: params.feeConfig.percentFee) < BigUint(value: PERCENT_BASE_POINTS),
+                params.feeConfig.percentFee < PERCENT_BASE_POINTS,
                 "Percent value above maximum value"
             )
         }
@@ -62,9 +61,8 @@ struct ValidationModule {
     }
     
     static func requireValidOrderInputDealConfig(params: OrderInputParams) {
-        // TODO: UInt64 comparison causes invalid contract code, there is another TODO in another contract example detailing why
         require(
-            BigUint(value: params.dealConfig.matchProviderPercent) < BigUint(value: PERCENT_BASE_POINTS),
+            params.dealConfig.matchProviderPercent < PERCENT_BASE_POINTS,
             "Bad deal config"
         )
     }

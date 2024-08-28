@@ -38,13 +38,14 @@ for TARGET in "${(k)TARGETS[@]}"; do
     TARGET_PACKAGE_OUTPUT_PATH="$TARGET_PACKAGE_PATH/output"
     OBJECT_FILE_PATH="$(pwd)/$TARGET.o"
     MEMCPY_OBJECT_FILE_PATH="$(pwd)/Utils/Memory/memcpy.o"
+    MULTI3_OBJECT_FILE_PATH="$(pwd)/Utils/Numbers/__multi3.o"
     WASM_BUILT_FILE_PATH="$(pwd)/$TARGET.wasm"
     WASM_OPT_FILE_PATH="$(pwd)/$TARGET-opt.wasm"
     WASM_DEST_FILE_PATH="$TARGET_PACKAGE_OUTPUT_PATH/$TARGET.wasm"
     SCENARIOS_JSON_DIR="$TARGET_PACKAGE_PATH/scenarios"
 
     SWIFT_WASM=true $SWIFT_BIN_FOLDER/swift build --target $TARGET --triple wasm32-unknown-none-wasm --disable-index-store -Xswiftc -Osize -Xswiftc -gnone
-    wasm-ld --no-entry --allow-undefined $OBJECT_FILE_PATH "$MEMCPY_OBJECT_FILE_PATH" -o $WASM_BUILT_FILE_PATH
+    wasm-ld --no-entry --allow-undefined $OBJECT_FILE_PATH "$MEMCPY_OBJECT_FILE_PATH" "$MULTI3_OBJECT_FILE_PATH" -o $WASM_BUILT_FILE_PATH
     wasm-opt -Os -o $WASM_OPT_FILE_PATH $WASM_BUILT_FILE_PATH
 
     mkdir -p $TARGET_PACKAGE_OUTPUT_PATH
