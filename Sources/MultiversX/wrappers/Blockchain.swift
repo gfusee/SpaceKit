@@ -74,7 +74,7 @@ public struct Blockchain {
             addressPtr: &addressBytes,
             tokenIDOffset: &tokenIdentifierBytes,
             tokenIDLen: tokenIdentifier.count,
-            nonce: toBigEndianInt64(from: API.getGasLeft().toBytes8()), // TODO: super tricky, we should ensure it works
+            nonce: toBigEndianInt64(from: nonce.toBytes8()), // TODO: super tricky, we should ensure it works
             dest: destHandle
         )
         

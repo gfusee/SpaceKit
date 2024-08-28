@@ -1,7 +1,7 @@
 import MultiversX
 
 fileprivate let PERFORM_ACTION_FINISH_GAS: UInt64 = 500_000
-fileprivate let PERFORM_ASYNC_CALL_ACTION_FINISH_GAS: UInt64 = 10_000_000
+fileprivate let PERFORM_ASYNC_CALL_ACTION_FINISH_GAS: UInt64 = 15_000_000
 fileprivate let PERFORM_ASYNC_CALLBACK_GAS: UInt64 = 1_000_000
 
 fileprivate func addSignedInt32ToUnsignedInt32(value: UInt32, delta: Int32) -> UInt32 {

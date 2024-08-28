@@ -95,7 +95,7 @@
             },
             "expect": {
                 "out": [
-                    "0x00"
+                    "false"
                 ],
                 "status": "",
                 "gas": "*",

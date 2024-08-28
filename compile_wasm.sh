@@ -8,7 +8,7 @@ TARGETS=(
     ["Adder"]="$(pwd)/Examples/Adder"
     ["BondingCurve"]="$(pwd)/Examples/BondingCurve"
     ["CheckPause"]="$(pwd)/Examples/CheckPause"
-    #["CrowdfundingEsdt"]="$(pwd)/Examples/CrowdfundingEsdt"
+    ["CrowdfundingEsdt"]="$(pwd)/Examples/CrowdfundingEsdt"
     ["CryptoBubbles"]="$(pwd)/Examples/CryptoBubbles"
     ["CryptoKittiesAuction"]="$(pwd)/Examples/CryptoKitties/Auction"
     ["CryptoKittiesGeneticAlg"]="$(pwd)/Examples/CryptoKitties/GeneticAlg"
@@ -18,11 +18,11 @@ TARGETS=(
     ["EsdtTransferWithFee"]="$(pwd)/Examples/EsdtTransferWithFee"
     ["Factorial"]="$(pwd)/Examples/Factorial"
     ["LotteryEsdt"]="$(pwd)/Examples/LotteryEsdt"
-    #["Multisig"]="$(pwd)/Examples/Multisig"
+    ["Multisig"]="$(pwd)/Examples/Multisig"
     ["NftMinter"]="$(pwd)/Examples/NftMinter"
     ["OrderBookPair"]="$(pwd)/Examples/OrderBookPair"
-    #["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
-    #["ProxyPause"]="$(pwd)/Examples/ProxyPause"
+    ["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
+    ["ProxyPause"]="$(pwd)/Examples/ProxyPause"
     ["TokenRelease"]="$(pwd)/Examples/TokenRelease"
     # Add more targets as needed
 )

@@ -37,7 +37,7 @@ import MultiversX
     public func pause() {
         self.requireOwner()
         
-        self.allOwners.forEach { contract in
+        self.allContracts.forEach { contract in
             PausableProxy.pause.callAndIgnoreResult(receiver: contract)
         }
     }
@@ -45,7 +45,7 @@ import MultiversX
     public func unpause() {
         self.requireOwner()
         
-        self.allOwners.forEach { contract in
+        self.allContracts.forEach { contract in
             PausableProxy.unpause.callAndIgnoreResult(receiver: contract)
         }
     }
