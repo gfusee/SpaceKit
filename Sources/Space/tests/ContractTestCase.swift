@@ -1,4 +1,4 @@
-#if !WASM && TESTING
+#if !WASM && canImport(XCTest)
 import XCTest
 
 open class ContractTestCase: XCTestCase {
