@@ -18,7 +18,7 @@ public struct MapMapper<K: TopEncode & NestedEncode & TopDecode, V: TopEncode & 
     }
     
     private func getMappedValueMapper(key: K) -> SingleValueMapper<V> {
-        return SingleValueMapper(key: self.buildNamedKey(name: Buffer(stringLiteral: MAPPED_VALUE_IDENTIFIER), key: key))
+        return SingleValueMapper(baseKey: self.buildNamedKey(name: Buffer(stringLiteral: MAPPED_VALUE_IDENTIFIER), key: key))
     }
     
     public func get(_ key: K) -> V? {

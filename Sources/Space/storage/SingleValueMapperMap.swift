@@ -12,13 +12,13 @@ public struct SingleValueMapperMap<K: NestedEncode, V: TopEncode & TopDecode> {
         return self.baseKey + result
     }
     
-    private func getSingleValueMapper(key: K) -> SingleValueMapper<V> {
-        return SingleValueMapper(key: self.getKey(keyItem: key))
+    private func getSingleValueMapper(baseKey: K) -> SingleValueMapper<V> {
+        return SingleValueMapper(baseKey: self.getKey(keyItem: baseKey))
     }
     
     public subscript(_ item: K) -> SingleValueMapper<V> {
         get {
-            return self.getSingleValueMapper(key: item)
+            return self.getSingleValueMapper(baseKey: item)
         }
     }
 }

@@ -28,7 +28,7 @@ fileprivate func  getDefaultInfo() -> QueueMapperInfo {
     return QueueMapperInfo(len: 0, front: 0, back: 0, new: 0)
 }
 
-public struct QueueMapper<V: TopEncode & TopDecode> {
+public struct QueueMapper<V: TopEncode & TopDecode>: StorageMapper {
     private let baseKey: Buffer
     
     public init(baseKey: Buffer) {
@@ -47,15 +47,15 @@ public struct QueueMapper<V: TopEncode & TopDecode> {
     }
     
     package func getInfoMapper() -> SingleValueMapper<QueueMapperInfo> {
-        return SingleValueMapper(key: self.buildNameKey(name: Buffer(stringLiteral: INFO_IDENTIFIER)))
+        return SingleValueMapper(baseKey: self.buildNameKey(name: Buffer(stringLiteral: INFO_IDENTIFIER)))
     }
     
     package func getNodeMapper(nodeId: UInt32) -> SingleValueMapper<Node> {
-        return SingleValueMapper(key: self.buildNodeIdNamedKey(name: Buffer(stringLiteral: NODE_IDENTIFIER), nodeId: nodeId))
+        return SingleValueMapper(baseKey: self.buildNodeIdNamedKey(name: Buffer(stringLiteral: NODE_IDENTIFIER), nodeId: nodeId))
     }
     
     package func getValueMapper(nodeId: UInt32) -> SingleValueMapper<V> {
-        return SingleValueMapper(key: self.buildNodeIdNamedKey(name: Buffer(stringLiteral: VALUE_IDENTIFIER), nodeId: nodeId))
+        return SingleValueMapper(baseKey: self.buildNodeIdNamedKey(name: Buffer(stringLiteral: VALUE_IDENTIFIER), nodeId: nodeId))
     }
     
     package func getValue(nodeId: UInt32) -> V {

@@ -363,33 +363,22 @@ let MAX_TICKETS: UInt32 = 800
         self.$burnPercentageForLottery[lotteryName].clear()
     }
     
-    // TODO: not super dev friendly
     func getLotteryWhitelistMapper(lotteryName: Buffer) -> UnorderedSetMapper<Address> {
-        var lotteryNameNestedEncoded = Buffer()
-        lotteryName.depEncode(dest: &lotteryNameNestedEncoded)
-        
-        return UnorderedSetMapper(baseKey: "lotteryWhitelist" + lotteryNameNestedEncoded)
+        UnorderedSetMapper(baseKey: "lotteryWhitelist") {
+            lotteryName
+        }
     }
     
-    // TODO: not super dev friendly
-    func getNumberOfEntriesForUserMapper(
-        lotteryName: Buffer,
-        user: Address
-    ) -> SingleValueMapper<UInt32> {
-        var lotteryNameNestedEncoded = Buffer()
-        lotteryName.depEncode(dest: &lotteryNameNestedEncoded)
-        
-        var userNestedEncoded = Buffer()
-        user.depEncode(dest: &userNestedEncoded)
-        
-        return SingleValueMapper(key: "numberOfEntriesForUser" + lotteryNameNestedEncoded + userNestedEncoded)
+    func getNumberOfEntriesForUserMapper(lotteryName: Buffer, user: Address) -> SingleValueMapper<UInt32> {
+        return SingleValueMapper(baseKey: "numberOfEntriesForUser") {
+            lotteryName
+            user
+        }
     }
     
-    // TODO: not super dev friendly
     func getTicketsHoldersMapper(lotteryName: Buffer) -> VecMapper<Address> {
-        var lotteryNameNestedEncoded = Buffer()
-        lotteryName.depEncode(dest: &lotteryNameNestedEncoded)
-        
-        return VecMapper(baseKey: "ticketHolder" + lotteryNameNestedEncoded)
+        return VecMapper(baseKey: "ticketHolder") {
+            lotteryName
+        }
     }
 }

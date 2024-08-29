@@ -13,12 +13,10 @@ struct StorageModule {
     @Mapping<Buffer, Buffer>(key: "bonding_curve") static var bondingCurveForTokenIdentifier
     @Mapping<NonceAmountMappingKey, BigUint>(key: "nonce_amount") static var nonceAmountForTokenIdentifierAndNonce
     
-    // TODO: Not dev friendly
     // TODO: use TokenIdentifier type once implemented
     static func getOwnedTokensMapperForOwner(owner: Address) -> SetMapper<Buffer> {
-        var ownerSerialized = Buffer()
-        owner.depEncode(dest: &ownerSerialized)
-        
-        return SetMapper(baseKey: "owned_tokens" + ownerSerialized)
+        return SetMapper(baseKey: "owned_tokens") {
+            owner
+        }
     }
 }

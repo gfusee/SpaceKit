@@ -1,4 +1,4 @@
-#if !WASM
+#if !WASM && TESTING
 import XCTest
 
 open class ContractTestCase: XCTestCase {

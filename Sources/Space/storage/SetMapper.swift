@@ -3,7 +3,7 @@
 fileprivate let NULL_ENTRY: UInt32 = 0
 fileprivate let NODE_ID_IDENTIFIER: StaticString = ".node_id"
 
-public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
+public struct SetMapper<V: TopEncode & NestedEncode & TopDecode>: StorageMapper {
     // TODO: add tests
     private let baseKey: Buffer
     private let queueMapper: QueueMapper<V>
@@ -21,7 +21,7 @@ public struct SetMapper<V: TopEncode & NestedEncode & TopDecode> {
     }
     
     private func getNodeIdMapper(value: V) -> SingleValueMapper<UInt32> {
-        return SingleValueMapper(key: self.buildNamedValueKey(name: Buffer(stringLiteral: NODE_ID_IDENTIFIER), value: value))
+        return SingleValueMapper(baseKey: self.buildNamedValueKey(name: Buffer(stringLiteral: NODE_ID_IDENTIFIER), value: value))
     }
     
     public func isEmpty() -> Bool {

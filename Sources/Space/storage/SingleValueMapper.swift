@@ -1,8 +1,8 @@
-public struct SingleValueMapper<V: TopEncode & TopDecode> {
+public struct SingleValueMapper<V: TopEncode & TopDecode>: StorageMapper {
     private let key: Buffer
     
-    public init(key: Buffer) {
-        self.key = key
+    public init(baseKey: Buffer) {
+        self.key = baseKey
     }
 
     public func clear() {

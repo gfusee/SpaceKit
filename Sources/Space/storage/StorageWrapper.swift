@@ -4,15 +4,15 @@
     
     public var wrappedValue: T {
         get {
-            return SingleValueMapper(key: key).get()
+            return SingleValueMapper(baseKey: key).get()
         }
         set {
-            SingleValueMapper(key: key).set(newValue)
+            SingleValueMapper(baseKey: key).set(newValue)
         }
     }
     
     public var projectedValue: SingleValueMapper<T> {
-        SingleValueMapper(key: self.key)
+        SingleValueMapper(baseKey: self.key)
     }
     
     public init(

@@ -43,6 +43,10 @@ for TARGET in "${(k)TARGETS[@]}"; do
     WASM_OPT_FILE_PATH="$(pwd)/$TARGET-opt.wasm"
     WASM_DEST_FILE_PATH="$TARGET_PACKAGE_OUTPUT_PATH/$TARGET.wasm"
     SCENARIOS_JSON_DIR="$TARGET_PACKAGE_PATH/scenarios"
+    
+    # This will emit macros build results for the current computer's architecture
+    # Those macros results are needed despite we will compile later for WASM
+    $SWIFT_BIN_FOLDER/swift build --target Space
 
     SWIFT_WASM=true $SWIFT_BIN_FOLDER/swift build --target $TARGET --triple wasm32-unknown-none-wasm --disable-index-store -Xswiftc -Osize -Xswiftc -gnone -Xswiftc -whole-module-optimization -Xswiftc -D -Xswiftc WASM -Xswiftc -disable-stack-protector -Xcc -fdeclspec
     

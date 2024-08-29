@@ -4,7 +4,7 @@ fileprivate let INDEX_OUT_OF_RANGE_ERROR: StaticString = "index out of range"
 fileprivate let ITEM_SUFFIX: StaticString = ".item"
 fileprivate let LEN_SUFFIX: StaticString = ".len"
 
-public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
+public struct VecMapper<V: TopEncode & NestedEncode & TopDecode>: StorageMapper {
     // TODO: add tests
     private let baseKey: Buffer
     private let lenKey: Buffer
@@ -26,11 +26,11 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode> {
         var itemEncoded = Buffer()
         index.depEncode(dest: &itemEncoded)
         
-        return SingleValueMapper(key: self.baseKey + Buffer(stringLiteral: ITEM_SUFFIX) + itemEncoded)
+        return SingleValueMapper(baseKey: self.baseKey + Buffer(stringLiteral: ITEM_SUFFIX) + itemEncoded)
     }
     
     private func getLenMapper() -> SingleValueMapper<UInt32> {
-        return SingleValueMapper(key: self.lenKey)
+        return SingleValueMapper(baseKey: self.lenKey)
     }
     
     public func get(index: UInt32) -> V {
