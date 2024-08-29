@@ -17,7 +17,7 @@ public struct ContractCallTransactionInput {
         self.esdtValue = esdtValue
     }
     
-    package func toTransactionInput(contractAddress: String) -> TransactionInput {
+    public func toTransactionInput(contractAddress: String) -> TransactionInput {
         let callerAddress = self.callerAddress ?? contractAddress
         var esdtValueArray: [TransactionInput.EsdtPayment] = []
 

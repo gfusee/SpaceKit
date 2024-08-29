@@ -77,7 +77,7 @@ public class DummyApi {
         }
     }
     
-    package func registerContractEndpointSelectorForContractAddress(
+    public func registerContractEndpointSelectorForContractAddress(
         contractAddress: Data,
         selector: any ContractEndpointSelector
     ) {
@@ -107,7 +107,7 @@ public class DummyApi {
         self.worldState = world
     }
 
-    package func setCurrentSCOwnerAddress(owner: Data) {
+    public func setCurrentSCOwnerAddress(owner: Data) {
         self.getCurrentContainer().setCurrentSCOwnerAddress(owner: owner)
     }
     
