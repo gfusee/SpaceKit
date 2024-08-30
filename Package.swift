@@ -29,7 +29,8 @@ var testTargets: [Target] = []
 
 if !isWasm {
     packageDependencies.append(contentsOf: [
-        .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0")
+        .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0"),
+        .package(url: "https://github.com/kylef/Commander.git", exact: "0.9.1")
     ])
     
     libraryDependencies.append(contentsOf: [
@@ -157,7 +158,8 @@ let package = Package(
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(name: "Space", targets: ["Space"])
+        .library(name: "Space", targets: ["Space"]),
+        .executable(name: "SpaceCLI", targets: ["SpaceCLI"])
     ],
     dependencies: packageDependencies,
     targets: [
@@ -340,6 +342,12 @@ let package = Package(
             name: "Space",
             dependencies: libraryDependencies,
             swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "SpaceCLI",
+            dependencies: [
+                .product(name: "Commander", package: "Commander")
+            ]
         ),
         .macro(
             name: "CallbackMacro",
