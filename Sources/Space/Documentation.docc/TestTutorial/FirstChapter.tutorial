@@ -1,0 +1,23 @@
+@Tutorial(time: 10) {
+    @Intro(title: "First chapter") {
+        This is the first chapter of the tutorial!
+    }
+    
+    @Section(title: "This is the first section") {
+        @ContentAndMedia {
+            This is the first section of the first chapter of the tutorial
+        }
+        
+        @Steps {
+            @Step {
+                In this first step, you should do blablabla
+            }
+            
+            @Step {
+                In this second step, you should do blablabla
+                
+                @Code(name: "Print Hello World!", file: chapter1section1step2code.swift)
+            }
+        }
+    }
+}

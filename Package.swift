@@ -30,7 +30,8 @@ var testTargets: [Target] = []
 if !isWasm {
     packageDependencies.append(contentsOf: [
         .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0"),
-        .package(url: "https://github.com/kylef/Commander.git", exact: "0.9.1")
+        .package(url: "https://github.com/kylef/Commander.git", exact: "0.9.1"),
+        .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.1.0"),
     ])
     
     libraryDependencies.append(contentsOf: [
@@ -343,7 +344,7 @@ let package = Package(
             dependencies: libraryDependencies,
             swiftSettings: swiftSettings
         ),
-        .target(
+        .executableTarget(
             name: "SpaceCLI",
             dependencies: [
                 .product(name: "Commander", package: "Commander")
