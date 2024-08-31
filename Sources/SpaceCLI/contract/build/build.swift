@@ -1,51 +1,6 @@
-/*
- #!/bin/zsh
-
- set -e
-
- SWIFT_BIN_FOLDER="/Library/Developer/Toolchains/swift-6.0-DEVELOPMENT-SNAPSHOT-2024-07-16-a.xctoolchain/usr/bin/"
- SCENARIO_JSON_EXECUTABLE="/Users/quentin/multiversx-sdk/vmtools/v1.5.24/mx-chain-vm-go-1.5.24/cmd/test/test"
-
- TARGET="Adder"
-
- # Do not edit the below variables
- BUILD_FOLDER="$(pwd)/.space/sc-build"
- OBJECT_FILE_PATH="$BUILD_FOLDER/$TARGET.o"
- MEMCPY_OBJECT_FILE_PATH="/Users/quentin/IdeaProjects/mx-sdk-swift/Utils/Memory/memcpy.o"
- MULTI3_OBJECT_FILE_PATH="/Users/quentin/IdeaProjects/mx-sdk-swift/Utils/Numbers/__multi3.o"
- WASM_BUILT_FILE_PATH="$BUILD_FOLDER/$TARGET.wasm"
- WASM_OPT_FILE_PATH="$BUILD_FOLDER/$TARGET-opt.wasm"
- TARGET_PACKAGE_OUTPUT_PATH="$(pwd)/Output"
- WASM_DEST_FILE_PATH="$TARGET_PACKAGE_OUTPUT_PATH/$TARGET.wasm"
- SCENARIOS_JSON_DIR="$(pwd)/Scenarios"
-
- mkdir -p .space
- cd .space
- rm -rf sc-build
- mkdir -p sc-build
- cd sc-build
-
- cp -f -R ../../Sources Sources
- cp -f ../../Package.swift Package.swift
- [ -d "../../Tests" ] && cp -f -R ../../Tests Tests
-
- # This will emit macros build results for the current computer's architecture
- # Those macros results are needed despite we will compile later for WASM
- $SWIFT_BIN_FOLDER/swift build --target $TARGET
-
- SWIFT_WASM=true $SWIFT_BIN_FOLDER/swift build --target $TARGET --triple wasm32-unknown-none-wasm --disable-index-store -Xswiftc -Osize -Xswiftc -gnone -Xswiftc -whole-module-optimization -Xswiftc -D -Xswiftc WASM -Xswiftc -disable-stack-protector -Xcc -fdeclspec
-
- wasm-ld --no-entry --allow-undefined $OBJECT_FILE_PATH "$MEMCPY_OBJECT_FILE_PATH" "$MULTI3_OBJECT_FILE_PATH" -o $WASM_BUILT_FILE_PATH
- wasm-opt -Os -o $WASM_OPT_FILE_PATH $WASM_BUILT_FILE_PATH
-
- mkdir -p $TARGET_PACKAGE_OUTPUT_PATH
- cp -f $WASM_OPT_FILE_PATH $WASM_DEST_FILE_PATH
-
- $SCENARIO_JSON_EXECUTABLE $SCENARIOS_JSON_DIR
- */
-
 import Foundation
 
+// TODO: remove relative path, this is not safe
 func buildContract(contractName: String?) throws(CLIError) {
     guard try isValidProject() else {
         throw .common(.invalidProject)
@@ -71,9 +26,6 @@ func buildContract(contractName: String?) throws(CLIError) {
     let linkableObjects = (try buildLinkableObjects())
         .map { $0.path }
     
-    print(linkableObjects)
-    fatalError()
-    
     let buildFolder = "\(pwd)/.space/sc-build"
     let objectFilePath = "\(buildFolder)/\(target).o"
     let wasmBuiltFilePath = "\(buildFolder)/\(target).wasm"
@@ -98,39 +50,59 @@ func buildContract(contractName: String?) throws(CLIError) {
         // Change to .space directory
         fileManager.changeCurrentDirectoryPath(".space")
         
-        // Remove sc-build directory if it exists
-        if fileManager.fileExists(atPath: "sc-build") {
-            try fileManager.removeItem(atPath: "sc-build")
-        }
-        
         // Create sc-build directory
-        try fileManager.createDirectory(atPath: "sc-build", withIntermediateDirectories: true, attributes: nil)
+        if !fileManager.fileExists(atPath: "sc-build") {
+            try fileManager.createDirectory(atPath: "sc-build", withIntermediateDirectories: true, attributes: nil)
+        }
         
         // Change to sc-build directory
         fileManager.changeCurrentDirectoryPath("sc-build")
         
-        // Create the Contracts folder
-        try fileManager.createDirectory(atPath: "Contracts", withIntermediateDirectories: true, attributes: nil)
+        let scBuildDirectory = URL(fileURLWithPath: fileManager.currentDirectoryPath, isDirectory: true)
+        
+        let copiedTargetURL = scBuildDirectory
+            .appending(path: "Contracts/\(target)")
+        
+        // Create the Contracts/TARGET folder
+        if !fileManager.fileExists(atPath: copiedTargetURL.path) {
+            try fileManager.createDirectory(at: copiedTargetURL, withIntermediateDirectories: true, attributes: nil)
+        }
+        
+        // Delete everything excepted the .build folder
+        let contentsOfTarget = try fileManager.contentsOfDirectory(at: copiedTargetURL, includingPropertiesForKeys: nil)
+        for content in contentsOfTarget {
+            guard content.lastPathComponent != ".build" else {
+                continue
+            }
+            
+            print("DEBUG: Deleting \(content.path)")
+            try fileManager.removeItem(at: content)
+        }
         
         // Copy Contracts/$TARGET directory
-        try fileManager.copyItem(atPath: "\(pwd)/Contracts/\(target)", toPath: "Contracts/\(target)")
+        // Note: we run the cp command because we want to override while keeping old files
+        try runInTerminal(
+            currentDirectoryURL: scBuildDirectory,
+            command: "cp -r \(pwd)/Contracts/\(target) \(scBuildDirectory.path)/Contracts"
+        )
         
         // Copy Package.swift
-        try fileManager.copyItem(atPath: "\(pwd)/Package.swift", toPath: "Package.swift")
-        
-        let copiedTargetPath = fileManager.currentDirectoryPath
-        let copiedTargetURL = URL(filePath: copiedTargetPath, directoryHint: .isDirectory)
+        // Note: we run the cp command because we want to override the previousPackage.swift
+        try runInTerminal(
+            currentDirectoryURL: scBuildDirectory,
+            command: "cp \(pwd)/Package.swift Package.swift"
+        )
         
         // Run Swift build for the current architecture
         try runInTerminal(
-            currentDirectoryURL: copiedTargetURL,
+            currentDirectoryURL: scBuildDirectory,
             command: "\(swiftBinFolder)/swift",
             arguments: ["build", "--target", target]
         )
         
         // Run Swift build for WASM target
         try runInTerminal(
-            currentDirectoryURL: copiedTargetURL,
+            currentDirectoryURL: scBuildDirectory,
             command: "\(swiftBinFolder)/swift",
             environment: ["SWIFT_WASM": "true"],
             arguments: [

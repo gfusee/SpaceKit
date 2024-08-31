@@ -6,10 +6,12 @@ let INITIAL_PWD = FileManager.default.currentDirectoryPath
 let main = Group { rootGroup in
     rootGroup.group("contract") { contractGroup in
         contractGroup.command("new") {
+            try initialize()
             print("new")
         }
         
         contractGroup.command("build", Option<String>("contract", default: "")) { contract in
+            try initialize()
             try buildContract(contractName: contract.isEmpty ? nil : "")
         }
     }

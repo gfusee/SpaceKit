@@ -17,6 +17,9 @@ var packageDependencies: [Package.Dependency] = [
     .package(url: "https://github.com/apple/swift-syntax", from: "510.0.1")
 ]
 
+#if hasFeature(Embedded)
+var libraryDependencies: [Target.Dependency] = []
+#else
 var libraryDependencies: [Target.Dependency] = [
     "CallbackMacro",
     "ContractMacro",
@@ -24,6 +27,7 @@ var libraryDependencies: [Target.Dependency] = [
     "EventMacro",
     "ProxyMacro"
 ]
+#endif
 
 var testTargets: [Target] = []
 

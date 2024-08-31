@@ -20,7 +20,7 @@ func runInTerminal(
     task.arguments = ["-c", fullCommand]
     
     do {
-        print("--- Running \(fullCommand) in \(currentDirectoryURL.path)")
+        print("INFO: Running \(fullCommand) in \(currentDirectoryURL.path)")
         try task.run()
     } catch {
         fatalError() // TODO

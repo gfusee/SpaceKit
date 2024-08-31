@@ -1,7 +1,7 @@
 import Foundation
 
 func initialize() throws(CLIError) {
-    let fileManager = FileManager.default
+    try checkRequirements()
     
     let _ = try getPermanentStorageDirectory()
 }
