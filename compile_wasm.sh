@@ -6,24 +6,24 @@ set -e
 declare -A TARGETS
 TARGETS=(
     ["Adder"]="$(pwd)/Examples/Adder"
-    ["BondingCurve"]="$(pwd)/Examples/BondingCurve"
-    ["CheckPause"]="$(pwd)/Examples/CheckPause"
-    ["CrowdfundingEsdt"]="$(pwd)/Examples/CrowdfundingEsdt"
-    ["CryptoBubbles"]="$(pwd)/Examples/CryptoBubbles"
-    ["CryptoKittiesAuction"]="$(pwd)/Examples/CryptoKitties/Auction"
-    ["CryptoKittiesGeneticAlg"]="$(pwd)/Examples/CryptoKitties/GeneticAlg"
-    ["CryptoKittiesOwnership"]="$(pwd)/Examples/CryptoKitties/Ownership"
-    ["DigitalCash"]="$(pwd)/Examples/DigitalCash"
-    ["Empty"]="$(pwd)/Examples/Empty"
-    ["EsdtTransferWithFee"]="$(pwd)/Examples/EsdtTransferWithFee"
-    ["Factorial"]="$(pwd)/Examples/Factorial"
-    ["LotteryEsdt"]="$(pwd)/Examples/LotteryEsdt"
-    ["Multisig"]="$(pwd)/Examples/Multisig"
-    ["NftMinter"]="$(pwd)/Examples/NftMinter"
-    ["OrderBookPair"]="$(pwd)/Examples/OrderBookPair"
-    ["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
-    ["ProxyPause"]="$(pwd)/Examples/ProxyPause"
-    ["TokenRelease"]="$(pwd)/Examples/TokenRelease"
+    #["BondingCurve"]="$(pwd)/Examples/BondingCurve"
+    #["CheckPause"]="$(pwd)/Examples/CheckPause"
+    #["CrowdfundingEsdt"]="$(pwd)/Examples/CrowdfundingEsdt"
+    #["CryptoBubbles"]="$(pwd)/Examples/CryptoBubbles"
+    #["CryptoKittiesAuction"]="$(pwd)/Examples/CryptoKitties/Auction"
+    #["CryptoKittiesGeneticAlg"]="$(pwd)/Examples/CryptoKitties/GeneticAlg"
+    #["CryptoKittiesOwnership"]="$(pwd)/Examples/CryptoKitties/Ownership"
+    #["DigitalCash"]="$(pwd)/Examples/DigitalCash"
+    #["Empty"]="$(pwd)/Examples/Empty"
+    #["EsdtTransferWithFee"]="$(pwd)/Examples/EsdtTransferWithFee"
+    #["Factorial"]="$(pwd)/Examples/Factorial"
+    #["LotteryEsdt"]="$(pwd)/Examples/LotteryEsdt"
+    #["Multisig"]="$(pwd)/Examples/Multisig"
+    #["NftMinter"]="$(pwd)/Examples/NftMinter"
+    #["OrderBookPair"]="$(pwd)/Examples/OrderBookPair"
+    #["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
+    #["ProxyPause"]="$(pwd)/Examples/ProxyPause"
+    #["TokenRelease"]="$(pwd)/Examples/TokenRelease"
     # Add more targets as needed
 )
 
@@ -48,7 +48,7 @@ for TARGET in "${(k)TARGETS[@]}"; do
     # Those macros results are needed despite we will compile later for WASM
     $SWIFT_BIN_FOLDER/swift build --target Space
 
-    SWIFT_WASM=true $SWIFT_BIN_FOLDER/swift build --target $TARGET --triple wasm32-unknown-none-wasm --disable-index-store -Xswiftc -Osize -Xswiftc -gnone -Xswiftc -whole-module-optimization -Xswiftc -D -Xswiftc WASM -Xswiftc -disable-stack-protector -Xcc -fdeclspec
+    SWIFT_WASM=true $SWIFT_BIN_FOLDER/swift build --target $TARGET --triple wasm32-unknown-none-wasm --disable-index-store -Xswiftc -Osize -Xswiftc -gnone
     
     wasm-ld --no-entry --allow-undefined $OBJECT_FILE_PATH "$MEMCPY_OBJECT_FILE_PATH" "$MULTI3_OBJECT_FILE_PATH" -o $WASM_BUILT_FILE_PATH
     wasm-opt -Os -o $WASM_OPT_FILE_PATH $WASM_BUILT_FILE_PATH

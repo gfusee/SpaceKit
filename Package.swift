@@ -7,8 +7,20 @@ import CompilerPluginSupport
 let isWasm = Context.environment["SWIFT_WASM"]?.lowercased() == "true"
 
 let swiftSettings: [SwiftSetting] = isWasm ? [
-    .enableExperimentalFeature("Extern"),
-    .enableExperimentalFeature("Embedded")
+    .unsafeFlags([
+        "-gnone",
+        "-Osize",
+        "-enable-experimental-feature",
+        "Extern",
+        "-enable-experimental-feature",
+        "Embedded",
+        "-Xcc",
+        "-fdeclspec",
+        "-whole-module-optimization",
+        "-D",
+        "WASM",
+        "-disable-stack-protector"
+    ])
 ] : []
 
 let experimentalFeatures: [String] = []
@@ -26,6 +38,12 @@ var libraryDependencies: [Target.Dependency] = [
 ]
 
 var testTargets: [Target] = []
+var extraNonWasmTargets: [Target] = []
+
+var products: [Product] = [
+    // Products define the executables and libraries a package produces, making them visible to other packages.
+    .library(name: "Space", targets: ["Space"])
+]
 
 if !isWasm {
     packageDependencies.append(contentsOf: [
@@ -150,6 +168,17 @@ if !isWasm {
             ]
         ),
     ])
+    
+    extraNonWasmTargets.append(
+        .executableTarget(
+            name: "SpaceCLI",
+            dependencies: [
+                .product(name: "Commander", package: "Commander")
+            ]
+        )
+    )
+    
+    products.append(.executable(name: "SpaceCLI", targets: ["SpaceCLI"]))
 }
 
 let package = Package(
@@ -157,11 +186,7 @@ let package = Package(
     platforms: [
         .macOS(.v14)
     ],
-    products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(name: "Space", targets: ["Space"]),
-        .executable(name: "SpaceCLI", targets: ["SpaceCLI"])
-    ],
+    products: products,
     dependencies: packageDependencies,
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -344,12 +369,6 @@ let package = Package(
             dependencies: libraryDependencies,
             swiftSettings: swiftSettings
         ),
-        .executableTarget(
-            name: "SpaceCLI",
-            dependencies: [
-                .product(name: "Commander", package: "Commander")
-            ]
-        ),
         .macro(
             name: "CallbackMacro",
             dependencies: [
@@ -390,5 +409,5 @@ let package = Package(
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ]
         )
-    ] + testTargets
+    ] + testTargets + extraNonWasmTargets
 )
