@@ -69,18 +69,14 @@ func buildContract(contractName: String?) throws(CLIError) {
         }
         
         // Delete everything excepted the .build folder
-        let contentsOfTarget = try fileManager.contentsOfDirectory(at: copiedTargetURL, includingPropertiesForKeys: nil)
-        for content in contentsOfTarget {
-            guard content.lastPathComponent != ".build" else {
-                continue
-            }
-            
-            print("DEBUG: Deleting \(content.path)")
-            try fileManager.removeItem(at: content)
+        if fileManager.fileExists(atPath: scBuildDirectory.path) {
+            try fileManager.removeItem(at: scBuildDirectory)
         }
         
+        try fileManager.createDirectory(at: copiedTargetURL, withIntermediateDirectories: true)
+        
         // Copy Contracts/$TARGET directory
-        // Note: we run the cp command because we want to override while keeping old files
+        // Note: we run the cp command because we want to override while (in the future) keeping old files
         try runInTerminal(
             currentDirectoryURL: scBuildDirectory,
             command: "cp -r \(pwd)/Contracts/\(target) \(scBuildDirectory.path)/Contracts"
@@ -92,6 +88,12 @@ func buildContract(contractName: String?) throws(CLIError) {
             currentDirectoryURL: scBuildDirectory,
             command: "cp \(pwd)/Package.swift Package.swift"
         )
+        
+        // Remove the .build copied folder
+        let scBuildArtifactsDirectory = scBuildDirectory.appending(path: ".build")
+        if fileManager.fileExists(atPath: scBuildArtifactsDirectory.path) {
+            try fileManager.removeItem(at: scBuildArtifactsDirectory)
+        }
         
         // Run Swift build for the current architecture
         try runInTerminal(
