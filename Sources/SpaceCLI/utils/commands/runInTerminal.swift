@@ -19,6 +19,12 @@ func runInTerminal(
     let fullCommand = "\(command) \(arguments.joined(separator: " "))"
     task.arguments = ["-c", fullCommand]
     
+    TERMINAL_PROCESS = task
+    
+    defer {
+        TERMINAL_PROCESS = nil
+    }
+    
     do {
         print("INFO: Running \(fullCommand) in \(currentDirectoryURL.path)")
         try task.run()

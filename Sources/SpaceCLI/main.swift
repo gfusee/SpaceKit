@@ -2,6 +2,17 @@ import Foundation
 import Commander
 
 let INITIAL_PWD = FileManager.default.currentDirectoryPath
+var TERMINAL_PROCESS: Process? = nil
+
+let signalCallback: sig_t = { signal in
+    if let terminalProcess = TERMINAL_PROCESS, terminalProcess.isRunning {
+        terminalProcess.interrupt()
+    }
+    
+    exit(signal)
+}
+
+signal(SIGINT, signalCallback)
 
 let main = Group { rootGroup in
     rootGroup.group("contract") { contractGroup in
