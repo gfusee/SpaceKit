@@ -1,9 +1,9 @@
 // TODO: report a Swift error in which Int64(<Int32 or UInt64 variable>) and UInt64(<Int32 or Int64 variable>) don't work in -no-allocations mode
 
 #if WASM
-var APIj = VMApi()
+var API = VMApi()
 #else
-public var APIj = DummyApi()
+public var API = DummyApi()
 #endif
 
 @attached(peer)
