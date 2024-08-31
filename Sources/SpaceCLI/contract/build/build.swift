@@ -68,10 +68,14 @@ func buildContract(contractName: String?) throws(CLIError) {
     fileManager.changeCurrentDirectoryPath(INITIAL_PWD)
     let pwd = fileManager.currentDirectoryPath
     
+    let linkableObjects = (try buildLinkableObjects())
+        .map { $0.path }
+    
+    print(linkableObjects)
+    fatalError()
+    
     let buildFolder = "\(pwd)/.space/sc-build"
     let objectFilePath = "\(buildFolder)/\(target).o"
-    let memcpyObjectFilePath = "/Users/quentin/IdeaProjects/mx-sdk-swift/Utils/Memory/memcpy.o" // TODO: compile and set
-    let multi3ObjectFilePath = "/Users/quentin/IdeaProjects/mx-sdk-swift/Utils/Numbers/__multi3.o" // TODO: compile and set
     let wasmBuiltFilePath = "\(buildFolder)/\(target).wasm"
     let wasmOptFilePath = "\(buildFolder)/\(target)-opt.wasm"
     let targetPackageOutputPath = "\(pwd)/Contracts/\(target)/Output"
@@ -142,15 +146,21 @@ func buildContract(contractName: String?) throws(CLIError) {
             ]
         )
         
+        var wasmLdArguments = [
+            "--no-entry", "--allow-undefined",
+            "-o", wasmBuiltFilePath,
+            objectFilePath
+        ]
+        
+        for linkableObject in linkableObjects {
+            wasmLdArguments.append(linkableObject)
+        }
+        
         // Run wasm-ld
         try runInTerminal(
             currentDirectoryURL: copiedTargetURL,
             command: "wasm-ld",
-            arguments: [
-                "--no-entry", "--allow-undefined",
-                objectFilePath, memcpyObjectFilePath, multi3ObjectFilePath,
-                "-o", wasmBuiltFilePath
-            ]
+            arguments: wasmLdArguments
         )
         
         // Run wasm-opt

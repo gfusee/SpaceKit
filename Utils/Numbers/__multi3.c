@@ -4,6 +4,8 @@
 
 // TODO: this is critical, so it has to be audited
 
+#include <stdint.h>
+
 typedef long long di_int;
 typedef unsigned long long du_int;
 typedef int ti_int __attribute__((mode(TI)));
