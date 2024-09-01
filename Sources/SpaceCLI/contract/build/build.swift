@@ -1,4 +1,6 @@
 import Foundation
+import Workspace
+import Basics
 
 // TODO: remove relative path, this is not safe
 func buildContract(contractName: String?) throws(CLIError) {
@@ -59,10 +61,15 @@ func buildContract(contractName: String?) throws(CLIError) {
             command: "ln -sf \(sourceTargetPath) \(linkedTargetUrl.path)"
         )
         
-        // Create the Package.swift symbolic link
-        try runInTerminal(
-            currentDirectoryURL: buildFolderUrl,
-            command: "ln -sf \(pwd)/Package.swift Package.swift"
+        let newPackagePath = "\(buildFolder)/Package.swift"
+        if fileManager.fileExists(atPath: newPackagePath) {
+            try fileManager.removeItem(at: URL(filePath: newPackagePath))
+        }
+        
+        // Add the custom Package.swift dedicated to WASM compilation
+        fileManager.createFile(
+            atPath: newPackagePath,
+            contents: (try generateWASMPackage(sourcePackagePath: pwd)).data(using: .utf8)
         )
         
         // Run Swift build for WASM target
