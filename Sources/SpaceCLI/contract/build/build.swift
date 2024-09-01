@@ -27,6 +27,12 @@ func buildContract(contractName: String?) throws(CLIError) {
         .map { $0.path }
     
     let buildFolder = "\(pwd)/.space/sc-build"
+    let buildFolderUrl = URL(fileURLWithPath: buildFolder, isDirectory: true)
+    let sourceTargetPath = "\(pwd)/Contracts/\(target)"
+    let contractsUrl = buildFolderUrl.appending(path: "Contracts")
+    let linkedTargetUrl = contractsUrl
+        .appending(path: target)
+    
     let objectFilePath = "\(buildFolder)/\(target).o"
     let wasmBuiltFilePath = "\(buildFolder)/\(target).wasm"
     let wasmOptFilePath = "\(buildFolder)/\(target)-opt.wasm"
@@ -38,73 +44,30 @@ func buildContract(contractName: String?) throws(CLIError) {
     let scenarioJsonExecutable = "/Users/quentin/multiversx-sdk/vmtools/v1.5.24/mx-chain-vm-go-1.5.24/cmd/test/test" // TODO: Replace with the actual path to the scenario JSON executable
 
     do {
-        // Explanations: we want to create a copy of the source files before compiling them.
-        // This copy will be done in .space/sc-build, note that the sc-build folder is resetted at each build.
-        // Only Contracts/$TARGET has to be copied.
+        // Explanations: we want to create a symbolic link of the source files before compiling them.
+        // By doing so, we avoid generating *.o files in the user project root directory
         
-        // Create .space directory
-        if !fileManager.fileExists(atPath: ".space") {
-            try fileManager.createDirectory(atPath: ".space", withIntermediateDirectories: true, attributes: nil)
+        if fileManager.fileExists(atPath: contractsUrl.path) {
+            try fileManager.removeItem(at: contractsUrl)
         }
         
-        // Change to .space directory
-        fileManager.changeCurrentDirectoryPath(".space")
+        try fileManager.createDirectory(at: contractsUrl, withIntermediateDirectories: true)
         
-        // Create sc-build directory
-        if !fileManager.fileExists(atPath: "sc-build") {
-            try fileManager.createDirectory(atPath: "sc-build", withIntermediateDirectories: true, attributes: nil)
-        }
-        
-        // Change to sc-build directory
-        fileManager.changeCurrentDirectoryPath("sc-build")
-        
-        let scBuildDirectory = URL(fileURLWithPath: fileManager.currentDirectoryPath, isDirectory: true)
-        
-        let copiedTargetURL = scBuildDirectory
-            .appending(path: "Contracts/\(target)")
-        
-        // Create the Contracts/TARGET folder
-        if !fileManager.fileExists(atPath: copiedTargetURL.path) {
-            try fileManager.createDirectory(at: copiedTargetURL, withIntermediateDirectories: true, attributes: nil)
-        }
-        
-        // Delete everything excepted the .build folder
-        if fileManager.fileExists(atPath: scBuildDirectory.path) {
-            try fileManager.removeItem(at: scBuildDirectory)
-        }
-        
-        try fileManager.createDirectory(at: copiedTargetURL, withIntermediateDirectories: true)
-        
-        // Copy Contracts/$TARGET directory
-        // Note: we run the cp command because we want to override while (in the future) keeping old files
+        // Create the Contracts/TARGET symbolic link
         try runInTerminal(
-            currentDirectoryURL: scBuildDirectory,
-            command: "cp -r \(pwd)/Contracts/\(target) \(scBuildDirectory.path)/Contracts"
+            currentDirectoryURL: buildFolderUrl,
+            command: "ln -sf \(sourceTargetPath) \(linkedTargetUrl.path)"
         )
         
-        // Copy Package.swift
-        // Note: we run the cp command because we want to override the previousPackage.swift
+        // Create the Package.swift symbolic link
         try runInTerminal(
-            currentDirectoryURL: scBuildDirectory,
-            command: "cp \(pwd)/Package.swift Package.swift"
-        )
-        
-        // Remove the .build copied folder
-        let scBuildArtifactsDirectory = scBuildDirectory.appending(path: ".build")
-        if fileManager.fileExists(atPath: scBuildArtifactsDirectory.path) {
-            try fileManager.removeItem(at: scBuildArtifactsDirectory)
-        }
-        
-        // Run Swift build for the current architecture
-        try runInTerminal(
-            currentDirectoryURL: scBuildDirectory,
-            command: "\(swiftBinFolder)/swift",
-            arguments: ["build", "--target", target]
+            currentDirectoryURL: buildFolderUrl,
+            command: "ln -sf \(pwd)/Package.swift Package.swift"
         )
         
         // Run Swift build for WASM target
         try runInTerminal(
-            currentDirectoryURL: scBuildDirectory,
+            currentDirectoryURL: buildFolderUrl,
             command: "\(swiftBinFolder)/swift",
             environment: ["SWIFT_WASM": "true"],
             arguments: [
@@ -112,11 +75,7 @@ func buildContract(contractName: String?) throws(CLIError) {
                 "--triple", "wasm32-unknown-none-wasm",
                 "--disable-index-store",
                 "-Xswiftc", "-Osize",
-                "-Xswiftc", "-gnone",
-                "-Xswiftc", "-whole-module-optimization",
-                "-Xswiftc", "-D", "-Xswiftc", "WASM",
-                "-Xswiftc", "-disable-stack-protector",
-                "-Xcc", "-fdeclspec"
+                "-Xswiftc", "-gnone"
             ]
         )
         
@@ -132,14 +91,14 @@ func buildContract(contractName: String?) throws(CLIError) {
         
         // Run wasm-ld
         try runInTerminal(
-            currentDirectoryURL: copiedTargetURL,
+            currentDirectoryURL: buildFolderUrl,
             command: "wasm-ld",
             arguments: wasmLdArguments
         )
         
         // Run wasm-opt
         try runInTerminal(
-            currentDirectoryURL: copiedTargetURL,
+            currentDirectoryURL: buildFolderUrl,
             command: "wasm-opt",
             arguments: ["-Os", "-o", wasmOptFilePath, wasmBuiltFilePath]
         )
@@ -162,7 +121,7 @@ func buildContract(contractName: String?) throws(CLIError) {
         
         // Execute the scenario JSON executable
         try runInTerminal(
-            currentDirectoryURL: copiedTargetURL,
+            currentDirectoryURL: buildFolderUrl,
             command: scenarioJsonExecutable,
             arguments: [scenariosJsonDir]
         )
