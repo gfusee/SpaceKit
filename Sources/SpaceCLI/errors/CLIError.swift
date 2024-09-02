@@ -2,6 +2,7 @@ enum CLIError: Error, CustomStringConvertible {
     case common(CommonErrors)
     case contractBuild(ContractBuildError)
     case fileManager(FileManagerError)
+    case manifest(ManifestError)
     
     var description: String {
         switch self {
@@ -10,6 +11,8 @@ enum CLIError: Error, CustomStringConvertible {
         case .contractBuild(let error):
             error.description
         case .fileManager(let error):
+            error.description
+        case .manifest(let error):
             error.description
         }
     }
