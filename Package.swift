@@ -38,7 +38,6 @@ var libraryDependencies: [Target.Dependency] = [
 ]
 
 var testTargets: [Target] = []
-var extraNonWasmTargets: [Target] = []
 
 var products: [Product] = [
     // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -47,10 +46,7 @@ var products: [Product] = [
 
 if !isWasm {
     packageDependencies.append(contentsOf: [
-        // TODO: open an issue in the swift-package-manager repo to update the tags
-        .package(url: "https://github.com/gfusee/swift-package-manager.git", exact: "0.6.1"),
         .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0"),
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.1.0"),
     ])
     
@@ -170,16 +166,6 @@ if !isWasm {
             ]
         ),
     ])
-    
-    extraNonWasmTargets.append(
-        .executableTarget(
-            name: "SpaceCLI",
-            dependencies: [
-                .product(name: "SwiftPM-auto", package: "swift-package-manager"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ]
-        )
-    )
     
     products.append(.executable(name: "SpaceCLI", targets: ["SpaceCLI"]))
 }
@@ -412,5 +398,5 @@ let package = Package(
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ]
         )
-    ] + testTargets + extraNonWasmTargets
+    ] + testTargets
 )
