@@ -24,7 +24,7 @@ struct SpaceCLI: AsyncParsableCommand {
                 }
             }
             
-            _stdlib.exit(signal)
+            Foundation.exit(signal)
         }
 
         signal(SIGINT, signalCallback)

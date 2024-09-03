@@ -47,7 +47,8 @@ var products: [Product] = [
 
 if !isWasm {
     packageDependencies.append(contentsOf: [
-        .package(url: "https://github.com/swiftlang/swift-package-manager", revision: "630330a"),
+        // TODO: open an issue in the swift-package-manager repo to update the tags
+        .package(url: "https://github.com/gfusee/swift-package-manager.git", exact: "0.6.1"),
         .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.1.0"),
