@@ -7,7 +7,7 @@ fileprivate struct DummyError: Error {}
 
 // TODO: automate this with a CI or by cloning the repo and retrieving the tags
 let versionToHash: [String : String] = [
-    "0.0.1" : "846262f7d32cc90548a2317edb45fcb8c1b989b1"
+    "0.0.1" : "a313294d07a847cee97b2e464b42ee6505569201"
 ]
 
 fileprivate func retrieveManifest(sourcePackagePath: String) throws(CLIError) -> Manifest {
