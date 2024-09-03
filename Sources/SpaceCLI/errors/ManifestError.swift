@@ -3,7 +3,9 @@ enum ManifestError: Error, CustomStringConvertible {
     case spaceDependencyNotFound(manifestPath: String)
     case cannotReadDependencyRequirement(manifestPath: String, dependency: String)
     case spaceDependencyShouldHaveExactVersion(manifestPath: String)
+    case spaceDependencyShouldBeAGitRepository(manifestPath: String)
     case invalidSpaceVersion(manifestPath: String, versionFound: String, validVersions: [String])
+    case targetNotFound(manifestPath: String, target: String)
     
     var description: String {
         switch self {
@@ -21,6 +23,10 @@ enum ManifestError: Error, CustomStringConvertible {
             Cannot read the requirements for the following dependency: \(dependency) in \(manifestPath).
             Please make sure it has requirements, such as the version number.
             """
+        case .spaceDependencyShouldBeAGitRepository(let manifestPath):
+            """
+            The dependency "Space" in \(manifestPath) should has be a Git repository, local or remote.
+            """
         case .spaceDependencyShouldHaveExactVersion(let manifestPath):
             """
             The dependency "Space" in \(manifestPath) should has be specified by it's exact version.
@@ -33,6 +39,10 @@ enum ManifestError: Error, CustomStringConvertible {
             Available versions:
             
             - \(validVersions.joined(separator: "\n- "))
+            """
+        case .targetNotFound(let manifestPath, let target):
+            """
+            Target \(target) not found in \(manifestPath).
             """
         }
     }

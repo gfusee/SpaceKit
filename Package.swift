@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -49,7 +49,7 @@ if !isWasm {
     packageDependencies.append(contentsOf: [
         .package(url: "https://github.com/swiftlang/swift-package-manager", revision: "630330a"),
         .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0"),
-        .package(url: "https://github.com/kylef/Commander.git", exact: "0.9.1"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.1.0"),
     ])
     
@@ -175,7 +175,7 @@ if !isWasm {
             name: "SpaceCLI",
             dependencies: [
                 .product(name: "SwiftPM-auto", package: "swift-package-manager"),
-                .product(name: "Commander", package: "Commander")
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
             ]
         )
     )

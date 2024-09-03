@@ -1,7 +1,7 @@
 import Foundation
 
-func initialize() throws(CLIError) {
-    try checkRequirements()
+func initialize() async throws(CLIError) {
+    try await checkRequirements()
     
     let _ = try getPermanentStorageDirectory()
 }

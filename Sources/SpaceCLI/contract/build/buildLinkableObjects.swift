@@ -6,8 +6,8 @@ fileprivate struct ObjectFileInfo {
     let outputName: String
 }
 
-func buildLinkableObjects() throws(CLIError) -> [URL] {
-    let spaceRepoUrl = "/Users/quentin/IdeaProjects/mx-sdk-swift"
+func buildLinkableObjects() async throws(CLIError) -> [URL] {
+    let spaceRepoUrl = "/Users/quentin/IdeaProjects/space"
     let spaceRepoName = "SpaceFramework"
     
     let permanentStorageDirectory = try getPermanentStorageDirectory()
@@ -24,7 +24,7 @@ func buildLinkableObjects() throws(CLIError) -> [URL] {
     }
     
     // We clone the framework and name the "SpaceFramework" for convenience
-    try runInTerminal(
+    try await runInTerminal(
         currentDirectoryURL: permanentStorageDirectory,
         command: "git clone \(spaceRepoUrl) \(spaceRepoName)"
     )
@@ -43,11 +43,10 @@ func buildLinkableObjects() throws(CLIError) -> [URL] {
     ]
     
     let outputDirectory = try getLinkableObjectsDirectory()
-    print("outputDirectory = \(outputDirectory.path)")
     var resultFilePaths: [URL] = []
     
     for objectFileInfo in allObjectFileInfo {
-        try runInTerminal(
+        try await runInTerminal(
             currentDirectoryURL: objectFileInfo.directory,
             command: "clang --target=wasm32 -O3 -c -o \(objectFileInfo.outputName) \(objectFileInfo.filename)"
         )

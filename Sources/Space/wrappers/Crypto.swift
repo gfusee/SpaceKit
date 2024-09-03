@@ -1,5 +1,4 @@
 public struct Crypto {
-    
     public static func verifyEd25519(
         key: Buffer,
         message: Buffer,
@@ -22,5 +21,4 @@ public struct Crypto {
         
         return result
     }
-    
 }

@@ -1,9 +1,37 @@
 import Foundation
 import Workspace
 import Basics
+import ArgumentParser
+
+struct BuildCommandOptions: ParsableArguments {
+    @Option(help: "The contract's name to build.")
+    var contract: String? = nil
+    
+    @Option(help: "The path to a custom swift toolchain.")
+    var customSwiftToolchain: String? = nil
+}
+
+struct BuildCommand: AsyncParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Build a contract to a .wasm file",
+        aliases: ["build"]
+    )
+    
+    @OptionGroup var options: BuildCommandOptions
+    
+    mutating func run() async throws {
+        try await buildContract(
+            contractName: self.options.contract,
+            customSwiftToolchain: self.options.customSwiftToolchain
+        )
+    }
+}
 
 // TODO: remove relative path, this is not safe
-func buildContract(contractName: String?) throws(CLIError) {
+func buildContract(
+    contractName: String?,
+    customSwiftToolchain: String?
+) async throws(CLIError) {
     guard try isValidProject() else {
         throw .common(.invalidProject)
     }
@@ -22,10 +50,9 @@ func buildContract(contractName: String?) throws(CLIError) {
     }
     
     let fileManager = FileManager.default
-    fileManager.changeCurrentDirectoryPath(INITIAL_PWD)
     let pwd = fileManager.currentDirectoryPath
     
-    let linkableObjects = (try buildLinkableObjects())
+    let linkableObjects = (try await buildLinkableObjects())
         .map { $0.path }
     
     let buildFolder = "\(pwd)/.space/sc-build"
@@ -40,10 +67,12 @@ func buildContract(contractName: String?) throws(CLIError) {
     let wasmOptFilePath = "\(buildFolder)/\(target)-opt.wasm"
     let targetPackageOutputPath = "\(pwd)/Contracts/\(target)/Output"
     let wasmDestFilePath = "\(targetPackageOutputPath)/\(target).wasm"
-    let scenariosJsonDir = "\(pwd)/Contracts/\(target)/Scenarios"
 
-    let swiftBinFolder = "/Library/Developer/Toolchains/swift-6.0-DEVELOPMENT-SNAPSHOT-2024-07-16-a.xctoolchain/usr/bin" // TODO: Replace with the actual path to your Swift binary folder
-    let scenarioJsonExecutable = "/Users/quentin/multiversx-sdk/vmtools/v1.5.24/mx-chain-vm-go-1.5.24/cmd/test/test" // TODO: Replace with the actual path to the scenario JSON executable
+    let swiftCommand = if let customSwiftToolchain = customSwiftToolchain {
+        "\(customSwiftToolchain)/swift"
+    } else {
+        "swift"
+    }
 
     do {
         // Explanations: we want to create a symbolic link of the source files before compiling them.
@@ -56,7 +85,7 @@ func buildContract(contractName: String?) throws(CLIError) {
         try fileManager.createDirectory(at: contractsUrl, withIntermediateDirectories: true)
         
         // Create the Contracts/TARGET symbolic link
-        try runInTerminal(
+        try await runInTerminal(
             currentDirectoryURL: buildFolderUrl,
             command: "ln -sf \(sourceTargetPath) \(linkedTargetUrl.path)"
         )
@@ -69,13 +98,13 @@ func buildContract(contractName: String?) throws(CLIError) {
         // Add the custom Package.swift dedicated to WASM compilation
         fileManager.createFile(
             atPath: newPackagePath,
-            contents: (try generateWASMPackage(sourcePackagePath: pwd)).data(using: .utf8)
+            contents: (try generateWASMPackage(sourcePackagePath: pwd, target: target)).data(using: .utf8)
         )
         
         // Run Swift build for WASM target
-        try runInTerminal(
+        try await runInTerminal(
             currentDirectoryURL: buildFolderUrl,
-            command: "\(swiftBinFolder)/swift",
+            command: swiftCommand,
             environment: ["SWIFT_WASM": "true"],
             arguments: [
                 "build", "--target", target,
@@ -97,14 +126,14 @@ func buildContract(contractName: String?) throws(CLIError) {
         }
         
         // Run wasm-ld
-        try runInTerminal(
+        try await runInTerminal(
             currentDirectoryURL: buildFolderUrl,
             command: "wasm-ld",
             arguments: wasmLdArguments
         )
         
         // Run wasm-opt
-        try runInTerminal(
+        try await runInTerminal(
             currentDirectoryURL: buildFolderUrl,
             command: "wasm-opt",
             arguments: ["-Os", "-o", wasmOptFilePath, wasmBuiltFilePath]
@@ -126,14 +155,13 @@ func buildContract(contractName: String?) throws(CLIError) {
         // Copy optimized WASM file to the destination
         try fileManager.copyItem(atPath: wasmOptFilePath, toPath: wasmDestFilePath)
         
-        // Execute the scenario JSON executable
-        try runInTerminal(
-            currentDirectoryURL: buildFolderUrl,
-            command: scenarioJsonExecutable,
-            arguments: [scenariosJsonDir]
+        print(
+            """
+            \(target) built successfully!
+            WAMS output: \(wasmDestFilePath)
+            """
         )
     } catch {
         print("error: \(error)")
     }
-
 }

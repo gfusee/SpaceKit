@@ -7,7 +7,7 @@ package enum TransactionContainerErrorBehavior {
     case fatalError
 }
 
-package class TransactionContainer {
+package final class TransactionContainer: @unchecked Sendable {
     package var managedBuffersData: [Int32 : Data] = [:]
     package var managedBigIntData: [Int32 : BigInt] = [:]
     package var state: WorldState

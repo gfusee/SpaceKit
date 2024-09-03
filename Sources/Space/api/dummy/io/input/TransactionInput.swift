@@ -41,8 +41,8 @@ public struct ContractCallTransactionInput {
     }
 }
 
-public struct TransactionInput {
-    public struct EsdtPayment {
+public struct TransactionInput: Sendable {
+    public struct EsdtPayment: Sendable {
         let tokenIdentifier: Data
         let nonce: UInt64
         let amount: BigInt

@@ -1,13 +1,13 @@
 import Foundation
 
-func checkRequirements() throws(CLIError) {
+func checkRequirements() async throws(CLIError) {
     let directory = URL(filePath: FileManager.default.currentDirectoryPath, directoryHint: .isDirectory)
     
     let requirements: [String] = ["clang", "git", "swift", "wasm-ld", "wasm-opt"]
     
     for requirement in requirements {
         do {
-            try runInTerminal(
+            try await runInTerminal(
                 currentDirectoryURL: directory,
                 command: "which \(requirement)"
             )

@@ -15,7 +15,7 @@ public class DummyApi {
     
     package var worldState = WorldState()
     
-    package func runTransactions(transactionInput: TransactionInput, transactionOutput: TransactionOutput? = nil, operations: @escaping () -> Void) throws(TransactionError) {
+    package func runTransactions(transactionInput: TransactionInput, transactionOutput: TransactionOutput? = nil, operations: UncheckedClosure) throws(TransactionError) {
         self.containerLock.lock()
         
         while let transactionContainer = self.transactionContainer {
@@ -42,7 +42,7 @@ public class DummyApi {
             self.containerLock.unlock()
         }
         
-        var hasThreadStartedExecution = false
+        nonisolated(unsafe) var hasThreadStartedExecution = false
         
         let thread = Thread {
             hasThreadStartedExecution = true
@@ -54,7 +54,7 @@ public class DummyApi {
                 esdtValue: transactionInput.esdtValue
             )
             
-            operations()
+            operations.closure()
         }
         
         thread.start()

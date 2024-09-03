@@ -2,7 +2,6 @@ import Foundation
 
 func isValidProject() throws(CLIError) -> Bool {
     let fileManager = FileManager.default
-    fileManager.changeCurrentDirectoryPath(INITIAL_PWD)
     
     let currentDirectoryString = fileManager.currentDirectoryPath
     guard let currentDirectory = URL(string: currentDirectoryString) else {

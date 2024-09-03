@@ -5,7 +5,7 @@ func runInTerminal(
     command: String,
     environment: [String : String] = [:],
     arguments: [String] = []
-) throws(CLIError) {
+) async throws(CLIError) {
     let task = Process()
     
     task.currentDirectoryURL = currentDirectoryURL
@@ -19,16 +19,14 @@ func runInTerminal(
     let fullCommand = "\(command) \(arguments.joined(separator: " "))"
     task.arguments = ["-c", fullCommand]
     
-    TERMINAL_PROCESS = task
-    
-    defer {
-        TERMINAL_PROCESS = nil
-    }
+    await CurrentTerminalProcess.process = task
     
     do {
         print("INFO: Running \(fullCommand) in \(currentDirectoryURL.path)")
         try task.run()
+        await CurrentTerminalProcess.process = nil
     } catch {
+        await CurrentTerminalProcess.process = nil
         fatalError() // TODO
     }
     

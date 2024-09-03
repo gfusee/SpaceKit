@@ -1,9 +1,9 @@
 // TODO: report a Swift error in which Int64(<Int32 or UInt64 variable>) and UInt64(<Int32 or Int64 variable>) don't work in -no-allocations mode
 
 #if WASM
-var API = VMApi()
+nonisolated(unsafe) var API = VMApi()
 #else
-public var API = DummyApi()
+nonisolated(unsafe) public var API = DummyApi()
 #endif
 
 @attached(peer)
@@ -25,7 +25,7 @@ public macro Event(dataType: TopEncode.Type) = #externalMacro(module: "EventMacr
 @attached(extension, names: arbitrary)
 public macro Proxy() = #externalMacro(module: "ProxyMacro", type: "Proxy")
 
-var nextHandle: Int32 = -100
+nonisolated(unsafe) var nextHandle: Int32 = -100
 func getNextHandle() -> Int32 {
     let currentHandle = nextHandle
     nextHandle -= 1

@@ -1,4 +1,5 @@
 {
+  "originHash" : "3f9730ce5e49919820869d6ac3924c1218f3cd99de6e53778a879105f2e89bee",
   "pins" : [
     {
       "identity" : "bigint",
@@ -7,24 +8,6 @@
       "state" : {
         "revision" : "793a7fac0bfc318e85994bf6900652e827aef33e",
         "version" : "5.4.1"
-      }
-    },
-    {
-      "identity" : "commander",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kylef/Commander",
-      "state" : {
-        "revision" : "4b6133c3071d521489a80c38fb92d7983f19d438",
-        "version" : "0.9.1"
-      }
-    },
-    {
-      "identity" : "spectre",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kylef/Spectre.git",
-      "state" : {
-        "revision" : "26cc5e9ae0947092c7139ef7ba612e34646086c7",
-        "version" : "0.10.1"
       }
     },
     {
@@ -163,5 +146,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

@@ -36,13 +36,25 @@ fileprivate func retrieveManifest(sourcePackagePath: String) throws(CLIError) ->
 }
 
 /// Generates the code of a Package.swift containing the contract target, ready for WASM compilation
-func generateWASMPackage(sourcePackagePath: String) throws(CLIError) -> String {
+func generateWASMPackage(sourcePackagePath: String, target: String) throws(CLIError) -> String {
     let manifestPath = "\(sourcePackagePath)/Package.swift"
-    let packageDependencies = (try retrieveManifest(sourcePackagePath: sourcePackagePath)).dependencies
-    print(packageDependencies)
-    let spaceDependency = packageDependencies.first { $0.nameForModuleDependencyResolutionOnly == "Space" }
+    let manifest = try retrieveManifest(sourcePackagePath: sourcePackagePath)
+    let packageDependencies = manifest.dependencies
+    let spaceDependency = packageDependencies.first { print($0.nameForModuleDependencyResolutionOnly); return $0.nameForModuleDependencyResolutionOnly.lowercased(with: .current) == "space" }
     guard let spaceDependency = spaceDependency else {
         throw .manifest(.spaceDependencyNotFound(manifestPath: manifestPath))
+    }
+    
+    guard case .sourceControl(let spaceSourceControlInfo) = spaceDependency else {
+        throw .manifest(.spaceDependencyShouldBeAGitRepository(manifestPath: manifestPath))
+    }
+    
+    let spaceUrl: String
+    switch spaceSourceControlInfo.location {
+    case .local(let setting):
+        spaceUrl = setting.pathString
+    case .remote(let settings):
+        spaceUrl = settings.absoluteString
     }
     
     let spaceRequirements: PackageRequirement
@@ -65,6 +77,56 @@ func generateWASMPackage(sourcePackagePath: String) throws(CLIError) -> String {
         ))
     }
     
-    print("hash: \(hash)")
-    fatalError()
+    guard let targetInfo = manifest.targetMap[target] else {
+        throw .manifest(.targetNotFound(manifestPath: sourcePackagePath, target: target))
+    }
+    
+    let targetPath = if let targetPath = targetInfo.path {
+        "path: \"\(targetPath)\","
+    } else {
+        ""
+    }
+    
+    return """
+    // swift-tools-version: 5.10
+    // The swift-tools-version declares the minimum version of Swift required to build this package.
+
+    import PackageDescription
+
+    let package = Package(
+        name: "\(target)Wasm",
+        products: [],
+        dependencies: [
+            .package(url: "\(spaceUrl)", revision: "\(hash)")
+        ],
+        targets: [
+            // Targets are the basic building blocks of a package, defining a module or a test suite.
+            // Targets can depend on other targets in this package and products from dependencies.
+            .target(
+                name: "\(target)",
+                dependencies: [
+                    .product(name: "Space", package: "Space")
+                ],
+                \(targetPath)
+                swiftSettings: [
+                    .unsafeFlags([
+                        "-gnone",
+                        "-Osize",
+                        "-enable-experimental-feature",
+                        "Extern",
+                        "-enable-experimental-feature",
+                        "Embedded",
+                        "-Xcc",
+                        "-fdeclspec",
+                        "-whole-module-optimization",
+                        "-D",
+                        "WASM",
+                        "-disable-stack-protector"
+                    ])
+                ]
+            )
+        ]
+    )
+
+    """
 }

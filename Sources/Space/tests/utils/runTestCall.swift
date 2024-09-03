@@ -33,16 +33,17 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode, 
     
     try API.runTransactions(
         transactionInput: transactionInput,
-        transactionOutput: transactionOutput
-    ) {
-        var injectedInputBuffer = BufferNestedDecodeInput(buffer: Buffer(data: concatenatedInputArgsBufferBytes))
-        
-        let result = operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
-        
-        var bytesDataBuffer = Buffer()
-        result.topEncode(output: &bytesDataBuffer)
-        bytesData = bytesDataBuffer.toBytes() // We have to extract the bytes from the transaction context...
-    }
+        transactionOutput: transactionOutput,
+        operations: UncheckedClosure {
+            var injectedInputBuffer = BufferNestedDecodeInput(buffer: Buffer(data: concatenatedInputArgsBufferBytes))
+            
+            let result = operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
+            
+            var bytesDataBuffer = Buffer()
+            result.topEncode(output: &bytesDataBuffer)
+            bytesData = bytesDataBuffer.toBytes() // We have to extract the bytes from the transaction context...
+        }
+    )
     
     let extractedResultBuffer = Buffer(data: bytesData) // ...and reinject it in the root context
     let extractedResult = ReturnType(topDecode: extractedResultBuffer)
@@ -79,12 +80,13 @@ public func runTestCall<each InputArg: TopEncode & NestedEncode & NestedDecode>(
     
     try API.runTransactions(
         transactionInput: transactionInput,
-        transactionOutput: transactionOutput
-    ) {
-        var injectedInputBuffer = BufferNestedDecodeInput(buffer: Buffer(data: concatenatedInputArgsBufferBytes))
-        
-        operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
-    }
+        transactionOutput: transactionOutput,
+        operations: UncheckedClosure {
+            var injectedInputBuffer = BufferNestedDecodeInput(buffer: Buffer(data: concatenatedInputArgsBufferBytes))
+            
+            operation(repeat (each InputArg)(depDecode: &injectedInputBuffer))
+        }
+    )
 }
 
 

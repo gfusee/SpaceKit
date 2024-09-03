@@ -2,7 +2,6 @@ import Foundation
 
 func getAllContractsNames() throws(CLIError) -> [String] {
     let fileManager = FileManager.default
-    fileManager.changeCurrentDirectoryPath(INITIAL_PWD)
     
     let currentDirectoryString = fileManager.currentDirectoryPath
     guard let currentDirectory = URL(string: currentDirectoryString) else {
