@@ -7,7 +7,7 @@ fileprivate struct DummyError: Error {}
 
 // TODO: automate this with a CI or by cloning the repo and retrieving the tags
 let versionToHash: [String : String] = [
-    "0.0.1" : "a313294d07a847cee97b2e464b42ee6505569201"
+    "0.0.1" : "421a0750f303a481b9cc4de410258af569501e28"
 ]
 
 fileprivate func retrieveManifest(sourcePackagePath: String) throws(CLIError) -> Manifest {
@@ -95,6 +95,9 @@ func generateWASMPackage(sourcePackagePath: String, target: String) throws(CLIEr
 
     let package = Package(
         name: "\(target)Wasm",
+        platforms: [
+            .macOS(.v14)
+        ],
         products: [],
         dependencies: [
             .package(url: "\(spaceUrl)", revision: "\(hash)")
