@@ -166,8 +166,6 @@ if !isWasm {
             ]
         ),
     ])
-    
-    products.append(.executable(name: "SpaceCLI", targets: ["SpaceCLI"]))
 }
 
 let package = Package(
