@@ -659,7 +659,7 @@ extension DummyApi: SendApiProtocol {
     }
     
     public func cleanReturnData() {
-        fatalError() // TODO: implement and test
+        // TODO: this opcode seems to not be relevant in the current state of the SwiftVM. I have to investigate a bit more on it.
     }
 }
 

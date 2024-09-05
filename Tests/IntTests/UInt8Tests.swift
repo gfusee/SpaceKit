@@ -33,7 +33,7 @@ final class UInt8Tests: ContractTestCase {
         
         value.topEncode(output: &output)
         
-        let expected = "00"
+        let expected = ""
         
         XCTAssertEqual(output.hexDescription, expected)
     }

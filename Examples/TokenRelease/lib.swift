@@ -101,10 +101,6 @@ let PERCENTAGE_TOTAL: UInt64 = 100
             "The schedule must have a positive number of total tokens released"
         )
         
-        let test = UInt64(periodUnlockPercentage) * releaseTicks
-        
-        smartContractError(message: "test \(BigUint(value: test))")
-        
         require(
             UInt64(periodUnlockPercentage) * releaseTicks == PERCENTAGE_TOTAL,
             "The final percentage is invalid"

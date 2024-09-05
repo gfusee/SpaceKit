@@ -9,7 +9,6 @@
         {
             "step": "scCall",
             "id": "add-group",
-            "displayLogs": true,
             "tx": {
                 "from": "address:owner",
                 "to": "sc:token_release_contract",

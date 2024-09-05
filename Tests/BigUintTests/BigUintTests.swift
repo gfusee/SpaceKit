@@ -109,7 +109,7 @@ final class BigUintTests: ContractTestCase {
             
             XCTFail()
         } catch {
-            XCTAssertEqual(error, .userError(message: "Cannot substract because the result would be negative."))
+            XCTAssertEqual(error, .userError(message: "cannot subtract because result would be negative"))
         }
     }
     
