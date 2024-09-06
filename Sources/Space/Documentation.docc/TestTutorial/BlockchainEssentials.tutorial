@@ -1,9 +1,9 @@
 @Tutorial(time: 10) {
-    @Intro(title: "First chapter") {
+    @Intro(title: "Blockchain essentials") {
         This is the first chapter of the tutorial!
     }
     
-    @Section(title: "This is the first section") {
+    @Section(title: "The blockchain, an immutable registry") {
         @ContentAndMedia {
             This is the first section of the first chapter of the tutorial
         }

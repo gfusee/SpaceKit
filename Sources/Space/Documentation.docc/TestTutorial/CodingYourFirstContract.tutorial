@@ -1,0 +1,212 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Coding your first Smart Contract") {
+        In this chapter, we'll write a simple smart contract that stores a counter, which can be increased or decreased by any user.
+    }
+    
+    @Section(title: "Initialising the project") {
+        @ContentAndMedia {
+            Before starting to code, we have to initialise the project using the Space CLI.
+        }
+        
+        @Steps {
+            @Step {
+                Open a terminal.
+                
+                @Image(source: InstallingToolsSection1Step1.png, alt: "An empty terminal.")
+            }
+            
+            @Step {
+                Go to the directory you want to create the new Space project, then run the command "space init Counter".
+                
+                This command will create a new directory called "Counter".
+                
+                @Image(source: CodingFirstContractSection1Step2.png, alt: "space init Counter output.")
+            }
+            
+            @Step {
+                Open the project in your favorite Swift IDE by opening the new "Counter" directory previously created.
+                
+                We recommand XCode or VSCode with the official Swift extension, both are great to use Space. For this tutorial we will use XCode, if requested we may write dedicated tutorials to use Space using VSCode on Linux and Windows machines. 
+                
+                @Image(source: CodingFirstContractSection1Step3.png, alt: "The XCode's project selection window, with the project Counter highlighted.")
+            }
+            
+            @Step {
+                Optional: build the project once. This allow your IDE to enable macros and improve the indexing
+                
+                On XCode, you can do this in Product > Build or by using the shortcut ⌘ + B.
+                
+                @Image(source: CodingFirstContractSection1Step4.png, alt: "The Product tab in XCode, with the \"Build\" option highlighted.")
+            }
+
+        }
+    }
+        
+    @Section(title: "Writing the code of the contract") {
+        @ContentAndMedia {
+            Let's write the smart contract.
+        }
+        
+        @Steps {
+            @Step {
+                We are going to write the contract code in the Contracts/Counter/Source/lib.swift file. Open this file and delete its whole content.
+                
+                @Code(name: "lib.swift", file: CodingFirstContractSection2Step1.swift)
+            }
+            
+            @Step {
+                Let's import the framework by adding the line "import Space".
+                
+                Important note: you must never import anything else than the Space framework. Foundation and other packages are not compatible with the SpaceVM.
+                
+                @Code(name: "lib.swift", file: CodingFirstContractSection2Step2.swift)
+            }
+            
+            @Step {
+                A contract is a struct annotated with @Contract. Let's declare the contract Counter.
+                
+                You should only have one @Contract struct.
+                You can write your code in multiple files but remind that your @Contract struct is the central point of your logic.
+                
+                @Code(name: "lib.swift", file: CodingFirstContractSection2Step3.swift)
+            }
+            
+            @Step {
+                The counter is a variable that should persist across executions. Let's declare it in the storage of the contract by annotating it with @Storage(key: "counter").
+                
+                The BigUint type allows you to handle arbitrary large numbers, you don't have any risk of overflow using it.
+                
+                @Code(name: "lib.swift", file: CodingFirstContractSection2Step4.swift)
+            }
+            
+            @Step {
+                The initialiser of a struct annotated with @Contract is the function executed when the contract is deployed on the blockchain. In our context, we want to provide the initial value of the counter variable.
+                
+                Note: the initialiser is only called when the contract is deployed, and is never called after its deployment.
+                
+                @Code(name: "lib.swift", file: CodingFirstContractSection2Step5.swift)
+            }
+            
+            @Step {
+                The endpoints of the contract are its public functions. We want any user to be able to increase the counter, therefore we have to create an endpoint for that purpose.
+                
+                We create the endpoint "increase" by declaring a public function with the same name. It has a single parameter, provided by the user, that tells by how much the counter should be increased.
+                
+                @Code(name: "lib.swift", file: CodingFirstContractSection2Step6.swift)
+            }
+            
+            @Step {
+                Let's do the same to decrease the counter.
+                
+                Important note: the BigUint cannot be negative, therefore a negative result will make the transaction to fail with no change being commited in the blockchain. 
+                
+                @Code(name: "lib.swift", file: CodingFirstContractSection2Step7.swift)
+            }
+            
+            @Step {
+                You can return a value from a public function. The returned value can be retrieved by the user or by any smart contract calling the endpoint. Let's create a view (= an endpoint that doesn't perform any change) to retrieve the current value of our counter.
+                
+                @Code(name: "lib.swift", file: CodingFirstContractSection2Step8.swift)
+            }
+        }
+    }
+        
+    @Section(title: "Testing the contract") {
+        @ContentAndMedia {
+            Space have a built-in reproduction of the SpaceVM, allowing you to test your contract in the Swift environnement. We call SwiftVM this reproduction.
+        }
+        
+        @Steps {
+            @Step {
+                We are going to write the tests in the Contracts/Counter/Tests/CounterTests directory. Delete any file in the directory and create a file "CounterTests.swift".
+                
+                @Image(source: CodingFirstContractSection3Step1.png, alt: "The file tree, showing the newly created CounterTests.swift file.")
+            }
+            
+            @Step {
+                Let's start by importing Space, your contract and XCTest.
+                
+                Note: XCTest is the official test tool to write Swift unit tests. 
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step2.swift)
+            }
+            
+            @Step {
+                Declare the contract's address.
+                
+                As well as in the SpaceVM, the SwiftVM assigns an address to our contract. However the SwiftVM allows us to have deterministic address.
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step3.swift)
+            }
+            
+            @Step {
+                Declare the class containing our tests. It has to inherit ContractTestCase.
+                
+                ContractTestCase inherits from XCTestCase, however please don't override the setUp and tearDown functions. 
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step4.swift)
+            }
+            
+            @Step {
+                 Override the initialAccounts property to declare the contract's address inside the SwiftVM.
+                
+                SwiftVM needs to know each address before them being used.
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step5.swift)
+            }
+            
+            @Step {
+                Declare the first unit test, in which we will check that deploying the contracts with an initial value of zero works.
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step6.swift)
+            }
+            
+            @Step {
+                Deploy the contract, by setting the initialValue parameter to 0.
+                
+                Space generates a static function named "testable" that deploys the contract on the SwiftVM. The first parameter is always the contract's address, the other parameters are the ones from your contract's initialiser. This function is throwable, allowing you to catch any error happening during the execution.
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step7.swift)
+            }
+            
+            @Step {
+                Call the "getCounter" view to assert the counter is 0.
+                
+                Space generates functions to call the contract's views and endpoints. The parameters are the same ones as those declared in the original views/endpoints, with extra parameters to have fine-grained control on the transaction simulation.
+                The generated functions, allowing you to catch any error happening during the execution.
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step8.swift)
+            }
+            
+            @Step {
+                Reproduce the above steps to add an unit tests that ensures deploying the contract with a value greater than zero works.
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step9.swift)
+            }
+            
+            @Step {
+                Add the unit tests for the increase endpoint, those are very similar to the deploy ones.
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step10.swift)
+            }
+            
+            @Step {
+                Do the same for the decrease tests.
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step11.swift)
+            }
+            
+            @Step {
+                Finally, let's add one more test that ensures the execution fails when an user wants to decrease more than the counter value.
+                
+                @Code(name: "CounterTests.swift", file: CodingFirstContractSection3Step12.swift)
+            }
+            
+            @Step {
+                Run the tests, your first contract works!
+                
+                @Image(source: CodingFirstContractSection3Step13.png, alt: "Test tab in XCode, showing all tests passed.")
+            }
+        }
+    }
+}

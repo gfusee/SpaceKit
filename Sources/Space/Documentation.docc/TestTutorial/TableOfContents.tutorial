@@ -1,11 +1,14 @@
-@Tutorials(name: "TestTutorial") {
-    @Intro(title: "Intro of the Tutorial") {
-        This is the intro I guess
+@Tutorials(name: "Getting Started") {
+    @Intro(title: "Meet Space") {
+        Enter the world of blockchain development with Space and Swift. Web3 has never been so easy.
     }
     
-    @Chapter(name: "The first chapter") {
-        This is the first chapter I guess
+    @Chapter(name: "Blockchain essentials") {
         
-        @TutorialReference(tutorial: "doc:FirstChapter")
+        @TutorialReference(tutorial: "doc:BlockchainEssentials")
+    }
+    
+    @Chapter(name: "Installing the tools") {
+        @TutorialReference(tutorial: "doc:InstallingTools")
     }
 }
