@@ -8,4 +8,4 @@ By leveraging familiar Swift syntax and tools, Space makes it easier to develop 
 
 ### Essentials
 
-- <doc:/tutorials/GettingStarted>
+- <doc:/tutorials/Space>
