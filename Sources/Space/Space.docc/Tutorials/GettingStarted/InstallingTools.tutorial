@@ -54,7 +54,7 @@
             }
 
             @Step {
-                Run the installation command: `TODO`.
+                Run the installation command: **TODO: the space-cli repo is private at the moment, please run the install.sh script to install the CLI**.
             }
 
             @Step {
