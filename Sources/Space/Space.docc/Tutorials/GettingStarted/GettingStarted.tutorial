@@ -1,17 +1,23 @@
-@Tutorials(name: "Getting Started") {
+@Tutorials(name: "Space") {
     @Intro(title: "Meet Space") {
         Discover how Space simplifies blockchain development using Swift. Dive into the world of Web3 with ease and efficiency.
     }
-
-    @Chapter(name: "Installing the Tools") {
-        @TutorialReference(tutorial: "doc:InstallingTools")
+    
+    @Volume(name: "Getting Started") {
+        Start your journey as a blockchain developer.
         
         @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
-    }
-
-    @Chapter(name: "Building Your First Smart Contract") {
-        @TutorialReference(tutorial: "doc:CodingYourFirstContract")
         
-        @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+        @Chapter(name: "Installing the Tools") {
+            @TutorialReference(tutorial: "doc:InstallingTools")
+            
+            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+        }
+
+        @Chapter(name: "Building Your First Smart Contract") {
+            @TutorialReference(tutorial: "doc:CodingYourFirstContract")
+            
+            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+        }
     }
 }
