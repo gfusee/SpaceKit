@@ -1,0 +1,103 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Install the Necessary Tools") {
+        Before writing your first smart contract with Space, ensure you have the necessary tools installed.
+    }
+    
+    @Section(title: "Installing Space's Dependencies") {
+        @ContentAndMedia {
+            Space relies on several dependencies, which you need to install on your system.
+        }
+        
+        @Steps {
+            @Step {
+                Open a terminal to begin.
+
+                @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+            }
+            
+            @Step {
+                Verify that `clang` is installed by running `clang --version`.
+
+                If it's not installed, use Homebrew on macOS or apt on Debian-based systems.
+
+                @Image(source: "InstallingToolsSection1Step2.png", alt: "Output of `clang --version`.")
+            }
+
+            @Step {
+                Check the Swift version by running `swift --version`. Space requires Swift 6 or later.
+
+                If necessary, install or update Swift by following the instructions on [the official Swift website](https://www.swift.org/install/macos/).
+
+                @Image(source: "InstallingToolsSection1Step3.png", alt: "Output of `swift --version`.")
+            }
+            
+            @Step {
+                Ensure `git` is installed. The Space CLI requires it to retrieve important files.
+
+                If `git` is not installed, use your preferred method to install it.
+
+                @Image(source: "InstallingToolsSection1Step4.png", alt: "Output of `git --version`.")
+            }
+        }
+    }
+    
+    @Section(title: "Setting Up the Space CLI") {
+        @ContentAndMedia {
+            The Space CLI is your primary tool for using the Space framework. You’ll use it to initialize and compile your smart contracts.
+        }
+
+        @Steps {
+            @Step {
+                Open a terminal.
+
+                @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+            }
+
+            @Step {
+                Run the installation command: `TODO`.
+            }
+
+            @Step {
+                Verify the Space CLI installation by running `space --help`.
+
+                @Image(source: "InstallingToolsSection2Step2.png", alt: "Output of `space --help`.")
+            }
+        }
+    }
+    
+    @Section(title: "Initializing and Compiling Your First Smart Contract") {
+        @ContentAndMedia {
+            Now, use the Space CLI to create and compile your first smart contract project.
+        }
+
+        @Steps {
+            @Step {
+                Open a terminal.
+
+                @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+            }
+
+            @Step {
+                Navigate to the desired directory and run `space init MyFirstSpaceProject`.
+
+                This command creates a new project directory named `MyFirstSpaceProject`.
+
+                @Image(source: "InstallingToolsSection3Step2.png", alt: "Output of `space init MyFirstSpaceProject`.")
+            }
+
+            @Step {
+                Navigate to the newly created `MyFirstSpaceProject` directory.
+
+                @Image(source: "InstallingToolsSection3Step3.png", alt: "Command output after navigating to the directory.")
+            }
+
+            @Step {
+                Build the smart contract by running `space contract build`.
+
+                Look for the "WASM output:" line, which indicates a successful compilation. The `.wasm` file is your compiled contract.
+
+                @Image(source: "InstallingToolsSection3Step4.png", alt: "Output of `space contract build`.")
+            }
+        }
+    }
+}
