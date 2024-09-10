@@ -9,16 +9,16 @@ extension Event: ExtensionMacro {
         conformingTo protocols: [TypeSyntax],
         in context: some MacroExpansionContext
     ) throws -> [ExtensionDeclSyntax] {
-        guard case .argumentList(let args) = node.arguments,
-              let arg = args.first
-        else {
-            fatalError() // TODO: add concrete error
+        let arg: LabeledExprSyntax? = if case .argumentList(let args) = node.arguments {
+            args.first
+        } else {
+            nil
         }
         
         if let structDecl = declaration.as(StructDeclSyntax.self) {
             return try generateStructExtension(
                 structDecl: structDecl,
-                dataTypeName: arg.expression.description
+                dataTypeName: arg?.expression.description
             )
         } else {
             throw EventMacroError.onlyApplicableToStruct

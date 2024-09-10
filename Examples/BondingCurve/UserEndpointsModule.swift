@@ -62,7 +62,7 @@ struct UserEndpointsModule {
         SellTokenEvent(
             user: caller,
             amount: calculatedPrice
-        ).emit(data: IgnoreValue())
+        ).emit()
     }
     
     // The "dummy" parameter is useless, I'm just a lazy developer that wants the Swift compiler to stop complaining
@@ -147,7 +147,7 @@ struct UserEndpointsModule {
         BuyTokenEvent(
             user: caller,
             amount: calculatedPrice
-        ).emit(data: IgnoreValue())
+        ).emit()
     }
     
     // TODO: use TokenIdentifier type once implemented

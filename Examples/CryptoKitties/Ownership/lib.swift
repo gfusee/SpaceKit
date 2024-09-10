@@ -6,15 +6,13 @@ import CryptoKittiesRandom
     case generateKittyGenes(matron: Kitty, sire: Kitty)
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct TransferEvent {
+@Event struct TransferEvent {
     let from: Address
     let to: Address
     let tokenId: UInt32
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct ApproveEvent {
+@Event struct ApproveEvent {
     let owner: Address
     let approved: Address
     let tokenId: UInt32
@@ -109,7 +107,7 @@ import CryptoKittiesRandom
             owner: caller,
             approved: to,
             tokenId: kittyId
-        ).emit(data: IgnoreValue())
+        ).emit()
     }
     
     public mutating func transfer(
@@ -517,7 +515,7 @@ import CryptoKittiesRandom
             from: from,
             to: to,
             tokenId: kittyId
-        ).emit(data: IgnoreValue())
+        ).emit()
     }
     
     func triggerCooldown(kitty: Kitty) -> Kitty {

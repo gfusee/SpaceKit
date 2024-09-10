@@ -9,7 +9,7 @@ import SwiftSyntaxMacros
 
 func generateStructExtension(
     structDecl: StructDeclSyntax,
-    dataTypeName: String
+    dataTypeName: String?
 ) throws -> [ExtensionDeclSyntax] {
     try structDecl.isValidStruct()
     
@@ -24,7 +24,7 @@ func generateStructExtension(
 fileprivate func generateEmitExtension(
     structName: TokenSyntax,
     fields: [VariableDeclSyntax],
-    dataTypeName: String
+    dataTypeName: String?
 ) throws -> ExtensionDeclSyntax {
     var nestedEncodeFieldsCallsList: [String] = []
     for field in fields {
@@ -40,15 +40,26 @@ fileprivate func generateEmitExtension(
     
     let nestedEncodeFieldsCalls = nestedEncodeFieldsCallsList.joined(separator: "\n")
     
+    let functionSignature: String
+    let dataTopEncode: String
+    
+    if let dataTypeName = dataTypeName {
+        functionSignature = "public func emit(data: \(dataTypeName))"
+        dataTopEncode = "data.topEncode(output: &_encodedData)"
+    } else {
+        functionSignature = "public func emit()"
+        dataTopEncode = ""
+    }
+    
     return ExtensionDeclSyntax(
         extendedType: IdentifierTypeSyntax(name: structName),
         memberBlock: """
         {
-            public func emit(data: \(raw: dataTypeName)) {
+             \(raw: functionSignature) {
                 var _indexedArgs: Vector<Buffer> = Vector()
                 _indexedArgs = _indexedArgs.appended("\(structName)")
                 var _encodedData = Buffer()
-                data.topEncode(output: &_encodedData)
+                \(raw: dataTopEncode)
         
                 \(raw: nestedEncodeFieldsCalls)
         

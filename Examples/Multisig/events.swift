@@ -2,22 +2,19 @@ import Space
 
 @Event(dataType: ActionFullInfo) struct StartPerformAction {}
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct PerformChangeUser {
+@Event struct PerformChangeUser {
     let actionId: UInt32
     let changedUser: Address
     let oldRole: UserRole
     let newRole: UserRole
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct PerformChangeQuorum {
+@Event struct PerformChangeQuorum {
     let actionId: UInt32
     let newQuorum: UInt32
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct PerformTransferExecute {
+@Event struct PerformTransferExecute {
     let actionId: UInt32
     let to: Address
     let egldValue: BigUint
@@ -26,8 +23,7 @@ import Space
     let arguments: MultiValueEncoded<Buffer>
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct PerformAsyncCall {
+@Event struct PerformAsyncCall {
     let actionId: UInt32
     let to: Address
     let egldValue: BigUint
@@ -36,19 +32,16 @@ import Space
     let arguments: MultiValueEncoded<Buffer>
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct AsyncCallSuccess {
+@Event struct AsyncCallSuccess {
     let results: MultiValueEncoded<Buffer>
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct AsyncCallError {
+@Event struct AsyncCallError {
     let errorCode: UInt32
     let errorMessage: Buffer
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct PerformDeployFromSource {
+@Event struct PerformDeployFromSource {
     let actionId: UInt32
     let egldValue: BigUint
     let sourceAddress: Address
@@ -57,8 +50,7 @@ import Space
     let arguments: MultiValueEncoded<Buffer>
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct PerformUpgradeFromSource {
+@Event struct PerformUpgradeFromSource {
     let actionId: UInt32
     let targetAddress: Address
     let egldValue: BigUint

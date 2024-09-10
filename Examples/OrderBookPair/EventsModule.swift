@@ -6,8 +6,7 @@ import Space
     let orderType: OrderType
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct MatchOrderEvent {
+@Event struct MatchOrderEvent {
     let caller: Address
     let epoch: UInt64
     let orderType: OrderType
@@ -15,8 +14,7 @@ import Space
     let orderCreator: Address
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct FreeOrderEvent {
+@Event struct FreeOrderEvent {
     let caller: Address
     let epoch: UInt64
     let orderType: OrderType
@@ -24,8 +22,7 @@ import Space
     let orderCreator: Address
 }
 
-// TODO: Using IgnoreValue where the event doesn't have any data is not intuitive
-@Event(dataType: IgnoreValue) struct CancelOrderEvent {
+@Event struct CancelOrderEvent {
     let caller: Address
     let epoch: UInt64
     let orderType: OrderType
@@ -52,7 +49,7 @@ struct EventsModule {
                 orderType: order.orderType,
                 orderId: order.id,
                 orderCreator: order.creator
-            ).emit(data: IgnoreValue())
+            ).emit()
         }
     }
     
@@ -67,7 +64,7 @@ struct EventsModule {
                 orderType: order.orderType,
                 orderId: order.id,
                 orderCreator: order.creator
-            ).emit(data: IgnoreValue())
+            ).emit()
         }
     }
     
@@ -81,7 +78,7 @@ struct EventsModule {
                 epoch: epoch,
                 orderType: order.orderType,
                 orderId: order.id
-            ).emit(data: IgnoreValue())
+            ).emit()
         }
     }
 }

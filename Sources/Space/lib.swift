@@ -20,7 +20,7 @@ public macro Codable() = #externalMacro(module: "CodableMacro", type: "Codable")
 public macro Callback() = #externalMacro(module: "CallbackMacro", type: "Callback");
 
 @attached(extension, names: arbitrary)
-public macro Event(dataType: TopEncode.Type) = #externalMacro(module: "EventMacro", type: "Event")
+public macro Event(dataType: TopEncode.Type? = nil) = #externalMacro(module: "EventMacro", type: "Event")
 
 @attached(extension, names: arbitrary)
 public macro Proxy() = #externalMacro(module: "ProxyMacro", type: "Proxy")

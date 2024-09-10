@@ -65,7 +65,7 @@ struct PerformModule {
             changedUser: userAddress,
             oldRole: oldRole,
             newRole: newRole
-        ).emit(data: IgnoreValue())
+        ).emit()
         
         // update board size
         var boardMembersDelta: Int32 = 0
@@ -164,7 +164,7 @@ struct PerformModule {
             PerformChangeQuorum(
                 actionId: actionId,
                 newQuorum: newQuorum
-            ).emit(data: IgnoreValue())
+            ).emit()
             
             result = .none
         case .sendTransferExecute(let callData):
@@ -177,7 +177,7 @@ struct PerformModule {
                 gas: gas,
                 endpoint: callData.endpointName,
                 arguments: MultiValueEncoded(rawBuffers: callData.arguments)
-            ).emit(data: IgnoreValue())
+            ).emit()
             
             ContractCall(
                 receiver: callData.to,
@@ -200,7 +200,7 @@ struct PerformModule {
                 gas: gas,
                 endpoint: callData.endpointName,
                 arguments: MultiValueEncoded(rawBuffers: callData.arguments)
-            ).emit(data: IgnoreValue())
+            ).emit()
             
             ContractCall(
                 receiver: callData.to,
@@ -226,7 +226,7 @@ struct PerformModule {
                 codeMetadata: deployData.codeMetadata,
                 gas: gas,
                 arguments: MultiValueEncoded(rawBuffers: deployData.arguments)
-            ).emit(data: IgnoreValue())
+            ).emit()
             
             let (newAddress, _) = Blockchain.deploySCFromSource(
                 gas: gas,
@@ -248,7 +248,7 @@ struct PerformModule {
                 codeMetadata: upgradeData.codeMetadata,
                 gas: gas,
                 arguments: MultiValueEncoded(rawBuffers: upgradeData.arguments)
-            ).emit(data: IgnoreValue())
+            ).emit()
             
             let _ = Blockchain.upgradeSCFromSource(
                 contractAddress: upgradeData.scAddress,
@@ -271,12 +271,12 @@ struct PerformModule {
         switch result {
         case .success(let data):
             AsyncCallSuccess(results: data)
-                .emit(data: IgnoreValue())
+                .emit()
         case .error(let error):
             AsyncCallError(
                 errorCode: error.errorCode,
                 errorMessage: error.errorMessage
-            ).emit(data: IgnoreValue())
+            ).emit()
         }
     }
     
