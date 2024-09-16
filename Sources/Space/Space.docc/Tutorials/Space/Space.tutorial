@@ -20,4 +20,17 @@
             @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
         }
     }
+    
+    @Volume(name: "Deep Dive into Space Concepts") {
+        Gain a deeper understanding of Space's architecture, from core types to advanced usage scenarios.
+
+        @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+        
+        @Chapter(name: "Exploring Space's Types") {
+            @TutorialReference(tutorial: "doc:FamiliarizeWithTypes")
+            Learn about the core types that power smart contracts in Space, including WebAssembly integration and Swift interoperability.
+
+            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+        }
+    }
 }
