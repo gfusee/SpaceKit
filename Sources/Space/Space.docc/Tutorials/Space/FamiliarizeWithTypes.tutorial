@@ -28,25 +28,42 @@
 
         @Steps {
             @Step {
-                Avoid using types with dynamic sizes in Space, as they are not permitted due to strict memory constraints.
+                Avoid using `String` in Space, as it is prohibited due to memory restrictions.
 
                 @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step1.swift")
             }
 
             @Step {
-                Use fixed-size types whenever possible to ensure compatibility with Space.
+                Use `Buffer` as a fixed-size alternative for handling raw data and text.
 
                 @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step2.swift")
             }
 
             @Step {
-                Only import the Space framework to maintain the minimal footprint required by smart contracts.
+                Similarly, avoid using `Array` since it leads to heap allocations and is not allowed.
 
                 @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step3.swift")
             }
+
+            @Step {
+                Instead, leverage the `Vector` type as a memory-efficient alternative to `Array`.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step4.swift")
+            }
+
+            @Step {
+                Integer types like `Int`, `UInt`, and `Bool` are fully supported and safe to use.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step5.swift")
+            }
+
+            @Step {
+                Ensure you only import the Space framework to keep the contract lightweight and efficient.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step6.swift")
+            }
         }
     }
-
 
     @Section(title: "Understanding the Buffer Type") {
         @ContentAndMedia {
