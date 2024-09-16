@@ -14,6 +14,6 @@ import Foundation // Don't do this ❌
         
         let two = 2 // Fine ✅
         let ten: UInt64 = 10 // Fine ✅
-        let isTwoEven = false // Fine ✅
+        let isTwoEven = true // Fine ✅
     }
 }
