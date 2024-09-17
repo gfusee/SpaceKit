@@ -32,5 +32,12 @@
 
             @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
         }
+        
+        @Chapter(name: "Persisting Data Across Executions") {
+            @TutorialReference(tutorial: "doc:StoreValues")
+            Discover how to retain data across multiple contract executions using Space's storage features.
+
+            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window displaying command line tools.")
+        }
     }
 }

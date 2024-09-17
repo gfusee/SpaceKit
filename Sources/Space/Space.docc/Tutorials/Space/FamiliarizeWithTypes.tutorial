@@ -210,4 +210,40 @@
             }
         }
     }
+        
+    @Section(title: "Creating Your Own Types") {
+        @ContentAndMedia {
+            You can define your own structures and enumerations and make them compatible with Space using the `@Codable` annotation. When a type is marked with `@Codable`, it becomes eligible to be used as input or output for endpoints, within arrays, and anywhere Space’s encoding system is applied.
+
+            A type annotated with `@Codable` must only contain fields of types compatible with Space, such as integers, `Bool`, `Buffer`, `BigUint`, `Vector`, and other `@Codable` types.
+
+            Additionally, the `@Codable` annotation prevents the structure from having methods or initializers.
+        }
+
+        @Steps {
+            @Step {
+                Start by creating a struct with fields that are compatible with Space.
+
+                @Code(name: "struct.swift", file: "FamiliarizeWithTypesSection5Step1.swift")
+            }
+
+            @Step {
+                Annotate your struct with `@Codable` to make it usable with Space’s encoding system.
+
+                @Code(name: "struct.swift", file: "FamiliarizeWithTypesSection5Step2.swift")
+            }
+
+            @Step {
+                Use the `@Codable`-annotated type within your smart contracts.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection5Step3.swift")
+            }
+
+            @Step {
+                Remember, a `@Codable` type can be used as a field in other `@Codable` types.
+
+                @Code(name: "struct.swift", file: "FamiliarizeWithTypesSection5Step4.swift")
+            }
+        }
+    }
 }
