@@ -11,7 +11,7 @@
         In this tutorial, you'll learn two common approaches for storing data using `@Storage` and `@Mapping` annotations. Additionally, Space provides advanced mechanisms like storage mappers to handle more complex data structures, which will be covered in a later chapter.
     }
 
-    @Section(title: "Working with `@Storage` for Single Value Persistence") {
+    @Section(title: "Working with @Storage for Single Value Persistence") {
         @ContentAndMedia {
             The `@Storage` annotation allows you to persist a single value under a specified key. The `key` parameter defines the storage key, and we recommend matching the key to the variable name for consistency.
             
