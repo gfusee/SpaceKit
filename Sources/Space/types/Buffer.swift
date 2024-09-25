@@ -364,6 +364,11 @@ public struct BufferInterpolationMatcher: StringInterpolationProtocol {
     public mutating func appendInterpolation(_ value: Address) {
         self.buffer = self.buffer + value.buffer // TODO: Is this the correct implementation?
     }
+    
+    public mutating func appendInterpolation(_ value: UInt64) {
+        // TODO: add tests
+        self.appendInterpolation(BigUint(value: value))
+    }
 }
 
 extension Buffer: ExpressibleByStringInterpolation {}

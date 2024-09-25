@@ -33,6 +33,16 @@ public struct Address {
         self == Address()
     }
     
+    public func getBalance() -> BigUint {
+        // TODO: add tests
+        return Blockchain.getBalance(address: self)
+    }
+    
+    public func getBalance(tokenIdentifier: Buffer, nonce: UInt64 = 0) -> BigUint {
+        // TODO: add tests
+        return Blockchain.getESDTBalance(address: self, tokenIdentifier: tokenIdentifier, nonce: nonce)
+    }
+    
     public func send(egldValue: BigUint) {
         let emptyBuffer = Buffer()
         
