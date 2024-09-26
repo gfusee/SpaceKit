@@ -2,49 +2,56 @@
     @Intro(title: "Meet Space") {
         Discover how Space simplifies blockchain development using Swift. Dive into the world of Web3 with ease and efficiency.
     }
-    
+
     @Volume(name: "Getting Started") {
         Start your journey as a blockchain developer.
-        
+
         @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
-        
+
         @Chapter(name: "Installing the Tools") {
             @TutorialReference(tutorial: "doc:InstallingTools")
-            
+
             @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
         }
 
         @Chapter(name: "Building Your First Smart Contract") {
             @TutorialReference(tutorial: "doc:CodingYourFirstContract")
-            
+
             @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
         }
     }
-    
+
     @Volume(name: "Deep Dive into Space Concepts") {
         Gain a deeper understanding of Space's architecture, from core types to advanced usage scenarios.
-        
+
         @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
-        
+
         @Chapter(name: "Exploring Space's Types") {
             @TutorialReference(tutorial: "doc:FamiliarizeWithTypes")
             Learn about the core types that power smart contracts in Space, including WebAssembly integration and Swift interoperability.
-            
+
             @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
         }
-        
+
         @Chapter(name: "Persisting Data Across Executions") {
             @TutorialReference(tutorial: "doc:StoreValues")
             Discover how to retain data across multiple contract executions using Space's storage features.
-            
+
             @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window displaying command line tools.")
         }
-        
+
         @Chapter(name: "Retrieving Information from the Blockchain") {
             @TutorialReference(tutorial: "doc:GetInfo")
             Learn how to access transaction and blockchain context data, such as caller information, payments, and timestamps, using the Space framework.
 
             @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window showing command line tools.")
+        }
+        
+        @Chapter(name: "Interact with Other Contracts") {
+            @TutorialReference(tutorial: "doc:SyncCalls")
+            Learn how to enable smart contracts to call other contracts in a synchronous manner, and explore contract-to-contract interaction using Space's proxy mechanisms.
+
+            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window showing code examples.")
         }
     }
 }

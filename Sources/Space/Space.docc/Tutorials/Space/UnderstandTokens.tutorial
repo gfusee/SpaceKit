@@ -1,0 +1,54 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Understand the ESDT standard") {
+        All the SpaceVM use a token standard called "ESDT". This standard defines 4 types of tokens: fungible, non-fungible (a.k.a NFT), semi-fungible and meta-esdt.
+        
+        Fungible tokens can be interchanged, 1 USDC on your wallet has the same value as 1 USDC on another wallet. Non-fungible tokens differ from that, there is a difference between two tokens of the same collection. For example, let's consider a collection representing the tickets for a given flight, in this collection those tickets are not fungible: they are attributed to different names, with different options such as cabin luggages, priority boarding, etc.
+        
+        The ESDT standard handles NFT this way: each token of a given collection has a "nonce", a number unique to each token in the collection, so we can differentiate them in the blockchain. For our flight collection, let's call it $FLIGHT, we have the $FLIGHT number 1, the $FLIGHT number 2, etc. those number are the nonce.
+        
+        Semi-fungible tokens are very similar to non-fungible, the only difference is that for a given nonce there is more than 1 token. It means that all the tokens for a given collection and a given nonce are fungible. We can imagine as an example 20-years state bounds $BOUND, where each nonce represent the year where the bounds has been emitted. If nonce 1 $BOUND represents all the bounds created in 2010, the nonce 2 $BOUND are the bounds created in 2011, etc. For a given nonce, the $BOUND are fungible because they will be unlocked the same date (2030 for nonce 1, 2031 for nonce 2, etc...)
+        
+        Meta-esdt are simply semi-fungible or non-fungible tokens for which we can add on-chain attributes for each nonce. For a given nonce, the attribute is a Space-compatible type: Buffer, BigUint, UInt64, ..., as well as any struct or enum annotated with @Codable. Meta-esdt are very powerful because they give you the ability to perform on-chain logic in your smart contracts by reading the attributes of any meta-esdt you receive.
+        
+        The ESDT standard allows you to manage the tokens you created by adding new one thin of the air (a.k.a minting), removing them (a.k.a burning), complying to legal requirement by controling who can transfer the token if needed, freezing an account, etc. Each operation should be declared as possible when issuing a new ESDT and anyone can read who can do which operation, therefore you can't mint, burn, freeze, etc. by surprise. For example an ESDT not marked as mintable nor upgradabeable (it means the mintable, burnable etc. attributes might be added or removed after issuance) won't be minted, never.
+    }
+
+    @Section(title: "Working with @Storage for Single Value Persistence") {
+        @ContentAndMedia {
+            The `@Storage` annotation allows you to persist a single value under a specified key. The `key` parameter defines the storage key, and we recommend matching the key to the variable name for consistency.
+            
+            In this section, you’ll implement an endpoint called `increaseStoredValue`, which increments a persistent integer each time it is called. If the value reaches 100, it resets to 0.
+            
+            Note: The focus here is on basic implementation. Optimizations, especially for transaction cost reductions, will be introduced in a later chapter.
+        }
+        
+        @Steps {
+            @Step {
+                Begin by setting up the basic structure of the contract.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection1Step1.swift")
+            }
+            
+            @Step {
+                Add a persistent integer to the contract using the `@Storage` annotation. By default, this integer is initialized to 0 unless otherwise specified.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection1Step2.swift")
+            }
+            
+            @Step {
+                Implement the logic to increment the stored integer whenever the `increaseStoredValue` endpoint is invoked. 
+
+                Tip: Be mindful that reading from storage increases transaction costs. This section focuses on functionality, and optimization techniques will be covered in later chapters.
+
+                @Code(name: "lib.swift", file: "StoreValuesSection1Step3.swift")
+            }
+            
+            @Step {
+                If the integer reaches 100, reset it to 0.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection1Step4.swift")
+            }
+        }
+    }
+
+}
