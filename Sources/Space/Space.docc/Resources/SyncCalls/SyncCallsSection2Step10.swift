@@ -1,6 +1,6 @@
 import Space
 
-@Proxy enum CalledContract {
+@Proxy enum CalleeContractProxy {
     case .deposit
     case .withdraw(amount: BigUint)
     case .getTotalDepositedAmount
@@ -10,7 +10,7 @@ import Space
     public func callDeposit() {
         let payment = Message.egldValue
         
-        CalledContract
+        CalleeContractProxy
             .deposit
             .callAndIgnoreResult(
                 receiver: "<called contract's address>",
@@ -19,7 +19,7 @@ import Space
     }
     
     public func callWithdraw(amount: BigUint) {
-        let payment: TokenPayment = CalledContract
+        let payment: TokenPayment = CalleeContractProxy
             .withdraw(amount: amount)
             .call(
                 receiver: "<called contract's address>"

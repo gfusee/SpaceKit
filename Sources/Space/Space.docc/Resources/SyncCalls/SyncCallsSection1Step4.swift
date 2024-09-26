@@ -1,6 +1,6 @@
 import Space
 
-@Proxy enum CalledContract {
+@Proxy enum CalleeContractProxy {
     case .deposit
 }
 
