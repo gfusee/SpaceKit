@@ -14,21 +14,13 @@
 
                 @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
             }
-            
-            @Step {
-                Verify that `clang` is installed by running `clang --version`.
-
-                If it's not installed, use Homebrew on macOS or apt on Debian-based systems.
-
-                @Image(source: "InstallingToolsSection1Step2.png", alt: "Output of `clang --version`.")
-            }
 
             @Step {
                 Check the Swift version by running `swift --version`. Space requires Swift 6 or later.
 
                 If necessary, install or update Swift by following the instructions on [the official Swift website](https://www.swift.org/install/macos/).
 
-                @Image(source: "InstallingToolsSection1Step3.png", alt: "Output of `swift --version`.")
+                @Image(source: "InstallingToolsSection1Step2.png", alt: "Output of `swift --version`.")
             }
             
             @Step {
@@ -36,7 +28,15 @@
 
                 If `git` is not installed, use your preferred method to install it.
 
-                @Image(source: "InstallingToolsSection1Step4.png", alt: "Output of `git --version`.")
+                @Image(source: "InstallingToolsSection1Step3.png", alt: "Output of `git --version`.")
+            }
+            
+            @Step {
+                Ensure that Docker is installed and running. Docker is required by the Space CLI to compile smart contracts.
+
+                If Docker is not installed, you can download and install it by following the steps on [Docker's official site](https://docs.docker.com/get-started/get-docker/).
+
+                @Image(source: "InstallingToolsSection1Step4.png", alt: "Terminal output showing Docker is running.")
             }
         }
     }
