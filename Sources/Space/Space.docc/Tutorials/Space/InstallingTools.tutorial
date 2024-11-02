@@ -54,13 +54,17 @@
             }
 
             @Step {
-                Run the installation command: **TODO: the space-cli repo is private at the moment, please run the install.sh script to install the CLI**.
+                Run the installation command: `curl -sSL https://raw.githubusercontent.com/gfusee/space-cli/refs/heads/main/install.sh | bash`
+                
+                After the installation, please restart your terminal to reload your PATH environment variable.
+                
+                @Image(source: "InstallingToolsSection2Step2.png", alt: "Output of `space --help`.")
             }
 
             @Step {
                 Verify the Space CLI installation by running `space --help`.
 
-                @Image(source: "InstallingToolsSection2Step2.png", alt: "Output of `space --help`.")
+                @Image(source: "InstallingToolsSection2Step3.png", alt: "Output of `space --help`.")
             }
         }
     }

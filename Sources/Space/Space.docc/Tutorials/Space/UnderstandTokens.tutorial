@@ -1,54 +1,53 @@
 @Tutorial(time: 15) {
-    @Intro(title: "Understand the ESDT standard") {
-        All the SpaceVM use a token standard called "ESDT". This standard defines 4 types of tokens: fungible, non-fungible (a.k.a NFT), semi-fungible and meta-esdt.
-        
-        Fungible tokens can be interchanged, 1 USDC on your wallet has the same value as 1 USDC on another wallet. Non-fungible tokens differ from that, there is a difference between two tokens of the same collection. For example, let's consider a collection representing the tickets for a given flight, in this collection those tickets are not fungible: they are attributed to different names, with different options such as cabin luggages, priority boarding, etc.
-        
-        The ESDT standard handles NFT this way: each token of a given collection has a "nonce", a number unique to each token in the collection, so we can differentiate them in the blockchain. For our flight collection, let's call it $FLIGHT, we have the $FLIGHT number 1, the $FLIGHT number 2, etc. those number are the nonce.
-        
-        Semi-fungible tokens are very similar to non-fungible, the only difference is that for a given nonce there is more than 1 token. It means that all the tokens for a given collection and a given nonce are fungible. We can imagine as an example 20-years state bounds $BOUND, where each nonce represent the year where the bounds has been emitted. If nonce 1 $BOUND represents all the bounds created in 2010, the nonce 2 $BOUND are the bounds created in 2011, etc. For a given nonce, the $BOUND are fungible because they will be unlocked the same date (2030 for nonce 1, 2031 for nonce 2, etc...)
-        
-        Meta-esdt are simply semi-fungible or non-fungible tokens for which we can add on-chain attributes for each nonce. For a given nonce, the attribute is a Space-compatible type: Buffer, BigUint, UInt64, ..., as well as any struct or enum annotated with @Codable. Meta-esdt are very powerful because they give you the ability to perform on-chain logic in your smart contracts by reading the attributes of any meta-esdt you receive.
-        
-        The ESDT standard allows you to manage the tokens you created by adding new one thin of the air (a.k.a minting), removing them (a.k.a burning), complying to legal requirement by controling who can transfer the token if needed, freezing an account, etc. Each operation should be declared as possible when issuing a new ESDT and anyone can read who can do which operation, therefore you can't mint, burn, freeze, etc. by surprise. For example an ESDT not marked as mintable nor upgradabeable (it means the mintable, burnable etc. attributes might be added or removed after issuance) won't be minted, never.
+    @Intro(title: "Understand the ESDT Standard") {
+        The Space framework uses a token standard called ESDT. This standard defines four types of tokens: fungible, non-fungible (NFT), semi-fungible, and meta-esdt.
+
+        Fungible tokens are interchangeable; for instance, one USDC in your wallet holds the same value as one USDC in another wallet. However, non-fungible tokens differ, where each token in a collection is unique. For example, consider a collection of flight tickets—each ticket represents a unique seat with specific options like cabin luggage or priority boarding. They cannot be exchanged one-to-one.
+
+        The ESDT standard addresses NFTs by assigning each token in a collection a unique "nonce" This allows differentiation between tokens. If we have a flight ticket collection labeled `$FLIGHT`, each token has a unique nonce such as `$FLIGHT#1`, `$FLIGHT#2`, etc.
+
+        Semi-fungible tokens operate similarly to NFTs, but for a given nonce, there can be multiple identical tokens. For example, state bonds labeled `$BOND` could have different nonces for the year they were issued. If `$BOND#1` represents bonds from 2010 and `$BOND#2` represents those from 2011, all tokens with the same nonce are fungible within their group, as they share the same maturity date.
+
+        Meta-esdt tokens enhance this concept by allowing attributes to be added on-chain for each nonce. These attributes can be of any Space-compatible type, such as `Buffer`, `BigUint`, or `UInt64`, or even complex structs and enums with the `@Codable` annotation. Meta-esdt is powerful because it enables contracts to process on-chain logic using these attributes.
+
+        The ESDT standard supports various token operations like minting, burning, freezing, and more. These actions must be explicitly declared at the time of token issuance, ensuring transparency. For example, a non-mintable ESDT cannot be minted or altered after issuance.
     }
 
     @Section(title: "Working with @Storage for Single Value Persistence") {
         @ContentAndMedia {
-            The `@Storage` annotation allows you to persist a single value under a specified key. The `key` parameter defines the storage key, and we recommend matching the key to the variable name for consistency.
-            
-            In this section, you’ll implement an endpoint called `increaseStoredValue`, which increments a persistent integer each time it is called. If the value reaches 100, it resets to 0.
-            
-            Note: The focus here is on basic implementation. Optimizations, especially for transaction cost reductions, will be introduced in a later chapter.
+            The `@Storage` annotation allows you to persist a single value under a defined key. It’s recommended to align the storage key with the variable name for clarity.
+
+            In this section, you’ll implement an endpoint called `increaseStoredValue`, which increments a stored integer each time it’s invoked. When the value reaches 100, it resets to 0.
+
+            Note: This section covers basic implementation. Transaction cost optimizations will be discussed in a later chapter.
         }
-        
+
         @Steps {
             @Step {
-                Begin by setting up the basic structure of the contract.
-                
+                Set up the basic structure of the contract.
+
                 @Code(name: "lib.swift", file: "StoreValuesSection1Step1.swift")
             }
-            
+
             @Step {
-                Add a persistent integer to the contract using the `@Storage` annotation. By default, this integer is initialized to 0 unless otherwise specified.
-                
+                Add a persistent integer to the contract using the `@Storage` annotation. By default, the integer initializes to 0 unless otherwise specified.
+
                 @Code(name: "lib.swift", file: "StoreValuesSection1Step2.swift")
             }
-            
+
             @Step {
                 Implement the logic to increment the stored integer whenever the `increaseStoredValue` endpoint is invoked. 
 
-                Tip: Be mindful that reading from storage increases transaction costs. This section focuses on functionality, and optimization techniques will be covered in later chapters.
+                Tip: Keep in mind that reading from storage increases transaction costs. This chapter focuses on functionality, with optimization techniques to follow.
 
                 @Code(name: "lib.swift", file: "StoreValuesSection1Step3.swift")
             }
-            
+
             @Step {
-                If the integer reaches 100, reset it to 0.
-                
+                Add logic to reset the integer back to 0 when it reaches 100.
+
                 @Code(name: "lib.swift", file: "StoreValuesSection1Step4.swift")
             }
         }
     }
-
 }
