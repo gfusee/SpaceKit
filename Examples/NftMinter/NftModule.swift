@@ -41,7 +41,7 @@ struct NftModule {
             )
         )
         .registerPromise(
-            callbackName: "issueCallback",
+            callbackName: "issueCallback", // TODO: handle $ callbacks in multi-file projects
             gas: gas,
             gasForCallback: gasForCallback,
             callbackArgs: ArgBuffer(),

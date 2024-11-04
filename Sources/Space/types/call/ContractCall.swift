@@ -46,19 +46,36 @@ public struct ContractCall {
         return ReturnType(topDecodeMulti: &resultBuffers)
     }
     
-    public func registerPromise(
-        callbackName: StaticString,
+    public func registerPromiseRaw(
         gas: UInt64,
-        gasForCallback: UInt64,
-        callbackArgs: ArgBuffer,
-        value: BigUint = 0
+        value: BigUint = 0,
+        callbackName: StaticString? = nil,
+        callbackArgs: ArgBuffer? = nil,
+        gasForCallback: UInt64? = nil
     ) {
+        let areCallbacksConsistent = (callbackName == nil && callbackArgs == nil && gasForCallback == nil) ||
+                                     (callbackName != nil && callbackArgs != nil && gasForCallback != nil)
+            
+        guard areCallbacksConsistent else {
+            smartContractError(message: "callbackName, callbackArgs, and gasForCallback must either all be nil or all non-nil.")
+        }
+        
+        let callbackName = callbackName ?? ""
+        
         let callbackNameLength = Int32(callbackName.utf8CodeUnitCount)
-        let callbackName = callbackName.utf8Start
+        let callbackNameStart = callbackName.utf8Start
         
         var callbackClosureSerialized = Buffer()
-        callbackArgs.buffers.forEach { buffer in
-            buffer.depEncode(dest: &callbackClosureSerialized)
+        if let callbackArgs = callbackArgs {
+            callbackArgs.buffers.forEach { buffer in
+                buffer.depEncode(dest: &callbackClosureSerialized)
+            }
+        }
+        
+        let gasForCallback: Int64 = if let gasForCallback = gasForCallback {
+            Int64(gasForCallback) // TODO: Is this cast safe?
+        } else {
+            0
         }
         
         let _ = API.managedCreateAsyncCall(
@@ -66,13 +83,28 @@ public struct ContractCall {
             valueHandle: value.handle,
             functionHandle: self.endpointName.handle,
             argumentsHandle: self.argBuffer.buffers.buffer.handle,
-            successOffset: callbackName,
+            successOffset: callbackNameStart,
             successLength: callbackNameLength,
-            errorOffset: callbackName,
+            errorOffset: callbackNameStart,
             errorLength: callbackNameLength,
             gas: Int64(gas), // TODO: Is this cast safe?
-            extraGasForCallback: Int64(gasForCallback), // TODO: Is this cast safe?
+            extraGasForCallback: gasForCallback,
             callbackClosureHandle: callbackClosureSerialized.handle
+        )
+    }
+    
+    public func registerPromise(
+        gas: UInt64,
+        value: BigUint = 0,
+        callback: CallbackParams? = nil
+    ) {
+        // TODO: add tests
+        self.registerPromiseRaw(
+            gas: gas,
+            value: value,
+            callbackName: callback?.name,
+            callbackArgs: callback?.args,
+            gasForCallback: callback?.gas
         )
     }
 }
@@ -87,18 +119,17 @@ public struct AsyncContractCall {
     }
     
     public func registerPromise(
-        callbackName: StaticString,
         gas: UInt64,
-        gasForCallback: UInt64,
-        callbackArgs: ArgBuffer,
-        value: BigUint = 0
+        value: BigUint = 0,
+        callback: CallbackParams? = nil
     ) {
         self.contractCall
-            .registerPromise(
-                callbackName: callbackName,
+            .registerPromiseRaw(
                 gas: gas,
-                gasForCallback: gasForCallback,
-                callbackArgs: callbackArgs
+                value: value,
+                callbackName: callback?.name,
+                callbackArgs: callback?.args,
+                gasForCallback: callback?.gas
             )
     }
 }

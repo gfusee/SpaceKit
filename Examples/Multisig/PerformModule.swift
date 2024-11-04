@@ -208,7 +208,7 @@ struct PerformModule {
                 argBuffer: callData.arguments.toArgBuffer()
             )
             .registerPromise(
-                callbackName: "performAsyncCallCallback",
+                callbackName: "performAsyncCallCallback", // TODO: handle $ callbacks in multi-file projects
                 gas: gas,
                 gasForCallback: PERFORM_ASYNC_CALLBACK_GAS,
                 callbackArgs: ArgBuffer(),
