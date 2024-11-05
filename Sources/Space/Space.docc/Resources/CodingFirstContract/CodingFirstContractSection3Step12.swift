@@ -86,7 +86,7 @@ final class CounterTests: ContractTestCase {
     }
     
     func testDecreaseTooMuchShouldFail() throws {
-        let contract = try Counter.testable(
+        var contract = try Counter.testable(
             COUNTER_ADDRESS,
             initialValue: 15
         )
