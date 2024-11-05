@@ -105,7 +105,7 @@
         @ContentAndMedia {
             Blockchains do not support decimal numbers. However, real-world applications often require decimal representation, such as in cryptocurrency amounts like 0.09281 Bitcoin.
 
-            To handle such cases, values are expressed as large numbers, with most tokens treating the first 18 trailing digits as decimals. For instance: 1 EGLD equals 1 * 10^18, or 1,000,000,000,000,000,000.
+            To handle such cases, values are expressed as large numbers, where many tokens allocate the last 18 digits to represent the decimal portion. For instance: 1 EGLD equals 1 * 10^18, or 1,000,000,000,000,000,000.
 
             Standard Swift types, such as `UInt64`, can only store values up to 18,446,744,073,709,551,615 (20 digits), making it impossible to represent values exceeding approximately 18.446744 EGLD.
 
