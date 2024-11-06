@@ -415,12 +415,12 @@ import CryptoKittiesRandom
             )
             .registerPromise(
                 receiver: geneScienceContractAddress,
+                gas: gasForExecution,
                 callback: self.$generateKittyGenesCallback(
                     matronId: matronId,
-                    originalCaller: Message.caller
-                ),
-                gas: gasForExecution,
-                gasForCallback: gasForCallback
+                    originalCaller: Message.caller,
+                    gasForCallback: gasForCallback
+                )
             )
         } else {
             smartContractError(message: "Gene science contract address not set!")

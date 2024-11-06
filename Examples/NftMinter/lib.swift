@@ -33,7 +33,9 @@ import Space
         
         let attributes = ExampleAttributes(creationTimestamp: Blockchain.getBlockTimestamp())
         
-        let _ = NftModule.createNftWithAttributes(
+        var nftModule = NftModule()
+        
+        let _ = nftModule.createNftWithAttributes(
             name: name,
             royalties: royalties,
             attributes: attributes,
@@ -57,20 +59,21 @@ import Space
             tokenId: tokenIdentifier,
             nonce: tokenNonce,
             claimDestination: caller
-        ).registerPromise(
+        ).registerPromiseRaw(
             receiver: marketplaceAddress,
-            callbackName: "", // TODO: no callback
-            gas: Blockchain.getGasLeft(),
-            gasForCallback: 0,
-            callbackArgs: ArgBuffer()
+            gas: Blockchain.getGasLeft()
         )
     }
     
     public func buyNft(nftNonce: UInt64) {
-        NftModule.buyNft(nftNonce: nftNonce)
+        let nftModule = NftModule()
+        
+        nftModule.buyNft(nftNonce: nftNonce)
     }
     
     @Callback public func issueCallback() {
-        NftModule.issueCallback()
+        var nftModule = NftModule()
+        
+        nftModule.issueCallback()
     }
 }

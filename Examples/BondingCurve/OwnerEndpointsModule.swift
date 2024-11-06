@@ -11,7 +11,8 @@ struct OwnerEndpointsModule {
         
         var setPayment: Buffer = "EGLD" // TODO: no hardcoded EGLD
         
-        if StorageModule.$bondingCurveForTokenIdentifier[payment.tokenIdentifier].isEmpty() {
+        let storageModule = StorageModule()
+        if storageModule.$bondingCurveForTokenIdentifier[payment.tokenIdentifier].isEmpty() {
             if let paymentToken = paymentToken {
                 setPayment = paymentToken
             } else {
@@ -19,7 +20,7 @@ struct OwnerEndpointsModule {
             }
         }
         
-        let tokenDetailsMapper = StorageModule.$tokenDetailsForTokenIdentifier[payment.tokenIdentifier]
+        let tokenDetailsMapper = storageModule.$tokenDetailsForTokenIdentifier[payment.tokenIdentifier]
         
         if tokenDetailsMapper.isEmpty() {
             let nonces = Vector(singleItem: payment.nonce)
@@ -49,8 +50,8 @@ struct OwnerEndpointsModule {
             paymentTokenIdentifier: setPayment,
             dummy: T(default: ())
         )
-        let _ = StorageModule.getOwnedTokensMapperForOwner(owner: caller).insert(value: payment.tokenIdentifier)
-        StorageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: payment.tokenIdentifier, nonce: payment.nonce)]
+        let _ = storageModule.getOwnedTokensMapperForOwner(owner: caller).insert(value: payment.tokenIdentifier)
+        storageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: payment.tokenIdentifier, nonce: payment.nonce)]
             .update { currentAmount in
                 currentAmount = currentAmount + payment.amount
             }
@@ -61,7 +62,8 @@ struct OwnerEndpointsModule {
     ) {
         let caller = Message.caller
         
-        let ownedTokensMapper = StorageModule.getOwnedTokensMapperForOwner(owner: caller)
+        let storageModule = StorageModule()
+        let ownedTokensMapper = storageModule.getOwnedTokensMapperForOwner(owner: caller)
         require(
             !ownedTokensMapper.isEmpty(),
             "You have nothing to claim"
@@ -71,10 +73,10 @@ struct OwnerEndpointsModule {
         var egldToClaim: BigUint = 0
         
         ownedTokensMapper.forEach { token in
-            let tokenDetailsMapper = StorageModule.$tokenDetailsForTokenIdentifier[token]
+            let tokenDetailsMapper = storageModule.$tokenDetailsForTokenIdentifier[token]
             let nonces = tokenDetailsMapper.get().tokenNonces
             nonces.forEach { nonce in
-                let nonceAmountMapper = StorageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: token, nonce: nonce)]
+                let nonceAmountMapper = storageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: token, nonce: nonce)]
                 
                 tokensToClaim = tokensToClaim.appended(
                     TokenPayment.new(
@@ -87,7 +89,7 @@ struct OwnerEndpointsModule {
                 nonceAmountMapper.clear()
             }
             
-            let bondingCurveMapper = StorageModule.$bondingCurveForTokenIdentifier[token]
+            let bondingCurveMapper = storageModule.$bondingCurveForTokenIdentifier[token]
             let bondingCurve = BondingCurve<T>(topDecode: bondingCurveMapper.get())
             
             if bondingCurve.payment.tokenIdentifier != "EGLD" { // TODO: no hardcoded EGLD
@@ -115,7 +117,8 @@ struct OwnerEndpointsModule {
         function: T,
         sellAvailability: Bool
     ) {
-        let tokenDetailsMapper = StorageModule.$tokenDetailsForTokenIdentifier[identifier]
+        let storageModule = StorageModule()
+        let tokenDetailsMapper = storageModule.$tokenDetailsForTokenIdentifier[identifier]
         
         require(
             !tokenDetailsMapper.isEmpty(),
@@ -124,14 +127,14 @@ struct OwnerEndpointsModule {
         
         let caller = Message.caller
         
-        let details = StorageModule.tokenDetailsForTokenIdentifier[identifier]
+        let details = storageModule.tokenDetailsForTokenIdentifier[identifier]
         
         require(
             details.owner == caller,
             "The price function can only be set by the seller."
         )
         
-        StorageModule.$bondingCurveForTokenIdentifier[identifier]
+        storageModule.$bondingCurveForTokenIdentifier[identifier]
             .update { buffer in
                 var bondingCurve = BondingCurve<T>(topDecode: buffer)
                 
@@ -157,7 +160,8 @@ struct OwnerEndpointsModule {
         let payment: TokenPayment
         let sellAvailability: Bool
         
-        let bondingCurveMapper = StorageModule.$bondingCurveForTokenIdentifier[identifier]
+        let storageModule = StorageModule()
+        let bondingCurveMapper = storageModule.$bondingCurveForTokenIdentifier[identifier]
         
         if bondingCurveMapper.isEmpty() {
             arguments = CurveArguments(

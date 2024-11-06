@@ -20,8 +20,10 @@ import Space
         quorum: UInt32,
         board: MultiValueEncoded<Address>
     ) {
+        var storageModule = StorageModule()
+        
         let newNumBoardMembers = StateModule.addMultipleBoardMembers(newBoardMembers: board.toArray())
-        let numProposers = StorageModule.numProposers
+        let numProposers = storageModule.numProposers
         
         require(
             newNumBoardMembers + numProposers > 0,
@@ -33,13 +35,15 @@ import Space
             "quorum cannot exceed board size"
         )
         
-        StorageModule.quorum = quorum
+        storageModule.quorum = quorum
     }
     
     public func deposit() {}
     
     public func sign(actionId: UInt32) {
-        let actionMapper = StorageModule.getActionMapper()
+        let storageModule = StorageModule()
+        
+        let actionMapper = storageModule.getActionMapper()
         
         require(
             !actionMapper.isItemEmptyUnchecked(index: actionId),
@@ -52,7 +56,7 @@ import Space
             "only board members can sign"
         )
         
-        let actionSignerIdsMapper = StorageModule.getActionSignerIdsMapper(actionId: actionId)
+        let actionSignerIdsMapper = storageModule.getActionSignerIdsMapper(actionId: actionId)
         
         if !actionSignerIdsMapper.contains(value: callerId) {
             let _ = actionSignerIdsMapper.insert(value: callerId)
@@ -60,7 +64,9 @@ import Space
     }
     
     public func unsign(actionId: UInt32) {
-        let actionMapper = StorageModule.getActionMapper()
+        let storageModule = StorageModule()
+        
+        let actionMapper = storageModule.getActionMapper()
         
         require(
             !actionMapper.isItemEmptyUnchecked(index: actionId),
@@ -73,7 +79,7 @@ import Space
             "only board members can un-sign"
         )
         
-        let actionSignerIdsMapper = StorageModule.getActionSignerIdsMapper(actionId: actionId)
+        let actionSignerIdsMapper = storageModule.getActionSignerIdsMapper(actionId: actionId)
         let _ = actionSignerIdsMapper.swapRemove(value: callerId)
     }
     
@@ -191,11 +197,15 @@ import Space
     }
     
     public func getQuorum() -> UInt32 {
-        return StorageModule.quorum
+        let storageModule = StorageModule()
+        
+        return storageModule.quorum
     }
     
     public func getNumBoardMembers() -> UInt32 {
-        return StorageModule.numBoardMembers
+        let storageModule = StorageModule()
+        
+        return storageModule.numBoardMembers
     }
     
     public func getActionSigners(actionId: UInt32) -> Vector<Address> {
@@ -205,8 +215,10 @@ import Space
     public func getPendingActionFullInfo() -> MultiValueEncoded<ActionFullInfo> {
         var resultArray: Vector<ActionFullInfo> = Vector()
         
+        let storageModule = StorageModule()
+        
         let actionLastIndex = StateModule.getActionLastIndex()
-        let actionMapper = StorageModule.getActionMapper()
+        let actionMapper = storageModule.getActionMapper()
         
         for actionId in 1...actionLastIndex {
             let actionData = actionMapper.get(index: actionId)
@@ -233,7 +245,9 @@ import Space
     }
     
     public func getActionSignerCount(actionId: UInt32) -> UInt32 {
-        StorageModule.getActionSignerIdsMapper(actionId: actionId).count
+        let storageModule = StorageModule()
+        
+        return storageModule.getActionSignerIdsMapper(actionId: actionId).count
     }
     
     public func getActionValidSignerCount(actionId: UInt32) -> UInt32 {
@@ -253,17 +267,19 @@ import Space
     }
     
     func getAllUsersWithRole(role: UserRole) -> MultiValueEncoded<Address> {
+        let storageModule = StorageModule()
+        
         var result: MultiValueEncoded<Address> = MultiValueEncoded()
-        let numUsers = StorageModule.userMapper.getUserCount()
+        let numUsers = storageModule.userMapper.getUserCount()
         
         guard numUsers > 0 else {
             return result
         }
         
-        let userMapper = StorageModule.userMapper
+        let userMapper = storageModule.userMapper
         
         for userId in 1...numUsers {
-            if StorageModule.userIdToRole[userId] == role {
+            if storageModule.userIdToRole[userId] == role {
                 if let address = userMapper.getUserAddress(id: userId) {
                     result = result.appended(value: address)
                 }

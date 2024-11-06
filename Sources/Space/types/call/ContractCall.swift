@@ -118,6 +118,23 @@ public struct AsyncContractCall {
         self.contractCall = contractCall
     }
     
+    public func registerPromiseRaw(
+        gas: UInt64,
+        value: BigUint = 0,
+        callbackName: StaticString? = nil,
+        callbackArgs: ArgBuffer? = nil,
+        gasForCallback: UInt64? = nil
+    ) {
+        self.contractCall
+            .registerPromiseRaw(
+                gas: gas,
+                value: value,
+                callbackName: callbackName,
+                callbackArgs: callbackArgs,
+                gasForCallback: gasForCallback
+            )
+    }
+    
     public func registerPromise(
         gas: UInt64,
         value: BigUint = 0,

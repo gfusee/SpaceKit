@@ -56,9 +56,10 @@ import Space
             .createGenZeroKitty
             .registerPromise(
                 receiver: kittyOwnershipContractAddress,
-                callback: self.$createGenZeroKittyCallback(),
                 gas: gasForExecution,
-                gasForCallback: gasForCallback
+                callback: self.$createGenZeroKittyCallback(
+                    gasForCallback: gasForCallback
+                )
             )
     }
     
@@ -281,16 +282,16 @@ import Space
                 )
                 .registerPromise(
                     receiver: kittyOwnershipContractAddress,
+                    gas: gasForExecution,
                     callback: self.$allowAuctioningCallback(
                         auctionType: auctionType,
                         callbackKittyId: kittyId,
                         startingPrice: startingPrice,
                         endingPrice: endingPrice,
                         deadline: deadline,
-                        kittyOwner: caller
-                    ),
-                    gas: gasForExecution,
-                    gasForCallback: gasForCallback
+                        kittyOwner: caller,
+                        gasForCallback: gasForCallback
+                    )
                 )
         }
     }
@@ -328,11 +329,11 @@ import Space
                 )
                 .registerPromise(
                     receiver: kittyOwnershipContractAddress,
-                    callback: self.$transferCallback(
-                        callbackKittyId: kittyId
-                    ),
                     gas: gasForExecution,
-                    gasForCallback: gasForCallback
+                    callback: self.$transferCallback(
+                        callbackKittyId: kittyId,
+                        gasForCallback: gasForCallback
+                    )
                 )
         }
     }
@@ -362,11 +363,11 @@ import Space
                 )
                 .registerPromise(
                     receiver: kittyOwnershipContractAddress,
-                    callback: self.$transferCallback( // not a mistake, same callback for transfer and approveSiringAndReturnKitty
-                        callbackKittyId: kittyId
-                    ),
                     gas: gasForExecution,
-                    gasForCallback: gasForCallback
+                    callback: self.$transferCallback( // not a mistake, same callback for transfer and approveSiringAndReturnKitty
+                        callbackKittyId: kittyId,
+                        gasForCallback: gasForCallback
+                    )
                 )
         }
     }

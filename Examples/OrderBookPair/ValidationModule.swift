@@ -69,7 +69,8 @@ struct ValidationModule {
     
     static func requireValidBuyPayment() -> Payment {
         let payment = Message.singleFungibleEsdt
-        let secondTokenIdentiier = StorageModule.secondTokenIdentifier
+        let storageModule = StorageModule()
+        let secondTokenIdentiier = storageModule.secondTokenIdentifier
         
         require(
             payment.tokenIdentifier == secondTokenIdentiier,
@@ -84,7 +85,8 @@ struct ValidationModule {
     
     static func requireValidSellPayment() -> Payment {
         let payment = Message.singleFungibleEsdt
-        let firstTokenIdentifier = StorageModule.firstTokenIdentifier
+        let storageModule = StorageModule()
+        let firstTokenIdentifier = storageModule.firstTokenIdentifier
         
         require(
             payment.tokenIdentifier == firstTokenIdentifier,

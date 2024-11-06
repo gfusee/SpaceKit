@@ -18,10 +18,11 @@ struct OrdersModule {
             params: params,
             orderType: orderType
         )
-        StorageModule.orderForId[order.id] = order
+        var storageModule = StorageModule()
+        storageModule.orderForId[order.id] = order
         
         let addressOrders = Vector(singleItem: order.id)
-        StorageModule.orderIdsForAddress[caller] = addressOrders
+        storageModule.orderIdsForAddress[caller] = addressOrders
         
         EventsModule.emitOrderEvent(order: order)
     }
@@ -49,13 +50,14 @@ struct OrdersModule {
         
         ValidationModule.requireContainsNone(baseArray: addressOrderIds, items: orderIds)
         
-        let firstTokenIdentifier = StorageModule.firstTokenIdentifier
-        let secondTokenIdentifier = StorageModule.secondTokenIdentifier
+        let storageModule = StorageModule()
+        let firstTokenIdentifier = storageModule.firstTokenIdentifier
+        let secondTokenIdentifier = storageModule.secondTokenIdentifier
         let epoch = Blockchain.getBlockEpoch()
         
         var orderIdsNotEmpty: Vector<UInt64> = Vector()
         orderIds.forEach { orderId in
-            if !StorageModule.$orderForId[orderId].isEmpty() {
+            if !storageModule.$orderForId[orderId].isEmpty() {
                 orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
             }
         }
@@ -80,8 +82,9 @@ struct OrdersModule {
         let addressOrderIds = OrdersModule.getAddressOrderIds(address: caller)
         
         var orderIdsNotEmpty: Vector<UInt64> = Vector()
+        let storageModule = StorageModule()
         addressOrderIds.forEach { orderId in
-            if !StorageModule.$orderForId[orderId].isEmpty() {
+            if !storageModule.$orderForId[orderId].isEmpty() {
                 orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
             }
         }
@@ -96,7 +99,8 @@ struct OrdersModule {
         secondTokenIdentifier: Buffer,
         epoch: UInt64
     ) -> Order {
-        let orderMapper = StorageModule.$orderForId[orderId]
+        let storageModule = StorageModule()
+        let orderMapper = storageModule.$orderForId[orderId]
         let order = orderMapper.get()
         
         let tokenIdentifier = switch order.orderType {
@@ -152,13 +156,14 @@ struct OrdersModule {
             items: orderIds
         )
         
-        let firstTokenIdentifier = StorageModule.firstTokenIdentifier
-        let secondTokenIdentifier = StorageModule.secondTokenIdentifier
+        var storageModule = StorageModule()
+        let firstTokenIdentifier = storageModule.firstTokenIdentifier
+        let secondTokenIdentifier = storageModule.secondTokenIdentifier
         let epoch = Blockchain.getBlockEpoch()
         
         var orderIdsNotEmpty: Vector<UInt64> = Vector()
         orderIds.forEach { orderId in
-            if !StorageModule.$orderForId[orderId].isEmpty() {
+            if !storageModule.$orderForId[orderId].isEmpty() {
                 orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
             }
         }
@@ -194,15 +199,16 @@ struct OrdersModule {
             orders = orders.appended(order)
         }
         
-        StorageModule.orderIdsForAddress[caller] = finalCallerOrders
+        storageModule.orderIdsForAddress[caller] = finalCallerOrders
         EventsModule.emitCancelOrderEvents(orders: orders)
     }
     
     static func loadOrders(orderIds: Vector<UInt64>) -> Vector<Order> {
         var ordersArray: Vector<Order> = Vector()
+        let storageModule = StorageModule()
         
         orderIds.forEach { orderId in
-            let orderMapper = StorageModule.$orderForId[orderId]
+            let orderMapper = storageModule.$orderForId[orderId]
             
             if !orderMapper.isEmpty() {
                 ordersArray = ordersArray.appended(orderMapper.get())
@@ -219,7 +225,8 @@ struct OrdersModule {
         secondTokenIdentifier: Buffer,
         epoch: UInt64
     ) -> Order {
-        let orderMapper = StorageModule.$orderForId[orderId]
+        let storageModule = StorageModule()
+        let orderMapper = storageModule.$orderForId[orderId]
         let order = orderMapper.get()
         
         let tokenIdentifier = switch order.orderType {
@@ -255,8 +262,9 @@ struct OrdersModule {
     
     static func createTransfers(orders: Vector<Order>) -> Vector<Transfer> {
         var transfers: Vector<Transfer> = Vector()
-        let firstTokenIdentifier = StorageModule.firstTokenIdentifier
-        let secondTokenIdentifier = StorageModule.secondTokenIdentifier
+        let storageModule = StorageModule()
+        let firstTokenIdentifier = storageModule.firstTokenIdentifier
+        let secondTokenIdentifier = storageModule.secondTokenIdentifier
         
         let buyOrders = self.getOrdersWithType(
             orders: orders,
@@ -303,7 +311,8 @@ struct OrdersModule {
     }
     
     static func getAndIncreaseOrderIdCounter() -> UInt64 {
-        let orderIdCounterMapper = StorageModule.$orderIdCounter
+        let storageModule = StorageModule()
+        let orderIdCounterMapper = storageModule.$orderIdCounter
         let id = orderIdCounterMapper.get()
         orderIdCounterMapper.set(id + 1)
         
@@ -312,9 +321,10 @@ struct OrdersModule {
     
     static func getAddressOrderIds(address: Address) -> Vector<UInt64> {
         var ordersArray: Vector<UInt64> = Vector()
+        let storageModule = StorageModule()
         
-        StorageModule.orderIdsForAddress[address].forEach { order in
-            if !StorageModule.$orderForId[order].isEmpty() {
+        storageModule.orderIdsForAddress[address].forEach { order in
+            if !storageModule.$orderForId[order].isEmpty() {
                 ordersArray = ordersArray.appended(order)
             }
         }
@@ -419,8 +429,9 @@ struct OrdersModule {
     }
     
     static func clearOrders(orderIds: Vector<UInt64>) {
+        let storageModule = StorageModule()
         orderIds.forEach { orderId in
-            StorageModule.$orderForId[orderId].clear()
+            storageModule.$orderForId[orderId].clear()
         }
     }
 }
