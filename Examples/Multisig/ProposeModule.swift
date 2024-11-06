@@ -11,11 +11,13 @@ struct ProposeModule {
             "only board members and proposers can propose"
         )
         
-        let actionId = StorageModule.getActionMapper().append(item: action)
+        let storageModule = StorageModule()
+        
+        let actionId = storageModule.getActionMapper().append(item: action)
         if callerRole.canSign() {
             // also sign
             // since the action is newly created, the caller can be the only signer
-            let _ = StorageModule.getActionSignerIdsMapper(actionId: actionId).insert(value: callerId)
+            let _ = storageModule.getActionSignerIdsMapper(actionId: actionId).insert(value: callerId)
         }
         
         return actionId

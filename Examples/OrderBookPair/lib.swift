@@ -6,12 +6,16 @@ import Space
         firstTokenIdentifier: Buffer,
         secondTokenIdentifier: Buffer
     ) {
-        StorageModule.firstTokenIdentifier = firstTokenIdentifier
-        StorageModule.secondTokenIdentifier = secondTokenIdentifier
+        var storageModule = StorageModule()
+        
+        storageModule.firstTokenIdentifier = firstTokenIdentifier
+        storageModule.secondTokenIdentifier = secondTokenIdentifier
     }
     
     public func createBuyOrder(params: OrderInputParams) {
-        GlobalOperationModule.requireGlobalOperationNotOngoing()
+        let globalOperationModule = GlobalOperationModule()
+        
+        globalOperationModule.requireGlobalOperationNotOngoing()
         ValidationModule.requireValidOrderInputParams(params: params)
         
         let payment = ValidationModule.requireValidBuyPayment()
@@ -24,7 +28,9 @@ import Space
     }
     
     public func createSellOrder(params: OrderInputParams) {
-        GlobalOperationModule.requireGlobalOperationNotOngoing()
+        let globalOperationModule = GlobalOperationModule()
+        
+        globalOperationModule.requireGlobalOperationNotOngoing()
         ValidationModule.requireValidOrderInputParams(params: params)
         
         let payment = ValidationModule.requireValidSellPayment()
@@ -37,31 +43,39 @@ import Space
     }
     
     public func matchOrders(orderIds: Vector<UInt64>) {
-        GlobalOperationModule.requireGlobalOperationNotOngoing()
+        let globalOperationModule = GlobalOperationModule()
+        
+        globalOperationModule.requireGlobalOperationNotOngoing()
         ValidationModule.requireValidMatchInputOrderIds(orderIds: orderIds)
         
         OrdersModule.matchOrders(orderIds: orderIds)
     }
     
     public func cancelOrders(orderIds: MultiValueEncoded<UInt64>) {
+        let globalOperationModule = GlobalOperationModule()
+        
         let orderIds = orderIds.toArray()
         
-        GlobalOperationModule.requireGlobalOperationNotOngoing()
+        globalOperationModule.requireGlobalOperationNotOngoing()
         ValidationModule.requireOrderIdsNotEmpty(orderIds: orderIds)
         
         OrdersModule.cancelOrders(orderIds: orderIds)
     }
     
     public func cancelAllOrders() {
-        GlobalOperationModule.requireGlobalOperationNotOngoing()
+        let globalOperationModule = GlobalOperationModule()
+        
+        globalOperationModule.requireGlobalOperationNotOngoing()
         
         OrdersModule.cancelAllOrders()
     }
     
     public func freeOrders(orderIds: MultiValueEncoded<UInt64>) {
+        let globalOperationModule = GlobalOperationModule()
+        
         let orderIds = orderIds.toArray()
         
-        GlobalOperationModule.requireGlobalOperationNotOngoing()
+        globalOperationModule.requireGlobalOperationNotOngoing()
         ValidationModule.requireOrderIdsNotEmpty(orderIds: orderIds)
         
         OrdersModule.freeOrders(orderIds: orderIds)
@@ -72,6 +86,8 @@ import Space
     }
     
     public func getOrderById(id: UInt64) -> Order {
-        return StorageModule.orderForId[id]
+        let storageModule = StorageModule()
+        
+        return storageModule.orderForId[id]
     }
 }

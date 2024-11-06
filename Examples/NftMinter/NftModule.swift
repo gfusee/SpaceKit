@@ -10,16 +10,15 @@ let ROYALTIES_MAX: UInt32 = 10_000
 }
 
 struct NftModule {
+    @Storage(key: "nftTokenId") var nftTokenId: Buffer // TODO: use TokenIdentifier type once implemented
+    @Mapping<UInt64, PriceTag>(key: "priceTag") var priceTagForNftNonce
     
-    @Storage(key: "nftTokenId") static var nftTokenId: Buffer // TODO: use TokenIdentifier type once implemented
-    @Mapping<UInt64, PriceTag>(key: "priceTag") static var priceTagForNftNonce
-    
-    package static func issueToken(
+    package func issueToken(
         tokenName: Buffer,
         tokenTicker: Buffer
     ) {
         require(
-            NftModule.$nftTokenId.isEmpty(),
+            self.$nftTokenId.isEmpty(),
             "Token already issued"
         )
         
@@ -40,16 +39,16 @@ struct NftModule {
                 canAddSpecialRoles: true
             )
         )
-        .registerPromise(
-            callbackName: "issueCallback",
+        .registerPromiseRaw(
             gas: gas,
-            gasForCallback: gasForCallback,
+            value: paymentAmount, // issue cost
+            callbackName: "issueCallback", // TODO: handle $ callbacks in multi-file projects
             callbackArgs: ArgBuffer(),
-            value: paymentAmount // issue cost
+            gasForCallback: gasForCallback
         )
     }
     
-    package static func setLocalRoles() {
+    package func setLocalRoles() {
         self.requireTokenIssued()
         
         Blockchain.setTokenRoles(
@@ -59,15 +58,12 @@ struct NftModule {
                 canCreateNft: true
             )
         )
-        .registerPromise(
-            callbackName: "", // TODO: no callback
-            gas: Blockchain.getGasLeft(),
-            gasForCallback: 0,
-            callbackArgs: ArgBuffer()
+        .registerPromiseRaw(
+            gas: Blockchain.getGasLeft()
         )
     }
     
-    package static func buyNft(nftNonce: UInt64) {
+    package func buyNft(nftNonce: UInt64) {
         let payment = Message.egldOrSingleEsdtTransfer
         
         self.requireTokenIssued()
@@ -113,7 +109,7 @@ struct NftModule {
             )
     }
     
-    package static func createNftWithAttributes<T: TopEncode>(
+    package mutating func createNftWithAttributes<T: TopEncode>(
         name: Buffer,
         royalties: BigUint,
         attributes: T,
@@ -122,7 +118,7 @@ struct NftModule {
         tokenUsedAsPayment: Buffer,
         tokenUsedAsPaymentNonce: UInt64
     ) -> UInt64 {
-        NftModule.requireTokenIssued()
+        self.requireTokenIssued()
         
         require(
             royalties <= BigUint(value: ROYALTIES_MAX),
@@ -155,14 +151,14 @@ struct NftModule {
         return nftNonce
     }
     
-    package static func requireTokenIssued() {
+    package func requireTokenIssued() {
         require(
-            !NftModule.$nftTokenId.isEmpty(),
+            !self.$nftTokenId.isEmpty(),
             "Token not issued"
         )
     }
     
-    package static func issueCallback() {
+    package mutating func issueCallback() {
         let result: AsyncCallResult<Buffer> = Message.asyncCallResult() // TODO: use TokenIdentifier type once available
         
         switch result {
@@ -176,5 +172,4 @@ struct NftModule {
             }
         }
     }
-    
 }

@@ -403,11 +403,6 @@ import CryptoKittiesRandom
         
         let geneScienceContractAddress = self.getGeneScienceContractAddressOrDefault()
         if !geneScienceContractAddress.isZero() {
-            // TODO: should be typed, but a bug in the embedded Swift compile mode deters to implement the feature
-            var callbackArgs = ArgBuffer()
-            callbackArgs.pushArg(arg: matronId)
-            callbackArgs.pushArg(arg: Message.caller)
-            
             // TODO: removing 10_000_000 is huge
             let gasLeft = Blockchain.getGasLeft() - 10_000_000
             let gasForCallback: UInt64 = 20_000_000
@@ -420,10 +415,12 @@ import CryptoKittiesRandom
             )
             .registerPromise(
                 receiver: geneScienceContractAddress,
-                callbackName: "generateKittyGenesCallback",
                 gas: gasForExecution,
-                gasForCallback: gasForCallback,
-                callbackArgs: callbackArgs
+                callback: self.$generateKittyGenesCallback(
+                    matronId: matronId,
+                    originalCaller: Message.caller,
+                    gasForCallback: gasForCallback
+                )
             )
         } else {
             smartContractError(message: "Gene science contract address not set!")

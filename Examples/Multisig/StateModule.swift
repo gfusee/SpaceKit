@@ -2,7 +2,9 @@ import Space
 
 struct StateModule {
     package static func addMultipleBoardMembers(newBoardMembers: Vector<Address>) -> UInt32 {
-        let userMapper = StorageModule.userMapper
+        var storageModule = StorageModule()
+        
+        let userMapper = storageModule.userMapper
         
         newBoardMembers.forEach { newBoardMember in
             require(
@@ -12,10 +14,10 @@ struct StateModule {
             
             let newUserId = userMapper.getOrCreateUser(address: newBoardMember)
             
-            StorageModule.userIdToRole[newUserId] = .boardMember
+            storageModule.userIdToRole[newUserId] = .boardMember
         }
         
-        let numBoardMembersMapper = StorageModule.$numBoardMembers
+        let numBoardMembersMapper = storageModule.$numBoardMembers
         let newNumBoardMembers = numBoardMembersMapper.get() + UInt32(newBoardMembers.count)
         numBoardMembersMapper.set(newNumBoardMembers)
         
@@ -24,8 +26,11 @@ struct StateModule {
     
     package static func getCallerIdAndRole() -> (UInt32, UserRole) {
         let caller = Message.caller
-        let callerId = StorageModule.userMapper.getUserId(address: caller)
-        let callerRole = StorageModule.userIdToRole[callerId]
+        
+        let storageModule = StorageModule()
+        
+        let callerId = storageModule.userMapper.getUserId(address: caller)
+        let callerRole = storageModule.userIdToRole[callerId]
         
         return (callerId, callerRole)
     }
@@ -33,12 +38,14 @@ struct StateModule {
     package static func getActionValidSignerCount(
         actionId: UInt32
     ) -> UInt32 {
-        let signerIds = StorageModule.getActionSignerIdsMapper(actionId: actionId)
+        let storageModule = StorageModule()
+        
+        let signerIds = storageModule.getActionSignerIdsMapper(actionId: actionId)
         
         var result: UInt32 = 0
         
         signerIds.forEach { signerId in
-            let signerRole = StorageModule.userIdToRole[signerId]
+            let signerRole = storageModule.userIdToRole[signerId]
             
             if signerRole.canSign() {
                 result += 1
@@ -49,8 +56,10 @@ struct StateModule {
     }
     
     package static func getActionSigners(actionId: UInt32) -> Vector<Address> {
-        let signerIdsMapper = StorageModule.getActionSignerIdsMapper(actionId: actionId)
-        let userMapper = StorageModule.userMapper
+        let storageModule = StorageModule()
+        
+        let signerIdsMapper = storageModule.getActionSignerIdsMapper(actionId: actionId)
+        let userMapper = storageModule.userMapper
         var signers: Vector<Address> = Vector()
         
         signerIdsMapper.forEach { signerId in
@@ -61,11 +70,15 @@ struct StateModule {
     }
     
     package static func getActionLastIndex() -> UInt32 {
-        return StorageModule.getActionMapper().count
+        let storageModule = StorageModule()
+        
+        return storageModule.getActionMapper().count
     }
     
     package static func getActionData(actionId: UInt32) -> Action {
-        return StorageModule.getActionMapper().get(index: actionId)
+        let storageModule = StorageModule()
+        
+        return storageModule.getActionMapper().get(index: actionId)
     }
 
 }

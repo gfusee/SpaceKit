@@ -42,7 +42,8 @@ struct PerformModule {
         userAddress: Address,
         newRole: UserRole
     ) {
-        let userMapper = StorageModule.userMapper
+        let storageModule = StorageModule()
+        let userMapper = storageModule.userMapper
         
         let userId: UInt32
         if newRole == .none {
@@ -56,7 +57,7 @@ struct PerformModule {
             userId = userMapper.getOrCreateUser(address: userAddress)
         }
         
-        let userIdToRoleMapper = StorageModule.$userIdToRole[userId]
+        let userIdToRoleMapper = storageModule.$userIdToRole[userId]
         let oldRole = userIdToRoleMapper.get()
         userIdToRoleMapper.set(newRole)
         
@@ -77,7 +78,7 @@ struct PerformModule {
         }
         
         if boardMembersDelta != 0 {
-            let numBoardMembersMapper = StorageModule.$numBoardMembers
+            let numBoardMembersMapper = storageModule.$numBoardMembers
             
             var numBoardMembers = numBoardMembersMapper.get()
             numBoardMembers = addSignedInt32ToUnsignedInt32(value: numBoardMembers, delta: boardMembersDelta)
@@ -94,7 +95,7 @@ struct PerformModule {
         }
         
         if proposerDelta != 0 {
-            let numProposerMapper = StorageModule.$numProposers
+            let numProposerMapper = storageModule.$numProposers
             
             var numProposer = numProposerMapper.get()
             numProposer = addSignedInt32ToUnsignedInt32(value: numProposer, delta: proposerDelta)
@@ -104,12 +105,16 @@ struct PerformModule {
     }
     
     package static func clearAction(actionId: UInt32) {
-        StorageModule.getActionMapper().clearEntryUnchecked(index: actionId)
-        StorageModule.getActionSignerIdsMapper(actionId: actionId).clear()
+        let storageModule = StorageModule()
+        
+        storageModule.getActionMapper().clearEntryUnchecked(index: actionId)
+        storageModule.getActionSignerIdsMapper(actionId: actionId).clear()
     }
     
     package static func performAction(actionId: UInt32) -> OptionalArgument<Address> {
-        let action = StorageModule.getActionMapper().get(index: actionId)
+        var storageModule = StorageModule()
+        
+        let action = storageModule.getActionMapper().get(index: actionId)
         
         StartPerformAction()
             .emit(data: ActionFullInfo(
@@ -133,33 +138,33 @@ struct PerformModule {
             
             // validation required for the scenario when a board member becomes a proposer
             require(
-                StorageModule.quorum <= StorageModule.numBoardMembers,
+                storageModule.quorum <= storageModule.numBoardMembers,
                 "quorum cannot exceed board size"
             )
             
             result = .none
         case .removeUser(let userAddress):
             self.changeUserRole(actionId: actionId, userAddress: userAddress, newRole: .none)
-            let numBoardMembers = StorageModule.numBoardMembers
-            let numProposer = StorageModule.numProposers
+            let numBoardMembers = storageModule.numBoardMembers
+            let numProposer = storageModule.numProposers
             
             require(
                 numBoardMembers + numProposer > 0,
                 "cannot remove all board members and proposers"
             )
             require(
-                StorageModule.quorum <= numBoardMembers,
+                storageModule.quorum <= numBoardMembers,
                 "quorum cannot exceed board size"
             )
             
             result = .none
         case .changeQuorum(let newQuorum):
             require(
-                newQuorum <= StorageModule.numBoardMembers,
+                newQuorum <= storageModule.numBoardMembers,
                 "quorum cannot exceed board size"
             )
             
-            StorageModule.quorum = newQuorum
+            storageModule.quorum = newQuorum
             
             PerformChangeQuorum(
                 actionId: actionId,
@@ -207,12 +212,12 @@ struct PerformModule {
                 endpointName: callData.endpointName,
                 argBuffer: callData.arguments.toArgBuffer()
             )
-            .registerPromise(
-                callbackName: "performAsyncCallCallback",
+            .registerPromiseRaw(
                 gas: gas,
-                gasForCallback: PERFORM_ASYNC_CALLBACK_GAS,
+                value: callData.egldAmount,
+                callbackName: "performAsyncCallCallback", // TODO: handle $ callbacks in multi-file projects
                 callbackArgs: ArgBuffer(),
-                value: callData.egldAmount
+                gasForCallback: PERFORM_ASYNC_CALLBACK_GAS
             )
             
             result = .none
@@ -281,7 +286,9 @@ struct PerformModule {
     }
     
     package static func quorumReached(actionId: UInt32) -> Bool {
-        let quorum = StorageModule.quorum
+        let storageModule = StorageModule()
+        
+        let quorum = storageModule.quorum
         let validSignersCount = StateModule.getActionValidSignerCount(actionId: actionId)
         
         return validSignersCount >= quorum

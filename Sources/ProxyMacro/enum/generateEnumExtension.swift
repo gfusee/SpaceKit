@@ -89,14 +89,14 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
                 )
             }
         
-            public func registerPromise(
+            public func registerPromiseRaw(
                 receiver: Address,
-                callbackName: StaticString,
                 gas: UInt64,
-                gasForCallback: UInt64,
-                callbackArgs: ArgBuffer,
                 egldValue: BigUint = 0,
-                esdtTransfers: Vector<TokenPayment> = Vector()
+                esdtTransfers: Vector<TokenPayment> = Vector(),
+                callbackName: StaticString? = nil,
+                callbackArgs: ArgBuffer? = nil,
+                gasForCallback: UInt64? = nil
             ) {
                 let (_endpointName, _argBuffer) = self._getEndpointNameAndArgs()
         
@@ -104,12 +104,29 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
                     receiver: receiver,
                     endpointName: _endpointName,
                     argBuffer: _argBuffer
-                ).registerPromise(
-                    callbackName: callbackName,
+                ).registerPromiseRaw(
                     gas: gas,
-                    gasForCallback: gasForCallback,
+                    value: egldValue,
+                    callbackName: callbackName,
                     callbackArgs: callbackArgs,
-                    value: egldValue
+                    gasForCallback: gasForCallback
+                )
+            }
+        
+            public func registerPromise(
+                receiver: Address,
+                gas: UInt64,
+                egldValue: BigUint = 0,
+                esdtTransfers: Vector<TokenPayment> = Vector(),
+                callback: CallbackParams? = nil
+            ) {
+                self.registerPromiseRaw(
+                    receiver: receiver,
+                    gas: gas,
+                    egldValue: egldValue,
+                    callbackName: callback?.name,
+                    callbackArgs: callback?.args,
+                    gasForCallback: callback?.gas
                 )
             }
         

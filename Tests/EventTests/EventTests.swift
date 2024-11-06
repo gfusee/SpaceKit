@@ -115,7 +115,7 @@ final class EventTests: ContractTestCase {
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
                 topics: [
-                    "5465737453696e676c65496e64657865644669656c644d58427566666572446174614576656e74",
+                    "5465737453696e676c65496e64657865644669656c64427566666572446174614576656e74",
                     "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"
                 ],
                 data: ""
@@ -138,7 +138,7 @@ final class EventTests: ContractTestCase {
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
                 topics: [
-                    "5465737453696e676c65496e64657865644669656c644d58427566666572446174614576656e74",
+                    "5465737453696e676c65496e64657865644669656c64427566666572446174614576656e74",
                     "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"
                 ],
                 data: "48656c6c6f20576f726c6421"
@@ -209,7 +209,7 @@ final class EventTests: ContractTestCase {
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
                 topics: [
-                    "5465737453696e676c65496e64657865644669656c644d58427566666572446174614576656e74",
+                    "5465737453696e676c65496e64657865644669656c64427566666572446174614576656e74",
                     "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"
                 ],
                 data: "48656c6c6f20576f726c6421"
@@ -268,7 +268,7 @@ final class EventTests: ContractTestCase {
         let expected: [TransactionOutputLog] = [
             TransactionOutputLog(
                 topics: [
-                    "5465737453696e676c65496e64657865644669656c644d58427566666572446174614576656e74",
+                    "5465737453696e676c65496e64657865644669656c64427566666572446174614576656e74",
                     "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f"
                 ],
                 data: "48656c6c6f20576f726c6421"

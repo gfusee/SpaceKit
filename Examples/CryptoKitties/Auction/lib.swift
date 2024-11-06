@@ -56,10 +56,10 @@ import Space
             .createGenZeroKitty
             .registerPromise(
                 receiver: kittyOwnershipContractAddress,
-                callbackName: "createGenZeroKittyCallback",
                 gas: gasForExecution,
-                gasForCallback: gasForCallback,
-                callbackArgs: ArgBuffer()
+                callback: self.$createGenZeroKittyCallback(
+                    gasForCallback: gasForCallback
+                )
             )
     }
     
@@ -275,15 +275,6 @@ import Space
             
             let gasForExecution = gasLeft - gasForCallback
             
-            var callbackArgs = ArgBuffer()
-            callbackArgs.pushArg(arg: auctionType)
-            callbackArgs.pushArg(arg: kittyId)
-            callbackArgs.pushArg(arg: startingPrice)
-            callbackArgs.pushArg(arg: endingPrice)
-            callbackArgs.pushArg(arg: deadline)
-            callbackArgs.pushArg(arg: caller)
-            
-            
             CryptoKittiesOwnershipProxy
                 .allowAuctioning(
                     by: caller,
@@ -291,10 +282,16 @@ import Space
                 )
                 .registerPromise(
                     receiver: kittyOwnershipContractAddress,
-                    callbackName: "allowAuctioningCallback",
                     gas: gasForExecution,
-                    gasForCallback: gasForCallback,
-                    callbackArgs: callbackArgs
+                    callback: self.$allowAuctioningCallback(
+                        auctionType: auctionType,
+                        callbackKittyId: kittyId,
+                        startingPrice: startingPrice,
+                        endingPrice: endingPrice,
+                        deadline: deadline,
+                        kittyOwner: caller,
+                        gasForCallback: gasForCallback
+                    )
                 )
         }
     }
@@ -332,10 +329,11 @@ import Space
                 )
                 .registerPromise(
                     receiver: kittyOwnershipContractAddress,
-                    callbackName: "transferCallback",
                     gas: gasForExecution,
-                    gasForCallback: gasForCallback,
-                    callbackArgs: callbackArgs
+                    callback: self.$transferCallback(
+                        callbackKittyId: kittyId,
+                        gasForCallback: gasForCallback
+                    )
                 )
         }
     }
@@ -365,10 +363,11 @@ import Space
                 )
                 .registerPromise(
                     receiver: kittyOwnershipContractAddress,
-                    callbackName: "transferCallback", // not a mistake, same callback for transfer and approveSiringAndReturnKitty
                     gas: gasForExecution,
-                    gasForCallback: gasForCallback,
-                    callbackArgs: callbackArgs
+                    callback: self.$transferCallback( // not a mistake, same callback for transfer and approveSiringAndReturnKitty
+                        callbackKittyId: kittyId,
+                        gasForCallback: gasForCallback
+                    )
                 )
         }
     }

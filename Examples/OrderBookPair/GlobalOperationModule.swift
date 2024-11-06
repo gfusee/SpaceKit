@@ -1,11 +1,11 @@
 import Space
 
 struct GlobalOperationModule {
-    @Storage(key: "global_operation_ongoing") static var isGlobalOperationOngoing: Bool
+    @Storage(key: "global_operation_ongoing") var isGlobalOperationOngoing: Bool
     
-    static func requireGlobalOperationNotOngoing() {
+    func requireGlobalOperationNotOngoing() {
         require(
-            !GlobalOperationModule.isGlobalOperationOngoing,
+            !self.isGlobalOperationOngoing,
             "Global operation ongoing"
         )
     }

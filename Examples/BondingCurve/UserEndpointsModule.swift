@@ -8,8 +8,9 @@ struct UserEndpointsModule {
         let offeredPayment = Message.singleEsdt
         
         self.checkTokenExists(issuedToken: offeredPayment.tokenIdentifier)
+        let storageModule = StorageModule()
         
-        let (calculatedPrice, paymentToken) = StorageModule.$bondingCurveForTokenIdentifier[offeredPayment.tokenIdentifier]
+        let (calculatedPrice, paymentToken) = storageModule.$bondingCurveForTokenIdentifier[offeredPayment.tokenIdentifier]
             .update { buffer in
                 var bondingCurve = BondingCurve<T>(topDecode: buffer)
                 
@@ -43,7 +44,7 @@ struct UserEndpointsModule {
         
         let caller = Message.caller
         
-        StorageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: offeredPayment.tokenIdentifier, nonce: offeredPayment.nonce)]
+        storageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: offeredPayment.tokenIdentifier, nonce: offeredPayment.nonce)]
             .update { val in
                 val = val + offeredPayment.amount
             }
@@ -54,7 +55,7 @@ struct UserEndpointsModule {
             amount: calculatedPrice
         )
         
-        StorageModule.$tokenDetailsForTokenIdentifier[offeredPayment.tokenIdentifier]
+        storageModule.$tokenDetailsForTokenIdentifier[offeredPayment.tokenIdentifier]
             .update { details in
                 details.addNonce(nonce: offeredPayment.nonce)
             }
@@ -76,8 +77,9 @@ struct UserEndpointsModule {
         let offeredPayment = Message.singleEsdt
         
         self.checkTokenExists(issuedToken: requestedToken)
+        let storageModule = StorageModule()
         
-        let calculatedPrice = StorageModule.$bondingCurveForTokenIdentifier[requestedToken]
+        let calculatedPrice = storageModule.$bondingCurveForTokenIdentifier[requestedToken]
             .update { buffer in
                 var bondingCurve = BondingCurve<T>(topDecode: buffer)
                 
@@ -117,7 +119,7 @@ struct UserEndpointsModule {
                 amount: requestedAmount
             )
             
-            let nonceAmountMapper = StorageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: requestedToken, nonce: requestedNonce)]
+            let nonceAmountMapper = storageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: requestedToken, nonce: requestedNonce)]
             let nonceAmount = nonceAmountMapper.get()
             let diff = nonceAmount - requestedAmount
             
@@ -125,7 +127,7 @@ struct UserEndpointsModule {
                 nonceAmountMapper.set(diff)
             } else {
                 nonceAmountMapper.clear()
-                StorageModule.$tokenDetailsForTokenIdentifier[requestedToken]
+                storageModule.$tokenDetailsForTokenIdentifier[requestedToken]
                     .update { details in
                         details.removeNonce(nonce: requestedNonce)
                     }
@@ -166,8 +168,10 @@ struct UserEndpointsModule {
     
     // TODO: use TokenIdentifier type once implemented
     static func checkTokenExists(issuedToken: Buffer) {
+        let storageModule = StorageModule()
+        
         require(
-            !StorageModule.$bondingCurveForTokenIdentifier[issuedToken].isEmpty(),
+            !storageModule.$bondingCurveForTokenIdentifier[issuedToken].isEmpty(),
             "Token is not issued yet!"
         )
     }
@@ -211,7 +215,8 @@ struct UserEndpointsModule {
         token: Buffer,
         amount: BigUint
     ) {
-        let tokenDetailsMapper = StorageModule.$tokenDetailsForTokenIdentifier[token]
+        let storageModule = StorageModule()
+        let tokenDetailsMapper = storageModule.$tokenDetailsForTokenIdentifier[token]
         var nonces = tokenDetailsMapper.get().tokenNonces
         var totalAmount = amount
         var tokensToSend: Vector<TokenPayment> = Vector()
@@ -223,7 +228,7 @@ struct UserEndpointsModule {
             )
             
             let nonce = nonces.get(0)
-            let nonceAmountMapper = StorageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: token, nonce: nonce)]
+            let nonceAmountMapper = storageModule.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: token, nonce: nonce)]
             let availableAmount = nonceAmountMapper.get()
             
             let amountToSend: BigUint
@@ -263,7 +268,8 @@ struct UserEndpointsModule {
     static func getTokenAvailability(
         identifier: Buffer
     ) -> MultiValueEncoded<Buffer> { // TODO: No MultiValue2 at the moment, so let's do it by hand
-        let tokenNonces = StorageModule.tokenDetailsForTokenIdentifier[identifier].tokenNonces
+        let storageModule = StorageModule()
+        let tokenNonces = storageModule.tokenDetailsForTokenIdentifier[identifier].tokenNonces
         var availability: MultiValueEncoded<Buffer> = MultiValueEncoded()
         
         tokenNonces.forEach { currentCheckNonce in
@@ -271,7 +277,7 @@ struct UserEndpointsModule {
             currentCheckNonce.topEncode(output: &currentCheckNonceTopEncoded)
             
             var nonceAmountTopEncoded = Buffer()
-            StorageModule.nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: identifier, nonce: currentCheckNonce)]
+            storageModule.nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: identifier, nonce: currentCheckNonce)]
                 .topEncode(output: &nonceAmountTopEncoded)
             
             availability = availability.appended(value: currentCheckNonceTopEncoded)
