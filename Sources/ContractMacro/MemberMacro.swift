@@ -196,8 +196,15 @@ fileprivate func getTestableStructDeclaration(
     memberBlock.members.append(MemberBlockItemSyntax(decl: testableInitDecl))
     
     for function in functions {
+        var function = function
         guard function.isEndpoint() else {
             continue
+        }
+        
+        if function.isCallback() {
+            function.attributes = function.attributes.filter { attributes in
+                attributes.description.trimmingCharacters(in: .whitespacesAndNewlines) != "@Callback"
+            }
         }
         
         var variableNamesList: [String] = []
@@ -394,7 +401,11 @@ fileprivate func getEndpointVariablesDeclarations(
         
         argumentDeclarationsList.append("let \(variableName) = \(variableType)(topDecodeMulti: &_argsLoader)")
         
-        contractFunctionCallArgumentsList.append("\(variableName): \(variableName)")
+        if parameter.firstName == "_" {
+            contractFunctionCallArgumentsList.append("\(variableName)")
+        } else {
+            contractFunctionCallArgumentsList.append("\(parameter.firstName): \(variableName)")
+        }
     }
     
     var loaderDeclaration: String?

@@ -6,6 +6,8 @@ import SwiftSyntaxMacros
 func generateFuncConformance(
     funcDecl: FunctionDeclSyntax
 ) throws(CallbackMacroError) -> [DeclSyntax] {
+    try funcDecl.isValidCallbackFunction()
+    
     return [
         try generateDollarFunction(callbackFuncDecl: funcDecl)
     ]

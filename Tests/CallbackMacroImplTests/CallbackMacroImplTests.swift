@@ -68,12 +68,12 @@ import XCTest
             .registerPromise(
                 receiver: Address(),
                 gas: 0,
-                callback: self.$testCallbackWithParametersNoReturn(firstArg: "", 0, gasForCallback: 0)
+                callback: self.$testCallbackWithParametersNoReturn(firstArg: "", 0, dummy: Address(), gasForCallback: 0)
             )
     }
     
-    @Callback func testCallbackWithoutArgumentNorReturn() {}
-    @Callback func testCallbackWithParametersNoReturn(firstArg: Buffer, _ secondArg: BigUint) {}
+    @Callback public func testCallbackWithoutArgumentNorReturn() {}
+    @Callback public func testCallbackWithParametersNoReturn(firstArg: Buffer, _ secondArg: BigUint, dummy thirdArg: Address) {}
 }
 
 final class CallbackMacroImplTests: ContractTestCase {
