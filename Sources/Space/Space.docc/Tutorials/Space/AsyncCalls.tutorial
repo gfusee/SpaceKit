@@ -1,0 +1,31 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Interacting with Contracts Across Shards") {
+        SpaceVM introduces an innovative capability within the blockchain landscape: seamless execution in a sharded environment. Sharding refers to dividing a blockchain's global state and validation responsibilities into smaller, manageable segments known as shards. This method allows for infinite scalability without compromising decentralization, ensuring nodes don't need extensive computing power.
+
+        On a sharded blockchain, each wallet resides within a specific shard, and any smart contract it deploys exists within the same shard. Communicating between contracts on different shards requires an asynchronous mechanism distinct from the synchronous communication we covered earlier due to the nature of inter-shard interactions.
+
+        Executing an asynchronous contract-to-contract (SC-to-SC) call resembles sending an HTTP request in conventional web development: you initiate the async call within a transaction and provide a callback to handle outcomes, whether successful or erroneous. One critical aspect to note is that, unlike synchronous calls, an error in the callee contract does not automatically revert the transaction. It is essential to handle state reversion explicitly within the callback logic.
+    }
+    
+    @Section(title: "Declare the Callee Proxy") {
+        @ContentAndMedia {
+            We'll reuse the code of the previous tutorial that covered synchronous call, as the setup is very similar.
+        }
+
+        @Steps {
+            @Step {
+                Let's remind the contract that we are going to call.
+
+                @Code(name: "CalleeContractProxy.swift", file: "AyncCallsSection1Step1.swift")
+            }
+
+            @Step {
+                Let's reuse the structure of the caller contract. A proxy is used for both synchronous calls and asynchronous calls.
+                
+                We assume the callee and the caller to be on different shards.
+
+                @Code(name: "lib.swift", file: "AyncCallsSection1Step2.swift")
+            }
+        }
+    }
+}
