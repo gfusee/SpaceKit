@@ -207,6 +207,14 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .target(
+            name: "CallbackNotExposed",
+            dependencies: [
+                "Space"
+            ],
+            path: "Examples/FeatureTests/CallbackNotExposed",
+            swiftSettings: swiftSettings
+        ),
+        .target(
             name: "CheckPause",
             dependencies: [
                 "Space"
