@@ -42,7 +42,7 @@ func generateDollarFunction(callbackFuncDecl: FunctionDeclSyntax) throws(Callbac
     
     let resultDecl = FunctionDeclSyntax(
         modifiers: [
-            DeclModifierSyntax.init(name: .keyword(.public)),
+            DeclModifierSyntax.init(name: .keyword(.package)),
         ],
         name: "$\(callbackFuncDecl.name)",
         signature: signature,

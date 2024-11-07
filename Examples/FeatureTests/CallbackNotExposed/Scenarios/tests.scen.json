@@ -1,0 +1,57 @@
+{
+    "name": "CallbackNotExposed",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "1",
+                    "balance": "0"
+                },
+                "sc:contract": {
+                    "code": "file:../output/CallbackNotExposed.wasm"
+                }
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "ensure @Callback is not callable",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "dummyCallback",
+                "arguments": [
+                    "5"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": "",
+                "message": "str:no callback for closure, cannot call callback directly",
+                "status": "10",
+                "logs": "*"
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "the $ callback is not exposed",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "$dummyCallback",
+                "arguments": [
+                    "5"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": "",
+                "message": "str:invalid function (not found)",
+                "status": "1",
+                "logs": "*"
+            }
+        }
+    ]
+}
