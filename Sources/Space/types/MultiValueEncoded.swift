@@ -1,6 +1,6 @@
 // TODO: add tests
 
-public struct MultiValueEncoded<Item: SpaceCodable> {
+public struct MultiValueEncoded<Item: SpaceCodable>: Equatable {
     private var rawBuffers: Vector<Buffer>
     
     public var count: Int32 {

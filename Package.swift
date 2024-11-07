@@ -152,6 +152,12 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "MultiArgsTests",
+            dependencies: [
+                "Space"
+            ]
+        ),
+        .testTarget(
             name: "ProxyTests",
             dependencies: [
                 "Space"
