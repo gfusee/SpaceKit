@@ -1,30 +1,112 @@
 @Tutorial(time: 15) {
     @Intro(title: "Interacting with Contracts Across Shards") {
-        SpaceVM introduces an innovative capability within the blockchain landscape: seamless execution in a sharded environment. Sharding refers to dividing a blockchain's global state and validation responsibilities into smaller, manageable segments known as shards. This method allows for infinite scalability without compromising decentralization, ensuring nodes don't need extensive computing power.
+        Blockchain platforms using SpaceVM enable seamless execution within a sharded environment. Sharding divides a blockchain's global state and validation workload into smaller, manageable units known as shards. This method enhances scalability without compromising decentralization, allowing nodes to operate without significant computational resources.
 
-        On a sharded blockchain, each wallet resides within a specific shard, and any smart contract it deploys exists within the same shard. Communicating between contracts on different shards requires an asynchronous mechanism distinct from the synchronous communication we covered earlier due to the nature of inter-shard interactions.
+        In a sharded blockchain, each wallet is associated with a specific shard, and any smart contract deployed resides within that shard. Communication between contracts on different shards requires an asynchronous approach, differing from the synchronous communication methods covered earlier due to the nature of inter-shard interactions.
 
-        Executing an asynchronous contract-to-contract (SC-to-SC) call resembles sending an HTTP request in conventional web development: you initiate the async call within a transaction and provide a callback to handle outcomes, whether successful or erroneous. One critical aspect to note is that, unlike synchronous calls, an error in the callee contract does not automatically revert the transaction. It is essential to handle state reversion explicitly within the callback logic.
+        Executing an asynchronous contract-to-contract (SC-to-SC) call is similar to issuing an HTTP request in traditional web development. Within a transaction, the async call is initiated, and a callback is provided to handle success or failure. It is important to note that errors in the called contract do not automatically revert the entire transaction. Handling state reversion must be explicitly managed within the callback logic.
     }
-    
+
     @Section(title: "Declare the Callee Proxy") {
         @ContentAndMedia {
-            We'll reuse the code of the previous tutorial that covered synchronous call, as the setup is very similar.
+            This section builds upon the contract code from the previous chapter covering synchronous calls, as the setup is similar.
+
+            This example focuses on the `deposit` endpoint, assumed to return a `TokenPayment`.
+
+            The objective is to return the payment to the initial caller upon a successful deposit. If the deposit fails, the original value must be refunded.
         }
 
         @Steps {
             @Step {
-                Let's remind the contract that we are going to call.
+                Review the contract provided in the previous chapter.
 
-                @Code(name: "CalleeContractProxy.swift", file: "AyncCallsSection1Step1.swift")
+                @Code(name: "CalleeContractProxy.swift", file: "AsyncCallsSection1Step1.swift")
             }
 
             @Step {
-                Let's reuse the structure of the caller contract. A proxy is used for both synchronous calls and asynchronous calls.
-                
-                We assume the callee and the caller to be on different shards.
+                Reuse the structure of the caller contract from the previous chapter. The proxy setup is used for both synchronous and asynchronous calls.
 
-                @Code(name: "lib.swift", file: "AyncCallsSection1Step2.swift")
+                The example assumes that the caller and callee are on different shards.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection1Step2.swift")
+            }
+        }
+    }
+
+    @Section(title: "Perform an Asynchronous Call") {
+        @ContentAndMedia {
+            After setting up the proxy, initiate the asynchronous call and declare the callback.
+        }
+
+        @Steps {
+            @Step {
+                Review the complete code from the previous section.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection1Step2.swift")
+            }
+
+            @Step {
+                Add the endpoint that users will call to initiate the deposit async call.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection2Step2.swift")
+            }
+
+            @Step {
+                Retrieve the payment provided by the user.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection2Step3.swift")
+            }
+
+            @Step {
+                Initiate the async call using the `registerPromise` method on the proxy.
+
+                Note: Unlike synchronous calls, all changes made before and after the registration are committed to the blockchain, regardless of the call's result.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection2Step4.swift")
+            }
+
+            @Step {
+                Define the callback function, annotated with `@Callback`. The function can take arguments to store information computed during the initial execution phase, before the async call.
+
+                Technically, a callback acts as an endpoint, but it is protected and only callable by SpaceVM after an async call.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection2Step5.swift")
+            }
+
+            @Step {
+                Retrieve the result of the asynchronous call.
+
+                Note: The result is represented as `AsyncCallResult<T>`, where `T` is the return type of the endpoint.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection2Step6.swift")
+            }
+
+            @Step {
+                Handle success and error cases.
+
+                In the event of success, the result contains the execution output; in the event of failure, it contains the error.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection2Step7.swift")
+            }
+
+            @Step {
+                Forward the received payment to the original user upon successful completion.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection2Step8.swift")
+            }
+
+            @Step {
+                Refund the original payment to the user in the event of failure.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection2Step9.swift")
+            }
+
+            @Step {
+                The `@Callback` annotation generates a `$` function that is used to populate the callback parameter in `registerPromise`.
+
+                Ensure that the `gasForCallback` parameter of the `$` function is set to provide sufficient gas for callback execution.
+
+                @Code(name: "lib.swift", file: "AsyncCallsSection2Step10.swift")
             }
         }
     }
