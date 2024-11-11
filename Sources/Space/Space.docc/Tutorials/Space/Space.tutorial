@@ -47,11 +47,19 @@
             @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window showing command line tools.")
         }
         
-        @Chapter(name: "Interact with Other Contracts") {
+        @Chapter(name: "Interacting with Other Contracts") {
             @TutorialReference(tutorial: "doc:SyncCalls")
             Learn how to enable smart contracts to call other contracts in a synchronous manner, and explore contract-to-contract interaction using Space's proxy mechanisms.
 
             @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window showing code examples.")
         }
+        
+        @Chapter(name: "Calling Contracts Across Shards") {
+            @TutorialReference(tutorial: "doc:AsyncCalls")
+            Asynchronous calls enable interaction with contracts across different shards. Let’s explore how to implement these cross-shard calls in Space.
+
+            @Image(source: "InstallingToolsSection1Step1.png", alt: "A terminal window displaying code examples.")
+        }
+
     }
 }
