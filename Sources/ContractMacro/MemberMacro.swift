@@ -239,6 +239,20 @@ fileprivate func getTestableStructDeclaration(
         testableFunction.signature.parameterClause.parameters = FunctionParameterListSyntax(baseParameters + transactionInputOptionalParameters)
         testableFunction.signature.effectSpecifiers = throwsEffectSpecifiers
         
+        let isVoid = function.signature.returnClause == nil
+        let adapterAndReturnBlock = if isVoid {
+            """
+                contract.\(function.name)(\(args))
+            """
+        } else {
+            """
+                var outputAdapter = ApiOutputAdapter()
+                let endpointOutput = contract.\(function.name)(\(args))
+                endpointOutput.multiEncode(output: &outputAdapter)
+            """
+            
+        }
+        
         testableFunction.body = CodeBlockSyntax(
             statements: """
             let transactionInput = transactionInput ?? ContractCallTransactionInput()
@@ -250,7 +264,8 @@ fileprivate func getTestableStructDeclaration(
                 transactionOutput: transactionOutput
             ) { \(raw: closureVariableInstantiations)
                 var contract = \(structDecl.name.trimmed)(_noDeploy: ())
-                return contract.\(function.name)(\(raw: args))
+            
+                \(raw: adapterAndReturnBlock)
             }
             """
         )

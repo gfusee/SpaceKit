@@ -15,7 +15,12 @@ public class DummyApi {
     
     package var worldState = WorldState()
     
-    package func runTransactions(transactionInput: TransactionInput, transactionOutput: TransactionOutput? = nil, operations: UncheckedClosure) throws(TransactionError) {
+    package func runTransactions(
+        transactionInput: TransactionInput,
+        transactionOutput: TransactionOutput? = nil,
+        executionType: TransactionContainerExecutionType = .sync,
+        operations: UncheckedClosure
+    ) throws(TransactionError) -> [Data] {
         self.containerLock.lock()
         
         while let transactionContainer = self.transactionContainer {
@@ -28,19 +33,12 @@ public class DummyApi {
         let transactionContainer = TransactionContainer(
             worldState: self.worldState,
             transactionInput: transactionInput,
-            errorBehavior: .blockThread
+            executionType: .sync,
+            errorBehavior: .blockThread,
+            byTransferringDataFrom: self.staticContainer
         )
         
         self.transactionContainer = transactionContainer
-
-        defer {
-            if let output = transactionContainer.transactionOutput {
-                transactionOutput?.merge(output: output)
-            }
-            
-            self.transactionContainer = nil
-            self.containerLock.unlock()
-        }
         
         nonisolated(unsafe) var hasThreadStartedExecution = false
         
@@ -68,13 +66,37 @@ public class DummyApi {
             }
         }
         
+        let containerExecutionType = transactionContainer.executionType
+        let containerPendingAsyncExecutions = transactionContainer.pendingAsyncExecutions
+        let containerOutputs = transactionContainer.outputs
+        
+        var errorToThrow: TransactionError? = nil
+        
         if let transactionError = transactionContainer.error {
-            throw transactionError
+            if !self.shouldContinueExecutionAfterError(executionType: containerExecutionType, pendingAsyncExecutions: containerPendingAsyncExecutions) {
+                errorToThrow = transactionError
+            }
         } else {
             // Commit the container into the state
             self.worldState = transactionContainer.state
-            self.transactionContainer = nil
         }
+        
+        if let output = transactionContainer.transactionOutput {
+            transactionOutput?.merge(output: output)
+        }
+        
+        self.transactionContainer = nil
+        self.containerLock.unlock()
+        
+        if let error = errorToThrow {
+            throw error
+        }
+        
+        for pendingAsyncExecution in containerPendingAsyncExecutions {
+            self.executePendingAsyncExecution(execution: pendingAsyncExecution)
+        }
+        
+        return containerOutputs
     }
     
     public func registerContractEndpointSelectorForContractAddress(
@@ -121,6 +143,47 @@ public class DummyApi {
     
     func throwExecutionFailed(reason: String) -> Never {
         self.getCurrentContainer().throwError(error: .executionFailed(reason: reason))
+    }
+    
+    func shouldContinueExecutionAfterError(
+        executionType: TransactionContainerExecutionType,
+        pendingAsyncExecutions: [AsyncCallInput]
+    ) -> Bool {
+        switch executionType {
+        case .sync:
+            return false
+        case .async:
+            return true
+        case .callback:
+            return true
+        }
+    }
+    
+    func executePendingAsyncExecution(execution: AsyncCallInput) {
+        let executionType: TransactionContainerExecutionType = execution.isCallback ? .callback : .async
+        
+        do {
+            let outputs = TransactionOutput()
+            
+            try self.runTransactions(
+                transactionInput: execution.input,
+                transactionOutput: outputs,
+                operations: UncheckedClosure({
+                    self.transactionContainer?
+                        .performNestedContractCall(
+                            receiver: execution.input.contractAddress,
+                            function: execution.function,
+                            inputs: execution.input
+                        )
+                })
+            )
+        } catch {
+            
+        }
+    }
+    
+    public func getNextHandle() -> Int32 {
+        self.getCurrentContainer().getNextHandle()
     }
 }
 
@@ -217,7 +280,7 @@ extension DummyApi: BufferApiProtocol {
         
         let outputData = currentContainer.getBufferData(handle: handle)
         
-        self.getCurrentContainer().outputs.append(outputData)
+        currentContainer.addOutput(output: outputData)
         
         return 0
     }
@@ -631,7 +694,31 @@ extension DummyApi: SendApiProtocol {
         extraGasForCallback: Int64,
         callbackClosureHandle: Int32
     ) -> Int32 {
-        fatalError() // TODO: implement and test
+        // TODO: implement and test
+        let currentTransactionContainer = self.getCurrentContainer()
+        
+        let sender = currentTransactionContainer.getCurrentSCAccount().addressData
+        let receiver = currentTransactionContainer.getBufferData(handle: dstHandle)
+        let value = currentTransactionContainer.getBigIntData(handle: valueHandle)
+        let function = currentTransactionContainer.getBufferData(handle: functionHandle)
+        
+        let argumentsArray: Vector<Buffer> = Vector(handle: argumentsHandle)
+        var arguments: [Data] = []
+        
+        argumentsArray.forEach { arguments.append(Data($0.toBytes())) }
+        
+        currentTransactionContainer.registerAsyncCallPromise(
+            function: function,
+            input: TransactionInput(
+                contractAddress: receiver,
+                callerAddress: sender,
+                egldValue: value,
+                esdtValue: [], // TODO: implement and test
+                arguments: arguments
+            )
+        )
+        
+        return 0
     }
     
     public func managedDeployFromSourceContract(

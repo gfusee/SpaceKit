@@ -24,11 +24,3 @@ public macro Event(dataType: TopEncode.Type? = nil) = #externalMacro(module: "Ev
 
 @attached(extension, names: arbitrary)
 public macro Proxy() = #externalMacro(module: "ProxyMacro", type: "Proxy")
-
-nonisolated(unsafe) var nextHandle: Int32 = -100
-func getNextHandle() -> Int32 {
-    let currentHandle = nextHandle
-    nextHandle -= 1
-
-    return currentHandle
-}

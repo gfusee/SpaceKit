@@ -13,7 +13,7 @@ extension EndpointArgumentsLoader: TopDecodeMultiInput {
     }
     
     public mutating func nextValueInput() -> Buffer {
-        let bufferHandle = getNextHandle()
+        let bufferHandle = API.getNextHandle()
         let _ = API.bufferGetArgument(argId: self.currentIndex, bufferHandle: bufferHandle)
         
         self.currentIndex += 1

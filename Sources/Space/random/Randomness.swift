@@ -1,5 +1,5 @@
 public struct Randomness {
-    public static let bufferHandle = getNextHandle()
+    public static let bufferHandle = API.getNextHandle()
     
     // Workaround for isolation
     private static func getBuffer() -> Buffer {

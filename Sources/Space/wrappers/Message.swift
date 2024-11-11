@@ -3,7 +3,7 @@ public struct Message {
     
     public static var egldValue: BigUint {
         // TODO: add caching
-        let valueHandle = getNextHandle()
+        let valueHandle = API.getNextHandle()
         
         API.bigIntGetCallValue(dest: valueHandle)
         
@@ -12,7 +12,7 @@ public struct Message {
 
     public static var allEsdtTransfers: Vector<TokenPayment> {
         // TODO: add caching
-        let resultHandle = getNextHandle()
+        let resultHandle = API.getNextHandle()
         
         API.managedGetMultiESDTCallValue(resultHandle: resultHandle)
         

@@ -23,7 +23,7 @@ public struct SingleValueMapper<V: TopEncode & TopDecode>: StorageMapper {
     }
     
     private func getRawBuffer() -> Buffer {
-        let storedValueBufferHandle = getNextHandle()
+        let storedValueBufferHandle = API.getNextHandle()
         let _ = API.bufferStorageLoad(keyHandle: self.key.handle, bufferHandle: storedValueBufferHandle)
         
         return Buffer(handle: storedValueBufferHandle)
