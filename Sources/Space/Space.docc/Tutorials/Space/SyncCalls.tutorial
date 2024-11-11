@@ -78,20 +78,22 @@
 
             @Step {
                 Add an endpoint called `callDeposit` that will trigger the `deposit` endpoint.
-
-                @Code(name: "lib.swift", file: "SyncCallsSection2Step1.swift")
-            }
-
-            @Step {
-                The `deposit` endpoint requires an EGLD payment. Retrieve it, and you'll pass it along during the call setup in a later step.
+                
+                The parameter `receiverAddress` is the called contract's address. 
 
                 @Code(name: "lib.swift", file: "SyncCallsSection2Step2.swift")
             }
 
             @Step {
-                Instantiate the `deposit` case from the `@Proxy` enum.
+                The `deposit` endpoint requires an EGLD payment. Retrieve it, and you'll pass it along during the call setup in a later step.
 
                 @Code(name: "lib.swift", file: "SyncCallsSection2Step3.swift")
+            }
+
+            @Step {
+                Instantiate the `deposit` case from the `@Proxy` enum.
+
+                @Code(name: "lib.swift", file: "SyncCallsSection2Step4.swift")
             }
 
             @Step {
@@ -99,7 +101,7 @@
                 
                 Note: Since `deposit` doesn't return any value, use `callAndIgnoreResult` instead of `call`.
 
-                @Code(name: "lib.swift", file: "SyncCallsSection2Step4.swift")
+                @Code(name: "lib.swift", file: "SyncCallsSection2Step5.swift")
             }
 
             @Step {
@@ -107,25 +109,27 @@
                 
                 Note: If you need to transfer ESDT tokens, use the `esdtTransfers` parameter.
 
-                @Code(name: "lib.swift", file: "SyncCallsSection2Step5.swift")
-            }
-
-            @Step {
-                Add an endpoint called `callWithdraw` that will invoke the `withdraw` endpoint. This function should accept an `amount` parameter that will be passed to the `withdraw` endpoint.
-
                 @Code(name: "lib.swift", file: "SyncCallsSection2Step6.swift")
             }
 
             @Step {
-                Instantiate the `withdraw` case from the `@Proxy` enum and pass the `amount` argument.
+                Add an endpoint called `callWithdraw` that will invoke the `withdraw` endpoint.
+                
+                This function should accept the receiver's address as well as an `amount` parameter that will be passed to the `withdraw` endpoint.
 
                 @Code(name: "lib.swift", file: "SyncCallsSection2Step7.swift")
             }
 
             @Step {
-                Use the `call` method to execute the contract call, passing the called contract’s address as the `receiver`, just like before.
+                Instantiate the `withdraw` case from the `@Proxy` enum and pass the `amount` argument.
 
                 @Code(name: "lib.swift", file: "SyncCallsSection2Step8.swift")
+            }
+
+            @Step {
+                Use the `call` method to execute the contract call, passing the called contract’s address as the `receiver`, just like before.
+
+                @Code(name: "lib.swift", file: "SyncCallsSection2Step9.swift")
             }
 
             @Step {
@@ -133,13 +137,13 @@
 
                 Important: Because the `@Proxy` enum does not define return values, you must explicitly declare the type here.
 
-                @Code(name: "lib.swift", file: "SyncCallsSection2Step9.swift")
+                @Code(name: "lib.swift", file: "SyncCallsSection2Step10.swift")
             }
 
             @Step {
                 Ensure that the resulting payment is greater than zero.
 
-                @Code(name: "lib.swift", file: "SyncCallsSection2Step10.swift")
+                @Code(name: "lib.swift", file: "SyncCallsSection2Step11.swift")
             }
         }
     }

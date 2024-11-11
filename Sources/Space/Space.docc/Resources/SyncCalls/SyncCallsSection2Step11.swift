@@ -22,10 +22,14 @@ import Space
         receiverAddress: Address,
         amount: BigUint
     ) {
-        CalleeContractProxy
+        let payment: TokenPayment = CalleeContractProxy
             .withdraw(amount: amount)
             .call(
                 receiver: receiverAddress
             )
+        
+        guard payment.amount > 0 else {
+            smartContractError(message: "No payment received")
+        }
     }
 }
