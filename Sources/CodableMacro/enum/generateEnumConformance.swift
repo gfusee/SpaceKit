@@ -11,8 +11,16 @@ func generateEnumConformance(
     let enumName = enumDecl.name.trimmed
     
     let members = enumDecl.memberBlock.members
-    let cases = members
-        .compactMap({ $0.decl.as(EnumCaseDeclSyntax.self) })
+    let cases: [EnumCaseDeclSyntax] = members
+        .compactMap { member in
+            guard var caseDecl = member.decl.as(EnumCaseDeclSyntax.self) else {
+                return nil
+            }
+            
+            caseDecl.trailingTrivia = Trivia(pieces: [])
+            
+            return caseDecl
+        }
     
     let discriminantsAndCases = getDiscriminantForCase(cases: cases)
     

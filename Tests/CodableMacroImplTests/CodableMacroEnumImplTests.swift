@@ -1,6 +1,13 @@
 import Space
 import XCTest
 
+// There was an issue with @Codable macro on structs or enums that has comments on its fields
+// The struct here is only here to check if it compiles
+@Codable enum TestEnum {
+    case firstCase // Dummy comment
+    case secondCase
+}
+
 @Codable enum PaymentType: Equatable {
     case egld
     case esdt, multiEsdts

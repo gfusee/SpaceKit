@@ -13,7 +13,16 @@ func generateStructConformance(
     try structDecl.isValidStruct()
     
     let structName = structDecl.name.trimmed
-    let fields = structDecl.memberBlock.members.compactMap { $0.decl.as(VariableDeclSyntax.self) }
+    let fields: [VariableDeclSyntax] = structDecl.memberBlock.members.compactMap { member in
+        
+        guard var field = member.decl.as(VariableDeclSyntax.self) else {
+            return nil
+        }
+        
+        field.trailingTrivia = Trivia(pieces: [])
+        
+        return field
+    }
     
     return [
         try generateTopEncodeExtension(structName: structName),
