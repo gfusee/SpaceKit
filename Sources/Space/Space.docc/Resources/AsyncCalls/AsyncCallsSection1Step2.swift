@@ -1,7 +1,7 @@
 import Space
 
 @Proxy enum CalleeContractProxy {
-    case .deposit
+    case deposit
 }
 
 @Contract struct MyContract {
