@@ -7,22 +7,22 @@ import Space
 }
 
 @Contract struct MyContract {
-    public func callDeposit() {
+    public func callDeposit(receiverAddress: Address) {
         let payment = Message.egldValue
         
         CalleeContractProxy
             .deposit
             .callAndIgnoreResult(
-                receiver: "<called contract's address>",
+                receiver: receiverAddress,
                 egldValue: payment
             )
     }
     
-    public func callWithdraw(amount: BigUint) {
+    public func callWithdraw(
+        receiverAddress: Address,
+        amount: BigUint
+    ) {
         CalleeContractProxy
             .withdraw(amount: amount)
-            .call(
-                receiver: "<called contract's address>"
-            )
     }
 }

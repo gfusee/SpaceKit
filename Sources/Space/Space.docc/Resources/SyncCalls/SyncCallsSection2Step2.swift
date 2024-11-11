@@ -7,7 +7,7 @@ import Space
 }
 
 @Contract struct MyContract {
-    public func callDeposit() {
-        let payment = Message.egldValue
+    public func callDeposit(receiverAddress: Address) {
+        
     }
 }

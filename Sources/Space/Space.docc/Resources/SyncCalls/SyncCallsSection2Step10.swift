@@ -7,26 +7,25 @@ import Space
 }
 
 @Contract struct MyContract {
-    public func callDeposit() {
+    public func callDeposit(receiverAddress: Address) {
         let payment = Message.egldValue
         
         CalleeContractProxy
             .deposit
             .callAndIgnoreResult(
-                receiver: "<called contract's address>",
+                receiver: receiverAddress,
                 egldValue: payment
             )
     }
     
-    public func callWithdraw(amount: BigUint) {
+    public func callWithdraw(
+        receiverAddress: Address,
+        amount: BigUint
+    ) {
         let payment: TokenPayment = CalleeContractProxy
             .withdraw(amount: amount)
             .call(
-                receiver: "<called contract's address>"
+                receiver: receiverAddress
             )
-        
-        guard payment.amount > 0 else {
-            smartContractError(message: "No payment received")
-        }
     }
 }
