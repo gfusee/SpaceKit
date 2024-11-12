@@ -32,10 +32,13 @@ import Space
     case increaseCounterBy(value: BigUint)
     case increaseCounterAndFail
     case returnValueNoInput
+    case getCounter
 }
 
 @Contract struct AsyncCallsTestsContract {
     @Storage(key: "counter") var counter: BigUint
+    @Storage(key: "storedErrorCode") var storedErrorCode: UInt32
+    @Storage(key: "storedErrorMessage") var storedErrorMessage: Buffer
     
     public func asyncCallIncreaseCounter(receiver: Address) {
         CalleeContractProxy
@@ -43,6 +46,32 @@ import Space
             .registerPromise(
                 receiver: receiver,
                 gas: 10_000_000
+            )
+    }
+    
+    public func asyncCallIncreaseCounterWithSimpleCallback(receiver: Address) {
+        CalleeContractProxy
+            .increaseCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$simpleCallback(gasForCallback: 5_000_000)
+            )
+    }
+    
+    public func asyncCallIncreaseCounterWithCallbackWithOneParameter(
+        receiver: Address,
+        callbackValue: BigUint
+    ) {
+        CalleeContractProxy
+            .increaseCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$callbackWithOneParameter(
+                    value: callbackValue,
+                    gasForCallback: 5_000_000
+                )
             )
     }
     
@@ -71,8 +100,60 @@ import Space
         self.counter += 150
     }
     
+    public mutating func asyncCallIncreaseCounterAndFailWithCallback(receiver: Address) {
+        self.counter += 100
+        
+        CalleeContractProxy
+            .increaseCounterAndFail
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$callbackWithResult(gasForCallback: 5_000_000)
+            )
+        
+        self.counter += 150
+    }
+    
+    public func asyncCallGetCounterWithCallback(receiver: Address) {
+        CalleeContractProxy
+            .getCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$callbackWithResult(gasForCallback: 5_000_000)
+            )
+    }
+    
     public func getCounter() -> BigUint {
         self.counter
+    }
+    
+    public func getStoredErrorCode() -> UInt32 {
+        self.storedErrorCode
+    }
+    
+    public func getStoredErrorMessage() -> Buffer {
+        self.storedErrorMessage
+    }
+    
+    @Callback public mutating func simpleCallback() {
+        self.counter += 1
+    }
+    
+    @Callback public mutating func callbackWithOneParameter(value: BigUint) {
+        self.counter += value
+    }
+    
+    @Callback public mutating func callbackWithResult() {
+        let result: AsyncCallResult<BigUint> = Message.asyncCallResult()
+        
+        switch result {
+        case .success(let value):
+            self.counter += value
+        case .error(let asyncCallError):
+            self.storedErrorCode = asyncCallError.errorCode
+            self.storedErrorMessage = asyncCallError.errorMessage
+        }
     }
 }
 
@@ -94,6 +175,63 @@ final class AsyncCallsTests: ContractTestCase {
         let counter = try callee.getCounter()
         
         XCTAssertEqual(counter, 1)
+    }
+    
+    func testIncreaseCounterWithSimpleCallback() throws {
+        let callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.asyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        
+        XCTAssertEqual(calleeCounter, 1)
+        XCTAssertEqual(callerCounter, 1)
+    }
+    
+    func testIncreaseCounterWithCallbackWithOneParameter() throws {
+        let callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.asyncCallIncreaseCounterWithCallbackWithOneParameter(
+            receiver: "callee",
+            callbackValue: 50
+        )
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        
+        XCTAssertEqual(calleeCounter, 1)
+        XCTAssertEqual(callerCounter, 50)
+    }
+    
+    func testIncreaseCounterWithCallbackWithResult() throws {
+        var callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try callee.increaseCounterBy(value: 100)
+        
+        try caller.asyncCallGetCounterWithCallback(receiver: "callee")
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        
+        XCTAssertEqual(calleeCounter, 100)
+        XCTAssertEqual(callerCounter, 100)
+    }
+    
+    func testIncreaseCounterWithCallback() throws {
+        let callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.asyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        
+        XCTAssertEqual(calleeCounter, 1)
+        XCTAssertEqual(callerCounter, 1)
     }
     
     func testIncreaseCounterBy() throws {
@@ -123,5 +261,26 @@ final class AsyncCallsTests: ContractTestCase {
         
         XCTAssertEqual(calleeCounter, 0)
         XCTAssertEqual(callerCounter, 250)
+    }
+    
+    func testChangeStorageAndStartFailableAsyncCallWithCallback() throws {
+        let callee = try CalleeContract.testable("callee")
+        var caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.asyncCallIncreaseCounterAndFailWithCallback(
+            receiver: "callee"
+        )
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        
+        let callerStoredErrorCode = try caller.getStoredErrorCode()
+        let callerStoredErrorMessage = try caller.getStoredErrorMessage()
+        
+        XCTAssertEqual(calleeCounter, 0)
+        XCTAssertEqual(callerCounter, 250)
+        
+        XCTAssertEqual(callerStoredErrorCode, 4)
+        XCTAssertEqual(callerStoredErrorMessage, "Oh no!")
     }
 }

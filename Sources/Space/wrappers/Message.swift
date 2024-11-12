@@ -83,7 +83,7 @@ public struct Message {
     
     public static var transactionHash: Buffer {
         // TODO: add caching
-        var result = Buffer()
+        let result = Buffer()
         
         API.managedGetOriginalTxHash(resultHandle: result.handle)
         

@@ -16,7 +16,7 @@ public func runTestCall<each InputArg: TopEncodeMulti & TopDecodeMulti, ReturnTy
         operations: UncheckedClosure {
             operation(repeat each args)
         }
-    )
+    ).results
     
     var extractedResultBuffers: Vector<Buffer> = Vector()
     

@@ -15,6 +15,17 @@ public enum TransactionError: Error, Equatable {
             return message
         }
     }
+    
+    var code: UInt32 {
+        switch self {
+        case .userError(let message):
+            4
+        case .executionFailed(let reason):
+            10
+        case .worldError(let message):
+            100
+        }
+    }
 }
 
 #endif
