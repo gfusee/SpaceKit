@@ -31,14 +31,18 @@ public struct BigUint {
         self.init(value: value.toBytes8())
     }
     
+    public init(value: UInt16) {
+        self.init(value: value.toBytes8())
+    }
+    
     public init(value: UInt8) {
         self.init(value: value.toBytes8())
     }
 
     package init(value: Bytes8) {
-        let handle = getNextHandle()
-        API.bigIntSetInt64(destination: handle, value: toBigEndianInt64(from: value))
-        self.handle = handle
+        let buffer = Buffer(data: value)
+        
+        self = BigUint(bigEndianBuffer: buffer)
     }
     
     public init(bigEndianBuffer: Buffer) {

@@ -500,4 +500,205 @@ final class BigUintTests: ContractTestCase {
         
         XCTAssertEqual(result, nil)
     }
+    
+    func testZeroUInt8ToBigUint() throws {
+        let result = BigUint(value: UInt8(0))
+        
+        let expected: BigUint = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testOneUInt8ToBigUint() throws {
+        let result = BigUint(value: UInt8(1))
+        
+        let expected: BigUint = 1
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testMaxUInt8ToBigUint() throws {
+        let result = BigUint(value: UInt8.max)
+        
+        let expected: BigUint = 255
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testZeroUInt16ToBigUint() throws {
+        let result = BigUint(value: UInt16(0))
+        
+        let expected: BigUint = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testOneUInt16ToBigUint() throws {
+        let result = BigUint(value: UInt16(1))
+        
+        let expected: BigUint = 1
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testMaxUInt16ToBigUint() throws {
+        let result = BigUint(value: UInt16.max)
+        
+        let expected: BigUint = 65535
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testZeroInt32ToBigUint() throws {
+        let result = BigUint(value: Int32(0))
+        
+        let expected: BigUint = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testOneInt32ToBigUint() throws {
+        let result = BigUint(value: Int32(1))
+        
+        let expected: BigUint = 1
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testInt32MidToBigUint() throws {
+        var result = Buffer()
+        BigUint(value: Int32.max / 2).topEncode(output: &result)
+        
+        let expected = Buffer(data: Array("3fffffff".hexadecimal))
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testInt32MidPlusOneToBigUint() throws {
+        var result = Buffer()
+        BigUint(value: (Int32.max / 2) + 1).topEncode(output: &result)
+        
+        let expected = Buffer(data: Array("40000000".hexadecimal))
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testMaxInt32ToBigUint() throws {
+        var result = Buffer()
+        BigUint(value: Int32.max).topEncode(output: &result)
+        
+        let expected = Buffer(data: Array("7fffffff".hexadecimal))
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testZeroUInt32ToBigUint() throws {
+        let result = BigUint(value: UInt32(0))
+        
+        let expected: BigUint = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testOneUInt32ToBigUint() throws {
+        let result = BigUint(value: UInt32(1))
+        
+        let expected: BigUint = 1
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testMaxUInt32ToBigUint() throws {
+        let result = BigUint(value: UInt32.max)
+        
+        let expected: BigUint = 4294967295
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testZeroInt64ToBigUint() throws {
+        let result = BigUint(value: Int64(0))
+        
+        let expected: BigUint = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testOneInt64ToBigUint() throws {
+        let result = BigUint(value: Int64(1))
+        
+        let expected: BigUint = 1
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testInt64MidToBigUint() throws {
+        var result = Buffer()
+        BigUint(value: Int64.max / 2).topEncode(output: &result)
+        
+        let expected = Buffer(data: Array("3fffffffffffffff".hexadecimal))
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testInt64MidPlusOneToBigUint() throws {
+        var result = Buffer()
+        BigUint(value: (Int64.max / 2) + 1).topEncode(output: &result)
+        
+        let expected = Buffer(data: Array("4000000000000000".hexadecimal))
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testMaxInt64ToBigUint() throws {
+        var result = Buffer()
+        BigUint(value: Int64.max).topEncode(output: &result)
+        
+        let expected = Buffer(data: Array("7fffffffffffffff".hexadecimal))
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testZeroUInt64ToBigUint() throws {
+        let result = BigUint(value: UInt64(0))
+        
+        let expected: BigUint = 0
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testOneUInt64ToBigUint() throws {
+        let result = BigUint(value: UInt64(1))
+        
+        let expected: BigUint = 1
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testUInt64MidToBigUint() throws {
+        var result = Buffer()
+        BigUint(value: UInt64.max / 2).topEncode(output: &result)
+        
+        let expected = Buffer(data: Array("7fffffffffffffff".hexadecimal))
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testUInt64MidPlusOneToBigUint() throws {
+        var result = Buffer()
+        BigUint(value: (UInt64.max / 2) + 1).topEncode(output: &result)
+        
+        let expected = Buffer(data: Array("8000000000000000".hexadecimal))
+        
+        XCTAssertEqual(result, expected)
+    }
+    
+    func testMaxUInt64ToBigUint() throws {
+        var result = Buffer()
+        BigUint(value: UInt64.max).topEncode(output: &result)
+        
+        let expected = Buffer(data: Array("ffffffffffffffff".hexadecimal))
+        
+        XCTAssertEqual(result, expected)
+    }
 }
