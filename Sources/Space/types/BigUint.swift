@@ -16,21 +16,7 @@ public struct BigUint {
     }
     
     public init(value: UInt64) {
-        if value <= Int64.max {
-            self.init(value: value.toBytes8())
-        } else {
-            let isOdd = value % 2 != 0
-            let actualValue = value / 2 // Ensure we don't exceed Int64.max
-            
-            var safeValue = BigUint(value: actualValue)
-            safeValue = safeValue * BigUint(value: UInt8(2))
-            
-            if isOdd { // We lost 1 during the div, so we have to add 1 * 2 = 2
-                safeValue = safeValue + 2
-            }
-            
-            self = safeValue * 2
-        }
+        self.init(value: value.toBytes8())
     }
     
     public init(value: Int32) {
@@ -54,9 +40,9 @@ public struct BigUint {
     }
 
     package init(value: Bytes8) {
-        let handle = getNextHandle()
-        API.bigIntSetInt64(destination: handle, value: toBigEndianInt64(from: value))
-        self.handle = handle
+        let buffer = Buffer(data: value)
+        
+        self = BigUint(bigEndianBuffer: buffer)
     }
     
     public init(bigEndianBuffer: Buffer) {

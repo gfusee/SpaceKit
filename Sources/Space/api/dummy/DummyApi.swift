@@ -223,9 +223,9 @@ extension DummyApi: BufferApiProtocol {
     }
     
     public func bufferFromBigIntUnsigned(bufferHandle: Int32, bigIntHandle: Int32) -> Int32 {
-        let bigInt = self.getCurrentContainer().getBigIntData(handle: bigIntHandle)
+        let bigUint = self.getCurrentContainer().getBigUintData(handle: bigIntHandle)
         
-        self.getCurrentContainer().managedBuffersData[bufferHandle] = bigInt.toBigEndianUnsignedData()
+        self.getCurrentContainer().managedBuffersData[bufferHandle] = bigUint.serialize()
         
         return 0
     }
