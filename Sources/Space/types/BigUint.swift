@@ -97,6 +97,14 @@ extension BigUint {
         BigUint(value: left) + right
     }
     
+    public static func + (left: BigUint, right: UInt16) -> BigUint {
+        left + BigUint(value: right)
+    }
+    
+    public static func + (left: UInt16, right: BigUint) -> BigUint {
+        BigUint(value: left) + right
+    }
+    
     public static func + (left: BigUint, right: UInt32) -> BigUint {
         left + BigUint(value: right)
     }

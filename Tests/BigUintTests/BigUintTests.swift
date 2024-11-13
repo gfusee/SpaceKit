@@ -101,6 +101,24 @@ final class BigUintTests: ContractTestCase {
         XCTAssertEqual(result, 3)
     }
     
+    func testAddBigUintAndUInt16() throws {
+        let bigUint: BigUint = 1
+        let integer: UInt16 = 2
+        
+        let result = bigUint + integer
+        
+        XCTAssertEqual(result, 3)
+    }
+    
+    func testAddUInt16AndBigUint() throws {
+        let bigUint: BigUint = 1
+        let integer: UInt16 = 2
+        
+        let result = integer + bigUint
+        
+        XCTAssertEqual(result, 3)
+    }
+    
     func testAddBigUintAndUInt32() throws {
         let bigUint: BigUint = 1
         let integer: UInt32 = 2
