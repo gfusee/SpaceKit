@@ -19,6 +19,20 @@ import Space
         let bigUint2: BigUint = 0
         let _ = bigUint1 / bigUint2
     }
+    
+    public func testAddBigUintAndNegativeLiteralShouldFail() {
+        let bigUint: BigUint = 1
+        let integer = -1
+        
+        let _ = bigUint + integer
+    }
+    
+    public func testAddNegativeLiteralAndBigUintShouldFail() {
+        let bigUint: BigUint = 1
+        let integer = -1
+        
+        let _ = integer + bigUint
+    }
 }
 
 final class BigUintTests: ContractTestCase {
@@ -67,6 +81,98 @@ final class BigUintTests: ContractTestCase {
         let result = bigUint1 + bigUint2
         
         XCTAssertEqual(result, 3)
+    }
+    
+    func testAddBigUintAndUInt8() throws {
+        let bigUint: BigUint = 1
+        let integer: UInt8 = 2
+        
+        let result = bigUint + integer
+        
+        XCTAssertEqual(result, 3)
+    }
+    
+    func testAddUInt8AndBigUint() throws {
+        let bigUint: BigUint = 1
+        let integer: UInt8 = 2
+        
+        let result = integer + bigUint
+        
+        XCTAssertEqual(result, 3)
+    }
+    
+    func testAddBigUintAndUInt32() throws {
+        let bigUint: BigUint = 1
+        let integer: UInt32 = 2
+        
+        let result = bigUint + integer
+        
+        XCTAssertEqual(result, 3)
+    }
+    
+    func testAddUInt32AndBigUint() throws {
+        let bigUint: BigUint = 1
+        let integer: UInt32 = 2
+        
+        let result = integer + bigUint
+        
+        XCTAssertEqual(result, 3)
+    }
+    
+    func testAddUInt64AndBigUint() throws {
+        let bigUint: BigUint = 1
+        let integer: UInt64 = 2
+        
+        let result = integer + bigUint
+        
+        XCTAssertEqual(result, 3)
+    }
+    
+    func testAddBigUintAndUInt64() throws {
+        let bigUint: BigUint = 1
+        let integer: UInt64 = 2
+        
+        let result = bigUint + integer
+        
+        XCTAssertEqual(result, 3)
+    }
+    
+    func testAddBigUintAndLiteralInt() throws {
+        let bigUint: BigUint = 1
+        let integer = 2
+        
+        let result = bigUint + integer
+        
+        XCTAssertEqual(result, 3)
+    }
+    
+    func testAddLiteralIntAndBigUint() throws {
+        let bigUint: BigUint = 1
+        let integer = 2
+        
+        let result = integer + bigUint
+        
+        XCTAssertEqual(result, 3)
+    }
+    
+    func testAddBigUintAndNegativeLiteralInt() throws {
+        do {
+            try BigUintTestsContract.testable("contract").testAddBigUintAndNegativeLiteralShouldFail()
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Cannot convert negative Int64 to BigUint."))
+        }
+    }
+    
+    func testAddNegativeLiteralIntAndBigUint() throws {
+        do {
+            try BigUintTestsContract.testable("contract").testAddNegativeLiteralAndBigUintShouldFail()
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Cannot convert negative Int64 to BigUint."))
+        }
     }
     
     func testAddAssignBigUint() throws {

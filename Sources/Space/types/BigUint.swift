@@ -21,7 +21,7 @@ public struct BigUint {
     
     public init(value: Int32) {
         if value < 0 {
-            smartContractError(message: "Cannot convert negative Int64 to BigUint.")
+            smartContractError(message: "Cannot convert negative Int32 to BigUint.")
         }
         
         self.init(value: value.toBytes8())
@@ -83,6 +83,38 @@ extension BigUint {
         API.bigIntAdd(destHandle: handle, lhsHandle: left.handle, rhsHandle: right.handle)
         
         return BigUint(handle: handle)
+    }
+    
+    public static func + (left: BigUint, right: UInt8) -> BigUint {
+        left + BigUint(value: right)
+    }
+    
+    public static func + (left: UInt8, right: BigUint) -> BigUint {
+        BigUint(value: left) + right
+    }
+    
+    public static func + (left: BigUint, right: UInt32) -> BigUint {
+        left + BigUint(value: right)
+    }
+    
+    public static func + (left: UInt32, right: BigUint) -> BigUint {
+        BigUint(value: left) + right
+    }
+    
+    public static func + (left: BigUint, right: UInt64) -> BigUint {
+        left + BigUint(value: right)
+    }
+    
+    public static func + (left: UInt64, right: BigUint) -> BigUint {
+        BigUint(value: left) + right
+    }
+    
+    public static func + (left: BigUint, right: IntegerLiteralType) -> BigUint {
+        left + BigUint(value: Int64(right))
+    }
+    
+    public static func + (left: IntegerLiteralType, right: BigUint) -> BigUint {
+        BigUint(value: Int64(left)) + right
     }
     
     public static func += (left: inout BigUint, right: BigUint) {
