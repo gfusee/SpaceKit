@@ -174,6 +174,21 @@ extension UInt32 {
     }
 }
 
+extension UInt16 {
+    package func toBytes8() -> Bytes8 {
+        // TODO: add tests
+        
+        let bytes2 = self.toBytes2()
+        
+        var result = getZeroedBytes8()
+        
+        result.6 = bytes2.0
+        result.7 = bytes2.1
+        
+        return result
+    }
+}
+
 extension UInt8 {
     package func toBytes8() -> Bytes8 {
         // TODO: add tests
