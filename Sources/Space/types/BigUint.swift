@@ -82,6 +82,66 @@ extension BigUint: Equatable {
 }
 
 extension BigUint {
+    public static func == (left: BigUint, right: UInt8) -> Bool {
+        left == BigUint(value: right)
+    }
+    
+    public static func == (left: UInt8, right: BigUint) -> Bool {
+        BigUint(value: left) == right
+    }
+    
+    public static func == (left: BigUint, right: UInt16) -> Bool {
+        left == BigUint(value: right)
+    }
+    
+    public static func == (left: UInt16, right: BigUint) -> Bool {
+        BigUint(value: left) == right
+    }
+    
+    public static func == (left: BigUint, right: UInt32) -> Bool {
+        left == BigUint(value: right)
+    }
+    
+    public static func == (left: UInt32, right: BigUint) -> Bool {
+        BigUint(value: left) == right
+    }
+    
+    public static func == (left: BigUint, right: UInt64) -> Bool {
+        left == BigUint(value: right)
+    }
+    
+    public static func == (left: UInt64, right: BigUint) -> Bool {
+        BigUint(value: left) == right
+    }
+    
+    public static func == (left: BigUint, right: IntegerLiteralType) -> Bool {
+        left == BigUint(value: Int64(right))
+    }
+    
+    public static func == (left: IntegerLiteralType, right: BigUint) -> Bool {
+        BigUint(value: Int64(left)) == right
+    }
+    
+    public static func != (left: BigUint, right: UInt8) -> Bool {
+        return left != BigUint(value: right)
+    }
+
+    public static func != (left: BigUint, right: UInt16) -> Bool {
+        return left != BigUint(value: right)
+    }
+
+    public static func != (left: BigUint, right: UInt32) -> Bool {
+        return left != BigUint(value: right)
+    }
+
+    public static func != (left: BigUint, right: UInt64) -> Bool {
+        return left != BigUint(value: right)
+    }
+
+    public static func != (left: BigUint, right: IntegerLiteralType) -> Bool {
+        return left != BigUint(value: Int64(right))
+    }
+    
     public static func + (left: BigUint, right: BigUint) -> BigUint {
         let handle = getNextHandle()
         API.bigIntAdd(destHandle: handle, lhsHandle: left.handle, rhsHandle: right.handle)
@@ -133,6 +193,26 @@ extension BigUint {
         left = left + right
     }
     
+    public static func += (left: inout BigUint, right: UInt8) {
+        left = left + BigUint(value: right)
+    }
+
+    public static func += (left: inout BigUint, right: UInt16) {
+        left = left + BigUint(value: right)
+    }
+
+    public static func += (left: inout BigUint, right: UInt32) {
+        left = left + BigUint(value: right)
+    }
+
+    public static func += (left: inout BigUint, right: UInt64) {
+        left = left + BigUint(value: right)
+    }
+
+    public static func += (left: inout BigUint, right: IntegerLiteralType) {
+        left = left + BigUint(value: Int64(right))
+    }
+    
     public static func - (lhs: BigUint, rhs: BigUint) -> BigUint {
         guard lhs >= rhs else {
             smartContractError(message: Buffer(stringLiteral: BIG_UINT_SUB_NEGATIVE))
@@ -144,11 +224,139 @@ extension BigUint {
         return BigUint(handle: handle)
     }
     
+    public static func - (left: BigUint, right: UInt8) -> BigUint {
+        left - BigUint(value: right)
+    }
+    
+    public static func - (left: UInt8, right: BigUint) -> BigUint {
+        BigUint(value: left) - right
+    }
+    
+    public static func - (left: BigUint, right: UInt16) -> BigUint {
+        left - BigUint(value: right)
+    }
+    
+    public static func - (left: UInt16, right: BigUint) -> BigUint {
+        BigUint(value: left) - right
+    }
+    
+    public static func - (left: BigUint, right: UInt32) -> BigUint {
+        left - BigUint(value: right)
+    }
+    
+    public static func - (left: UInt32, right: BigUint) -> BigUint {
+        BigUint(value: left) - right
+    }
+    
+    public static func - (left: BigUint, right: UInt64) -> BigUint {
+        left - BigUint(value: right)
+    }
+    
+    public static func - (left: UInt64, right: BigUint) -> BigUint {
+        BigUint(value: left) - right
+    }
+    
+    public static func - (left: BigUint, right: IntegerLiteralType) -> BigUint {
+        left - BigUint(value: Int64(right))
+    }
+    
+    public static func - (left: IntegerLiteralType, right: BigUint) -> BigUint {
+        BigUint(value: Int64(left)) - right
+    }
+    
+    public static func -= (left: inout BigUint, right: BigUint) {
+        left = left - right
+    }
+    
+    public static func -= (left: inout BigUint, right: UInt8) {
+        left = left - BigUint(value: right)
+    }
+
+    public static func -= (left: inout BigUint, right: UInt16) {
+        left = left - BigUint(value: right)
+    }
+
+    public static func -= (left: inout BigUint, right: UInt32) {
+        left = left - BigUint(value: right)
+    }
+
+    public static func -= (left: inout BigUint, right: UInt64) {
+        left = left - BigUint(value: right)
+    }
+
+    public static func -= (left: inout BigUint, right: IntegerLiteralType) {
+        left = left - BigUint(value: Int64(right))
+    }
+    
     public static func * (lhs: BigUint, rhs: BigUint) -> BigUint {
         let handle = getNextHandle()
         API.bigIntMul(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         
         return BigUint(handle: handle)
+    }
+    
+    public static func * (left: BigUint, right: UInt8) -> BigUint {
+        left * BigUint(value: right)
+    }
+    
+    public static func * (left: UInt8, right: BigUint) -> BigUint {
+        BigUint(value: left) * right
+    }
+    
+    public static func * (left: BigUint, right: UInt16) -> BigUint {
+        left * BigUint(value: right)
+    }
+    
+    public static func * (left: UInt16, right: BigUint) -> BigUint {
+        BigUint(value: left) * right
+    }
+    
+    public static func * (left: BigUint, right: UInt32) -> BigUint {
+        left * BigUint(value: right)
+    }
+    
+    public static func * (left: UInt32, right: BigUint) -> BigUint {
+        BigUint(value: left) * right
+    }
+    
+    public static func * (left: BigUint, right: UInt64) -> BigUint {
+        left * BigUint(value: right)
+    }
+    
+    public static func * (left: UInt64, right: BigUint) -> BigUint {
+        BigUint(value: left) * right
+    }
+    
+    public static func * (left: BigUint, right: IntegerLiteralType) -> BigUint {
+        left * BigUint(value: Int64(right))
+    }
+    
+    public static func * (left: IntegerLiteralType, right: BigUint) -> BigUint {
+        BigUint(value: Int64(left)) * right
+    }
+    
+    public static func *= (left: inout BigUint, right: BigUint) {
+        left = left * right
+    }
+    
+    public static func *= (left: inout BigUint, right: UInt8) {
+        left = left * BigUint(value: right)
+    }
+
+    public static func *= (left: inout BigUint, right: UInt16) {
+        left = left * BigUint(value: right)
+    }
+
+    public static func *= (left: inout BigUint, right: UInt32) {
+        left = left * BigUint(value: right)
+    }
+
+    public static func *= (left: inout BigUint, right: UInt64) {
+        left = left * BigUint(value: right)
+    }
+
+    public static func *= (left: inout BigUint, right: IntegerLiteralType) {
+        left = left * BigUint(value: Int64(right))
     }
     
     public static func / (lhs: BigUint, rhs: BigUint) -> BigUint {
@@ -159,6 +367,70 @@ extension BigUint {
         return BigUint(handle: handle)
     }
     
+    public static func / (left: BigUint, right: UInt8) -> BigUint {
+        left / BigUint(value: right)
+    }
+    
+    public static func / (left: UInt8, right: BigUint) -> BigUint {
+        BigUint(value: left) / right
+    }
+    
+    public static func / (left: BigUint, right: UInt16) -> BigUint {
+        left / BigUint(value: right)
+    }
+    
+    public static func / (left: UInt16, right: BigUint) -> BigUint {
+        BigUint(value: left) / right
+    }
+    
+    public static func / (left: BigUint, right: UInt32) -> BigUint {
+        left / BigUint(value: right)
+    }
+    
+    public static func / (left: UInt32, right: BigUint) -> BigUint {
+        BigUint(value: left) / right
+    }
+    
+    public static func / (left: BigUint, right: UInt64) -> BigUint {
+        left / BigUint(value: right)
+    }
+    
+    public static func / (left: UInt64, right: BigUint) -> BigUint {
+        BigUint(value: left) / right
+    }
+    
+    public static func / (left: BigUint, right: IntegerLiteralType) -> BigUint {
+        left / BigUint(value: Int64(right))
+    }
+    
+    public static func / (left: IntegerLiteralType, right: BigUint) -> BigUint {
+        BigUint(value: Int64(left)) / right
+    }
+    
+    public static func /= (left: inout BigUint, right: BigUint) {
+        left = left / right
+    }
+    
+    public static func /= (left: inout BigUint, right: UInt8) {
+        left = left / BigUint(value: right)
+    }
+
+    public static func /= (left: inout BigUint, right: UInt16) {
+        left = left / BigUint(value: right)
+    }
+
+    public static func /= (left: inout BigUint, right: UInt32) {
+        left = left / BigUint(value: right)
+    }
+
+    public static func /= (left: inout BigUint, right: UInt64) {
+        left = left / BigUint(value: right)
+    }
+
+    public static func /= (left: inout BigUint, right: IntegerLiteralType) {
+        left = left / BigUint(value: Int64(right))
+    }
+    
     public static func % (lhs: BigUint, rhs: BigUint) -> BigUint {
         // TODO: be sure rhs == 0 throws an error on the SpaceVM (critical)
         let handle = getNextHandle()
@@ -167,22 +439,248 @@ extension BigUint {
         return BigUint(handle: handle)
     }
     
+    public static func % (left: BigUint, right: UInt8) -> BigUint {
+        left % BigUint(value: right)
+    }
+    
+    public static func % (left: UInt8, right: BigUint) -> BigUint {
+        BigUint(value: left) % right
+    }
+    
+    public static func % (left: BigUint, right: UInt16) -> BigUint {
+        left % BigUint(value: right)
+    }
+    
+    public static func % (left: UInt16, right: BigUint) -> BigUint {
+        BigUint(value: left) % right
+    }
+    
+    public static func % (left: BigUint, right: UInt32) -> BigUint {
+        left % BigUint(value: right)
+    }
+    
+    public static func % (left: UInt32, right: BigUint) -> BigUint {
+        BigUint(value: left) % right
+    }
+    
+    public static func % (left: BigUint, right: UInt64) -> BigUint {
+        left % BigUint(value: right)
+    }
+    
+    public static func % (left: UInt64, right: BigUint) -> BigUint {
+        BigUint(value: left) % right
+    }
+    
+    public static func % (left: BigUint, right: IntegerLiteralType) -> BigUint {
+        left % BigUint(value: Int64(right))
+    }
+    
+    public static func % (left: IntegerLiteralType, right: BigUint) -> BigUint {
+        BigUint(value: Int64(left)) % right
+    }
+    
+    public static func %= (left: inout BigUint, right: BigUint) {
+        left = left % right
+    }
+    
+    public static func %= (left: inout BigUint, right: UInt8) {
+        left = left % BigUint(value: right)
+    }
+
+    public static func %= (left: inout BigUint, right: UInt16) {
+        left = left % BigUint(value: right)
+    }
+
+    public static func %= (left: inout BigUint, right: UInt32) {
+        left = left % BigUint(value: right)
+    }
+
+    public static func %= (left: inout BigUint, right: UInt64) {
+        left = left % BigUint(value: right)
+    }
+
+    public static func %= (left: inout BigUint, right: IntegerLiteralType) {
+        left = left % BigUint(value: Int64(right))
+    }
+
+    
     public static func > (lhs: BigUint, rhs: BigUint) -> Bool {
         let compareResult = API.bigIntCompare(lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         
         return compareResult == 1
     }
     
+    public static func > (lhs: BigUint, rhs: UInt8) -> Bool {
+        lhs > BigUint(value: rhs)
+    }
+    
+    public static func > (lhs: UInt8, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) > rhs
+    }
+    
+    public static func > (lhs: BigUint, rhs: UInt16) -> Bool {
+        lhs > BigUint(value: rhs)
+    }
+    
+    public static func > (lhs: UInt16, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) > rhs
+    }
+    
+    public static func > (lhs: BigUint, rhs: UInt32) -> Bool {
+        lhs > BigUint(value: rhs)
+    }
+    
+    public static func > (lhs: UInt32, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) > rhs
+    }
+    
+    public static func > (lhs: BigUint, rhs: UInt64) -> Bool {
+        lhs > BigUint(value: rhs)
+    }
+    
+    public static func > (lhs: UInt64, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) > rhs
+    }
+    
+    public static func > (lhs: BigUint, rhs: IntegerLiteralType) -> Bool {
+        lhs > BigUint(value: Int64(rhs))
+    }
+    
+    public static func > (lhs: IntegerLiteralType, rhs: BigUint) -> Bool {
+        BigUint(value: Int64(lhs)) > rhs
+    }
+    
     public static func <= (lhs: BigUint, rhs: BigUint) -> Bool {
         !(lhs > rhs)
     }
+    
+    public static func <= (lhs: BigUint, rhs: UInt8) -> Bool {
+        lhs <= BigUint(value: rhs)
+    }
+
+    public static func <= (lhs: UInt8, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) <= rhs
+    }
+
+    public static func <= (lhs: BigUint, rhs: UInt16) -> Bool {
+        lhs <= BigUint(value: rhs)
+    }
+
+    public static func <= (lhs: UInt16, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) <= rhs
+    }
+
+    public static func <= (lhs: BigUint, rhs: UInt32) -> Bool {
+        lhs <= BigUint(value: rhs)
+    }
+
+    public static func <= (lhs: UInt32, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) <= rhs
+    }
+
+    public static func <= (lhs: BigUint, rhs: UInt64) -> Bool {
+        lhs <= BigUint(value: rhs)
+    }
+
+    public static func <= (lhs: UInt64, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) <= rhs
+    }
+
+    public static func <= (lhs: BigUint, rhs: IntegerLiteralType) -> Bool {
+        lhs <= BigUint(value: Int64(rhs))
+    }
+
+    public static func <= (lhs: IntegerLiteralType, rhs: BigUint) -> Bool {
+        BigUint(value: Int64(lhs)) <= rhs
+    }
+
     
     public static func < (lhs: BigUint, rhs: BigUint) -> Bool {
         lhs <= rhs && lhs != rhs
     }
     
+    public static func < (lhs: BigUint, rhs: UInt8) -> Bool {
+        lhs < BigUint(value: rhs)
+    }
+
+    public static func < (lhs: UInt8, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) < rhs
+    }
+
+    public static func < (lhs: BigUint, rhs: UInt16) -> Bool {
+        lhs < BigUint(value: rhs)
+    }
+
+    public static func < (lhs: UInt16, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) < rhs
+    }
+
+    public static func < (lhs: BigUint, rhs: UInt32) -> Bool {
+        lhs < BigUint(value: rhs)
+    }
+
+    public static func < (lhs: UInt32, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) < rhs
+    }
+
+    public static func < (lhs: BigUint, rhs: UInt64) -> Bool {
+        lhs < BigUint(value: rhs)
+    }
+
+    public static func < (lhs: UInt64, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) < rhs
+    }
+
+    public static func < (lhs: BigUint, rhs: IntegerLiteralType) -> Bool {
+        lhs < BigUint(value: Int64(rhs))
+    }
+
+    public static func < (lhs: IntegerLiteralType, rhs: BigUint) -> Bool {
+        BigUint(value: Int64(lhs)) < rhs
+    }
+    
     public static func >= (lhs: BigUint, rhs: BigUint) -> Bool {
         lhs > rhs || lhs == rhs
+    }
+    
+    public static func >= (lhs: BigUint, rhs: UInt8) -> Bool {
+        lhs >= BigUint(value: rhs)
+    }
+
+    public static func >= (lhs: UInt8, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) >= rhs
+    }
+
+    public static func >= (lhs: BigUint, rhs: UInt16) -> Bool {
+        lhs >= BigUint(value: rhs)
+    }
+
+    public static func >= (lhs: UInt16, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) >= rhs
+    }
+
+    public static func >= (lhs: BigUint, rhs: UInt32) -> Bool {
+        lhs >= BigUint(value: rhs)
+    }
+
+    public static func >= (lhs: UInt32, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) >= rhs
+    }
+
+    public static func >= (lhs: BigUint, rhs: UInt64) -> Bool {
+        lhs >= BigUint(value: rhs)
+    }
+
+    public static func >= (lhs: UInt64, rhs: BigUint) -> Bool {
+        BigUint(value: lhs) >= rhs
+    }
+
+    public static func >= (lhs: BigUint, rhs: IntegerLiteralType) -> Bool {
+        lhs >= BigUint(value: Int64(rhs))
+    }
+
+    public static func >= (lhs: IntegerLiteralType, rhs: BigUint) -> Bool {
+        BigUint(value: Int64(lhs)) >= rhs
     }
 }
 
