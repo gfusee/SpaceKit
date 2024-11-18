@@ -250,8 +250,8 @@ public class DummyApi {
                 input: TransactionInput(
                     contractAddress: execution.input.callerAddress,
                     callerAddress: execution.input.contractAddress,
-                    egldValue: execution.input.egldValue,
-                    esdtValue: execution.input.esdtValue,
+                    egldValue: 0,
+                    esdtValue: [],
                     arguments: asyncCallResults
                 ),
                 callbackClosure: errorCallback.args,

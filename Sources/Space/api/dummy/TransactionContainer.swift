@@ -301,18 +301,18 @@ package final class TransactionContainer: @unchecked Sendable {
         inputs: TransactionInput,
         shouldBePerformedInAChildContainer: Bool = true // useful for async calls, see DummyApi's executePendingAsyncExecution
     ) -> [Data] {
-        self.performEgldOrEsdtTransfers(
-            senderAddress: inputs.callerAddress,
-            receiverAddress: receiver,
-            egldValue: inputs.egldValue,
-            esdtValue: inputs.esdtValue
-        )
-        
         let endpointName = String(data: function, encoding: .utf8)!
         let receiverAccount = self.getAccount(address: receiver)
         var selector = self.getContractEndpointSelectorForContractAccount(contractAccount: receiverAccount)
         
         if shouldBePerformedInAChildContainer {
+            self.performEgldOrEsdtTransfers(
+                senderAddress: inputs.callerAddress,
+                receiverAddress: receiver,
+                egldValue: inputs.egldValue,
+                esdtValue: inputs.esdtValue
+            )
+            
             let nestedCallTransactionContainer = TransactionContainer(
                 worldState: self.state,
                 transactionInput: inputs,
@@ -326,7 +326,6 @@ package final class TransactionContainer: @unchecked Sendable {
         
         selector._callEndpoint(name: endpointName)
         
-        let outputData: [Data]
         if shouldBePerformedInAChildContainer {
             guard let nestedCallTransactionContainer = self.nestedCallTransactionContainer else {
                 fatalError("Should not be executed")

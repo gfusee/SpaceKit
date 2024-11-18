@@ -22,6 +22,13 @@ import Space
         smartContractError(message: "Oh no!")
     }
     
+    public mutating func returnEgldValue() -> BigUint {
+        let value = Message.egldValue
+        self.counter += value
+        
+        return value
+    }
+    
     public func getCounter() -> BigUint {
         self.counter
     }
@@ -32,6 +39,7 @@ import Space
     case increaseCounterBy(value: BigUint)
     case increaseCounterAndFail
     case returnValueNoInput
+    case returnEgldValue
     case getCounter
 }
 
@@ -124,6 +132,33 @@ import Space
             )
     }
     
+    public func asyncCallReturnEgldValueNoCallback(
+        receiver: Address,
+        paymentValue: BigUint
+    ) {
+        CalleeContractProxy
+            .returnEgldValue
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                egldValue: paymentValue
+            )
+    }
+    
+    public func asyncCallIncreaseCounterAndFailWithEgld(
+        receiver: Address,
+        paymentValue: BigUint
+    ) {
+        CalleeContractProxy
+            .increaseCounterAndFail
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                egldValue: paymentValue,
+                callback: self.$increaseCounterAndFailWithEgldCallback(gasForCallback: 15_000_000)
+            )
+    }
+    
     public func getCounter() -> BigUint {
         self.counter
     }
@@ -155,6 +190,17 @@ import Space
             self.storedErrorMessage = asyncCallError.errorMessage
         }
     }
+    
+    @Callback public mutating func increaseCounterAndFailWithEgldCallback() {
+        let result: AsyncCallResult<BigUint> = Message.asyncCallResult()
+        
+        switch result {
+        case .success(_):
+            break
+        case .error(_):
+            self.counter = Blockchain.getBalance(address: Blockchain.getSCAddress())
+        }
+    }
 }
 
 final class AsyncCallsTests: ContractTestCase {
@@ -162,7 +208,10 @@ final class AsyncCallsTests: ContractTestCase {
     override var initialAccounts: [WorldAccount] {
         [
             WorldAccount(address: "callee"),
-            WorldAccount(address: "caller")
+            WorldAccount(
+                address: "caller",
+                balance: 1000
+            )
         ]
     }
     
@@ -282,5 +331,37 @@ final class AsyncCallsTests: ContractTestCase {
         
         XCTAssertEqual(callerStoredErrorCode, 4)
         XCTAssertEqual(callerStoredErrorMessage, "Oh no!")
+    }
+    
+    func testReturnEgldNoCallback() throws {
+        let callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.asyncCallReturnEgldValueNoCallback(receiver: "callee", paymentValue: 150)
+        
+        let calleeCounter = try callee.getCounter()
+        let calleeBalance = self.getAccount(address: "callee")?.balance
+        let callerBalance = self.getAccount(address: "caller")?.balance
+        
+        XCTAssertEqual(calleeCounter, 150)
+        XCTAssertEqual(calleeBalance, 150)
+        XCTAssertEqual(callerBalance, 850)
+    }
+    
+    func testIncreaseCounterAndFailWithEgldWithCallback() throws {
+        let callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.asyncCallIncreaseCounterAndFailWithEgld(receiver: "callee", paymentValue: 150)
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        let calleeBalance = self.getAccount(address: "callee")?.balance
+        let callerBalance = self.getAccount(address: "caller")?.balance
+        
+        XCTAssertEqual(calleeCounter, 0)
+        XCTAssertEqual(callerCounter, 1000)
+        XCTAssertEqual(calleeBalance, 0)
+        XCTAssertEqual(callerBalance, 1000)
     }
 }
