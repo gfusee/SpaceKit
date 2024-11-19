@@ -127,6 +127,14 @@ package final class TransactionContainer: @unchecked Sendable {
         return data
     }
     
+    package func getBigUintData(handle: Int32) -> BigUInt {
+        guard let data = self.managedBigIntData[handle] else {
+            self.throwError(error: .executionFailed(reason: "no bigInt under the given handle"))
+        }
+        
+        return BigUInt.init(data)
+    }
+    
     package func getTransactionInput() -> TransactionInput {
         guard let input = self.transactionInput else {
             self.throwError(error: .worldError(message: "No transaction input provided. Are you in a transaction context?"))

@@ -3,6 +3,7 @@ import Space
 
 @Contract struct CalleeContract {
     @Storage(key: "counter") var counter: BigUint
+    @Storage(key: "address") var address: Address
     
     public mutating func increaseCounter() {
         self.counter += 1
@@ -22,6 +23,10 @@ import Space
         smartContractError(message: "Oh no!")
     }
     
+    public mutating func storeCaller() {
+        self.address = Message.caller
+    }
+    
     public mutating func returnEgldValue() -> BigUint {
         let value = Message.egldValue
         self.counter += value
@@ -32,12 +37,17 @@ import Space
     public func getCounter() -> BigUint {
         self.counter
     }
+    
+    public func getAddress() ->  Address {
+        self.address
+    }
 }
 
 @Proxy enum CalleeContractProxy {
     case increaseCounter
     case increaseCounterBy(value: BigUint)
     case increaseCounterAndFail
+    case storeCaller
     case returnValueNoInput
     case returnEgldValue
     case getCounter
@@ -45,6 +55,7 @@ import Space
 
 @Contract struct AsyncCallsTestsContract {
     @Storage(key: "counter") var counter: BigUint
+    @Storage(key: "address") var address: Address
     @Storage(key: "storedErrorCode") var storedErrorCode: UInt32
     @Storage(key: "storedErrorMessage") var storedErrorMessage: Buffer
     
@@ -64,6 +75,65 @@ import Space
                 receiver: receiver,
                 gas: 10_000_000,
                 callback: self.$simpleCallback(gasForCallback: 5_000_000)
+            )
+    }
+    
+    public func multiAsyncCallIncreaseCounterWithSimpleCallback(receiver: Address) {
+        CalleeContractProxy
+            .increaseCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$simpleCallback(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .increaseCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$simpleCallback(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .increaseCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$simpleCallback(gasForCallback: 5_000_000)
+            )
+    }
+    
+    public func multiAsyncCallIncreaseCounterWithSimpleCallbackOneNoCallback(receiver: Address) {
+        CalleeContractProxy
+            .increaseCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$simpleCallback(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .increaseCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$simpleCallback(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .increaseCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$simpleCallback(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .increaseCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000
             )
     }
     
@@ -132,6 +202,84 @@ import Space
             )
     }
     
+    public func multiAsyncCallGetCounterWithCallback(receiver: Address) {
+        CalleeContractProxy
+            .getCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$callbackWithResult(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .getCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$callbackWithResult(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .getCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$callbackWithResult(gasForCallback: 5_000_000)
+            )
+    }
+    
+    public func multiAsyncCallGetCounterWithDifferentCallbacks(receiver: Address) {
+        CalleeContractProxy
+            .getCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$simpleCallback(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .getCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$simpleCallback(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .getCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$callbackWithResult(gasForCallback: 5_000_000)
+            )
+    }
+    
+    public func multiAsyncCallGetCounterWithCallbackOneFailure(receiver: Address) {
+        CalleeContractProxy
+            .getCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$callbackWithResult(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .increaseCounterAndFail
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$callbackWithResult(gasForCallback: 5_000_000)
+            )
+        
+        CalleeContractProxy
+            .getCounter
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$callbackWithResult(gasForCallback: 5_000_000)
+            )
+    }
+    
     public func asyncCallReturnEgldValueNoCallback(
         receiver: Address,
         paymentValue: BigUint
@@ -159,8 +307,47 @@ import Space
             )
     }
     
+    public func asyncCallStoreCallerNoCallback(
+        receiver: Address
+    ) {
+        CalleeContractProxy
+            .storeCaller
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000
+            )
+    }
+    
+    public func asyncCallStoreCallerWithCallback(
+        receiver: Address
+    ) {
+        CalleeContractProxy
+            .storeCaller
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$storeCallerCallback(gasForCallback: 10_000_000)
+            )
+    }
+    
+    public func asyncCallIncreaseCounterAndFailWithStoreCallerCallback(
+        receiver: Address
+    ) {
+        CalleeContractProxy
+            .increaseCounterAndFail
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                callback: self.$storeCallerCallback(gasForCallback: 10_000_000)
+            )
+    }
+    
     public func getCounter() -> BigUint {
         self.counter
+    }
+    
+    public func getAddress() ->  Address {
+        self.address
     }
     
     public func getStoredErrorCode() -> UInt32 {
@@ -201,6 +388,10 @@ import Space
             self.counter = Blockchain.getBalance(address: Blockchain.getSCAddress())
         }
     }
+    
+    @Callback public mutating func storeCallerCallback() {
+        self.address = Message.caller
+    }
 }
 
 final class AsyncCallsTests: ContractTestCase {
@@ -239,6 +430,32 @@ final class AsyncCallsTests: ContractTestCase {
         XCTAssertEqual(callerCounter, 1)
     }
     
+    func testMultiIncreaseCounterWithSimpleCallback() throws {
+        let callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.multiAsyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        
+        XCTAssertEqual(calleeCounter, 3)
+        XCTAssertEqual(callerCounter, 3)
+    }
+    
+    func testMultiIncreaseCounterWithSimpleCallbackOneNoCallback() throws {
+        let callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.multiAsyncCallIncreaseCounterWithSimpleCallbackOneNoCallback(receiver: "callee")
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        
+        XCTAssertEqual(calleeCounter, 4)
+        XCTAssertEqual(callerCounter, 3)
+    }
+    
     func testIncreaseCounterWithCallbackWithOneParameter() throws {
         let callee = try CalleeContract.testable("callee")
         let caller = try AsyncCallsTestsContract.testable("caller")
@@ -268,6 +485,57 @@ final class AsyncCallsTests: ContractTestCase {
         
         XCTAssertEqual(calleeCounter, 100)
         XCTAssertEqual(callerCounter, 100)
+    }
+    
+    func testMultiIncreaseCounterWithCallbackWithResult() throws {
+        var callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try callee.increaseCounterBy(value: 100)
+        
+        try caller.multiAsyncCallGetCounterWithCallback(receiver: "callee")
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        
+        XCTAssertEqual(calleeCounter, 100)
+        XCTAssertEqual(callerCounter, 300)
+    }
+    
+    func testMultiIncreaseCounterWithDifferentCallbacks() throws {
+        var callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try callee.increaseCounterBy(value: 100)
+        
+        try caller.multiAsyncCallGetCounterWithDifferentCallbacks(receiver: "callee")
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        
+        XCTAssertEqual(calleeCounter, 100)
+        XCTAssertEqual(callerCounter, 102)
+    }
+    
+    func testMultiIncreaseCounterWithCallbackWithResultOneFailure() throws {
+        var callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try callee.increaseCounterBy(value: 100)
+        
+        try caller.multiAsyncCallGetCounterWithCallbackOneFailure(receiver: "callee")
+        
+        let calleeCounter = try callee.getCounter()
+        let callerCounter = try caller.getCounter()
+        
+        let callerStoredErrorCode = try caller.getStoredErrorCode()
+        let callerStoredErrorMessage = try caller.getStoredErrorMessage()
+        
+        XCTAssertEqual(calleeCounter, 100)
+        XCTAssertEqual(callerCounter, 200)
+        
+        XCTAssertEqual(callerStoredErrorCode, 4)
+        XCTAssertEqual(callerStoredErrorMessage, "Oh no!")
     }
     
     func testIncreaseCounterWithCallback() throws {
@@ -363,5 +631,40 @@ final class AsyncCallsTests: ContractTestCase {
         XCTAssertEqual(callerCounter, 1000)
         XCTAssertEqual(calleeBalance, 0)
         XCTAssertEqual(callerBalance, 1000)
+    }
+    
+    func testAsyncCallStoreCallerNoCallback() throws {
+        let callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.asyncCallStoreCallerNoCallback(receiver: "callee")
+        
+        let calleeStoredAddress = try callee.getAddress()
+        
+        XCTAssertEqual(calleeStoredAddress, "caller")
+    }
+    
+    func testAsyncCallStoreCallerWithCallback() throws {
+        let callee = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.asyncCallStoreCallerWithCallback(receiver: "callee")
+        
+        let calleeStoredAddress = try callee.getAddress()
+        let callerStoredAddress = try caller.getAddress()
+        
+        XCTAssertEqual(calleeStoredAddress, "caller")
+        XCTAssertEqual(callerStoredAddress, "callee")
+    }
+    
+    func testAsyncCallIncreaseCounterAndFailWithStoreCallerCallback() throws {
+        _ = try CalleeContract.testable("callee")
+        let caller = try AsyncCallsTestsContract.testable("caller")
+        
+        try caller.asyncCallIncreaseCounterAndFailWithStoreCallerCallback(receiver: "callee")
+        
+        let callerStoredAddress = try caller.getAddress()
+        
+        XCTAssertEqual(callerStoredAddress, "callee")
     }
 }
