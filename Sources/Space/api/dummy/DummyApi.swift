@@ -15,7 +15,12 @@ public class DummyApi {
     
     package var worldState = WorldState()
     
-    package func runTransactions(transactionInput: TransactionInput, transactionOutput: TransactionOutput? = nil, operations: UncheckedClosure) throws(TransactionError) {
+    package func runTransactions(
+        transactionInput: TransactionInput,
+        transactionOutput: TransactionOutput? = nil,
+        executionType: TransactionContainerExecutionType = .sync,
+        operations: UncheckedClosure
+    ) throws(TransactionError) -> (results: [Data], asyncError: TransactionError?) {
         self.containerLock.lock()
         
         while let transactionContainer = self.transactionContainer {
@@ -24,23 +29,15 @@ public class DummyApi {
             }
         }
         
-        // We have to keep it in a local variable to be sure to be able to access it in the defer clause
         let transactionContainer = TransactionContainer(
             worldState: self.worldState,
             transactionInput: transactionInput,
-            errorBehavior: .blockThread
+            executionType: executionType,
+            errorBehavior: .blockThread,
+            byTransferringDataFrom: self.staticContainer
         )
         
         self.transactionContainer = transactionContainer
-
-        defer {
-            if let output = transactionContainer.transactionOutput {
-                transactionOutput?.merge(output: output)
-            }
-            
-            self.transactionContainer = nil
-            self.containerLock.unlock()
-        }
         
         nonisolated(unsafe) var hasThreadStartedExecution = false
         
@@ -68,13 +65,47 @@ public class DummyApi {
             }
         }
         
+        let containerExecutionType = transactionContainer.executionType
+        let containerPendingAsyncExecutions = transactionContainer.pendingAsyncExecutions
+        let containerOutputs = transactionContainer.outputs
+        
+        var error: (error: TransactionError, shouldThrow: Bool)?
+        
         if let transactionError = transactionContainer.error {
-            throw transactionError
+            let shouldThrow = !self.shouldContinueExecutionAfterError(executionType: containerExecutionType, pendingAsyncExecutions: containerPendingAsyncExecutions)
+            
+            error = (error: transactionError, shouldThrow: shouldThrow)
         } else {
             // Commit the container into the state
             self.worldState = transactionContainer.state
-            self.transactionContainer = nil
         }
+        
+        if let output = transactionContainer.transactionOutput {
+            transactionOutput?.merge(output: output)
+        }
+        
+        self.transactionContainer = nil
+        self.containerLock.unlock()
+        
+        if let error = error {
+            if error.shouldThrow {
+                throw error.error
+            }
+        }
+        
+        var pendingAsyncExecutions: [AsyncCallInput] = containerPendingAsyncExecutions
+        
+        while !pendingAsyncExecutions.isEmpty {
+            let pendingAsyncExecution = pendingAsyncExecutions.removeFirst()
+            
+            let pendingCallbackExecution = self.executePendingAsyncExecution(execution: pendingAsyncExecution)
+            
+            if let pendingCallbackExecution = pendingCallbackExecution {
+                pendingAsyncExecutions.append(pendingCallbackExecution)
+            }
+        }
+        
+        return (results: containerOutputs, asyncError: error?.error)
     }
     
     public func registerContractEndpointSelectorForContractAddress(
@@ -121,6 +152,119 @@ public class DummyApi {
     
     func throwExecutionFailed(reason: String) -> Never {
         self.getCurrentContainer().throwError(error: .executionFailed(reason: reason))
+    }
+    
+    func shouldContinueExecutionAfterError(
+        executionType: TransactionContainerExecutionType,
+        pendingAsyncExecutions: [AsyncCallInput]
+    ) -> Bool {
+        switch executionType {
+        case .sync:
+            return false
+        case .async:
+            return true
+        case .callback:
+            return true
+        }
+    }
+    
+    func executePendingAsyncExecution(execution: AsyncCallInput) -> AsyncCallInput? {
+        let executionType: TransactionContainerExecutionType = if let callbackClosure = execution.callbackClosure {
+            .callback(
+                arguments: execution.input.arguments,
+                callbackClosure: callbackClosure
+            )
+        } else {
+            .async
+        }
+        
+        var asyncError: TransactionError? = nil
+        
+        let outputs = TransactionOutput()
+        var executionResults: [Data]?
+        do {
+            asyncError = try self.runTransactions(
+                transactionInput: execution.input,
+                transactionOutput: outputs,
+                executionType: executionType,
+                operations: UncheckedClosure({
+                    executionResults = self.transactionContainer?
+                        .performNestedContractCall(
+                            receiver: execution.input.contractAddress,
+                            function: execution.function,
+                            inputs: execution.input,
+                            shouldBePerformedInAChildContainer: false
+                        )
+                })
+             ).asyncError
+        } catch {
+            fatalError("Should not be executed, as runTransactions doesn't throw when performing non-sync executions")
+        }
+        
+        var isError: Bool
+        var asyncCallResults: [Data] = []
+        
+        if let asyncError = asyncError {
+            var errorCodeEncoded = Buffer()
+            asyncError.code.topEncode(output: &errorCodeEncoded)
+            asyncCallResults.append(Data(errorCodeEncoded.toBytes()))
+            
+            asyncCallResults.append(Data(asyncError.message.utf8))
+            
+            isError = true
+        } else {
+            var crossShardSuccessCodeEncoded = Buffer()
+            CROSS_SHARD_SUCCESS_CODE.topEncode(output: &crossShardSuccessCodeEncoded)
+            asyncCallResults.append(Data(crossShardSuccessCodeEncoded.toBytes()))
+            
+            if let executionResults = executionResults {
+                asyncCallResults.append(contentsOf: executionResults)
+            }
+            
+            isError = false
+        }
+        
+        if let successCallback = execution.successCallback,
+           !isError
+        {
+            return AsyncCallInput(
+                function: successCallback.function,
+                input: TransactionInput(
+                    contractAddress: execution.input.callerAddress,
+                    callerAddress: execution.input.contractAddress,
+                    egldValue: 0,
+                    esdtValue: [],
+                    arguments: asyncCallResults
+                ),
+                callbackClosure: successCallback.args,
+                successCallback: nil,
+                errorCallback: nil
+            )
+        }
+        
+        if let errorCallback = execution.errorCallback,
+           isError
+        {
+            return AsyncCallInput(
+                function: errorCallback.function,
+                input: TransactionInput(
+                    contractAddress: execution.input.callerAddress,
+                    callerAddress: execution.input.contractAddress,
+                    egldValue: 0,
+                    esdtValue: [],
+                    arguments: asyncCallResults
+                ),
+                callbackClosure: errorCallback.args,
+                successCallback: nil,
+                errorCallback: nil
+            )
+        }
+        
+        return nil
+    }
+    
+    public func getNextHandle() -> Int32 {
+        self.getCurrentContainer().getNextHandle()
     }
 }
 
@@ -217,7 +361,7 @@ extension DummyApi: BufferApiProtocol {
         
         let outputData = currentContainer.getBufferData(handle: handle)
         
-        self.getCurrentContainer().outputs.append(outputData)
+        currentContainer.addOutput(output: outputData)
         
         return 0
     }
@@ -414,7 +558,14 @@ extension DummyApi: EndpointApiProtocol {
     }
     
     public func managedGetCallbackClosure(callbackClosureHandle: Int32) {
-        fatalError() // TODO: implement and test
+        let currentContainer = self.getCurrentContainer()
+        
+        switch currentContainer.executionType {
+        case .callback(_, let callbackClosure):
+            currentContainer.managedBuffersData[callbackClosureHandle] = callbackClosure
+        default:
+            self.throwExecutionFailed(reason: "Callback cannot be called directly") // TODO: use the same error as in the SpaceVM
+        }
     }
 }
 
@@ -631,7 +782,55 @@ extension DummyApi: SendApiProtocol {
         extraGasForCallback: Int64,
         callbackClosureHandle: Int32
     ) -> Int32 {
-        fatalError() // TODO: implement and test
+        // TODO: implement and test
+        let currentTransactionContainer = self.getCurrentContainer()
+        
+        let sender = currentTransactionContainer.getCurrentSCAccount().addressData
+        let receiver = currentTransactionContainer.getBufferData(handle: dstHandle)
+        let value = currentTransactionContainer.getBigIntData(handle: valueHandle)
+        let function = currentTransactionContainer.getBufferData(handle: functionHandle)
+        
+        let argumentsArray: Vector<Buffer> = Vector(handle: argumentsHandle)
+        var arguments: [Data] = []
+        
+        argumentsArray.forEach { arguments.append(Data($0.toBytes())) }
+        
+        var successCallback: AsyncCallCallbackInput? = nil
+        if successLength > 0 {
+            let successFunction = Data(bytes: successOffset, count: Int(successLength))
+            let callbackClosure = currentTransactionContainer.getBufferData(handle: callbackClosureHandle)
+            
+            successCallback = AsyncCallCallbackInput(
+                function: successFunction,
+                args: callbackClosure
+            )
+        }
+        
+        var errorCallback: AsyncCallCallbackInput? = nil
+        if errorLength > 0 {
+            let successFunction = Data(bytes: errorOffset, count: Int(errorLength))
+            let callbackClosure = currentTransactionContainer.getBufferData(handle: callbackClosureHandle)
+            
+            errorCallback = AsyncCallCallbackInput(
+                function: successFunction,
+                args: callbackClosure
+            )
+        }
+        
+        currentTransactionContainer.registerAsyncCallPromise(
+            function: function,
+            input: TransactionInput(
+                contractAddress: receiver,
+                callerAddress: sender,
+                egldValue: value,
+                esdtValue: [], // TODO: implement and test
+                arguments: arguments
+            ),
+            successCallback: successCallback,
+            errorCallback: errorCallback
+        )
+        
+        return 0
     }
     
     public func managedDeployFromSourceContract(

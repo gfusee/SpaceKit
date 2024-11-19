@@ -10,7 +10,7 @@ public struct BigUint {
             smartContractError(message: "Cannot convert negative Int64 to BigUint.")
         }
         
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         API.bigIntSetInt64(destination: handle, value: value)
         self.handle = handle
     }
@@ -46,7 +46,7 @@ public struct BigUint {
     }
     
     public init(bigEndianBuffer: Buffer) {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         let _ = API.bufferToBigIntUnsigned(bufferHandle: bigEndianBuffer.handle, bigIntHandle: handle)
         
         self.handle = handle
@@ -57,7 +57,7 @@ public struct BigUint {
     }
 
     public func toBuffer() -> Buffer {
-        let destHandle = getNextHandle()
+        let destHandle = API.getNextHandle()
         API.bigIntToBuffer(bigIntHandle: self.handle, destHandle: destHandle)
 
         return Buffer(handle: destHandle)
@@ -68,7 +68,7 @@ public struct BigUint {
     }
     
     func toBytesBigEndianBuffer() -> Buffer {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         let _ = API.bufferFromBigIntUnsigned(bufferHandle: handle, bigIntHandle: self.handle)
         
         return Buffer(handle: handle)
@@ -83,7 +83,7 @@ extension BigUint: Equatable {
 
 extension BigUint {
     public static func + (left: BigUint, right: BigUint) -> BigUint {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         API.bigIntAdd(destHandle: handle, lhsHandle: left.handle, rhsHandle: right.handle)
         
         return BigUint(handle: handle)
@@ -98,14 +98,14 @@ extension BigUint {
             smartContractError(message: Buffer(stringLiteral: BIG_UINT_SUB_NEGATIVE))
         }
         
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         API.bigIntSub(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         
         return BigUint(handle: handle)
     }
     
     public static func * (lhs: BigUint, rhs: BigUint) -> BigUint {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         API.bigIntMul(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         
         return BigUint(handle: handle)
@@ -113,7 +113,7 @@ extension BigUint {
     
     public static func / (lhs: BigUint, rhs: BigUint) -> BigUint {
         // TODO: be sure rhs == 0 throws an error on the SpaceVM (critical)
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         API.bigIntTDiv(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         
         return BigUint(handle: handle)
@@ -121,7 +121,7 @@ extension BigUint {
     
     public static func % (lhs: BigUint, rhs: BigUint) -> BigUint {
         // TODO: be sure rhs == 0 throws an error on the SpaceVM (critical)
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         API.bigIntTMod(destHandle: handle, lhsHandle: lhs.handle, rhsHandle: rhs.handle)
         
         return BigUint(handle: handle)
@@ -219,7 +219,7 @@ extension BigUint: CustomDebugStringConvertible {
 
 extension BigUint {
     public var stringDescription: String {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         API.bigIntToString(bigIntHandle: self.handle, destHandle: handle)
         let utf8Buffer = Buffer(handle: handle)
         

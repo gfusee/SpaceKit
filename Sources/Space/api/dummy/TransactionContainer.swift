@@ -7,11 +7,17 @@ package enum TransactionContainerErrorBehavior {
     case fatalError
 }
 
+public enum TransactionContainerExecutionType {
+    case sync // default
+    case async // the async execution on the called contract
+    case callback(arguments: [Data], callbackClosure: Data)
+}
+
 package final class TransactionContainer: @unchecked Sendable {
     package var managedBuffersData: [Int32 : Data] = [:]
     package var managedBigIntData: [Int32 : BigInt] = [:]
     package var state: WorldState
-    package var outputs: [Data] = []
+    package private(set) var outputs: [Data] = []
     public package(set) var error: TransactionError? = nil
     public package(set) var shouldExitThread: Bool = false
     
@@ -19,25 +25,40 @@ package final class TransactionContainer: @unchecked Sendable {
     // If nestedCallTransactionContainer != nil, then nestedCallTransactionContainer.parent == self
     package weak var parentContainer: TransactionContainer? = nil
     package var nestedCallTransactionContainer: TransactionContainer? = nil
+    package private(set) var pendingAsyncExecutions: [AsyncCallInput] = []
     
     private var transactionInput: TransactionInput? = nil
     package private(set) var transactionOutput: TransactionOutput? = nil
+    package private(set) var executionType: TransactionContainerExecutionType
     private var errorBehavior: TransactionContainerErrorBehavior
+    private var nextHandle: Int32 = -100
     
     package init(
         worldState: WorldState,
         transactionInput: TransactionInput,
-        errorBehavior: TransactionContainerErrorBehavior
+        executionType: TransactionContainerExecutionType,
+        errorBehavior: TransactionContainerErrorBehavior,
+        byTransferringDataFrom container: TransactionContainer?
     ) {
         self.state = worldState
         self.transactionInput = transactionInput
         self.transactionOutput = TransactionOutput()
+        self.executionType = executionType
         self.errorBehavior = errorBehavior
+        
+        if let container = container {
+            self.managedBuffersData = container.managedBuffersData
+            self.managedBigIntData = container.managedBigIntData
+            
+            self.nextHandle = container.nextHandle
+        }
     }
     
     package init(errorBehavior: TransactionContainerErrorBehavior) {
         self.errorBehavior = errorBehavior
         self.state = WorldState()
+        self.executionType = .sync
+        self.nextHandle = -100
     }
     
     package func throwError(error: TransactionError) -> Never {
@@ -61,6 +82,13 @@ package final class TransactionContainer: @unchecked Sendable {
                 }
             }
         }
+    }
+    
+    package func getNextHandle() -> Int32 {
+        let currentHandle = self.nextHandle
+        self.nextHandle -= 1
+
+        return currentHandle
     }
     
     package func registerContractEndpointSelectorForContractAccount(
@@ -184,6 +212,27 @@ package final class TransactionContainer: @unchecked Sendable {
         
         self.state.storageForContractAddress[currentContractAddress] = storage
     }
+    
+    package func addOutput(output: Data) {
+        self.outputs.append(output)
+        
+        if let transactionInput = transactionInput,
+           let transactionOutput = transactionOutput {
+            if var lastResults = transactionOutput.results.last,
+               lastResults.contractAddress == transactionInput.contractAddress
+            {
+                lastResults.results.append(output)
+                transactionOutput.results[transactionOutput.results.count] = lastResults
+            } else {
+                transactionOutput.results.append(
+                    TransactionOutputResult(
+                        contractAddress: transactionInput.contractAddress,
+                        results: [output]
+                    )
+                )
+            }
+        }
+    }
 
     package func performEgldTransfer(from: Data, to: Data, value: BigInt) {
         self.addEgldToAddressBalance(address: from, value: -value)
@@ -237,38 +286,68 @@ package final class TransactionContainer: @unchecked Sendable {
         self.addEsdtToAddressBalance(address: to, token: token, nonce: nonce, value: value)
     }
     
+    public func registerAsyncCallPromise(
+        function: Data,
+        input: TransactionInput,
+        successCallback: AsyncCallCallbackInput?,
+        errorCallback: AsyncCallCallbackInput?
+    ) {
+        self.pendingAsyncExecutions.append(
+            AsyncCallInput(
+                function: function,
+                input: input,
+                callbackClosure: nil,
+                successCallback: successCallback,
+                errorCallback: errorCallback
+            )
+        )
+    }
+    
     public func performNestedContractCall(
         receiver: Data,
         function: Data,
-        inputs: TransactionInput
+        inputs: TransactionInput,
+        shouldBePerformedInAChildContainer: Bool = true // useful for async calls, see DummyApi's executePendingAsyncExecution
     ) -> [Data] {
-        self.performEgldOrEsdtTransfers(
-            senderAddress: inputs.callerAddress,
-            receiverAddress: receiver,
-            egldValue: inputs.egldValue,
-            esdtValue: inputs.esdtValue
-        )
-        
         let endpointName = String(data: function, encoding: .utf8)!
         let receiverAccount = self.getAccount(address: receiver)
         var selector = self.getContractEndpointSelectorForContractAccount(contractAccount: receiverAccount)
         
-        let nestedCallTransactionContainer = TransactionContainer(
-            worldState: self.state,
-            transactionInput: inputs,
-            errorBehavior: self.errorBehavior
-        )
-        nestedCallTransactionContainer.parentContainer = self
-        self.nestedCallTransactionContainer = nestedCallTransactionContainer
+        if shouldBePerformedInAChildContainer {
+            self.performEgldOrEsdtTransfers(
+                senderAddress: inputs.callerAddress,
+                receiverAddress: receiver,
+                egldValue: inputs.egldValue,
+                esdtValue: inputs.esdtValue
+            )
+            
+            let nestedCallTransactionContainer = TransactionContainer(
+                worldState: self.state,
+                transactionInput: inputs,
+                executionType: executionType,
+                errorBehavior: self.errorBehavior,
+                byTransferringDataFrom: nil
+            )
+            nestedCallTransactionContainer.parentContainer = self
+            self.nestedCallTransactionContainer = nestedCallTransactionContainer
+        }
         
         selector._callEndpoint(name: endpointName)
         
-        let outputData = nestedCallTransactionContainer.outputs
-        self.state = nestedCallTransactionContainer.state
-        
-        self.nestedCallTransactionContainer = nil
-        
-        return outputData
+        if shouldBePerformedInAChildContainer {
+            guard let nestedCallTransactionContainer = self.nestedCallTransactionContainer else {
+                fatalError("Should not be executed")
+            }
+            
+            let outputData = nestedCallTransactionContainer.outputs
+            self.state = nestedCallTransactionContainer.state
+            
+            self.nestedCallTransactionContainer = nil
+            
+            return outputData
+        } else {
+            return self.outputs
+        }
     }
     
     private func addEsdtToAddressBalance(address: Data, token: Data, nonce: UInt64, value: BigInt) {

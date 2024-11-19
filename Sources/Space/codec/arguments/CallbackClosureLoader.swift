@@ -4,7 +4,7 @@ public struct CallbackClosureLoader {
     let argBuffer: ArgBuffer
     
     public init() {
-        var bufferSerialized = Buffer()
+        let bufferSerialized = Buffer()
         
         API.managedGetCallbackClosure(callbackClosureHandle: bufferSerialized.handle)
         

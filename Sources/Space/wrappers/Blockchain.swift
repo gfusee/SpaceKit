@@ -16,7 +16,7 @@ public struct Blockchain {
     private init() {}
     
     public static func getSCAddress() -> Address {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         
         API.managedSCAddress(resultHandle: handle)
         
@@ -50,7 +50,7 @@ public struct Blockchain {
     ) -> BigUint {
         var addressBytes = address.buffer.to32BytesStackArray()
         
-        let destHandle = getNextHandle()
+        let destHandle = API.getNextHandle()
         
         API.bigIntGetExternalBalance(
             addressPtr: &addressBytes,
@@ -68,7 +68,7 @@ public struct Blockchain {
         var addressBytes = address.buffer.to32BytesStackArray()
         var tokenIdentifierBytes = tokenIdentifier.to32BytesStackArray()
         
-        let destHandle = getNextHandle()
+        let destHandle = API.getNextHandle()
         
         API.bigIntGetESDTExternalBalance(
             addressPtr: &addressBytes,
@@ -83,7 +83,7 @@ public struct Blockchain {
 
     public static func getOwner() -> Address {
         // TODO: add caching
-        let resultHandle = getNextHandle()
+        let resultHandle = API.getNextHandle()
         
         API.managedOwnerAddress(resultHandle: resultHandle)
         

@@ -56,6 +56,12 @@ if !isWasm {
     
     testTargets.append(contentsOf: [
         .testTarget(
+            name: "AsyncCallsTests",
+            dependencies: [
+                "Space"
+            ]
+        ),
+        .testTarget(
             name: "BufferTests",
             dependencies: [
                 "Space"

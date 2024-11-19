@@ -22,7 +22,7 @@ public struct Buffer {
     }
 
     public init(_ string: StaticString) {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         let _ = API.bufferSetBytes(handle: handle, bytePtr: string.utf8Start, byteLen: Int32(string.utf8CodeUnitCount))
 
         self.handle = handle
@@ -35,7 +35,7 @@ public struct Buffer {
     
     @inline(__always)
     package init(data: [UInt8]) {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         
         var data = data
         
@@ -47,7 +47,7 @@ public struct Buffer {
     
     @inline(__always)
     package init(data: UInt8) {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         
         var data = data
         
@@ -58,7 +58,7 @@ public struct Buffer {
     
     @inline(__always)
     package init(data: Bytes2) {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         
         var data = data
         
@@ -69,7 +69,7 @@ public struct Buffer {
     
     @inline(__always)
     package init(data: Bytes4) {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         
         var data = data
         
@@ -80,7 +80,7 @@ public struct Buffer {
     
     @inline(__always)
     package init(data: Bytes8) {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         
         var data = data
         
@@ -91,7 +91,7 @@ public struct Buffer {
     
     @inline(__always)
     package init(data: Bytes32) {
-        let handle = getNextHandle()
+        let handle = API.getNextHandle()
         
         var data = data
         
@@ -237,7 +237,7 @@ public struct Buffer {
     }
     
     public func toHexadecimalBuffer() -> Buffer {
-        let resultHandle = getNextHandle()
+        let resultHandle = API.getNextHandle()
         
         API.managedBufferToHex(sourceHandle: self.handle, destinationHandle: resultHandle)
         

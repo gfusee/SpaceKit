@@ -1,5 +1,7 @@
 #if WASM
 
+nonisolated(unsafe) var nextHandle: Int32 = -100
+
 // TODO: /!\ CRITICAL /!\ Handle all possible errors from the Int32 status code. For example substracting two BigUint A - B, where A < B, DOESN'T throw an error in the VM
 
 // MARK: Buffer-related OPCODES
@@ -292,7 +294,16 @@ func managedVerifyEd25519(keyHandle: Int32, messageHandle: Int32, sigHandle: Int
 @_extern(c)
 func managedSha256(inputHandle: Int32, outputHandle: Int32) -> Int32
 
-struct VMApi {}
+struct VMApi {
+    
+    public func getNextHandle() -> Int32 {
+        let currentHandle = nextHandle
+        nextHandle -= 1
+
+        return currentHandle
+    }
+    
+}
 
 // MARK: BufferApi Implementation
 
