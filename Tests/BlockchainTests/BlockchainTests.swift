@@ -25,6 +25,9 @@ import Space
         return Blockchain.getOwner()
     }
     
+    public func getShard(address: Address) -> UInt32 {
+        address.getShard()
+    }
 }
 
 final class BlockchainTests: ContractTestCase {
@@ -152,6 +155,61 @@ final class BlockchainTests: ContractTestCase {
         let owner = try contract.getOwner()
         
         XCTAssertEqual(owner.hexDescription, "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f")
+    }
+    
+    func testGetShardOfAddressOnShard0() throws {
+        let contract = try BlockchainContract.testable(
+            "adder",
+            transactionInput: ContractCallTransactionInput(callerAddress: "user")
+        )
+        
+        let shard = try contract.getShard(address: Address(buffer: Buffer(data: Array("f82b37a187e2fa215a160149a9200dbb96da44d51b0943fd2fb7c387642f4420".hexadecimal))))
+        
+        XCTAssertEqual(shard, 0)
+    }
+    
+    func testGetShardOfAddressOnShard1() throws {
+        let contract = try BlockchainContract.testable(
+            "adder",
+            transactionInput: ContractCallTransactionInput(callerAddress: "user")
+        )
+        
+        let shard = try contract.getShard(address: Address(buffer: Buffer(data: Array("b80df5db4ccedd88c45c42b567a383cc87188aeaa1c75cc8cfab2f500d01fecf".hexadecimal))))
+        
+        XCTAssertEqual(shard, 1)
+    }
+    
+    func testGetShardOfAddressOnShard2() throws {
+        let contract = try BlockchainContract.testable(
+            "adder",
+            transactionInput: ContractCallTransactionInput(callerAddress: "user")
+        )
+        
+        let shard = try contract.getShard(address: Address(buffer: Buffer(data: Array("b57d0b1ae1c2141d17bbb4fe1ce680875fb3b318015799536d6f0de6a8d173fe".hexadecimal))))
+        
+        XCTAssertEqual(shard, 2)
+    }
+    
+    func testGetShardOfAddressOnMetachain() throws {
+        let contract = try BlockchainContract.testable(
+            "adder",
+            transactionInput: ContractCallTransactionInput(callerAddress: "user")
+        )
+        
+        let shard = try contract.getShard(address: Address(buffer: Buffer(data: Array("000000000000000000010000000000000000000000000000000000000002ffff".hexadecimal))))
+        
+        XCTAssertEqual(shard, 4294967295)
+    }
+    
+    func testGetShardOfEmptyAddressOnMetachain() throws {
+        let contract = try BlockchainContract.testable(
+            "adder",
+            transactionInput: ContractCallTransactionInput(callerAddress: "user")
+        )
+        
+        let shard = try contract.getShard(address: Address(buffer: Buffer(data: Array("0000000000000000000000000000000000000000000000000000000000000000".hexadecimal))))
+        
+        XCTAssertEqual(shard, 4294967295)
     }
     
 }

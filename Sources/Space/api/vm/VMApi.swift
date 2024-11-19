@@ -189,6 +189,10 @@ func getGasLeft() -> Int64
 @_extern(c)
 func getESDTLocalRoles(tokenhandle: Int32) -> Int64
 
+@_extern(wasm, module: "env", name: "getShardOfAddress")
+@_extern(c)
+func getShardOfAddress(address_ptr: UnsafeRawPointer) -> Int32
+
 // MARK: CallValue-related OPCODES
 @_extern(wasm, module: "env", name: "bigIntGetCallValue")
 @_extern(c)
@@ -521,6 +525,10 @@ extension VMApi: BlockchainApiProtocol {
     
     mutating func getESDTLocalRoles(tokenIdHandle: Int32) -> Int64 {
         return Space.getESDTLocalRoles(tokenhandle: tokenIdHandle)
+    }
+    
+    mutating func getShardOfAddress(addressPtr: UnsafeRawPointer) -> Int32 {
+        return Space.getShardOfAddress(address_ptr: addressPtr)
     }
 }
 

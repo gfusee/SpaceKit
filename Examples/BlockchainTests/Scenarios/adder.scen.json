@@ -1,0 +1,95 @@
+{
+    "name": "BlockchainTests",
+    "comment": "",
+    "gasSchedule": "v3",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "1",
+                    "balance": "0"
+                }
+            },
+            "newAddresses": [
+                {
+                    "creatorAddress": "address:owner",
+                    "creatorNonce": "1",
+                    "newAddress": "sc:blockchain_tests"
+                }
+            ]
+        },
+        {
+            "step": "scDeploy",
+            "id": "1",
+            "tx": {
+                "from": "address:owner",
+                "contractCode": "file:../output/BlockchainTests.wasm",
+                "arguments": [],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": "*",
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get shard of address on shard 0",
+            "tx": {
+                "to": "sc:blockchain_tests",
+                "function": "getShard",
+                "arguments": [
+                    "0xf82b37a187e2fa215a160149a9200dbb96da44d51b0943fd2fb7c387642f4420"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "0"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get shard of address on shard 1",
+            "tx": {
+                "to": "sc:blockchain_tests",
+                "function": "getShard",
+                "arguments": [
+                    "0xb80df5db4ccedd88c45c42b567a383cc87188aeaa1c75cc8cfab2f500d01fecf"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "1"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get shard of address on shard 2",
+            "tx": {
+                "to": "sc:blockchain_tests",
+                "function": "getShard",
+                "arguments": [
+                    "0xb57d0b1ae1c2141d17bbb4fe1ce680875fb3b318015799536d6f0de6a8d173fe"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "1"
+                ],
+                "status": "",
+                "logs": []
+            }
+        }
+    ]
+}
