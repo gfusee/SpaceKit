@@ -205,14 +205,6 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .target(
-            name: "BlockchainTestsExample",
-            dependencies: [
-                "Space"
-            ],
-            path: "Examples/BlockchainTests",
-            swiftSettings: swiftSettings
-        ),
-        .target(
             name: "BondingCurve",
             dependencies: [
                 "Space"

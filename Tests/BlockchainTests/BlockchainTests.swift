@@ -201,7 +201,7 @@ final class BlockchainTests: ContractTestCase {
         XCTAssertEqual(shard, 4294967295)
     }
     
-    func testGetShardOfEmptyAddressOnMetachain() throws {
+    func testGetShardOfEmptyAddress() throws {
         let contract = try BlockchainContract.testable(
             "adder",
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
