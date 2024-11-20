@@ -33,6 +33,10 @@ public struct Address {
         self == Address()
     }
     
+    public func getShard() -> UInt32 {
+        return Blockchain.getShardOfAddress(address: self)
+    }
+    
     public func getBalance() -> BigUint {
         // TODO: add tests
         return Blockchain.getBalance(address: self)

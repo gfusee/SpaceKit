@@ -23,6 +23,13 @@ public struct Blockchain {
         return Address(handle: handle)
     }
     
+    public static func getShardOfAddress(address: Address) -> UInt32 {
+        var addressBytes = address.buffer.to32BytesStackArray()
+        
+        return toBigEndianUInt32(from: API.getShardOfAddress(addressPtr: &addressBytes).toBytes4())
+        // TODO: super tricky, we should ensure it works
+    }
+    
     public static func getBlockTimestamp() -> UInt64 {
         // TODO: add tests
         return toBigEndianUInt64(from: API.getBlockTimestamp().toBytes8()) // TODO: super tricky, we should ensure it works

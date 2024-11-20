@@ -3,6 +3,8 @@ import Foundation
 import BigInt
 
 public class DummyApi {
+    private var numberOfShards: UInt8 = 3
+    
     private var containerLock: NSLock = NSLock()
     package var globalLock: NSLock = NSLock()
     
@@ -106,6 +108,10 @@ public class DummyApi {
         }
         
         return (results: containerOutputs, asyncError: error?.error)
+    }
+    
+    public func setNumberOfShards(shards: UInt8) {
+        self.numberOfShards = shards
     }
     
     public func registerContractEndpointSelectorForContractAddress(
@@ -647,6 +653,37 @@ extension DummyApi: BlockchainApiProtocol {
     public func getESDTLocalRoles(tokenIdHandle: Int32) -> Int64 {
         // TODO: implement and tests
         fatalError()
+    }
+    
+    public func getShardOfAddress(addressPtr: UnsafeRawPointer) -> Int32 {
+        let addressData: [UInt8] = Array(Data(bytes: addressPtr, count: 32))
+        let metachainPrefix: [UInt8] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        
+        let pubKeyPrefix = Array(addressData[0..<metachainPrefix.count])
+        
+        let metachainShardId: Int32 = Int32(bitPattern: 4294967295)
+        if pubKeyPrefix == metachainPrefix {
+            return metachainShardId
+        }
+        
+        let zeroAddress: [UInt8] = Array(repeating: 0, count: 32)
+        
+        if addressData == zeroAddress {
+            return metachainShardId
+        }
+        
+        let n = Int32(ceil(log2(Float(self.numberOfShards))))
+        let maskHigh: Int32 = (1 << n) - 1
+        let maskLow: Int32 = (1 << (n - 1)) - 1
+        
+        let lastByteOfPubKey = Int32(addressData[addressData.count - 1])
+        
+        var shard = lastByteOfPubKey & maskHigh
+        if shard > self.numberOfShards - 1 {
+            shard = lastByteOfPubKey & maskLow
+        }
+        
+        return shard
     }
 }
 
