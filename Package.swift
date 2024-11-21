@@ -370,6 +370,14 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .target(
+            name: "SendTestsExample",
+            dependencies: [
+                "Space"
+            ],
+            path: "Examples/SendTests",
+            swiftSettings: swiftSettings
+        ),
+        .target(
             name: "TokenRelease",
             dependencies: [
                 "Space"

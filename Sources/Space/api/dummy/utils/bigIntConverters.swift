@@ -12,6 +12,13 @@ extension BigInt {
 
         self = BigInt(hexString, radix: 16)!
     }
+    
+    init(bigUintData: Data) {
+        let buffer = Buffer(data: Array((bigUintData)))
+        let biguint = BigUint(topDecode: buffer)
+        
+        self.init(bigUint: biguint)
+    }
 
     func toBigEndianUnsignedData() -> Data {
         let bigIntData = self.serialize()

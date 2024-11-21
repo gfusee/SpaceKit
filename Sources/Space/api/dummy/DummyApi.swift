@@ -773,25 +773,33 @@ extension DummyApi: SendApiProtocol {
         // TODO: test
         let currentTransactionContainer = self.getCurrentContainer()
         
-        let sender = currentTransactionContainer.getCurrentSCAccount().addressData
-        let receiver = currentTransactionContainer.getBufferData(handle: addressHandle)
-        let value = currentTransactionContainer.getBigIntData(handle: valueHandle)
-        let function = currentTransactionContainer.getBufferData(handle: functionHandle)
+        let senderData = currentTransactionContainer.getCurrentSCAccount().addressData
+        let receiverData = currentTransactionContainer.getBufferData(handle: addressHandle)
+        let valueData = currentTransactionContainer.getBigIntData(handle: valueHandle)
+        let functionData = currentTransactionContainer.getBufferData(handle: functionHandle)
         
         let argumentsArray: Vector<Buffer> = Vector(handle: argumentsHandle)
-        var arguments: [Data] = []
+        var argumentsData: [Data] = []
         
-        argumentsArray.forEach { arguments.append(Data($0.toBytes())) }
+        argumentsArray.forEach { argumentsData.append(Data($0.toBytes())) }
+        
+        let parsed = self.parseContractCall(
+            function: functionData,
+            sender: senderData,
+            receiver: receiverData,
+            value: valueData,
+            arguments: argumentsData
+        )
         
         let results = currentTransactionContainer.performNestedContractCall(
-            receiver: receiver,
-            function: function,
+            receiver: parsed.receiver,
+            function: parsed.function,
             inputs: TransactionInput(
-                contractAddress: receiver,
-                callerAddress: sender,
-                egldValue: value,
-                esdtValue: [], // TODO: implement and test
-                arguments: arguments
+                contractAddress: parsed.receiver,
+                callerAddress: parsed.sender,
+                egldValue: parsed.value,
+                esdtValue: parsed.tokenTransfers,
+                arguments: parsed.arguments
             )
         )
         
@@ -896,6 +904,132 @@ extension DummyApi: SendApiProtocol {
     
     public func cleanReturnData() {
         // TODO: this opcode seems to not be relevant in the current state of the SwiftVM. I have to investigate a bit more on it.
+    }
+    
+    private func parseContractCall(
+        function: Data,
+        sender: Data,
+        receiver: Data,
+        value: BigInt,
+        arguments: [Data]
+    ) -> (function: Data, sender: Data, receiver: Data, value: BigInt, tokenTransfers: [TransactionInput.EsdtPayment], arguments: [Data]) {
+        let currentTransactionContainer = self.getCurrentContainer()
+        
+        let actualFunction: Data
+        let actualSender: Data
+        let actualReceiver: Data
+        let actualValue: BigInt
+        let actualTokenTransfers: [TransactionInput.EsdtPayment]
+        let actualArguments: [Data]
+        
+        if function == Data("\(ESDT_TRANSFER_FUNC_NAME)".utf8) {
+            guard arguments.count >= 3 else {
+                self.throwExecutionFailed(reason: "invalid contract call with single fungible esdt transfer")
+            }
+            
+            let paymentToken = arguments[0]
+            let paymentAmount = BigInt(bigUintData: arguments[1])
+            
+            actualFunction = arguments[2]
+            actualSender = sender
+            actualReceiver = receiver
+            actualValue = 0
+            actualArguments = Array(arguments.suffix(from: 3))
+            
+            actualTokenTransfers = [
+                TransactionInput.EsdtPayment(
+                    tokenIdentifier: paymentToken,
+                    nonce: 0,
+                    amount: paymentAmount
+                )
+            ]
+        } else if function == Data("\(ESDT_NFT_TRANSFER_FUNC_NAME)".utf8) {
+            guard sender == receiver else {
+                throwExecutionFailed(reason: "sender and receiver should be the same for contract calls with single esdt nft transfer")
+            }
+            
+            guard arguments.count >= 5 else {
+                self.throwExecutionFailed(reason: "invalid contract call with single esdt nft transfer")
+            }
+            
+            let paymentToken = arguments[0]
+            let paymentNonce = UInt64(BigInt(bigUintData: arguments[1]))
+            let paymentAmount = BigInt(bigUintData: arguments[2])
+            
+            actualReceiver = arguments[3]
+            actualFunction = arguments[4]
+            actualSender = sender
+            actualValue = 0
+            actualArguments = Array(arguments.suffix(from: 5))
+            
+            actualTokenTransfers = [
+                TransactionInput.EsdtPayment(
+                    tokenIdentifier: paymentToken,
+                    nonce: paymentNonce,
+                    amount: paymentAmount
+                )
+            ]
+        } else if function == Data("\(ESDT_MULTI_TRANSFER_FUNC_NAME)".utf8) {
+            guard sender == receiver else {
+                throwExecutionFailed(reason: "sender and receiver should be the same for contract calls with multi esdt nft transfer")
+            }
+            
+            guard arguments.count >= 3 else { // to + number of payments + ...payments + function
+                self.throwExecutionFailed(reason: "invalid contract call with multi esdt nft transfer")
+            }
+            
+            actualReceiver = arguments[0]
+            let numberOfPayments = UInt64(BigInt(bigUintData: arguments[1]))
+            
+            guard arguments.count >= 3 + numberOfPayments else {
+                self.throwExecutionFailed(reason: "invalid contract call with multi esdt nft transfer, not enough args for the given number of payments")
+            }
+            
+            var currentIndex = 2
+            var tokenTransfers: [TransactionInput.EsdtPayment] = []
+            
+            for _ in 0..<numberOfPayments {
+                let paymentToken = arguments[currentIndex]
+                let paymentNonce = UInt64(BigInt(bigUintData: arguments[currentIndex + 1]))
+                let paymentAmount = BigInt(bigUintData: arguments[currentIndex + 2])
+                
+                tokenTransfers.append(
+                    TransactionInput.EsdtPayment(
+                        tokenIdentifier: paymentToken,
+                        nonce: paymentNonce,
+                        amount: paymentAmount
+                    )
+                )
+                
+                currentIndex += 3
+            }
+            
+            
+            actualFunction = arguments[currentIndex]
+            currentIndex += 1
+            
+            actualSender = sender
+            actualValue = 0
+            actualArguments = Array(arguments.suffix(from: currentIndex))
+            
+            actualTokenTransfers = tokenTransfers
+        } else {
+            actualFunction = function
+            actualSender = sender
+            actualReceiver = receiver
+            actualValue = value
+            actualArguments = arguments
+            actualTokenTransfers = []
+        }
+        
+        return (
+            function: actualFunction,
+            sender: actualSender,
+            receiver: actualReceiver,
+            value: actualValue,
+            tokenTransfers: actualTokenTransfers,
+            arguments: actualArguments
+        )
     }
 }
 
