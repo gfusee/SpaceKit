@@ -66,12 +66,15 @@ fileprivate struct ContractCallNormalized {
             
             var actualArgBuffer = ArgBuffer()
             
+            actualArgBuffer.pushArg(arg: receiver)
+            
+            actualArgBuffer.pushArg(arg: esdtTransfers.count)
+            
             esdtTransfers.forEach { transfer in
                 actualArgBuffer.pushArg(arg: transfer.tokenIdentifier)
                 actualArgBuffer.pushArg(arg: transfer.nonce)
                 actualArgBuffer.pushArg(arg: transfer.amount)
             }
-            actualArgBuffer.pushArg(arg: receiver)
             actualArgBuffer.pushArg(arg: endpointName)
             
             argBuffer.buffers.forEach { arg in
