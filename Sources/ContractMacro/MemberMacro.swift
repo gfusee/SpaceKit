@@ -236,6 +236,9 @@ fileprivate func getTestableStructDeclaration(
                 return parameter
             }
         
+        let isMutating = testableFunction.modifiers.contains(where: { $0.name.tokenKind == .keyword(.mutating) })
+        let contractInstantiationKeyword = isMutating ? "var" : "let"
+        
         testableFunction.signature.parameterClause.parameters = FunctionParameterListSyntax(baseParameters + transactionInputOptionalParameters)
         testableFunction.signature.effectSpecifiers = throwsEffectSpecifiers
         
@@ -263,7 +266,7 @@ fileprivate func getTestableStructDeclaration(
                 transactionInput: transactionInput.toTransactionInput(contractAddress: self.address),
                 transactionOutput: transactionOutput
             ) { \(raw: closureVariableInstantiations)
-                var contract = \(structDecl.name.trimmed)(_noDeploy: ())
+                \(raw: contractInstantiationKeyword) contract = \(structDecl.name.trimmed)(_noDeploy: ())
             
                 \(raw: adapterAndReturnBlock)
             }
@@ -301,7 +304,10 @@ fileprivate func getStaticEndpointDeclarations(
             functionParameters: function.signature.parameterClause.parameters
         )
         
-        let contractVariableDeclaration: ExprSyntax = "var _contract = \(structName)(_noDeploy: ())"
+        let isMutating = function.modifiers.contains(where: { $0.name.tokenKind == .keyword(.mutating) })
+        let contractInstantiationKeyword = isMutating ? "var" : "let"
+        
+        let contractVariableDeclaration: ExprSyntax = "\(raw: contractInstantiationKeyword) _contract = \(structName)(_noDeploy: ())"
         
         let body: String
         if function.signature.returnClause != nil {
