@@ -913,8 +913,6 @@ extension DummyApi: SendApiProtocol {
         value: BigInt,
         arguments: [Data]
     ) -> (function: Data, sender: Data, receiver: Data, value: BigInt, tokenTransfers: [TransactionInput.EsdtPayment], arguments: [Data]) {
-        let currentTransactionContainer = self.getCurrentContainer()
-        
         let actualFunction: Data
         let actualSender: Data
         let actualReceiver: Data

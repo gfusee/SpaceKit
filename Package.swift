@@ -182,7 +182,7 @@ if !isWasm {
                 "Space",
                 "BigInt"
             ]
-        ),
+        )
     ])
 }
 
