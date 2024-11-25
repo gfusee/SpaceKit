@@ -11,6 +11,45 @@
     let canAddSpecialRoles: Bool
 }
 
+@Codable public struct FungibleTokenProperties {
+    let numDecimals: UInt32
+    let canFreeze: Bool
+    let canWipe: Bool
+    let canPause: Bool
+    let canMint: Bool
+    let canBurn: Bool
+    let canChangeOwner: Bool
+    let canUpgrade: Bool
+    let canAddSpecialRoles: Bool
+}
+
+extension FungibleTokenProperties {
+    // TODO: remove once @Codable creates a public default init
+    public static func new(
+        numDecimals: UInt32,
+        canFreeze: Bool,
+        canWipe: Bool,
+        canPause: Bool,
+        canMint: Bool,
+        canBurn: Bool,
+        canChangeOwner: Bool, 
+        canUpgrade: Bool,
+        canAddSpecialRoles: Bool
+    ) -> FungibleTokenProperties {
+        FungibleTokenProperties(
+            numDecimals: numDecimals,
+            canFreeze: canFreeze,
+            canWipe: canWipe,
+            canPause: canPause,
+            canMint: canMint,
+            canBurn: canBurn,
+            canChangeOwner: canChangeOwner,
+            canUpgrade: canUpgrade,
+            canAddSpecialRoles: canAddSpecialRoles
+        )
+    }
+}
+
 @Codable public struct NonFungibleTokenProperties {
     var canFreeze: Bool
     var canWipe: Bool
