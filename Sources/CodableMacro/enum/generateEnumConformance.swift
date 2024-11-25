@@ -285,6 +285,11 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
     }
     
     let payloadSizeSum = payloadSizeSumList.joined(separator: ", ")
+    let payloadSizeReturnValue = if payloadSizeSumList.count == 1 {
+        payloadSizeSum
+    } else {
+        "max(\(payloadSizeSum))"
+    }
     
     let payloadInputsDeclarations = payloadInputsDeclarationsList.joined(separator: "\n")
     let decodeArrayPayloadInitArgs = decodeArrayPayloadInitArgsList.joined(separator: "\n")
@@ -295,7 +300,7 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
         memberBlock: """
         : ArrayItem {
             public static var payloadSize: Int32 {
-                return max(\(raw: payloadSizeSum))
+                return \(raw: payloadSizeReturnValue)
             }
             
             @inline(__always)
