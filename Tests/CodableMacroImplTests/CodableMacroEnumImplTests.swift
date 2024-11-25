@@ -1,9 +1,15 @@
 import Space
 import XCTest
 
+// There was an issue with @Codable macro on enums that has only one case
+// The struct here is only here to check if it compiles
+@Codable enum TestEnumWithOnlyOneCase {
+    case firstCase
+}
+
 // There was an issue with @Codable macro on structs or enums that has comments on its fields
 // The struct here is only here to check if it compiles
-@Codable enum TestEnum {
+@Codable enum TestEnumWithComment {
     case firstCase // Dummy comment
     case secondCase
 }
