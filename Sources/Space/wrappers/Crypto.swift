@@ -12,7 +12,7 @@ public struct Crypto {
     }
     
     public static func getSha256Hash(of value: Buffer) -> Buffer {
-        var result = Buffer()
+        let result = Buffer()
         
         let _ = API.managedSha256(
             inputHandle: value.handle,

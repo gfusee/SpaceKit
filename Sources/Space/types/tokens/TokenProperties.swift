@@ -104,7 +104,7 @@ extension TokenPropertiesArgument: TopEncodeMulti {
         
         if let canWipe = self.canWipe {
             output.pushSingleValue(arg: Buffer(stringLiteral: "canWipe"))
-            output.pushSingleValue(arg: canFreeze)
+            output.pushSingleValue(arg: canWipe)
         }
         
         if let canPause = self.canPause {

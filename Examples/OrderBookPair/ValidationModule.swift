@@ -137,7 +137,7 @@ struct ValidationModule {
             let item = items[itemIndex]
             var checkItem = false
             
-            for baseIndex in 0..<itemsCount {
+            for baseIndex in 0..<baseArrayCount {
                 let base = baseArray[baseIndex]
                 
                 if item == base {

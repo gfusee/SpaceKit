@@ -28,7 +28,7 @@ fileprivate func generateEmitExtension(
 ) throws -> ExtensionDeclSyntax {
     var nestedEncodeFieldsCallsList: [String] = []
     for field in fields {
-        guard let fieldType = field.bindings.first!.typeAnnotation else {
+        guard field.bindings.first!.typeAnnotation != nil else {
             throw EventMacroError.allFieldsShouldHaveAType
         }
         

@@ -71,7 +71,7 @@ public struct QueueMapper<V: TopEncode & TopDecode>: StorageMapper {
     }
     
     package func pushBackNodeId(value: V) -> UInt32 {
-        var infoMapper = self.getInfoMapper()
+        let infoMapper = self.getInfoMapper()
         
         var info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
         let newNodeId = info.generateNewNodeId()
@@ -102,7 +102,7 @@ public struct QueueMapper<V: TopEncode & TopDecode>: StorageMapper {
     
     public func isEmpty() -> Bool {
         let infoMapper = self.getInfoMapper()
-        var info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
+        let info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
         
         return info.len == 0
     }
