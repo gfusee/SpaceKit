@@ -87,6 +87,23 @@ public struct Blockchain {
         
         return BigUint(handle: destHandle)
     }
+    
+    public static func getSCBalance() -> BigUint {
+        Blockchain
+            .getBalance(address: Blockchain.getSCAddress())
+    }
+    
+    public static func getSCBalance(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> BigUint {
+        Blockchain
+            .getESDTBalance(
+                address: Blockchain.getSCAddress(),
+                tokenIdentifier: tokenIdentifier,
+                nonce: nonce
+            )
+    }
 
     public static func getOwner() -> Address {
         // TODO: add caching
