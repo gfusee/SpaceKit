@@ -23,6 +23,7 @@ func generateEnumExtension(
 
 fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> ExtensionDeclSyntax {
     var callsList: [String] = []
+    var argBufferInstantiationKeyword: String = "let"
     for discriminantAndCase in discriminantsAndCases {
         let caseName = discriminantAndCase.1.name.trimmed
         var associatedValuesInstantiationsList: [String] = []
@@ -34,6 +35,7 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
                 
                 associatedValuesInstantiationsList.append("let \(valueName)")
                 associatedValuesPushArgsList.append("_argBuffer.pushArg(arg: \(valueName))")
+                argBufferInstantiationKeyword = "var"
             }
         }
         
@@ -132,7 +134,7 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
         
             private func _getEndpointNameAndArgs() -> (Buffer, ArgBuffer) {
                 let _endpointName: Buffer
-                var _argBuffer = ArgBuffer()
+                \(raw: argBufferInstantiationKeyword) _argBuffer = ArgBuffer()
                 switch self {
                     \(raw: calls)
                 }

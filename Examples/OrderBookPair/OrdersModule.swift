@@ -403,7 +403,7 @@ struct OrdersModule {
                     to: order.creator,
                     payment: Payment(
                         tokenIdentifier: tokenRequested,
-                        amount: creatorAmount
+                        amount: creatorAmount + creatorDealAmount
                     )
                 )
             )

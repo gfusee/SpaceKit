@@ -13,7 +13,7 @@ import XCTest
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<Buffer> = ["Hello!", "Bonjour!", "¡Hola!"]
         
-        let array2: Vector<CustomCodableStruct> = [
+        let _: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -140,7 +140,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testTwoElementsArrayThroughLiteralAssign() throws {
-        var array: Vector<CustomCodableStruct> = [
+        let array: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -180,7 +180,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testAppendedContentsOf() throws {
-        var array1: Vector<CustomCodableStruct> = [
+        let array1: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -195,7 +195,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         ]
         
-        var array2: Vector<CustomCodableStruct> = [
+        let array2: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "test3",
                 secondElement: 1,

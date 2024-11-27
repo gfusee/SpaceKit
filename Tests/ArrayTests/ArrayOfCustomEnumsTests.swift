@@ -12,7 +12,7 @@ import XCTest
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<Buffer> = ["Hello!", "Bonjour!", "¡Hola!"]
         
-        let array2: Vector<CustomCodableEnum> = [
+        let _: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -691,7 +691,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedEncodeThreeDifferentCases() throws {
-        var array: Vector<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,

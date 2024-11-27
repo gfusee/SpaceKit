@@ -285,7 +285,7 @@ final class UInt64Tests: ContractTestCase {
     }
     
     func testFixedArrayToUInt64WithZero() throws {
-        var array = getZeroedBytes8()
+        let array = getZeroedBytes8()
         let result = toBigEndianUInt64(from: array)
         
         let expected: UInt64 = 0

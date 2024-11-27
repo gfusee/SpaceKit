@@ -161,7 +161,6 @@ let PERCENTAGE_TOTAL: UInt64 = 100
         
         let userGroupsMapper = self.$userGroupsForAddress[address]
         let userGroups = userGroupsMapper.get()
-        let userGroupsCount = userGroups.count
         
         var groupExists = false
         for groupIndex in 0..<userGroups.count {

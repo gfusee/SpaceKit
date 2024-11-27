@@ -497,7 +497,7 @@ import CryptoKittiesRandom
         let newNumberOwnedTo = numberOwnedToMapper.get() + 1
         
         if !from.isZero() {
-            var numberOwnedFromMapper = self.$numberOfOwnedKittiesForAddress[from]
+            let numberOwnedFromMapper = self.$numberOfOwnedKittiesForAddress[from]
             let newNumberOwnedFrom = numberOwnedFromMapper.get() - 1
             
             numberOwnedFromMapper.set(newNumberOwnedFrom)
@@ -662,7 +662,7 @@ import CryptoKittiesRandom
             
             // new kitty goes to the owner of the matron
             let newKittyOwner = self.kittyOwnerForId[matronId]
-            let newKittyId = self.createNewKitty(
+            _ = self.createNewKitty(
                 matronId: matronId,
                 sireId: sireId,
                 generation: newKittyGeneration,
