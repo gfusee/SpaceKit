@@ -39,14 +39,17 @@ fileprivate func generateEmitExtension(
     }
     
     let nestedEncodeFieldsCalls = nestedEncodeFieldsCallsList.joined(separator: "\n")
-    
+   
+    let encodedDataInstantiationKeyword: String
     let functionSignature: String
     let dataTopEncode: String
     
     if let dataTypeName = dataTypeName {
+        encodedDataInstantiationKeyword = "var"
         functionSignature = "public func emit(data: \(dataTypeName))"
         dataTopEncode = "data.topEncode(output: &_encodedData)"
     } else {
+        encodedDataInstantiationKeyword = "let"
         functionSignature = "public func emit()"
         dataTopEncode = ""
     }
@@ -58,7 +61,7 @@ fileprivate func generateEmitExtension(
              \(raw: functionSignature) {
                 var _indexedArgs: Vector<Buffer> = Vector()
                 _indexedArgs = _indexedArgs.appended("\(structName)")
-                var _encodedData = Buffer()
+                \(raw: encodedDataInstantiationKeyword) _encodedData = Buffer()
                 \(raw: dataTopEncode)
         
                 \(raw: nestedEncodeFieldsCalls)
