@@ -75,7 +75,8 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
                     endpointName: _endpointName,
                     argBuffer: _argBuffer
                 ).call(
-                    value: egldValue
+                    value: egldValue,
+                    esdtTransfers: esdtTransfers
                 )
             }
         
@@ -109,6 +110,7 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
                 ).registerPromiseRaw(
                     gas: gas,
                     value: egldValue,
+                    esdtTransfers: esdtTransfers,
                     callbackName: callbackName,
                     callbackArgs: callbackArgs,
                     gasForCallback: gasForCallback
@@ -126,6 +128,7 @@ fileprivate func generateCallExtension(enumName: TokenSyntax, discriminantsAndCa
                     receiver: receiver,
                     gas: gas,
                     egldValue: egldValue,
+                    esdtTransfers: esdtTransfers,
                     callbackName: callback?.name,
                     callbackArgs: callback?.args,
                     gasForCallback: callback?.gas

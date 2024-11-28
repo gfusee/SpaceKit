@@ -1,0 +1,210 @@
+{
+    "name": "send tokens",
+    "comment": "",
+    "gasSchedule": "v3",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "1",
+                    "balance": "0",
+                    "esdt": {
+                        "str:SFT-abcdef": {
+                            "instances": [
+                                {
+                                    "nonce": "2",
+                                    "balance": "1000"
+                                },
+                                {
+                                    "nonce": "10",
+                                    "balance": "1000"
+                                }
+                            ]
+                        },
+                        "str:OTHER-abcdef": {
+                            "instances": [
+                                {
+                                    "nonce": "3",
+                                    "balance": "1000"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "newAddresses": [
+                {
+                    "creatorAddress": "address:owner",
+                    "creatorNonce": "1",
+                    "newAddress": "sc:sender"
+                },
+                {
+                    "creatorAddress": "address:owner",
+                    "creatorNonce": "2",
+                    "newAddress": "sc:receiver"
+                }
+            ]
+        },
+        {
+            "step": "scDeploy",
+            "id": "1",
+            "tx": {
+                "from": "address:owner",
+                "contractCode": "file:../output/SendTestsExample.wasm",
+                "arguments": [],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": "*",
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "scDeploy",
+            "id": "2",
+            "tx": {
+                "from": "address:owner",
+                "contractCode": "file:../output/SendTestsExample.wasm",
+                "arguments": [],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": "*",
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "send multiple non fungible esdt token",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:sender",
+                "function": "sendTokens",
+                "arguments": [
+                    "sc:receiver"
+                ],
+                "esdtValue": [
+                    {
+                        "tokenIdentifier": "str:SFT-abcdef",
+                        "nonce": "2",
+                        "value": "100"
+                    },
+                    {
+                        "tokenIdentifier": "str:SFT-abcdef",
+                        "nonce": "10",
+                        "value": "150"
+                    },
+                    {
+                        "tokenIdentifier": "str:OTHER-abcdef",
+                        "nonce": "3",
+                        "value": "200"
+                    }
+                ],
+                "gasLimit": "25,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": "*",
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "storage": {},
+                    "esdt": {
+                        "str:SFT-abcdef": {
+                            "instances": [
+                                {
+                                    "nonce": "2",
+                                    "balance": "900"
+                                },
+                                {
+                                    "nonce": "10",
+                                    "balance": "850"
+                                }
+                            ]
+                        },
+                        "str:OTHER-abcdef": {
+                            "instances": [
+                                {
+                                    "nonce": "3",
+                                    "balance": "800"
+                                }
+                            ]
+                        }
+                    },
+                    "code": ""
+                },
+                "sc:sender": {
+                    "nonce": "0",
+                    "balance": "0",
+                    "storage": {},
+                    "code": "file:../output/SendTestsExample.wasm"
+                },
+                "sc:receiver": {
+                    "nonce": "0",
+                    "balance": "0",
+                    "esdt": {
+                        "str:SFT-abcdef": {
+                            "instances": [
+                                {
+                                    "nonce": "2",
+                                    "balance": "100"
+                                },
+                                {
+                                    "nonce": "10",
+                                    "balance": "150"
+                                }
+                            ]
+                        },
+                        "str:OTHER-abcdef": {
+                            "instances": [
+                                {
+                                    "nonce": "3",
+                                    "balance": "200"
+                                }
+                            ]
+                        }
+                    },
+                    "storage": {
+                        "str:lastReceivedTokens": [
+                            {
+                                "00-tokenIdentifier": "nested:str:SFT-abcdef",
+                                "01-nonce": "u64:2",
+                                "02-amount": "biguint:100"
+                            },
+                            {
+                                "00-tokenIdentifier": "nested:str:SFT-abcdef",
+                                "01-nonce": "u64:10",
+                                "02-amount": "biguint:150"
+                            },
+                            {
+                                "00-tokenIdentifier": "nested:str:OTHER-abcdef",
+                                "01-nonce": "u64:3",
+                                "02-amount": "biguint:200"
+                            }
+                        ]
+                    },
+                    "code": "file:../output/SendTestsExample.wasm"
+                }
+            }
+        }
+    ]
+}
+

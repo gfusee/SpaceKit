@@ -182,7 +182,7 @@ if !isWasm {
                 "Space",
                 "BigInt"
             ]
-        ),
+        )
     ])
 }
 
@@ -443,6 +443,14 @@ let package = Package(
                 "Scenarios",
                 "Output"
             ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "SendTestsExample",
+            dependencies: [
+                "Space"
+            ],
+            path: "Examples/SendTests",
             swiftSettings: swiftSettings
         ),
         .target(

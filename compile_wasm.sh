@@ -24,6 +24,7 @@ TARGETS=(
     ["OrderBookPair"]="$(pwd)/Examples/OrderBookPair"
     ["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
     ["ProxyPause"]="$(pwd)/Examples/ProxyPause"
+    ["SendTestsExample"]="$(pwd)/Examples/SendTests"
     ["TokenRelease"]="$(pwd)/Examples/TokenRelease"
     # Add more targets as needed
 )

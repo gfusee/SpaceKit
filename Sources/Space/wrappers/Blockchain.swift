@@ -1,13 +1,3 @@
-fileprivate let ESDT_LOCAL_MINT_FUNC_NAME: StaticString = "ESDTLocalMint"
-fileprivate let ESDT_NFT_ADD_QUANTITY_FUNC_NAME: StaticString = "ESDTNFTAddQuantity"
-fileprivate let ESDT_NFT_CREATE_FUNC_NAME: StaticString = "ESDTNFTCreate"
-
-fileprivate let ISSUE_FUNGIBLE_ENDPOINT_NAME: StaticString = "issue"
-fileprivate let ISSUE_NON_FUNGIBLE_ENDPOINT_NAME: StaticString = "issueNonFungible"
-fileprivate let ISSUE_SEMI_FUNGIBLE_ENDPOINT_NAME: StaticString = "issueSemiFungible"
-fileprivate let REGISTER_META_ESDT_ENDPOINT_NAME: StaticString = "registerMetaESDT"
-fileprivate let ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME: StaticString = "registerAndSetAllRoles"
-
 fileprivate let ESDT_SYSTEM_SC_ADDRESS_BYTES: Bytes32 = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 255, 255)
 
 // TODO: add caching when needed (and turn related function into computed variables)
