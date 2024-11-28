@@ -71,9 +71,9 @@ package final class TransactionContainer: @unchecked Sendable {
             self.error = error
             
             if let parentContainer = self.parentContainer {
-                parentContainer.throwError(error: .executionFailed(reason: "execution failed"))
+                parentContainer.throwExecutionFailed()
             } else {
-                // Wait for the error to be handled from an external process, as we don't want any further instruction to be executed
+                // Wait for the error to be handled from an external process, as we don't want any further instruction to be executed
                 // This container should not be used anymore
                 while true {
                     if self.shouldExitThread {
@@ -81,6 +81,7 @@ package final class TransactionContainer: @unchecked Sendable {
                     }
                 }
             }
+            
         }
     }
     
@@ -385,6 +386,11 @@ package final class TransactionContainer: @unchecked Sendable {
         topicsArray.forEach { topics.append(Data($0.toBytes())) }
         
         self.transactionOutput?.writeLog(log: TransactionOutputLogRaw(topics: topics, data: data))
+    }
+    
+    // Avoid a wrong warning about infinite recursion
+    private func throwExecutionFailed() -> Never {
+        self.throwError(error: .executionFailed(reason: "execution failed"))
     }
 }
 

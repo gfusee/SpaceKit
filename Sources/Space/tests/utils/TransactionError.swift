@@ -18,11 +18,11 @@ public enum TransactionError: Error, Equatable {
     
     var code: UInt32 {
         switch self {
-        case .userError(let message):
+        case .userError(_):
             4
-        case .executionFailed(let reason):
+        case .executionFailed(_):
             10
-        case .worldError(let message):
+        case .worldError(_):
             100
         }
     }

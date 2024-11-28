@@ -19,17 +19,17 @@ import Space
     
     public func testNestedDecodeBufferEmptyInputShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("".hexadecimal)))
-        let result = Buffer(depDecode: &input)
+        _ = Buffer(depDecode: &input)
     }
     
     public func testNestedDecodeBufferBadLengthInputShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000".hexadecimal)))
-        let result = Buffer(depDecode: &input)
+        _ = Buffer(depDecode: &input)
     }
     
     public func testNestedDecodeBufferTooLargeLengthInputShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("0000004248656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
-        let result = Buffer(depDecode: &input)
+        _ = Buffer(depDecode: &input)
     }
 }
 

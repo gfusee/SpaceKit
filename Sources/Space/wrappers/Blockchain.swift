@@ -77,6 +77,23 @@ public struct Blockchain {
         
         return BigUint(handle: destHandle)
     }
+    
+    public static func getSCBalance() -> BigUint {
+        Blockchain
+            .getBalance(address: Blockchain.getSCAddress())
+    }
+    
+    public static func getSCBalance(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> BigUint {
+        Blockchain
+            .getESDTBalance(
+                address: Blockchain.getSCAddress(),
+                tokenIdentifier: tokenIdentifier,
+                nonce: nonce
+            )
+    }
 
     public static func getOwner() -> Address {
         // TODO: add caching
@@ -293,6 +310,33 @@ public struct Blockchain {
         return AsyncContractCall(contractCall: contractCall)
     }
     
+    public static func issueFungibleToken(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        initialSupply: BigUint,
+        properties: FungibleTokenProperties
+    ) -> AsyncContractCall {
+        // TODO: add tests
+        Blockchain.issueToken(
+            tokenType: .fungible,
+            tokenDisplayName: tokenDisplayName,
+            tokenTicker: tokenTicker,
+            initialSupply: initialSupply,
+            properties: TokenProperties(
+                numDecimals: properties.numDecimals,
+                canFreeze: properties.canFreeze,
+                canWipe: properties.canWipe,
+                canPause: properties.canPause,
+                canTransferCreateRole: false,
+                canMint: properties.canMint,
+                canBurn: properties.canBurn,
+                canChangeOwner: properties.canChangeOwner,
+                canUpgrade: properties.canUpgrade,
+                canAddSpecialRoles: properties.canAddSpecialRoles
+            )
+        )
+    }
+
     public static func issueNonFungibleToken(
         tokenDisplayName: Buffer,
         tokenTicker: Buffer,

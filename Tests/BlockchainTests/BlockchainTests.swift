@@ -13,12 +13,27 @@ import Space
         return Blockchain.getBalance(address: address)
     }
     
+    public func getSCBalance() -> BigUint {
+        Blockchain.getSCBalance()
+    }
+    
     public func getEsdtBalance(
         address: Address,
         tokenIdentifier: Buffer,
         nonce: UInt64
     ) -> BigUint {
         return Blockchain.getESDTBalance(address: address, tokenIdentifier: tokenIdentifier, nonce: nonce)
+    }
+    
+    public func getSCEsdtBalance(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> BigUint {
+        Blockchain
+            .getSCBalance(
+                tokenIdentifier: tokenIdentifier,
+                nonce: nonce
+            )
     }
 
     public func getOwner() -> Address {
@@ -34,7 +49,15 @@ final class BlockchainTests: ContractTestCase {
     
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "adder"),
+            WorldAccount(
+                address: "adder",
+                 balance: 1500,
+                 esdtBalances: [
+                    "SFT-abcdef": [
+                        EsdtBalance(nonce: 5, balance: 20)
+                    ]
+                 ]
+            ),
             WorldAccount(
                 address: "user",
                 balance: 1000
@@ -54,7 +77,8 @@ final class BlockchainTests: ContractTestCase {
                         EsdtBalance(nonce: 10, balance: 40)
                     ]
                 ]
-            )
+            ),
+            WorldAccount(address: "userNoBalance")
         ]
     }
     
@@ -69,7 +93,7 @@ final class BlockchainTests: ContractTestCase {
     func testGetBalanceOnZeroBalanceAccount() throws {
         let contract = try BlockchainContract.testable("adder")
         
-        let balance = try contract.getBalance(address: "adder")
+        let balance = try contract.getBalance(address: "userNoBalance")
         
         XCTAssertEqual(balance, 0)
     }
@@ -90,6 +114,14 @@ final class BlockchainTests: ContractTestCase {
         XCTAssertEqual(balance, 1000)
     }
     
+    func testGetSCBalance() throws {
+        let contract = try BlockchainContract.testable("adder")
+        
+        let balance = try contract.getSCBalance()
+        
+        XCTAssertEqual(balance, 1500)
+    }
+
     func testGetEsdtBalanceOnZeroBalanceAccount() throws {
         let contract = try BlockchainContract.testable("adder")
         
@@ -136,6 +168,22 @@ final class BlockchainTests: ContractTestCase {
         let balance = try contract.getEsdtBalance(address: "userNonFungible", tokenIdentifier: "SFT-abcdef", nonce: 10)
         
         XCTAssertEqual(balance, 40)
+    }
+    
+    func testGetSCBalanceWithEsdt() throws {
+        let contract = try BlockchainContract.testable("adder")
+        
+        let balance = try contract.getSCEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 5)
+        
+        XCTAssertEqual(balance, 20)
+    }
+    
+    func testGetSCBalanceWithUUnknownEsdt() throws {
+        let contract = try BlockchainContract.testable("adder")
+        
+        let balance = try contract.getSCEsdtBalance(tokenIdentifier: "UNKNOWN-abcdef", nonce: 5)
+        
+        XCTAssertEqual(balance, 0)
     }
 
     func testGetOwnerDefaultOwner() throws {

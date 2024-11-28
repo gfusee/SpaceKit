@@ -202,6 +202,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/Adder",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -210,6 +214,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/BondingCurve",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -218,6 +226,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/FeatureTests/CallbackNotExposed",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -226,6 +238,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/CheckPause",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -234,6 +250,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/CrowdfundingEsdt",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -242,6 +262,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/CryptoBubbles",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -250,6 +274,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/CryptoKitties/Auction",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -277,6 +305,10 @@ let package = Package(
                 "CryptoKittiesRandom"
             ],
             path: "Examples/CryptoKitties/GeneticAlg",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -287,6 +319,10 @@ let package = Package(
                 "CryptoKittiesRandom"
             ],
             path: "Examples/CryptoKitties/Ownership",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -295,6 +331,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/DigitalCash",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -303,6 +343,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/Empty",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -311,6 +355,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/EsdtTransferWithFee",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -319,6 +367,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/Factorial",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -327,6 +379,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/LotteryEsdt",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -335,6 +391,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/PingPongEgld",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -343,6 +403,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/ProxyPause",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -351,6 +415,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/Multisig",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -359,6 +427,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/NftMinter",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -367,6 +439,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/OrderBookPair",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -383,6 +459,10 @@ let package = Package(
                 "Space"
             ],
             path: "Examples/TokenRelease",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(

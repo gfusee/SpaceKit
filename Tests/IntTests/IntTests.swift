@@ -9,18 +9,18 @@ import Space
     
     public func testNestedDecodeIntEmptyBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("".hexadecimal)))
-        let result = Int(depDecode: &input)
+        _ = Int(depDecode: &input)
     }
     
     public func testNestedDecodeIntTooSmallBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000".hexadecimal)))
-        let result = Int(depDecode: &input)
+        _ = Int(depDecode: &input)
     }
     
     public func testNestedDecodeTwoIntsTooSmallBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000003e8000000".hexadecimal)))
-        let result1 = Int(depDecode: &input)
-        let result2 = Int(depDecode: &input)
+        _ = Int(depDecode: &input)
+        _ = Int(depDecode: &input)
     }
 }
 

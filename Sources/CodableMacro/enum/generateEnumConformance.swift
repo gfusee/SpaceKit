@@ -37,14 +37,37 @@ func generateEnumConformance(
 
 fileprivate func generateTopEncodeExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> ExtensionDeclSyntax {
     let firstCase = discriminantsAndCases[0].1
+    let nestedEncodedInstantiationKeyword: String
+    let guardFirstCaseDefaultIfNeeded: String
+    let depEncodeLogicIfNeeded: String
+    
+    if discriminantsAndCases.count >= 2 {
+        nestedEncodedInstantiationKeyword = "var"
+        
+        guardFirstCaseDefaultIfNeeded = """
+        default:
+            break
+        """
+        
+        depEncodeLogicIfNeeded = """
+        self.depEncode(dest: &nestedEncoded)
+        nestedEncoded.topEncode(output: &output)
+        """
+    } else {
+        nestedEncodedInstantiationKeyword = "let"
+        
+        guardFirstCaseDefaultIfNeeded = ""
+        
+        depEncodeLogicIfNeeded = ""
+    }
+    
     let guardFirstCase = if shouldTopEncodeEmptyWhenFirstCase(firstCase: firstCase) {
         """
         switch self {
         case .\(firstCase.name.trimmed):
             nestedEncoded.topEncode(output: &output)
             return
-        default:
-            break
+        \(guardFirstCaseDefaultIfNeeded)
         }
         """
     } else {
@@ -57,10 +80,9 @@ fileprivate func generateTopEncodeExtension(enumName: TokenSyntax, discriminants
         : TopEncode {
             @inline(__always)
             public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
-                var nestedEncoded = Buffer()
+                \(raw: nestedEncodedInstantiationKeyword) nestedEncoded = Buffer()
                 \(raw: guardFirstCase)
-                self.depEncode(dest: &nestedEncoded)
-                nestedEncoded.topEncode(output: &output)
+                \(raw: depEncodeLogicIfNeeded)
             }
         }
         """
@@ -217,7 +239,6 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
 
 fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> ExtensionDeclSyntax {
     var payloadSizeSumList: [String] = []
-    var payloadInputsDeclarationsList: [String] = []
     var decodeArrayPayloadInitArgsList: [String] = []
     var intoArrayPayloadCasesList: [String] = []
     for discriminantAndCase in discriminantsAndCases {
@@ -285,8 +306,12 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
     }
     
     let payloadSizeSum = payloadSizeSumList.joined(separator: ", ")
+    let payloadSizeReturnValue = if payloadSizeSumList.count == 1 {
+        payloadSizeSum
+    } else {
+        "max(\(payloadSizeSum))"
+    }
     
-    let payloadInputsDeclarations = payloadInputsDeclarationsList.joined(separator: "\n")
     let decodeArrayPayloadInitArgs = decodeArrayPayloadInitArgsList.joined(separator: "\n")
     let intoArrayPayloadCases = intoArrayPayloadCasesList.joined(separator: "\n")
     
@@ -295,7 +320,7 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
         memberBlock: """
         : ArrayItem {
             public static var payloadSize: Int32 {
-                return max(\(raw: payloadSizeSum))
+                return \(raw: payloadSizeReturnValue)
             }
             
             @inline(__always)

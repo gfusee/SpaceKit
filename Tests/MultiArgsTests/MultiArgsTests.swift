@@ -102,7 +102,7 @@ final class MultiArgsTests: ContractTestCase {
     }
     
     func getMultiValueEncoded() throws {
-        var contract = try MultiArgsContract.testable("contract")
+        let contract = try MultiArgsContract.testable("contract")
 
         let result = try contract.getDummyMultiValueEncoded()
         
