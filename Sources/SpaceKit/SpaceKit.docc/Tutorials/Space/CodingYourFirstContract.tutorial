@@ -5,7 +5,7 @@
     
     @Section(title: "Initializing the Project") {
         @ContentAndMedia {
-            Before writing the contract, let's initialize the project using the Space CLI.
+            Before writing the contract, let's initialize the project using the SpaceKit CLI.
         }
         
         @Steps {
@@ -56,7 +56,7 @@
             @Step {
                 Import the framework by adding `import SpaceKit`.
 
-                **Note:** Only import the Space framework. Other libraries like Foundation are not compatible with SpaceVM.
+                **Note:** Only import the SpaceKit framework. Other libraries like Foundation are not compatible with SpaceVM.
 
                 @Code(name: "lib.swift", file: "CodingFirstContractSection2Step2.swift")
             }
@@ -109,7 +109,7 @@
     
     @Section(title: "Testing the Contract") {
         @ContentAndMedia {
-            Space includes a built-in emulator called SwiftVM, which allows you to test your contract in the Swift environment.
+            SpaceKit includes a built-in emulator called SwiftVM, which allows you to test your contract in the Swift environment.
         }
 
         @Steps {
@@ -120,7 +120,7 @@
             }
 
             @Step {
-                Import the necessary frameworks: Space, your contract, and XCTest.
+                Import the necessary frameworks: SpaceKit, your contract, and XCTest.
 
                 **Note:** XCTest is the official tool for writing unit tests in Swift.
 
@@ -164,7 +164,7 @@
             @Step {
                 Call the `getCounter` view to assert the counter is 0.
 
-                **Note:** Space generates functions for contract views and endpoints.
+                **Note:** SpaceKit generates functions for contract views and endpoints.
 
                 @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step8.swift")
             }

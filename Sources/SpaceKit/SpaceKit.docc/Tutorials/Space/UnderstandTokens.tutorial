@@ -1,6 +1,6 @@
 @Tutorial(time: 15) {
     @Intro(title: "Understand the ESDT Standard") {
-        The Space framework uses a token standard called ESDT. This standard defines four types of tokens: fungible, non-fungible (NFT), semi-fungible, and meta-esdt.
+        The SpaceKit framework uses a token standard called ESDT. This standard defines four types of tokens: fungible, non-fungible (NFT), semi-fungible, and meta-esdt.
 
         Fungible tokens are interchangeable; for instance, one USDC in your wallet holds the same value as one USDC in another wallet. However, non-fungible tokens differ, where each token in a collection is unique. For example, consider a collection of flight tickets—each ticket represents a unique seat with specific options like cabin luggage or priority boarding. They cannot be exchanged one-to-one.
 
@@ -8,7 +8,7 @@
 
         Semi-fungible tokens operate similarly to NFTs, but for a given nonce, there can be multiple identical tokens. For example, state bonds labeled `$BOND` could have different nonces for the year they were issued. If `$BOND#1` represents bonds from 2010 and `$BOND#2` represents those from 2011, all tokens with the same nonce are fungible within their group, as they share the same maturity date.
 
-        Meta-esdt tokens enhance this concept by allowing attributes to be added on-chain for each nonce. These attributes can be of any Space-compatible type, such as `Buffer`, `BigUint`, or `UInt64`, or even complex structs and enums with the `@Codable` annotation. Meta-esdt is powerful because it enables contracts to process on-chain logic using these attributes.
+        Meta-esdt tokens enhance this concept by allowing attributes to be added on-chain for each nonce. These attributes can be of any SpaceKit-compatible type, such as `Buffer`, `BigUint`, or `UInt64`, or even complex structs and enums with the `@Codable` annotation. Meta-esdt is powerful because it enables contracts to process on-chain logic using these attributes.
 
         The ESDT standard supports various token operations like minting, burning, freezing, and more. These actions must be explicitly declared at the time of token issuance, ensuring transparency. For example, a non-mintable ESDT cannot be minted or altered after issuance.
     }

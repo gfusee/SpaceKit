@@ -2,13 +2,13 @@
     @Intro(title: "Persist Values Between Executions") {
         Each time a smart contract is invoked, it runs a single operation. The contract is temporarily loaded into the SpaceVM memory, the operation is executed, and then the contract is removed from memory.
 
-        However, there are situations where you need to persist data across multiple executions. To support this, Space provides a built-in "storage" system for every contract.
+        However, there are situations where you need to persist data across multiple executions. To support this, SpaceKit provides a built-in "storage" system for every contract.
         
         The storage system is essentially a key-value dictionary where both keys and values are stored as raw data. 
         
-        Space abstracts away the complexities of encoding and decoding values, offering simple APIs for interacting with storage.
+        SpaceKit abstracts away the complexities of encoding and decoding values, offering simple APIs for interacting with storage.
 
-        In this tutorial, you'll learn two common approaches for storing data using `@Storage` and `@Mapping` annotations. Additionally, Space provides advanced mechanisms like storage mappers to handle more complex data structures, which will be covered in a later chapter.
+        In this tutorial, you'll learn two common approaches for storing data using `@Storage` and `@Mapping` annotations. Additionally, SpaceKit provides advanced mechanisms like storage mappers to handle more complex data structures, which will be covered in a later chapter.
     }
 
     @Section(title: "Working with @Storage for Single Value Persistence") {
@@ -51,7 +51,7 @@
     
     @Section(title: "Leveraging @Mapping for Dynamic Key-Value Storage") {
         @ContentAndMedia {
-            The `@Mapping` annotation allows you to store values under dynamically computed keys, effectively creating a nested dictionary in the contract's storage. Space automatically handles encoding and decoding, ensuring typed access to both keys and values.
+            The `@Mapping` annotation allows you to store values under dynamically computed keys, effectively creating a nested dictionary in the contract's storage. SpaceKit automatically handles encoding and decoding, ensuring typed access to both keys and values.
 
             Think of it like this: if Alice and Bob both call your smart contract, each of them will have their own persistent storage SpaceKit. When Alice calls the contract, her address is used to store or retrieve address unique data, and the same happens for Bob with his own key. This way, each user can have their own independent version of the same data, without interference.
 

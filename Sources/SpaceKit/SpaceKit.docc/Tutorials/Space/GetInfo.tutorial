@@ -2,7 +2,7 @@
     @Intro(title: "Retrieving Information from the Blockchain") {
         Many smart contracts rely on contextual data to execute their operations effectively. This data can include input payments, the caller's address, the current time, the balance of a specific account, or even the contract owner.
 
-        The Space framework provides an intuitive way to retrieve all of this information using the `Message` and `Blockchain` objects.
+        The SpaceKit framework provides an intuitive way to retrieve all of this information using the `Message` and `Blockchain` objects.
     }
 
     @Section(title: "Accessing Transaction Context Data") {

@@ -1,11 +1,11 @@
 @Tutorial(time: 20) {
-    @Intro(title: "Exploring Space's Types") {
-        Space provides types that allow you to leverage the full potential of the SpaceVM.
+    @Intro(title: "Exploring SpaceKit's Types") {
+        SpaceKit provides types that allow you to leverage the full potential of the SpaceVM.
     }
 
     @Section(title: "Handling Heap Allocation Challenges") {
         @ContentAndMedia {
-            Writing code for blockchain involves operating within strict resource constraints. To address this, Space uses Swift’s "embedded" mode, ensuring the compiled code is as lightweight and efficient as possible.
+            Writing code for blockchain involves operating within strict resource constraints. To address this, SpaceKit uses Swift’s "embedded" mode, ensuring the compiled code is as lightweight and efficient as possible.
 
             SpaceVM, the engine running smart contracts, limits heap allocations. As a result, types with dynamic sizes, such as Strings, Arrays, or classes, and any structs or enums containing these, are not permitted.
 
@@ -17,7 +17,7 @@
             - Integer types: Int, UInt, UInt8, UInt16, etc.
             - Bool: treated as a UInt8
 
-            Space introduces specific types that serve as alternatives for those not allowed. This chapter introduces three key replacements:
+            SpaceKit introduces specific types that serve as alternatives for those not allowed. This chapter introduces three key replacements:
 
             - `Buffer`: A substitute for String and Data
             - `BigUint`: Capable of handling large unsigned integers
@@ -28,7 +28,7 @@
 
         @Steps {
             @Step {
-                Avoid using `String` in Space, as it is prohibited due to memory restrictions.
+                Avoid using `String` in SpaceKit, as it is prohibited due to memory restrictions.
 
                 @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step1.swift")
             }
@@ -58,7 +58,7 @@
             }
 
             @Step {
-                Ensure you only import the Space framework to keep the contract lightweight and efficient.
+                Ensure you only import the SpaceKit framework to keep the contract lightweight and efficient.
 
                 @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step6.swift")
             }
@@ -67,7 +67,7 @@
 
     @Section(title: "Understanding the Buffer Type") {
         @ContentAndMedia {
-            `Buffer` is a fundamental type in Space, designed to store raw data and strings.
+            `Buffer` is a fundamental type in SpaceKit, designed to store raw data and strings.
         }
 
         @Steps {
@@ -109,7 +109,7 @@
 
             Standard Swift types, such as `UInt64`, can only store values up to 18,446,744,073,709,551,615 (20 digits), making it impossible to represent values exceeding approximately 18.446744 EGLD.
 
-            Space provides the `BigUint` type to store arbitrarily large positive numbers.
+            SpaceKit provides the `BigUint` type to store arbitrarily large positive numbers.
         }
 
         @Steps {
@@ -148,7 +148,7 @@
             @Step {
                 Subtract 21 from the variable.
                 
-                Note: A `BigUint` value cannot be negative. If the subtraction results in a value below zero, Space will trigger a smart contract error.
+                Note: A `BigUint` value cannot be negative. If the subtraction results in a value below zero, SpaceKit will trigger a smart contract error.
 
                 @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection3Step6.swift")
             }
@@ -169,9 +169,9 @@
     
     @Section(title: "Working with the Vector Type") {
         @ContentAndMedia {
-            The `Array` type is often the default for storing dynamic-size data, but it is not permitted in SpaceKit. Fortunately, Space provides a suitable alternative: `Vector`.
+            The `Array` type is often the default for storing dynamic-size data, but it is not permitted in SpaceKit. Fortunately, SpaceKit provides a suitable alternative: `Vector`.
             
-            A `Vector` can store any type compatible with Space, including user-defined structs and enums.
+            A `Vector` can store any type compatible with SpaceKit, including user-defined structs and enums.
         }
 
         @Steps {
@@ -184,7 +184,7 @@
             @Step {
                 Declare a `Vector` variable to hold `BigUint` elements.
 
-                Important: Currently, array literal assignment is disabled. The Space team is investigating its impact on memory management in smart contracts before enabling it.
+                Important: Currently, array literal assignment is disabled. The SpaceKit team is investigating its impact on memory management in smart contracts before enabling it.
 
                 @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection4Step2.swift")
             }
@@ -198,7 +198,7 @@
             @Step {
                 Iterate over the `Vector` to sum all the elements.
                 
-                Important: The `for ... in` loop for vectors is currently disabled. The Space team is evaluating its effect on smart contract memory before enabling it.
+                Important: The `for ... in` loop for vectors is currently disabled. The SpaceKit team is evaluating its effect on smart contract memory before enabling it.
 
                 @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection4Step4.swift")
             }
@@ -213,9 +213,9 @@
         
     @Section(title: "Creating Your Own Types") {
         @ContentAndMedia {
-            You can define your own structures and enumerations and make them compatible with Space using the `@Codable` annotation. When a type is marked with `@Codable`, it becomes eligible to be used as input or output for endpoints, within arrays, and anywhere Space’s encoding system is applied.
+            You can define your own structures and enumerations and make them compatible with SpaceKit using the `@Codable` annotation. When a type is marked with `@Codable`, it becomes eligible to be used as input or output for endpoints, within arrays, and anywhere SpaceKit’s encoding system is applied.
 
-            A type annotated with `@Codable` must only contain fields of types compatible with Space, such as integers, `Bool`, `Buffer`, `BigUint`, `Vector`, and other `@Codable` types.
+            A type annotated with `@Codable` must only contain fields of types compatible with SpaceKit, such as integers, `Bool`, `Buffer`, `BigUint`, `Vector`, and other `@Codable` types.
 
             Additionally, the `@Codable` annotation prevents the structure from having methods or initializers.
         }
@@ -228,7 +228,7 @@
             }
 
             @Step {
-                Annotate your struct with `@Codable` to make it usable with Space’s encoding system.
+                Annotate your struct with `@Codable` to make it usable with SpaceKit’s encoding system.
 
                 @Code(name: "struct.swift", file: "FamiliarizeWithTypesSection5Step2.swift")
             }

@@ -1,11 +1,11 @@
 @Tutorial(time: 10) {
     @Intro(title: "Install the Necessary Tools") {
-        Before writing your first smart contract with Space, ensure you have the necessary tools installed.
+        Before writing your first smart contract with SpaceKit, ensure you have the necessary tools installed.
     }
     
     @Section(title: "Installing SpaceKit's Dependencies") {
         @ContentAndMedia {
-            Space relies on several dependencies, which you need to install on your system.
+            SpaceKit relies on several dependencies, which you need to install on your system.
         }
         
         @Steps {
@@ -16,7 +16,7 @@
             }
 
             @Step {
-                Check the Swift version by running `swift --version`. Space requires Swift 6 or later.
+                Check the Swift version by running `swift --version`. SpaceKit requires Swift 6 or later.
 
                 If necessary, install or update Swift by following the instructions on [the official Swift website](https://www.swift.org/install/macos/).
 
@@ -24,7 +24,7 @@
             }
             
             @Step {
-                Ensure `git` is installed. The Space CLI requires it to retrieve important files.
+                Ensure `git` is installed. The SpaceKit CLI requires it to retrieve important files.
 
                 If `git` is not installed, use your preferred method to install it.
 
@@ -32,7 +32,7 @@
             }
             
             @Step {
-                Ensure that Docker is installed and running. Docker is required by the Space CLI to compile smart contracts.
+                Ensure that Docker is installed and running. Docker is required by the SpaceKit CLI to compile smart contracts.
 
                 If Docker is not installed, you can download and install it by following the steps on [Docker's official site](https://docs.docker.com/get-started/get-docker/).
 
@@ -41,9 +41,9 @@
         }
     }
     
-    @Section(title: "Setting Up the Space CLI") {
+    @Section(title: "Setting Up the SpaceKit CLI") {
         @ContentAndMedia {
-            The Space CLI is your primary tool for using the Space framework. You’ll use it to initialize and compile your smart contracts.
+            The SpaceKit CLI is your primary tool for using the SpaceKit framework. You’ll use it to initialize and compile your smart contracts.
         }
 
         @Steps {
@@ -62,7 +62,7 @@
             }
 
             @Step {
-                Verify the Space CLI installation by running `space --help`.
+                Verify the SpaceKit CLI installation by running `space --help`.
 
                 @Image(source: "InstallingToolsSection2Step3.png", alt: "Output of `space --help`.")
             }
@@ -71,7 +71,7 @@
     
     @Section(title: "Initializing and Compiling Your First Smart Contract") {
         @ContentAndMedia {
-            Now, use the Space CLI to create and compile your first smart contract project.
+            Now, use the SpaceKit CLI to create and compile your first smart contract project.
         }
 
         @Steps {
