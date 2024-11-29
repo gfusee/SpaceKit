@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Codable struct PaidFeesMapperKey {
     let tokenIdentifier: Buffer

@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 // TODO: add tests to ensure non public func are not exported in the wasm
 

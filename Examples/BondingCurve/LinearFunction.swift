@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Codable struct LinearFunction: Equatable {
     let initialPrice: BigUint

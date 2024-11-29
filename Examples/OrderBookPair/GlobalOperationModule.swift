@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 struct GlobalOperationModule {
     @Storage(key: "global_operation_ongoing") var isGlobalOperationOngoing: Bool

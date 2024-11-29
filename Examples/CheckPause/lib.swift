@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Contract struct CheckPause {
     @Storage(key: "isContractPaused") var isContractPaused: Bool

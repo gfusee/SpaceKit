@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 struct StateModule {
     package static func addMultipleBoardMembers(newBoardMembers: Vector<Address>) -> UInt32 {

@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Codable enum Status {
     case inactive

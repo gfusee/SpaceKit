@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Contract struct CrowdfundingEsdt {
     @Storage(key: "target") var target: BigUint

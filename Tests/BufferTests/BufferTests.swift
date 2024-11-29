@@ -1,5 +1,5 @@
 import XCTest
-import Space
+import SpaceKit
 
 @Contract struct BufferTestsContract {
     public func testNonEmptyBufferGetTooLongSubBufferShouldFail() {

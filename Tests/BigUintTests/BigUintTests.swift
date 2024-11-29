@@ -1,5 +1,5 @@
 import XCTest
-import Space
+import SpaceKit
 
 @Contract struct BigUintTestsContract {
     public func testSubstractTwoBigUintNegativeShouldFail() {

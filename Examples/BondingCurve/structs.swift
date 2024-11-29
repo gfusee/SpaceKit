@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Codable struct CurveArguments {
     var availableSupply: BigUint

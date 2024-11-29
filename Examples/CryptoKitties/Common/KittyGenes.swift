@@ -1,5 +1,5 @@
 import CryptoKittiesRandom
-import Space
+import SpaceKit
 
 @Codable public struct KittyGenes {
     public let furColor: Color

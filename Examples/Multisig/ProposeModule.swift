@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 struct ProposeModule {
     package static func proposeAction(

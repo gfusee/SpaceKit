@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 struct StorageModule {
     @UserMapping(key: "user") var userMapper

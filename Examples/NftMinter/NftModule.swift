@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 let NFT_AMOUNT: UInt32 = 1
 let ROYALTIES_MAX: UInt32 = 10_000

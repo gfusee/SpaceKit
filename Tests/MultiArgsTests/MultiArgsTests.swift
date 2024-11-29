@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 import XCTest
 
 @Contract

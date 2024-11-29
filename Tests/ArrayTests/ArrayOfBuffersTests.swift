@@ -1,4 +1,4 @@
-@testable import Space
+@testable import SpaceKit
 import XCTest
 
 @Contract struct ArrayOfBuffersTestsContract {

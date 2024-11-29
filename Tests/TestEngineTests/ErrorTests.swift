@@ -1,5 +1,5 @@
 import XCTest
-import Space
+import SpaceKit
 
 @Contract struct ErrorTestsContract {
     public func testUserErrorStopsTheExecution() {

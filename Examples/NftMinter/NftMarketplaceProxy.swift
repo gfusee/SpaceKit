@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Proxy enum NftMarketplaceProxy {
     case claimTokens(

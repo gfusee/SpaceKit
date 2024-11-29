@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 import XCTest
 
 @Proxy enum CalleeProxy {

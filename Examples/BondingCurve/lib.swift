@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Contract struct BondingCurveContract {
     public func sellToken() {

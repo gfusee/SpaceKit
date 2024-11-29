@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 let PERCENTAGE_TOTAL: UInt64 = 100
 

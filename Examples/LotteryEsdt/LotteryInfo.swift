@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 // TODO: use TokenIdentifier type
 @Codable struct LotteryInfo {

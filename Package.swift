@@ -41,7 +41,7 @@ var testTargets: [Target] = []
 
 var products: [Product] = [
     // Products define the executables and libraries a package produces, making them visible to other packages.
-    .library(name: "Space", targets: ["Space"])
+    .library(name: "SpaceKit", targets: ["SpaceKit"])
 ]
 
 if !isWasm {
@@ -58,37 +58,37 @@ if !isWasm {
         .testTarget(
             name: "AsyncCallsTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "BufferTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "BigUintTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "IntTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "ContractStorageTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "TestEngineTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
@@ -112,74 +112,74 @@ if !isWasm {
         .testTarget(
             name: "CodableMacroImplTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "CallbackMacroImplTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "AdderTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "ArrayTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "EventTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "FactorialTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "BlockchainTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "MessageTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "MultiArgsTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "ProxyTests",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ]
         ),
         .testTarget(
             name: "SendTests",
             dependencies: [
-                "Space",
+                "SpaceKit",
                 "BigInt"
             ]
         ),
         .testTarget(
             name: "ErrorTests",
             dependencies: [
-                "Space",
+                "SpaceKit",
                 "BigInt"
             ]
         )
@@ -187,7 +187,7 @@ if !isWasm {
 }
 
 let package = Package(
-    name: "Space",
+    name: "SpaceKit",
     platforms: [
         .macOS(.v14)
     ],
@@ -199,7 +199,7 @@ let package = Package(
         .target(
             name: "Adder",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/Adder",
             exclude: [
@@ -211,7 +211,7 @@ let package = Package(
         .target(
             name: "BondingCurve",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/BondingCurve",
             exclude: [
@@ -223,7 +223,7 @@ let package = Package(
         .target(
             name: "CallbackNotExposed",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/FeatureTests/CallbackNotExposed",
             exclude: [
@@ -235,7 +235,7 @@ let package = Package(
         .target(
             name: "CheckPause",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/CheckPause",
             exclude: [
@@ -247,7 +247,7 @@ let package = Package(
         .target(
             name: "CrowdfundingEsdt",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/CrowdfundingEsdt",
             exclude: [
@@ -259,7 +259,7 @@ let package = Package(
         .target(
             name: "CryptoBubbles",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/CryptoBubbles",
             exclude: [
@@ -271,7 +271,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesAuction",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/CryptoKitties/Auction",
             exclude: [
@@ -283,7 +283,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesCommon",
             dependencies: [
-                "Space",
+                "SpaceKit",
                 "CryptoKittiesRandom"
             ],
             path: "Examples/CryptoKitties/Common",
@@ -292,7 +292,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesRandom",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/CryptoKitties/Random",
             swiftSettings: swiftSettings
@@ -300,7 +300,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesGeneticAlg",
             dependencies: [
-                "Space",
+                "SpaceKit",
                 "CryptoKittiesCommon",
                 "CryptoKittiesRandom"
             ],
@@ -314,7 +314,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesOwnership",
             dependencies: [
-                "Space",
+                "SpaceKit",
                 "CryptoKittiesCommon",
                 "CryptoKittiesRandom"
             ],
@@ -328,7 +328,7 @@ let package = Package(
         .target(
             name: "DigitalCash",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/DigitalCash",
             exclude: [
@@ -340,7 +340,7 @@ let package = Package(
         .target(
             name: "Empty",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/Empty",
             exclude: [
@@ -352,7 +352,7 @@ let package = Package(
         .target(
             name: "EsdtTransferWithFee",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/EsdtTransferWithFee",
             exclude: [
@@ -364,7 +364,7 @@ let package = Package(
         .target(
             name: "Factorial",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/Factorial",
             exclude: [
@@ -376,7 +376,7 @@ let package = Package(
         .target(
             name: "LotteryEsdt",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/LotteryEsdt",
             exclude: [
@@ -388,7 +388,7 @@ let package = Package(
         .target(
             name: "PingPongEgld",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/PingPongEgld",
             exclude: [
@@ -400,7 +400,7 @@ let package = Package(
         .target(
             name: "ProxyPause",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/ProxyPause",
             exclude: [
@@ -412,7 +412,7 @@ let package = Package(
         .target(
             name: "Multisig",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/Multisig",
             exclude: [
@@ -424,7 +424,7 @@ let package = Package(
         .target(
             name: "NftMinter",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/NftMinter",
             exclude: [
@@ -436,7 +436,7 @@ let package = Package(
         .target(
             name: "OrderBookPair",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/OrderBookPair",
             exclude: [
@@ -448,7 +448,7 @@ let package = Package(
         .target(
             name: "SendTestsExample",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/SendTests",
             swiftSettings: swiftSettings
@@ -456,7 +456,7 @@ let package = Package(
         .target(
             name: "TokenRelease",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/TokenRelease",
             exclude: [
@@ -466,7 +466,7 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .target(
-            name: "Space",
+            name: "SpaceKit",
             dependencies: libraryDependencies,
             swiftSettings: swiftSettings
         ),
