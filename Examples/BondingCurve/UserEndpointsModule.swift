@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 
 struct UserEndpointsModule {

@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Contract struct DigitalCash {
     init(fee: BigUint, token: Buffer) {

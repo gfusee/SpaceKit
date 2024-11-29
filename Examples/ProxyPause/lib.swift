@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Proxy enum PausableProxy {
     case pause

@@ -66,7 +66,7 @@ fileprivate func generateEmitExtension(
         
                 \(raw: nestedEncodeFieldsCalls)
         
-                Space.emitEvent(topicsHandle: _indexedArgs.buffer.handle, dataHandle: _encodedData.handle)
+                SpaceKit.emitEvent(topicsHandle: _indexedArgs.buffer.handle, dataHandle: _encodedData.handle)
             }
         }
         """

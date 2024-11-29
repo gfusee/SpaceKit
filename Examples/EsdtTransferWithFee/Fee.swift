@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 let PERCENTAGE_DIVISOR: UInt32 = 10_000
 

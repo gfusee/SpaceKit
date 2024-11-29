@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 // TODO: Assert in the @Contract macro that OptionalArgument args are the last ones
 

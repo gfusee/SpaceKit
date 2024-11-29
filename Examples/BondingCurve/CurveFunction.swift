@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 protocol CurveFunction {
     func calculatePrice(

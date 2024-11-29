@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Contract struct Pair {
     // TODO: use TokenIdentifier when available

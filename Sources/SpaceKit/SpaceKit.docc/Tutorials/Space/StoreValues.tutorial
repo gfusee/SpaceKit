@@ -1,0 +1,106 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Persist Values Between Executions") {
+        Each time a smart contract is invoked, it runs a single operation. The contract is temporarily loaded into the SpaceVM memory, the operation is executed, and then the contract is removed from memory.
+
+        However, there are situations where you need to persist data across multiple executions. To support this, Space provides a built-in "storage" system for every contract.
+        
+        The storage system is essentially a key-value dictionary where both keys and values are stored as raw data. 
+        
+        Space abstracts away the complexities of encoding and decoding values, offering simple APIs for interacting with storage.
+
+        In this tutorial, you'll learn two common approaches for storing data using `@Storage` and `@Mapping` annotations. Additionally, Space provides advanced mechanisms like storage mappers to handle more complex data structures, which will be covered in a later chapter.
+    }
+
+    @Section(title: "Working with @Storage for Single Value Persistence") {
+        @ContentAndMedia {
+            The `@Storage` annotation allows you to persist a single value under a specified key. The `key` parameter defines the storage key, and we recommend matching the key to the variable name for consistency.
+            
+            In this section, you’ll implement an endpoint called `increaseStoredValue`, which increments a persistent integer each time it is called. If the value reaches 100, it resets to 0.
+            
+            Note: The focus here is on basic implementation. Optimizations, especially for transaction cost reductions, will be introduced in a later chapter.
+        }
+        
+        @Steps {
+            @Step {
+                Begin by setting up the basic structure of the contract.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection1Step1.swift")
+            }
+            
+            @Step {
+                Add a persistent integer to the contract using the `@Storage` annotation. By default, this integer is initialized to 0 unless otherwise specified.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection1Step2.swift")
+            }
+            
+            @Step {
+                Implement the logic to increment the stored integer whenever the `increaseStoredValue` endpoint is invoked. 
+
+                Tip: Be mindful that reading from storage increases transaction costs. This section focuses on functionality, and optimization techniques will be covered in later chapters.
+
+                @Code(name: "lib.swift", file: "StoreValuesSection1Step3.swift")
+            }
+            
+            @Step {
+                If the integer reaches 100, reset it to 0.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection1Step4.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Leveraging @Mapping for Dynamic Key-Value Storage") {
+        @ContentAndMedia {
+            The `@Mapping` annotation allows you to store values under dynamically computed keys, effectively creating a nested dictionary in the contract's storage. Space automatically handles encoding and decoding, ensuring typed access to both keys and values.
+
+            Think of it like this: if Alice and Bob both call your smart contract, each of them will have their own persistent storage SpaceKit. When Alice calls the contract, her address is used to store or retrieve address unique data, and the same happens for Bob with his own key. This way, each user can have their own independent version of the same data, without interference.
+
+            In this section, you’ll extend the `increaseStoredValue` endpoint so that each user (like Alice and Bob) will have a unique persistent integer tied to their address. The integer will be stored and incremented individually for each user, ensuring their data remains isolated.
+        }
+        
+        @Steps {
+            @Step {
+                Begin by defining the structure of your contract.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection2Step1.swift")
+            }
+            
+            @Step {
+                Use the `@Mapping<Key, Value>` annotation to associate each user’s address with their own persistent integer.
+                
+                Tip: You don’t need to explicitly declare the type of the variable. Specifying the `Key` and `Value` generic parameters is sufficient.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection2Step2.swift")
+            }
+            
+            @Step {
+                Retrieve the caller’s address.
+                
+                Note: This involves interacting with the `Message` object, which will be covered in detail in a future chapter.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection2Step3.swift")
+            }
+            
+            @Step {
+                Increment the persistent integer associated with the caller’s address.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection2Step4.swift")
+            }
+            
+            @Step {
+                Reset the caller’s integer to 0 once it reaches 100.
+                
+                @Code(name: "lib.swift", file: "StoreValuesSection2Step5.swift")
+            }
+            
+            @Step {
+                Implement a view to allow querying of the stored integer value for a given user, enabling off-chain access to the data.
+                
+                Reminder: A view is an endpoint that does not alter any state on the blockchain.
+
+                @Code(name: "lib.swift", file: "StoreValuesSection2Step6.swift")
+            }
+        }
+    }
+
+}

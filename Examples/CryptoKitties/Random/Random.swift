@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 // WARNING: to anyone reading this code. This is a reproduction of the Rust example, however the below Swift code is not a good practice in its current state. This is because of all the bytes manipulations done in Buffer instead of static arrays, which are not available in Swift at the moment.
 

@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 // TODO: use TokenIdentifier type once implemented
 @Codable struct NonceAmountMappingKey {

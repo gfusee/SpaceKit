@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Codable enum FunctionSelector: Equatable {
     case linear(LinearFunction)

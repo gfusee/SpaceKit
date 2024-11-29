@@ -348,7 +348,7 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
                 let trailingZerosCount = \(enumName).payloadSize - currentCasePayloadSize
         
                 if trailingZerosCount > 0 {
-                    totalPayload = totalPayload + Space.getZeroedBuffer(count: trailingZerosCount)
+                    totalPayload = totalPayload + SpaceKit.getZeroedBuffer(count: trailingZerosCount)
                 }
         
                 return totalPayload

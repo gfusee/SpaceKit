@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 struct StorageModule {
     @Mapping(key: "deposit") var depositForDonor: StorageMap<Address, DepositInfo>

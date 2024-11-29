@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 struct OwnerEndpointsModule {
     // TODO: use TokenIdentifier type once implemented

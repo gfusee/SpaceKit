@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 @Codable public struct DepositInfo {
     var depositorAddress: Address

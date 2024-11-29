@@ -1,0 +1,249 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Exploring Space's Types") {
+        Space provides types that allow you to leverage the full potential of the SpaceVM.
+    }
+
+    @Section(title: "Handling Heap Allocation Challenges") {
+        @ContentAndMedia {
+            Writing code for blockchain involves operating within strict resource constraints. To address this, Space uses Swift’s "embedded" mode, ensuring the compiled code is as lightweight and efficient as possible.
+
+            SpaceVM, the engine running smart contracts, limits heap allocations. As a result, types with dynamic sizes, such as Strings, Arrays, or classes, and any structs or enums containing these, are not permitted.
+
+            Additionally, Swift's existential types—such as `any Protocol` where `Protocol` is a protocol—are also forbidden. Existential types introduce runtime overhead, which is why they are not allowed in SpaceKit.
+
+            The allowed Swift types are:
+
+            - StaticString
+            - Integer types: Int, UInt, UInt8, UInt16, etc.
+            - Bool: treated as a UInt8
+
+            Space introduces specific types that serve as alternatives for those not allowed. This chapter introduces three key replacements:
+
+            - `Buffer`: A substitute for String and Data
+            - `BigUint`: Capable of handling large unsigned integers
+            - `Vector`: An alternative to Array
+
+            For security, these types do not feature mutating methods. Instead, they use methods that return new instances. For example, the `Buffer` type does not include `append(_:) -> Void` but instead offers `appending(_:) -> Buffer`.
+        }
+
+        @Steps {
+            @Step {
+                Avoid using `String` in Space, as it is prohibited due to memory restrictions.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step1.swift")
+            }
+
+            @Step {
+                Use `Buffer` as a fixed-size alternative for handling raw data and text.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step2.swift")
+            }
+
+            @Step {
+                Similarly, avoid using `Array` since it leads to heap allocations and is not allowed.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step3.swift")
+            }
+
+            @Step {
+                Instead, leverage the `Vector` type as a memory-efficient alternative to `Array`.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step4.swift")
+            }
+
+            @Step {
+                Integer types like `Int`, `UInt`, and `Bool` are fully supported and safe to use.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step5.swift")
+            }
+
+            @Step {
+                Ensure you only import the Space framework to keep the contract lightweight and efficient.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection1Step6.swift")
+            }
+        }
+    }
+
+    @Section(title: "Understanding the Buffer Type") {
+        @ContentAndMedia {
+            `Buffer` is a fundamental type in Space, designed to store raw data and strings.
+        }
+
+        @Steps {
+            @Step {
+                Start by creating the basic structure for your contract.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection2Step1.swift")
+            }
+            
+            @Step {
+                Initialize a `Buffer` variable using a string literal. 
+                
+                Important: Explicitly declare your variable as `Buffer` to avoid being interpreted as `String`.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection2Step2.swift")
+            }
+            
+            @Step {
+                Append another `Buffer` to your existing variable.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection2Step3.swift")
+            }
+            
+            @Step {
+                Compare two `Buffer` instances. If they don’t match, throw a smart contract error.
+
+                Note: The `smartContractError` function requires a `Buffer` parameter. This topic is covered in detail in a later chapter.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection2Step4.swift")
+            }
+        }
+    }
+
+    @Section(title: "Working with the BigUint Type") {
+        @ContentAndMedia {
+            Blockchains do not support decimal numbers. However, real-world applications often require decimal representation, such as in cryptocurrency amounts like 0.09281 Bitcoin.
+
+            To handle such cases, values are expressed as large numbers, where many tokens allocate the last 18 digits to represent the decimal portion. For instance: 1 EGLD equals 1 * 10^18, or 1,000,000,000,000,000,000.
+
+            Standard Swift types, such as `UInt64`, can only store values up to 18,446,744,073,709,551,615 (20 digits), making it impossible to represent values exceeding approximately 18.446744 EGLD.
+
+            Space provides the `BigUint` type to store arbitrarily large positive numbers.
+        }
+
+        @Steps {
+            @Step {
+                Begin by structuring your contract.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection3Step1.swift")
+            }
+            
+            @Step {
+                Declare a `BigUint` constant with an integer literal.
+
+                Important: You must specify the type explicitly as `BigUint`, or it will default to `Int`.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection3Step2.swift")
+            }
+            
+            @Step {
+                Create a new `BigUint` by adding 3 to the previous constant.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection3Step3.swift")
+            }
+            
+            @Step {
+                Multiply the new variable by 7.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection3Step4.swift")
+            }
+            
+            @Step {
+                Add three times the initial constant to the new variable.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection3Step5.swift")
+            }
+            
+            @Step {
+                Subtract 21 from the variable.
+                
+                Note: A `BigUint` value cannot be negative. If the subtraction results in a value below zero, Space will trigger a smart contract error.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection3Step6.swift")
+            }
+            
+            @Step {
+                Verify that the result is a multiple of 10, and throw a smart contract error if not.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection3Step7.swift")
+            }
+            
+            @Step {
+                Ensure the result is greater than zero, throwing an error if it isn’t.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection3Step8.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Working with the Vector Type") {
+        @ContentAndMedia {
+            The `Array` type is often the default for storing dynamic-size data, but it is not permitted in SpaceKit. Fortunately, Space provides a suitable alternative: `Vector`.
+            
+            A `Vector` can store any type compatible with Space, including user-defined structs and enums.
+        }
+
+        @Steps {
+            @Step {
+                Begin by setting up the basic structure of your contract.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection4Step1.swift")
+            }
+            
+            @Step {
+                Declare a `Vector` variable to hold `BigUint` elements.
+
+                Important: Currently, array literal assignment is disabled. The Space team is investigating its impact on memory management in smart contracts before enabling it.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection4Step2.swift")
+            }
+            
+            @Step {
+                Add elements to the `Vector`.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection4Step3.swift")
+            }
+            
+            @Step {
+                Iterate over the `Vector` to sum all the elements.
+                
+                Important: The `for ... in` loop for vectors is currently disabled. The Space team is evaluating its effect on smart contract memory before enabling it.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection4Step4.swift")
+            }
+            
+            @Step {
+                Ensure the sum equals 13. Throw a smart contract error if it doesn't.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection4Step5.swift")
+            }
+        }
+    }
+        
+    @Section(title: "Creating Your Own Types") {
+        @ContentAndMedia {
+            You can define your own structures and enumerations and make them compatible with Space using the `@Codable` annotation. When a type is marked with `@Codable`, it becomes eligible to be used as input or output for endpoints, within arrays, and anywhere Space’s encoding system is applied.
+
+            A type annotated with `@Codable` must only contain fields of types compatible with Space, such as integers, `Bool`, `Buffer`, `BigUint`, `Vector`, and other `@Codable` types.
+
+            Additionally, the `@Codable` annotation prevents the structure from having methods or initializers.
+        }
+
+        @Steps {
+            @Step {
+                Start by creating a struct with fields that are compatible with SpaceKit.
+
+                @Code(name: "struct.swift", file: "FamiliarizeWithTypesSection5Step1.swift")
+            }
+
+            @Step {
+                Annotate your struct with `@Codable` to make it usable with Space’s encoding system.
+
+                @Code(name: "struct.swift", file: "FamiliarizeWithTypesSection5Step2.swift")
+            }
+
+            @Step {
+                Use the `@Codable`-annotated type within your smart contracts.
+
+                @Code(name: "lib.swift", file: "FamiliarizeWithTypesSection5Step3.swift")
+            }
+
+            @Step {
+                Remember, a `@Codable` type can be used as a field in other `@Codable` types.
+
+                @Code(name: "struct.swift", file: "FamiliarizeWithTypesSection5Step4.swift")
+            }
+        }
+    }
+}

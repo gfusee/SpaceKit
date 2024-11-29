@@ -1,0 +1,203 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Building Your First Smart Contract") {
+        In this chapter, you'll create a simple smart contract that manages a counter, which can be incremented or decremented by any user.
+    }
+    
+    @Section(title: "Initializing the Project") {
+        @ContentAndMedia {
+            Before writing the contract, let's initialize the project using the Space CLI.
+        }
+        
+        @Steps {
+            @Step {
+                Open a terminal.
+
+                @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+            }
+
+            @Step {
+                Navigate to the desired directory, then run the command `space init Counter`.
+
+                This command creates a new directory named "Counter."
+
+                @Image(source: "CodingFirstContractSection1Step2.png", alt: "Output of `space init Counter` command.")
+            }
+
+            @Step {
+                Open the project in your preferred Swift IDE by opening the "Counter" directory.
+
+                We recommend Xcode or VSCode with the official Swift extension. In this tutorial, we'll use Xcode. For other environments like VSCode on Linux or Windows, dedicated tutorials may be available.
+
+                @Image(source: "CodingFirstContractSection1Step3.png", alt: "Xcode project selection screen with 'Counter' highlighted.")
+            }
+
+            @Step {
+                (Optional) Build the project to enable macros and improve indexing in your IDE.
+
+                In Xcode, go to **Product > Build** or press `⌘ + B`.
+
+                @Image(source: "CodingFirstContractSection1Step4.png", alt: "Xcode's Product menu with 'Build' highlighted.")
+            }
+        }
+    }
+    
+    @Section(title: "Writing the Contract Code") {
+        @ContentAndMedia {
+            Let's start coding the smart contract.
+        }
+
+        @Steps {
+            @Step {
+                Open the `Contracts/Counter/Source/lib.swift` file and delete its contents.
+
+                @Code(name: "lib.swift", file: "CodingFirstContractSection2Step1.swift")
+            }
+
+            @Step {
+                Import the framework by adding `import SpaceKit`.
+
+                **Note:** Only import the Space framework. Other libraries like Foundation are not compatible with SpaceVM.
+
+                @Code(name: "lib.swift", file: "CodingFirstContractSection2Step2.swift")
+            }
+
+            @Step {
+                Declare the contract by annotating a struct with `@Contract`. For this project, we’ll declare the `Counter` contract.
+
+                **Note:** You should have only one `@Contract` struct. The logic can be spread across multiple files, but the `@Contract` struct remains central.
+
+                @Code(name: "lib.swift", file: "CodingFirstContractSection2Step3.swift")
+            }
+
+            @Step {
+                To persist the counter across executions, declare it in the contract's storage with `@Storage(key: "counter")`.
+
+                **Note:** The `BigUint` type handles arbitrarily large numbers, so there’s no risk of overflow.
+
+                @Code(name: "lib.swift", file: "CodingFirstContractSection2Step4.swift")
+            }
+
+            @Step {
+                Define the initializer for the contract, which is executed only once during deployment to set the initial counter value.
+
+                **Note:** The initializer is called only when the contract is deployed.
+
+                @Code(name: "lib.swift", file: "CodingFirstContractSection2Step5.swift")
+            }
+
+            @Step {
+                Create an endpoint `increase` to allow users to increment the counter. The function takes a single user-provided parameter indicating how much to increment the counter.
+
+                @Code(name: "lib.swift", file: "CodingFirstContractSection2Step6.swift")
+            }
+
+            @Step {
+                Similarly, create the `decrease` endpoint to decrement the counter.
+
+                **Note:** The `BigUint` type cannot be negative, so if the operation results in a negative value, the transaction will fail without changes being committed.
+
+                @Code(name: "lib.swift", file: "CodingFirstContractSection2Step7.swift")
+            }
+
+            @Step {
+                To allow users or other contracts to retrieve the counter's value, create a view function (`getCounter`), which does not modify the contract’s state.
+
+                @Code(name: "lib.swift", file: "CodingFirstContractSection2Step8.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Testing the Contract") {
+        @ContentAndMedia {
+            Space includes a built-in emulator called SwiftVM, which allows you to test your contract in the Swift environment.
+        }
+
+        @Steps {
+            @Step {
+                Open the `Contracts/Counter/Tests/CounterTests` directory. Delete any files and create a new file named `CounterTests.swift`.
+
+                @Image(source: "CodingFirstContractSection3Step1.png", alt: "File tree showing newly created `CounterTests.swift`.")
+            }
+
+            @Step {
+                Import the necessary frameworks: Space, your contract, and XCTest.
+
+                **Note:** XCTest is the official tool for writing unit tests in Swift.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step2.swift")
+            }
+
+            @Step {
+                Declare the contract’s address, as SwiftVM assigns a deterministic address to our contract.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step3.swift")
+            }
+
+            @Step {
+                Create a class for the tests, inheriting from `ContractTestCase`.
+
+                **Note:** Avoid overriding the `setUp` and `tearDown` methods.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step4.swift")
+            }
+
+            @Step {
+                Override the `initialAccounts` property to declare the contract's address in SwiftVM.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step5.swift")
+            }
+
+            @Step {
+                Create the first unit test to verify deploying the contract with an initial counter value of zero.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step6.swift")
+            }
+
+            @Step {
+                Deploy the contract with an initial value of 0 using the generated `testable` function.
+
+                **Note:** This function allows you to catch any errors during execution.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step7.swift")
+            }
+
+            @Step {
+                Call the `getCounter` view to assert the counter is 0.
+
+                **Note:** Space generates functions for contract views and endpoints.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step8.swift")
+            }
+
+            @Step {
+                Add a unit test to verify deploying the contract with a non-zero initial value.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step9.swift")
+            }
+
+            @Step {
+                Create unit tests for the `increase` endpoint, similar to the deployment tests.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step10.swift")
+            }
+
+            @Step {
+                Repeat for the `decrease` endpoint.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step11.swift")
+            }
+
+            @Step {
+                Add a test to ensure failure when trying to decrease the counter below zero.
+
+                @Code(name: "CounterTests.swift", file: "CodingFirstContractSection3Step12.swift")
+            }
+
+            @Step {
+                Run the tests to confirm your contract works correctly!
+
+                @Image(source: "CodingFirstContractSection3Step13.png", alt: "Xcode's test tab showing all tests passed.")
+            }
+        }
+    }
+}

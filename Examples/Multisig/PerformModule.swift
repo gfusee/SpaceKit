@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 
 fileprivate let PERFORM_ACTION_FINISH_GAS: UInt64 = 500_000
 fileprivate let PERFORM_ASYNC_CALL_ACTION_FINISH_GAS: UInt64 = 15_000_000

@@ -1,4 +1,4 @@
-import Space
+import SpaceKit
 import XCTest
 
 // There was an issue with @Codable macro on enums that has only one case
