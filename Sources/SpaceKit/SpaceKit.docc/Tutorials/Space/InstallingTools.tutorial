@@ -3,7 +3,7 @@
         Before writing your first smart contract with Space, ensure you have the necessary tools installed.
     }
     
-    @Section(title: "Installing Space's Dependencies") {
+    @Section(title: "Installing SpaceKit's Dependencies") {
         @ContentAndMedia {
             Space relies on several dependencies, which you need to install on your system.
         }
