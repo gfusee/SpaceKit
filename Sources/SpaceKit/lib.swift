@@ -9,7 +9,7 @@ nonisolated(unsafe) public var API = DummyApi()
 @attached(peer)
 @attached(member, names: arbitrary)
 #if !WASM
-@attached(extension, conformances: ContractEndpointSelector, names: arbitrary)
+@attached(extension, conformances: ContractEndpointSelector & SwiftVMCompatibleContract, names: arbitrary)
 #endif
 public macro Contract() = #externalMacro(module: "ContractMacro", type: "Contract")
 
@@ -21,6 +21,9 @@ public macro Callback() = #externalMacro(module: "CallbackMacro", type: "Callbac
 
 @attached(extension, names: arbitrary)
 public macro Event(dataType: TopEncode.Type? = nil) = #externalMacro(module: "EventMacro", type: "Event")
+
+@attached(peer)
+public macro Init() = #externalMacro(module: "InitMacro", type: "Init")
 
 @attached(extension, names: arbitrary)
 public macro Proxy() = #externalMacro(module: "ProxyMacro", type: "Proxy")

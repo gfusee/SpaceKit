@@ -15,18 +15,18 @@ import SpaceKit
     let buffer: Buffer
 }
 
-@Contract struct EventTestsContract {
-    init() {
-        let data: Buffer = "Hello World!"
-        TestSingleIndexedFieldBufferDataEvent(address: Message.caller).emit(data: data)
-        
-        TestMultipleIndexedFieldEvent(
-            address: Message.caller,
-            number: 100,
-            buffer: "Hello World!"
-        ).emit(data: "")
-    }
+@Init func initialize() {
+    let data: Buffer = "Hello World!"
+    TestSingleIndexedFieldBufferDataEvent(address: Message.caller).emit(data: data)
     
+    TestMultipleIndexedFieldEvent(
+        address: Message.caller,
+        number: 100,
+        buffer: "Hello World!"
+    ).emit(data: "")
+}
+
+@Contract struct EventTestsContract {
     public func emitNoEvent() {
         
     }
@@ -88,7 +88,7 @@ final class EventTests: ContractTestCase {
     }
     
     func testNoEvent() throws {
-        let contract = try EventTestsContract.testable("contract")
+        let contract = try self.deployContract(EventTestsContract.self, at: "contract")
         let transactionOutput = TransactionOutput()
         
         try contract.emitNoEvent(
@@ -103,7 +103,7 @@ final class EventTests: ContractTestCase {
     }
     
     func testSingleIndexedFieldEventNoData() throws {
-        let contract = try EventTestsContract.testable("contract")
+        let contract = try self.deployContract(EventTestsContract.self, at: "contract")
         let transactionOutput = TransactionOutput()
         
         try contract.emitSingleIndexedFieldEventNoData(
@@ -126,7 +126,7 @@ final class EventTests: ContractTestCase {
     }
     
     func testSingleIndexedFieldEventWithBufferData() throws {
-        let contract = try EventTestsContract.testable("contract")
+        let contract = try self.deployContract(EventTestsContract.self, at: "contract")
         let transactionOutput = TransactionOutput()
         
         try contract.emitSingleIndexedFieldEventWithBufferData(
@@ -149,7 +149,7 @@ final class EventTests: ContractTestCase {
     }
     
     func testSingleIndexedFieldEventWithBigUintData() throws {
-        let contract = try EventTestsContract.testable("contract")
+        let contract = try self.deployContract(EventTestsContract.self, at: "contract")
         let transactionOutput = TransactionOutput()
         
         try contract.emitSingleIndexedFieldEventWithBigUintData(
@@ -172,7 +172,7 @@ final class EventTests: ContractTestCase {
     }
     
     func testMultipleIndexedFieldEventNoData() throws {
-        let contract = try EventTestsContract.testable("contract")
+        let contract = try self.deployContract(EventTestsContract.self, at: "contract")
         let transactionOutput = TransactionOutput()
         
         try contract.emitMultipleIndexedFieldEventNoData(
@@ -197,7 +197,7 @@ final class EventTests: ContractTestCase {
     }
     
     func testMultipleEvents() throws {
-        let contract = try EventTestsContract.testable("contract")
+        let contract = try self.deployContract(EventTestsContract.self, at: "contract")
         let transactionOutput = TransactionOutput()
         
         try contract.emitMultipleEvents(
@@ -229,7 +229,7 @@ final class EventTests: ContractTestCase {
     }
     
     func testEventFromArgs() throws {
-        let contract = try EventTestsContract.testable("contract")
+        let contract = try self.deployContract(EventTestsContract.self, at: "contract")
         let transactionOutput = TransactionOutput()
         
         try contract.emitEventFromArgs(
@@ -258,8 +258,9 @@ final class EventTests: ContractTestCase {
     
     func testMultipleEventsInInit() throws {
         let transactionOutput = TransactionOutput()
-        let _ = try EventTestsContract.testable(
-            "contract",
+        let _ = try self.deployContract(
+            EventTestsContract.self,
+            at: "contract",
             transactionInput: ContractCallTransactionInput(callerAddress: "user"),
             transactionOutput: transactionOutput
         )

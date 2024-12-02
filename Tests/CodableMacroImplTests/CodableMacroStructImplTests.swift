@@ -53,7 +53,7 @@ final class CodableMacroStructImplTests: ContractTestCase {
     
     func testTopDecodeForCustomInputTooLargeError() throws {
         do {
-            try CodableMacroStructImplTestsContract.testable("contract").testTopDecodeForCustomInputTooLargeError()
+            try self.deployContract(CodableMacroStructImplTestsContract.self, at: "contract").testTopDecodeForCustomInputTooLargeError()
             
             XCTFail()
         } catch {

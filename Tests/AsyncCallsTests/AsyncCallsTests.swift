@@ -407,8 +407,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testIncreaseCounter() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallIncreaseCounter(receiver: "callee")
         
@@ -418,8 +418,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testIncreaseCounterWithSimpleCallback() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
         
@@ -431,8 +431,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testMultiIncreaseCounterWithSimpleCallback() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.multiAsyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
         
@@ -444,8 +444,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testMultiIncreaseCounterWithSimpleCallbackOneNoCallback() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.multiAsyncCallIncreaseCounterWithSimpleCallbackOneNoCallback(receiver: "callee")
         
@@ -457,8 +457,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testIncreaseCounterWithCallbackWithOneParameter() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallIncreaseCounterWithCallbackWithOneParameter(
             receiver: "callee",
@@ -473,8 +473,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testIncreaseCounterWithCallbackWithResult() throws {
-        var callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        var callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try callee.increaseCounterBy(value: 100)
         
@@ -488,8 +488,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testMultiIncreaseCounterWithCallbackWithResult() throws {
-        var callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        var callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try callee.increaseCounterBy(value: 100)
         
@@ -503,8 +503,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testMultiIncreaseCounterWithDifferentCallbacks() throws {
-        var callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        var callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try callee.increaseCounterBy(value: 100)
         
@@ -518,8 +518,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testMultiIncreaseCounterWithCallbackWithResultOneFailure() throws {
-        var callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        var callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try callee.increaseCounterBy(value: 100)
         
@@ -539,8 +539,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testIncreaseCounterWithCallback() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
         
@@ -552,8 +552,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testIncreaseCounterBy() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallIncreaseCounterBy(
             receiver: "callee",
@@ -566,8 +566,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testChangeStorageAndStartFailableAsyncCall() throws {
-        let callee = try CalleeContract.testable("callee")
-        var caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        var caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallIncreaseCounterAndFail(
             receiver: "callee"
@@ -581,8 +581,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testChangeStorageAndStartFailableAsyncCallWithCallback() throws {
-        let callee = try CalleeContract.testable("callee")
-        var caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        var caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallIncreaseCounterAndFailWithCallback(
             receiver: "callee"
@@ -602,8 +602,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testReturnEgldNoCallback() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallReturnEgldValueNoCallback(receiver: "callee", paymentValue: 150)
         
@@ -617,8 +617,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testIncreaseCounterAndFailWithEgldWithCallback() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallIncreaseCounterAndFailWithEgld(receiver: "callee", paymentValue: 150)
         
@@ -634,8 +634,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testAsyncCallStoreCallerNoCallback() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallStoreCallerNoCallback(receiver: "callee")
         
@@ -645,8 +645,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testAsyncCallStoreCallerWithCallback() throws {
-        let callee = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        let callee = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallStoreCallerWithCallback(receiver: "callee")
         
@@ -658,8 +658,8 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testAsyncCallIncreaseCounterAndFailWithStoreCallerCallback() throws {
-        _ = try CalleeContract.testable("callee")
-        let caller = try AsyncCallsTestsContract.testable("caller")
+        _ = try self.deployContract(CalleeContract.self, at: "callee")
+        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
         
         try caller.asyncCallIncreaseCounterAndFailWithStoreCallerCallback(receiver: "callee")
         

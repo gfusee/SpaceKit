@@ -21,7 +21,9 @@ final class ErrorTests: ContractTestCase {
     
     func testUserErrorStopsTheExecution() throws {
         do {
-            try ErrorTestsContract.testable("contract").testUserErrorStopsTheExecution()
+            let contract = try self.deployContract(ErrorTestsContract.self, at: "contract")
+            
+            try contract.testUserErrorStopsTheExecution()
             
             XCTFail()
         } catch {

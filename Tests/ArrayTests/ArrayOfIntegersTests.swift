@@ -161,7 +161,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfIntegersTestsContract.testable("contract").testGetOutOfRangeShouldFail()
+            try self.deployContract(ArrayOfIntegersTestsContract.self, at: "contract").testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -379,7 +379,7 @@ final class ArrayOfIntegersTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfIntegersTestsContract.testable("contract").testReplacedOutOfRangeShouldFail()
+            try self.deployContract(ArrayOfIntegersTestsContract.self, at: "contract").testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

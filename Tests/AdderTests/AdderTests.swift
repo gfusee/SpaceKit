@@ -1,13 +1,14 @@
 import SpaceKit
 import XCTest
 
-@Contract
-struct Adder {
-    @Storage(key: "sum") var sum: BigUint
+@Init func initialize(initialValue: BigUint) {
+    var adderController = Adder()
+    
+    adderController.sum = initialValue
+}
 
-    init(initialValue: BigUint) {
-        self.sum = initialValue
-    }
+@Contract struct Adder {
+    @Storage(key: "sum") var sum: BigUint
 
     public mutating func add(value: BigUint) {
         self.sum += value
@@ -27,7 +28,13 @@ final class AdderTests: ContractTestCase {
     }
 
     func testDeployAdderInitialValueZero() throws {
-        let contract = try Adder.testable("adder", initialValue: 0)
+        let contract = try self.deployContract(
+            Adder.self,
+            at: "adder",
+            arguments: [
+                0
+            ]
+        )
 
         let result = try contract.getSum()
 
@@ -35,7 +42,13 @@ final class AdderTests: ContractTestCase {
     }
 
     func testDeployAdderInitialValueNonZero() throws {
-        let contract = try Adder.testable("adder", initialValue: 15)
+        let contract = try self.deployContract(
+            Adder.self,
+            at: "adder",
+            arguments: [
+                15
+            ]
+        )
 
         let result = try contract.getSum()
 
@@ -43,7 +56,13 @@ final class AdderTests: ContractTestCase {
     }
 
     func testAddZero() throws {
-        var contract = try Adder.testable("adder", initialValue: 15)
+        var contract = try self.deployContract(
+            Adder.self,
+            at: "adder",
+            arguments: [
+                15
+            ]
+        )
 
         try contract.add(value: 0)
 
@@ -53,7 +72,13 @@ final class AdderTests: ContractTestCase {
     }
 
     func testAddNonZero() throws {
-        var contract = try Adder.testable("adder", initialValue: 15)
+        var contract = try self.deployContract(
+            Adder.self,
+            at: "adder",
+            arguments: [
+                15
+            ]
+        )
 
         try contract.add(value: 5)
 
@@ -61,5 +86,4 @@ final class AdderTests: ContractTestCase {
 
         XCTAssertEqual(result, 20)
     }
-
 }

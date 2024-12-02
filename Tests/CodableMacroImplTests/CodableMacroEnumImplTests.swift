@@ -128,7 +128,7 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopDecodeForEnumInputTooLargeError() throws {
         do {
-            try CodableMacroEnumImplTestsContract.testable("contract").testTopDecodeForEnumInputTooLargeError()
+            try self.deployContract(CodableMacroEnumImplTestsContract.self, at: "contract").testTopDecodeForEnumInputTooLargeError()
             
             XCTFail()
         } catch {

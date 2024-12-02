@@ -1,13 +1,14 @@
 import XCTest
 import SpaceKit
 
+@Init func initialize() {
+    var messageController = MessageContract()
+    
+    messageController.address = Message.caller
+}
+
 @Contract struct MessageContract {
-    
     @Storage(key: "address") var address: Address
-    
-    init() {
-        self.address = Message.caller
-    }
     
     public func getCallerAddress() -> Address {
         return Message.caller
@@ -48,7 +49,7 @@ final class MessageTests: ContractTestCase {
     }
     
     func testGetCallerInInitNotSet() throws {
-        let contract = try MessageContract.testable("adder")
+        let contract = try self.deployContract(MessageContract.self, at: "adder")
         
         let storedAddress = try contract.getStorageAddress()
         
@@ -56,8 +57,9 @@ final class MessageTests: ContractTestCase {
     }
     
     func testGetCallerInInit() throws {
-        let contract = try MessageContract.testable(
-            "adder",
+        let contract = try self.deployContract(
+            MessageContract.self,
+            at: "adder",
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
         
@@ -67,7 +69,7 @@ final class MessageTests: ContractTestCase {
     }
     
     func testGetCallerNotSet() throws {
-        let contract = try MessageContract.testable("adder")
+        let contract = try self.deployContract(MessageContract.self, at: "adder")
         
         let contractAddress = try contract.getCallerAddress()
         
@@ -75,7 +77,7 @@ final class MessageTests: ContractTestCase {
     }
     
     func testGetCaller() throws {
-        let contract = try MessageContract.testable("adder")
+        let contract = try self.deployContract(MessageContract.self, at: "adder")
         
         let contractAddress = try contract.getCallerAddress(
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
@@ -85,7 +87,7 @@ final class MessageTests: ContractTestCase {
     }
 
     func testGetEgldValueNoValue() throws {
-        let contract = try MessageContract.testable("adder")
+        let contract = try self.deployContract(MessageContract.self, at: "adder")
         
         let value = try contract.getEgldValue()
         
@@ -95,7 +97,7 @@ final class MessageTests: ContractTestCase {
     // TODO: add a test that ensures it is impossible to provide both egldValue and esdtValue
 
     func testGetEgldValue() throws {
-        let contract = try MessageContract.testable("adder")
+        let contract = try self.deployContract(MessageContract.self, at: "adder")
         
         let value = try contract.getEgldValue(transactionInput: ContractCallTransactionInput(callerAddress: "user", egldValue: 100))
         
@@ -105,7 +107,7 @@ final class MessageTests: ContractTestCase {
     }
 
     func testGetAllEsdtTransfersNoTransfers() throws {
-        let contract = try MessageContract.testable("adder")
+        let contract = try self.deployContract(MessageContract.self, at: "adder")
         
         let value = try contract.getAllEsdtTransfers()
         
@@ -113,7 +115,7 @@ final class MessageTests: ContractTestCase {
     }
 
     func testGetAllEsdtTransfersSingleTransfer() throws {
-        let contract = try MessageContract.testable("adder")
+        let contract = try self.deployContract(MessageContract.self, at: "adder")
         
         let value = try contract.getAllEsdtTransfers(
             transactionInput: ContractCallTransactionInput(
@@ -128,7 +130,7 @@ final class MessageTests: ContractTestCase {
     }
 
     func testGetAllEsdtTransfersMultiTransfers() throws {
-        let contract = try MessageContract.testable("adder")
+        let contract = try self.deployContract(MessageContract.self, at: "adder")
         
         let value = try contract.getAllEsdtTransfers(
             transactionInput: ContractCallTransactionInput(

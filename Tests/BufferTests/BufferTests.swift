@@ -135,7 +135,7 @@ final class BufferTests: ContractTestCase {
     
     func testNonEmptyBufferGetTooLongSubBufferShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNonEmptyBufferGetTooLongSubBufferShouldFail()
+            try self.deployContract(BufferTestsContract.self, at: "contract").testNonEmptyBufferGetTooLongSubBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -145,7 +145,7 @@ final class BufferTests: ContractTestCase {
     
     func testNonEmptyBufferSubBufferNegativeStartIndexShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNonEmptyBufferSubBufferNegativeStartIndexShouldFail()
+            try self.deployContract(BufferTestsContract.self, at: "contract").testNonEmptyBufferSubBufferNegativeStartIndexShouldFail()
             
             XCTFail()
         } catch {
@@ -155,7 +155,7 @@ final class BufferTests: ContractTestCase {
     
     func testNonEmptyBufferSubBufferNegativeSliceLengthShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNonEmptyBufferSubBufferNegativeSliceLengthShouldFail()
+            try self.deployContract(BufferTestsContract.self, at: "contract").testNonEmptyBufferSubBufferNegativeSliceLengthShouldFail()
             
             XCTFail()
         } catch {
@@ -322,7 +322,7 @@ final class BufferTests: ContractTestCase {
     
     func testNestedDecodeBufferEmptyInputShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNestedDecodeBufferEmptyInputShouldFail()
+            try self.deployContract(BufferTestsContract.self, at: "contract").testNestedDecodeBufferEmptyInputShouldFail()
             
             XCTFail()
         } catch {
@@ -332,7 +332,7 @@ final class BufferTests: ContractTestCase {
     
     func testNestedDecodeBufferBadLengthInputShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNestedDecodeBufferBadLengthInputShouldFail()
+            try self.deployContract(BufferTestsContract.self, at: "contract").testNestedDecodeBufferBadLengthInputShouldFail()
             
             XCTFail()
         } catch {
@@ -342,7 +342,7 @@ final class BufferTests: ContractTestCase {
     
     func testNestedDecodeBufferTooLargeLengthInputShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNestedDecodeBufferTooLargeLengthInputShouldFail()
+            try self.deployContract(BufferTestsContract.self, at: "contract").testNestedDecodeBufferTooLargeLengthInputShouldFail()
             
             XCTFail()
         } catch {

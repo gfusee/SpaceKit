@@ -83,7 +83,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetSCAddress() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let contractAddress = try contract.getSelfAddress()
         
@@ -91,7 +91,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetBalanceOnZeroBalanceAccount() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getBalance(address: "userNoBalance")
         
@@ -99,7 +99,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetBalanceUnknownAccount() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getBalance(address: "unknown")
         
@@ -107,7 +107,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetBalance() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getBalance(address: "user")
         
@@ -115,7 +115,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetSCBalance() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getSCBalance()
         
@@ -123,7 +123,7 @@ final class BlockchainTests: ContractTestCase {
     }
 
     func testGetEsdtBalanceOnZeroBalanceAccount() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getEsdtBalance(address: "adder", tokenIdentifier: "WEGLD-abcdef", nonce: 0)
         
@@ -131,7 +131,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetEsdtBalanceUnknownAccount() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getEsdtBalance(address: "unknown", tokenIdentifier: "WEGLD-abcdef", nonce: 0)
         
@@ -139,7 +139,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetEsdtBalanceUnknownToken() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getEsdtBalance(address: "userFungible", tokenIdentifier: "USDC-abcdef", nonce: 0)
         
@@ -147,7 +147,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetEsdtBalanceUnknownNonce() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getEsdtBalance(address: "userFungible", tokenIdentifier: "WEGLD-abcdef", nonce: 1)
         
@@ -155,7 +155,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetEsdtFungibleBalance() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getEsdtBalance(address: "userFungible", tokenIdentifier: "WEGLD-abcdef", nonce: 0)
         
@@ -163,7 +163,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetEsdtNonFungibleBalance() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getEsdtBalance(address: "userNonFungible", tokenIdentifier: "SFT-abcdef", nonce: 10)
         
@@ -171,7 +171,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetSCBalanceWithEsdt() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getSCEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 5)
         
@@ -179,7 +179,7 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetSCBalanceWithUUnknownEsdt() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let balance = try contract.getSCEsdtBalance(tokenIdentifier: "UNKNOWN-abcdef", nonce: 5)
         
@@ -187,7 +187,7 @@ final class BlockchainTests: ContractTestCase {
     }
 
     func testGetOwnerDefaultOwner() throws {
-        let contract = try BlockchainContract.testable("adder")
+        let contract = try self.deployContract(BlockchainContract.self, at: "adder")
         
         let owner = try contract.getOwner()
         
@@ -195,8 +195,9 @@ final class BlockchainTests: ContractTestCase {
     }
 
     func testGetOwner() throws {
-        let contract = try BlockchainContract.testable(
-            "adder",
+        let contract = try self.deployContract(
+            BlockchainContract.self,
+            at: "adder",
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
         
@@ -206,8 +207,9 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetShardOfAddressOnShard0() throws {
-        let contract = try BlockchainContract.testable(
-            "adder",
+        let contract = try self.deployContract(
+            BlockchainContract.self,
+            at: "adder",
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
         
@@ -217,8 +219,9 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetShardOfAddressOnShard1() throws {
-        let contract = try BlockchainContract.testable(
-            "adder",
+        let contract = try self.deployContract(
+            BlockchainContract.self,
+            at: "adder",
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
         
@@ -228,8 +231,9 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetShardOfAddressOnShard2() throws {
-        let contract = try BlockchainContract.testable(
-            "adder",
+        let contract = try self.deployContract(
+            BlockchainContract.self,
+            at: "adder",
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
         
@@ -239,8 +243,9 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetShardOfAddressOnMetachain() throws {
-        let contract = try BlockchainContract.testable(
-            "adder",
+        let contract = try self.deployContract(
+            BlockchainContract.self,
+            at: "adder",
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
         
@@ -250,8 +255,9 @@ final class BlockchainTests: ContractTestCase {
     }
     
     func testGetShardOfEmptyAddress() throws {
-        let contract = try BlockchainContract.testable(
-            "adder",
+        let contract = try self.deployContract(
+            BlockchainContract.self,
+            at: "adder",
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
         

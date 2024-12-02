@@ -153,7 +153,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testTopDecodeUInt8TooLargeBufferShouldFail() throws {
         do {
-            try UInt8TestsContract.testable("contract").testTopDecodeUInt8TooLargeBufferShouldFail()
+            try self.deployContract(UInt8TestsContract.self, at: "contract").testTopDecodeUInt8TooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -190,7 +190,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testNestedDecodeUInt8EmptyBufferShouldFail() throws {
         do {
-            try UInt8TestsContract.testable("contract").testNestedDecodeUInt8EmptyBufferShouldFail()
+            try self.deployContract(UInt8TestsContract.self, at: "contract").testNestedDecodeUInt8EmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -212,7 +212,7 @@ final class UInt8Tests: ContractTestCase {
     
     func testNestedDecodeTwoUInt8sTooSmallBufferShouldFail() throws {
         do {
-            try UInt8TestsContract.testable("contract").testNestedDecodeTwoUInt8sTooSmallBufferShouldFail()
+            try self.deployContract(UInt8TestsContract.self, at: "contract").testNestedDecodeTwoUInt8sTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {

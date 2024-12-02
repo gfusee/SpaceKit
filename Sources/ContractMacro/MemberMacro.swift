@@ -33,18 +33,23 @@ extension Contract: MemberMacro {
             functions: functionDecls
         )
         
+        let contractInitDecl = getStaticInitializerDeclarations(structDecl: structDecl, initDecl: initDecl)
+        
         let testableDeclSyntax = """
         #if !WASM
-        \(testableStructDecl.staticInitializer.formatted())
+        \(testableStructDecl.formatted())
+        #endif
+        """
         
-        \(testableStructDecl.struct.formatted())
+        let contractInitDeclSyntax = """
+        #if !WASM
+        \(contractInitDecl.formatted())
         #endif
         """
         
         var results: [DeclSyntax] = [
-            DeclSyntax(getNoDeployInit()),
             DeclSyntax(stringLiteral: testableDeclSyntax),
-            DeclSyntax(getStaticInitializerDeclarations(structDecl: structDecl, initDecl: initDecl))
+            DeclSyntax(stringLiteral: contractInitDeclSyntax)
         ]
         
         results.append(contentsOf:
@@ -79,8 +84,7 @@ extension Contract: MemberMacro {
 fileprivate func getTestableStructDeclaration(
     structDecl: StructDeclSyntax,
     functions: [FunctionDeclSyntax]
-) -> (staticInitializer: FunctionDeclSyntax, struct: StructDeclSyntax) {
-    let structName = structDecl.name.trimmed
+) -> StructDeclSyntax {
     let optionalInitDecl = structDecl.memberBlock.members.first(where: { $0.decl.as(InitializerDeclSyntax.self) != nil } )
     
     let initDecl = optionalInitDecl?.decl.as(InitializerDeclSyntax.self) ?? InitializerDeclSyntax(
@@ -94,25 +98,13 @@ fileprivate func getTestableStructDeclaration(
         )
     )
     
-    let testableAddressParameter = "_ _testableAddress: String,"
-    
-    // We have to add a comma to the last parameter declaration
-    let initEndpointParameters = initDecl.signature.parameterClause.parameters
-        .map { parameter in
-            var parameter = parameter
-            
-            parameter.trailingComma = parameter.trailingComma ?? ","
-            
-            return parameter
-        }
-    
     let transactionInputOptionalParameters: [FunctionParameterSyntax] = [
         "transactionInput: ContractCallTransactionInput? = nil,",
         "transactionOutput: TransactionOutput = TransactionOutput()"
     ]
         .map { FunctionParameterSyntax(stringLiteral: $0) }
     
-    let testableStaticInitializerParameters: FunctionParameterListSyntax = [FunctionParameterSyntax(stringLiteral: testableAddressParameter)] + initEndpointParameters + transactionInputOptionalParameters
+    let testableStaticInitializerParameters: FunctionParameterListSyntax = ["address: String"]
     
     var parameterNamesList: [String] = []
     var initCallParametersList: [String] = []
@@ -123,68 +115,15 @@ fileprivate func getTestableStructDeclaration(
         parameterNamesList.append("\(parameterName)")
     }
     
-    let initCallParameters = initCallParametersList.joined(separator: ", ")
-    let parameterNames = parameterNamesList.joined(separator: ", ")
-    
-    let closureParameterInstantiations = if parameterNames.isEmpty {
-        ""
-    } else {
-        "\(parameterNames) in"
-    }
-    
-    let testableStaticInitializerCallParameters = initCallParameters.count > 0 ? "\(initCallParameters)," : ""
-    
-    var throwsEffectSpecifiers = FunctionEffectSpecifiersSyntax()
-    throwsEffectSpecifiers.throwsSpecifier = TokenSyntax.init(stringLiteral: "throws(TransactionError)")
-    
-    let testableStaticInitializer: FunctionDeclSyntax = FunctionDeclSyntax(
-        modifiers: [
-            DeclModifierSyntax.init(name: .keyword(.public)),
-            DeclModifierSyntax.init(name: .keyword(.static)),
-        ],
-        name: "testable",
-        signature: FunctionSignatureSyntax(
-            parameterClause: FunctionParameterClauseSyntax(
-                parameters: testableStaticInitializerParameters
-            ),
-            effectSpecifiers: throwsEffectSpecifiers,
-            returnClause: ReturnClauseSyntax(
-                type: TypeSyntax(stringLiteral: "Testable")
-            )
-        ),
-        bodyBuilder: {
-            "try Testable(_testableAddress, \(raw: testableStaticInitializerCallParameters) transactionInput: transactionInput, transactionOutput: transactionOutput)"
-        }
-    )
-    
     let testableInitDecl = InitializerDeclSyntax(
         signature: FunctionSignatureSyntax(
             parameterClause: FunctionParameterClauseSyntax(
                 parameters: testableStaticInitializerParameters // Same as the static func testable
-            ),
-            effectSpecifiers: throwsEffectSpecifiers
+            )
         ),
         body: CodeBlockSyntax(
             statements: """
-            self.address = _testableAddress
-            let transactionInput = transactionInput ?? ContractCallTransactionInput()
-            try runTestCall(
-                contractAddress: self.address,
-                endpointName: "init",
-                args: (\(raw: parameterNames)),
-                transactionInput: transactionInput.toTransactionInput(contractAddress: _testableAddress),
-                transactionOutput: transactionOutput
-            ) { \(raw: closureParameterInstantiations)
-                let ownerAddress = transactionInput.callerAddress?.toAddressData() ?? _testableAddress.toAddressData()
-                API.setCurrentSCOwnerAddress(owner: ownerAddress)
-                
-                let _ = \(structDecl.name.trimmed)(\(raw: initCallParameters))
-            
-                API.registerContractEndpointSelectorForContractAddress(
-                    contractAddress: ownerAddress,
-                    selector: \(structName)(_noDeploy: ())
-                )
-            }
+            self.address = address
             """
         )
     )
@@ -216,13 +155,6 @@ fileprivate func getTestableStructDeclaration(
             variableNamesList.append("\(variableName)")
         }
         let variableNames = variableNamesList.joined(separator: ", ")
-        let args = argsList.joined(separator: ", ")
-        
-        let closureVariableInstantiations = if variableNames.isEmpty {
-            ""
-        } else {
-            "\(variableNames) in"
-        }
         
         var testableFunction = function
         
@@ -236,25 +168,13 @@ fileprivate func getTestableStructDeclaration(
                 return parameter
             }
         
-        let isMutating = testableFunction.modifiers.contains(where: { $0.name.tokenKind == .keyword(.mutating) })
-        let contractInstantiationKeyword = isMutating ? "var" : "let"
+        var throwsEffectSpecifiers = FunctionEffectSpecifiersSyntax()
+        throwsEffectSpecifiers.throwsSpecifier = TokenSyntax.init(stringLiteral: "throws(TransactionError)")
         
         testableFunction.signature.parameterClause.parameters = FunctionParameterListSyntax(baseParameters + transactionInputOptionalParameters)
         testableFunction.signature.effectSpecifiers = throwsEffectSpecifiers
         
-        let isVoid = function.signature.returnClause == nil
-        let adapterAndReturnBlock = if isVoid {
-            """
-                contract.\(function.name)(\(args))
-            """
-        } else {
-            """
-                var outputAdapter = ApiOutputAdapter()
-                let endpointOutput = contract.\(function.name)(\(args))
-                endpointOutput.multiEncode(output: &outputAdapter)
-            """
-            
-        }
+        let argsDeclaration = "[\(variableNames)]"
         
         testableFunction.body = CodeBlockSyntax(
             statements: """
@@ -262,13 +182,13 @@ fileprivate func getTestableStructDeclaration(
             return try runTestCall(
                 contractAddress: self.address,
                 endpointName: "\(function.name)",
-                args: (\(raw: variableNames)),
-                transactionInput: transactionInput.toTransactionInput(contractAddress: self.address),
+                transactionInput: transactionInput.toTransactionInput(
+                    contractAddress: self.address,
+                    arguments: \(raw: argsDeclaration)
+                ),
                 transactionOutput: transactionOutput
-            ) { \(raw: closureVariableInstantiations)
-                \(raw: contractInstantiationKeyword) contract = \(structDecl.name.trimmed)(_noDeploy: ())
-            
-                \(raw: adapterAndReturnBlock)
+            ) {
+                \(structDecl.name.trimmed).\(function.name)()
             }
             """
         )
@@ -280,11 +200,11 @@ fileprivate func getTestableStructDeclaration(
         modifiers: [
             DeclModifierSyntax.init(name: .keyword(.public))
         ],
-        name: "Testable",
+        name: "Testable: TestableContract",
         memberBlock: memberBlock
     )
     
-    return (staticInitializer: testableStaticInitializer, struct: testableStruct)
+    return testableStruct
 }
 
 fileprivate func getStaticEndpointDeclarations(
@@ -307,7 +227,7 @@ fileprivate func getStaticEndpointDeclarations(
         let isMutating = function.modifiers.contains(where: { $0.name.tokenKind == .keyword(.mutating) })
         let contractInstantiationKeyword = isMutating ? "var" : "let"
         
-        let contractVariableDeclaration: ExprSyntax = "\(raw: contractInstantiationKeyword) _contract = \(structName)(_noDeploy: ())"
+        let contractVariableDeclaration: ExprSyntax = "\(raw: contractInstantiationKeyword) _contract = \(structName)()"
         
         let body: String
         if function.signature.returnClause != nil {
@@ -358,20 +278,11 @@ fileprivate func getStaticInitializerDeclarations(
     structDecl: StructDeclSyntax,
     initDecl: InitializerDeclSyntax
 ) -> FunctionDeclSyntax {
-    let structName = structDecl.name.trimmed
-    
-    let endpointParams = getEndpointVariablesDeclarations(
-        isCallback: false,
-        functionParameters: initDecl.signature.parameterClause.parameters
-    )
-    
-    let body: String = """
-    \(endpointParams.argumentDeclarations)
-    let _ = \(structName.trimmed)(\(endpointParams.contractFunctionCallArguments))
-    """
-    
     let bodySyntax = CodeBlockSyntax(statements: """
-    \(raw: body)
+    if let symbol = dlsym(dlopen(nil, RTLD_LAZY), "__swiftVMInitialize") {
+        typealias InitializeType = @convention(c) () -> Void
+        unsafeBitCast(symbol, to: InitializeType.self)()
+    }
     """)
     
     let staticEndpointSyntax = FunctionDeclSyntax(
@@ -392,21 +303,6 @@ fileprivate func getStaticInitializerDeclarations(
     )
     
     return staticEndpointSyntax
-}
-
-fileprivate func getNoDeployInit() -> InitializerDeclSyntax {
-    return InitializerDeclSyntax(
-        signature: FunctionSignatureSyntax(
-            parameterClause: FunctionParameterClauseSyntax(
-                parameters: [
-                    "_noDeploy: ()"
-                ]
-            )
-        ),
-        body: CodeBlockSyntax(
-            statements: ""
-        )
-    )
 }
 
 fileprivate func getEndpointVariablesDeclarations(

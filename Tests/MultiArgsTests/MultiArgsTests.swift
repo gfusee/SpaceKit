@@ -49,7 +49,7 @@ final class MultiArgsTests: ContractTestCase {
     }
 
     func testMultiValueEncodedWithNoArgument() throws {
-        var contract = try MultiArgsContract.testable("contract")
+        var contract = try self.deployContract(MultiArgsContract.self, at: "contract")
         
         try contract.endpointWithOnlyMultiValueEncoded(value: MultiValueEncoded())
 
@@ -59,7 +59,7 @@ final class MultiArgsTests: ContractTestCase {
     }
     
     func testMultiValueEncodedWithOneArgument() throws {
-        var contract = try MultiArgsContract.testable("contract")
+        var contract = try self.deployContract(MultiArgsContract.self, at: "contract")
         
         var input = MultiValueEncoded<Buffer>()
         input = input.appended(value: "Hello")
@@ -72,7 +72,7 @@ final class MultiArgsTests: ContractTestCase {
     }
     
     func testMultiValueEncodedWithMultipleArguments() throws {
-        var contract = try MultiArgsContract.testable("contract")
+        var contract = try self.deployContract(MultiArgsContract.self, at: "contract")
         
         var input = MultiValueEncoded<Buffer>()
         input = input.appended(value: "Hello")
@@ -87,7 +87,7 @@ final class MultiArgsTests: ContractTestCase {
     }
     
     func testMultiValueEncodedWithMultipleArgumentsAndArgsBefore() throws {
-        var contract = try MultiArgsContract.testable("contract")
+        var contract = try self.deployContract(MultiArgsContract.self, at: "contract")
         
         var input = MultiValueEncoded<Buffer>()
         input = input.appended(value: "Hello")
@@ -102,7 +102,7 @@ final class MultiArgsTests: ContractTestCase {
     }
     
     func getMultiValueEncoded() throws {
-        let contract = try MultiArgsContract.testable("contract")
+        let contract = try self.deployContract(MultiArgsContract.self, at: "contract")
 
         let result = try contract.getDummyMultiValueEncoded()
         

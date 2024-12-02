@@ -2,19 +2,18 @@
 import Foundation
 import BigInt
 
-public func runTestCall<each InputArg: TopEncodeMulti & TopDecodeMulti, ReturnType: TopEncodeMulti & TopDecodeMulti>(
+public func runTestCall<ReturnType: TopEncodeMulti & TopDecodeMulti>(
     contractAddress: String,
     endpointName: String,
-    args: (repeat each InputArg),
     transactionInput: TransactionInput,
     transactionOutput: TransactionOutput = TransactionOutput(),
-    operation: @escaping (repeat each InputArg) -> Void
+    operation: @escaping () -> Void
 ) throws(TransactionError) -> ReturnType {
     let results = try API.runTransactions(
         transactionInput: transactionInput,
         transactionOutput: transactionOutput,
         operations: UncheckedClosure {
-            operation(repeat each args)
+            operation()
         }
     ).results
     
@@ -29,19 +28,18 @@ public func runTestCall<each InputArg: TopEncodeMulti & TopDecodeMulti, ReturnTy
     return extractedResult
 }
 
-public func runTestCall<each InputArg: TopEncodeMulti & TopDecodeMulti>(
+public func runTestCall(
     contractAddress: String,
     endpointName: String,
-    args: (repeat each InputArg),
     transactionInput: TransactionInput,
     transactionOutput: TransactionOutput = TransactionOutput(),
-    operation: @escaping (repeat each InputArg) -> Void
+    operation: @escaping () -> Void
 ) throws(TransactionError) {
     let _ = try API.runTransactions(
         transactionInput: transactionInput,
         transactionOutput: transactionOutput,
         operations: UncheckedClosure {
-            operation(repeat each args)
+            operation()
         }
     )
 }

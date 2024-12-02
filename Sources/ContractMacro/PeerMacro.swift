@@ -13,9 +13,7 @@ extension Contract: PeerMacro {
         
         try structDecl.isValidStruct()
         
-        var results: [FunctionDeclSyntax] = [
-            getInitExportDeclaration(structName: structDecl.name, context: context)
-        ]
+        var results: [FunctionDeclSyntax] = []
         
         let functionDecls = structDecl.memberBlock.members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         for function in functionDecls {
@@ -56,30 +54,6 @@ fileprivate func getEndpointExportDeclaration(structName: TokenSyntax, function:
         \(structName).\(endpointName)()
         """
     )
-    
-    return exportedFunction
-}
-
-fileprivate func getInitExportDeclaration(structName: TokenSyntax, context: some MacroExpansionContext) -> FunctionDeclSyntax {
-    var exportedFunction = FunctionDeclSyntax(
-        name: context.makeUniqueName("init"),
-        signature: FunctionSignatureSyntax(
-            parameterClause: FunctionParameterClauseSyntax(
-                parameters: []
-            )
-        )
-    )
-    
-    exportedFunction.attributes = """
-    #if WASM
-    @_expose(wasm, "init")
-    @_cdecl("init")
-    #endif
-    """
-    
-    exportedFunction.body = CodeBlockSyntax(statements: """
-        \(structName).__contractInit()
-    """)
     
     return exportedFunction
 }

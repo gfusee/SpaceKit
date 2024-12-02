@@ -17,9 +17,22 @@ public struct ContractCallTransactionInput {
         self.esdtValue = esdtValue
     }
     
-    public func toTransactionInput(contractAddress: String) -> TransactionInput {
+    public func toTransactionInput(
+        contractAddress: String,
+        arguments: [TopEncodeMulti & TopDecodeMulti]
+    ) -> TransactionInput {
         let callerAddress = self.callerAddress ?? contractAddress
         var esdtValueArray: [TransactionInput.EsdtPayment] = []
+        
+        var argsVector: Vector<Buffer> = Vector()
+        for arg in arguments {
+            arg.multiEncode(output: &argsVector)
+        }
+        
+        var argsData: [Data] = []
+        argsVector.forEach { argBuffer in
+            argsData.append(Data(argBuffer.toBytes()))
+        }
 
         self.esdtValue.forEach { transfer in
             esdtValueArray.append(
@@ -36,7 +49,7 @@ public struct ContractCallTransactionInput {
             callerAddress: callerAddress.toAddressData(),
             egldValue: BigInt(bigUint: self.egldValue),
             esdtValue: esdtValueArray,
-            arguments: []
+            arguments: argsData
         )
     }
 }

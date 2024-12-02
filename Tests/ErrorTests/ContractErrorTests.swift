@@ -26,7 +26,7 @@ final class ContractErrorTests: ContractTestCase {
     }
     
     func testUserError() throws {
-        let contract = try ErrorContract.testable("contract")
+        let contract = try self.deployContract(ErrorContract.self, at: "contract")
         
         do {
             try contract.throwError(errorMessage: "This is an user error message")
@@ -38,7 +38,7 @@ final class ContractErrorTests: ContractTestCase {
     }
     
     func testUserErrorThroughRequire() throws {
-        let contract = try ErrorContract.testable("contract")
+        let contract = try self.deployContract(ErrorContract.self, at: "contract")
         
         do {
             try contract.throwErrorThroughRequire()
@@ -50,7 +50,7 @@ final class ContractErrorTests: ContractTestCase {
     }
     
     func testRequireNoError() throws {
-        let contract = try ErrorContract.testable("contract")
+        let contract = try self.deployContract(ErrorContract.self, at: "contract")
         
         try contract.dontThrowErrorThroughRequire()
     }
