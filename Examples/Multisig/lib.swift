@@ -1,13 +1,15 @@
 import SpaceKit
 
-@Contract struct Multisig {
-    init(
-        quorum: UInt32,
-        board: MultiValueEncoded<Address>
-    ) {
-        self.initialise(quorum: quorum, board: board)
-    }
+@Init func initialize(
+    quorum: UInt32,
+    board: MultiValueEncoded<Address>
+) {
+    let controller = Multisig()
     
+    controller.initialise(quorum: quorum, board: board)
+}
+
+@Contract struct Multisig {
     // TODO: ensure the upgrade endpoint is marked with something with @Upgrade, so it cannot be a mistake
     public func upgrade(
         quorum: UInt32,

@@ -1,9 +1,9 @@
 import SpaceKit
 
 @Init func initialize(initialValue: BigUint) {
-    var adderController = Adder()
+    var controller = Adder()
     
-    adderController.sum = initialValue
+    controller.sum = initialValue
 }
 
 @Contract struct Adder {

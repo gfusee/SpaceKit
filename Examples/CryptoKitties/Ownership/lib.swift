@@ -18,6 +18,26 @@ import CryptoKittiesRandom
     let tokenId: UInt32
 }
 
+@Init func initialize(
+    birthFee: BigUint,
+    optGeneScienceContractAddress: OptionalArgument<Address>,
+    optKittyAuctionContractAddress: OptionalArgument<Address>
+) {
+    var controller = CryptoKittiesOwnership()
+    
+    controller.birthFee = birthFee
+    
+    if let geneScienceContractAddress = optGeneScienceContractAddress.intoOptional() {
+        controller.geneScienceContractAddress = geneScienceContractAddress
+    }
+    
+    if let kittyAuctionContractAddress = optKittyAuctionContractAddress.intoOptional() {
+        controller.kittyAuctionContractAddress = kittyAuctionContractAddress
+    }
+    
+    controller.createGenesisKitty()
+}
+
 @Contract struct CryptoKittiesOwnership {
     @Storage(key: "geneScienceContractAddress") var geneScienceContractAddress: Address
     @Storage(key: "kittyAuctionContractAddress") var kittyAuctionContractAddress: Address
@@ -29,24 +49,6 @@ import CryptoKittiesRandom
     @Mapping<Address, UInt32>(key: "nrOwnedKitties") var numberOfOwnedKittiesForAddress
     @Mapping<UInt32, Address>(key: "approvedAddress") var approvedAddressForId
     @Mapping<UInt32, Address>(key: "sireAllowedAddress") var sireAllowedAddressForId
-    
-    init(
-        birthFee: BigUint,
-        optGeneScienceContractAddress: OptionalArgument<Address>,
-        optKittyAuctionContractAddress: OptionalArgument<Address>
-    ) {
-        self.birthFee = birthFee
-        
-        if let geneScienceContractAddress = optGeneScienceContractAddress.intoOptional() {
-            self.geneScienceContractAddress = geneScienceContractAddress
-        }
-        
-        if let kittyAuctionContractAddress = optKittyAuctionContractAddress.intoOptional() {
-            self.kittyAuctionContractAddress = kittyAuctionContractAddress
-        }
-        
-        self.createGenesisKitty()
-    }
     
     public mutating func setGeneScienceContractAddress(address: Address) {
         assertOwner()

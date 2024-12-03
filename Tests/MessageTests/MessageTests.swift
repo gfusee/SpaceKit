@@ -2,9 +2,9 @@ import XCTest
 import SpaceKit
 
 @Init func initialize() {
-    var messageController = MessageContract()
+    var controller = MessageContract()
     
-    messageController.address = Message.caller
+    controller.address = Message.caller
 }
 
 @Contract struct MessageContract {
