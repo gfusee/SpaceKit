@@ -3,6 +3,11 @@
 import Darwin // For macOS
 #elseif os(Linux)
 import Glibc // For Linux
+
+#if !canImport(dlfcn)
+let RTLD_LAZY = Int32(0x0001) // Fallback definition for RTLD_LAZY
+#endif
+
 #elseif os(Windows)
 import WinSDK // For Windows
 #endif
