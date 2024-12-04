@@ -34,7 +34,7 @@ open class ContractTestCase: XCTestCase {
     final public func deployContract<T: ContractEndpointSelector & SwiftVMCompatibleContract>(
         _ contractType: T.Type,
         at address: String,
-        arguments: [TopEncodeMulti & TopDecodeMulti] = [],
+        arguments: [any TopEncodeMulti & TopDecodeMulti] = [],
         transactionInput: ContractCallTransactionInput? = nil,
         transactionOutput: TransactionOutput = TransactionOutput()
     ) throws(TransactionError) -> T.TestableContractType {

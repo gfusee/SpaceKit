@@ -3,7 +3,7 @@
 fileprivate let NULL_ENTRY: UInt32 = 0
 fileprivate let NODE_ID_IDENTIFIER: StaticString = ".node_id"
 
-public struct SetMapper<V: TopEncode & NestedEncode & TopDecode>: StorageMapper {
+public struct SetMapper<V: SpaceCodable>: StorageMapper {
     // TODO: add tests
     private let baseKey: Buffer
     private let queueMapper: QueueMapper<V>
@@ -117,3 +117,17 @@ extension SetMapper: TopEncodeMulti {
         }
     }
 }
+
+#if !WASM
+extension SetMapper: TopDecodeMulti {
+    public typealias SwiftVMDecoded = MultiValueEncoded<V>
+    
+    static public func fromTopDecodeMultiInput(_ input: inout some TopDecodeMultiInput) -> MultiValueEncoded<V> {
+        MultiValueEncoded(topDecodeMulti: &input)
+    }
+    
+    public init(topDecodeMulti input: inout some TopDecodeMultiInput) {
+        smartContractError(message: "SetMapper should not be decoded using TopDecodeMulti in the SwiftVM. If you encounter this error please open an issue on GitHub.")
+    }
+}
+#endif

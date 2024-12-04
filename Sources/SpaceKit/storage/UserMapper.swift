@@ -99,3 +99,17 @@ extension UserMapper: TopEncodeMulti {
         MultiValueEncoded(items: self.getAllAddresses()).multiEncode(output: &output)
     }
 }
+
+#if !WASM
+extension UserMapper: TopDecodeMulti {
+    public typealias SwiftVMDecoded = MultiValueEncoded<Address>
+    
+    static public func fromTopDecodeMultiInput(_ input: inout some TopDecodeMultiInput) -> MultiValueEncoded<Address> {
+        MultiValueEncoded(topDecodeMulti: &input)
+    }
+    
+    public init(topDecodeMulti input: inout some TopDecodeMultiInput) {
+        smartContractError(message: "UserMapper should not be decoded using TopDecodeMulti in the SwiftVM. If you encounter this error please open an issue on GitHub.")
+    }
+}
+#endif

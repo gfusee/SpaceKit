@@ -47,9 +47,17 @@ extension Contract: MemberMacro {
         #endif
         """
         
+        let bundleHelperClass: DeclSyntax = """
+        #if !WASM
+        public class __BundleHelper {}
+        #endif
+        """
+            
+        
         var results: [DeclSyntax] = [
             DeclSyntax(stringLiteral: testableDeclSyntax),
-            DeclSyntax(stringLiteral: contractInitDeclSyntax)
+            DeclSyntax(stringLiteral: contractInitDeclSyntax),
+            bundleHelperClass
         ]
         
         results.append(contentsOf:
@@ -176,17 +184,39 @@ fileprivate func getTestableStructDeclaration(
         
         let argsDeclaration = "[\(variableNames)]"
         
+        var runTestCallArguments: [String] = [
+            "contractAddress: self.address",
+            """
+            endpointName: "\(function.name.trimmed.description)"
+            """,
+            """
+            transactionInput: transactionInput.toTransactionInput(
+                contractAddress: self.address,
+                arguments: \(argsDeclaration)
+            )
+            """,
+            "transactionOutput: transactionOutput",
+        ]
+        
+        let returnType = testableFunction.signature.returnClause?.type.trimmed
+        
+        if let returnType = returnType {
+            runTestCallArguments.append("for: \(returnType).self")
+        }
+        
+        if testableFunction.signature.returnClause != nil {
+            testableFunction.signature.returnClause?.type = "\(returnType).SwiftVMDecoded"
+        } else {
+            let type: TypeSyntax = "Void"
+            testableFunction.signature.returnClause = ReturnClauseSyntax(type: type)
+        }
+        
+        
         testableFunction.body = CodeBlockSyntax(
             statements: """
             let transactionInput = transactionInput ?? ContractCallTransactionInput()
             return try runTestCall(
-                contractAddress: self.address,
-                endpointName: "\(function.name)",
-                transactionInput: transactionInput.toTransactionInput(
-                    contractAddress: self.address,
-                    arguments: \(raw: argsDeclaration)
-                ),
-                transactionOutput: transactionOutput
+                \(raw: runTestCallArguments.joined(separator: ",\n"))
             ) {
                 \(structDecl.name.trimmed).\(function.name)()
             }
@@ -279,7 +309,16 @@ fileprivate func getStaticInitializerDeclarations(
     initDecl: InitializerDeclSyntax
 ) -> FunctionDeclSyntax {
     let bodySyntax = CodeBlockSyntax(statements: """
-    dynamicInitSymbolCalling()
+    let bundle = Bundle(for: type(of: __BundleHelper()))
+    let fullyQualifiedName = String(reflecting: Self.self)
+    if let moduleName = fullyQualifiedName.split(separator: ".").first {
+        let className = moduleName + "." + "__ContractInit"
+        if let classType = bundle.classNamed(className) as? SwiftVMInit.Type {
+            _ = classType.init()
+        } else {
+            // Class not found
+        }
+    }
     """)
     
     let staticEndpointSyntax = FunctionDeclSyntax(

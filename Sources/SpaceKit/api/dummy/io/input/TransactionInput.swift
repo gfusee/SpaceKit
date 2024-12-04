@@ -19,7 +19,7 @@ public struct ContractCallTransactionInput {
     
     public func toTransactionInput(
         contractAddress: String,
-        arguments: [TopEncodeMulti & TopDecodeMulti]
+        arguments: [any TopEncodeMulti & TopDecodeMulti]
     ) -> TransactionInput {
         let callerAddress = self.callerAddress ?? contractAddress
         var esdtValueArray: [TransactionInput.EsdtPayment] = []

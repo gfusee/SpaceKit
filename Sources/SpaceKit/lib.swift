@@ -1,5 +1,15 @@
 // TODO: report a Swift error in which Int64(<Int32 or UInt64 variable>) and UInt64(<Int32 or Int64 variable>) don't work in -no-allocations mode
 
+#if !WASM
+
+#if !canImport (Foundation)
+#error("Foundation framework is required when not compiling to WebAssembly.")
+#else
+@_exported import Foundation
+#endif
+
+#endif
+
 #if WASM
 nonisolated(unsafe) var API = VMApi()
 #else
@@ -22,7 +32,7 @@ public macro Callback() = #externalMacro(module: "CallbackMacro", type: "Callbac
 @attached(extension, names: arbitrary)
 public macro Event(dataType: TopEncode.Type? = nil) = #externalMacro(module: "EventMacro", type: "Event")
 
-@attached(peer)
+@attached(peer, names: named(__ContractInit))
 public macro Init() = #externalMacro(module: "InitMacro", type: "Init")
 
 @attached(extension, names: arbitrary)

@@ -2,13 +2,14 @@
 import Foundation
 import BigInt
 
-public func runTestCall<ReturnType: TopEncodeMulti & TopDecodeMulti>(
+public func runTestCall<ReturnType: TopDecodeMulti>(
     contractAddress: String,
     endpointName: String,
     transactionInput: TransactionInput,
     transactionOutput: TransactionOutput = TransactionOutput(),
+    for returnType: ReturnType.Type, // So Swift doesn't complain of ReturnType not used in the function signature
     operation: @escaping () -> Void
-) throws(TransactionError) -> ReturnType {
+) throws(TransactionError) -> ReturnType.SwiftVMDecoded {
     let results = try API.runTransactions(
         transactionInput: transactionInput,
         transactionOutput: transactionOutput,
@@ -23,7 +24,7 @@ public func runTestCall<ReturnType: TopEncodeMulti & TopDecodeMulti>(
         extractedResultBuffers = extractedResultBuffers.appended(Buffer(data: Array(bytes)))
     }
     
-    let extractedResult = ReturnType(topDecodeMulti: &extractedResultBuffers)
+    let extractedResult = ReturnType.fromTopDecodeMultiInput(&extractedResultBuffers)
     
     return extractedResult
 }

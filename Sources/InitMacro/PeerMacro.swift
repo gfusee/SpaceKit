@@ -15,13 +15,16 @@ extension Init: PeerMacro {
             throw InitMacroError.functionNameMustBeInitialize
         }
         
+        let initDeclarations = getInitExportDeclarations(funcDecl: funcDecl, context: context)
+        
         return [
-            DeclSyntax(getInitExportDeclarations(funcDecl: funcDecl, context: context))
+            DeclSyntax(initDeclarations.wasmExportedFunction),
+            DeclSyntax(initDeclarations.swiftVmInitClass)
         ]
     }
 }
 
-fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context: some MacroExpansionContext) -> FunctionDeclSyntax {
+fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context: some MacroExpansionContext) -> (wasmExportedFunction: FunctionDeclSyntax, swiftVmInitClass: DeclSyntax) {
     let endpointParams = getInitVariablesDeclarations(
         functionParameters: funcDecl.signature.parameterClause.parameters
     )
@@ -31,7 +34,7 @@ fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context
     \(funcDecl.body?.statements ?? [])
     """)
     
-    var exportedFunction = FunctionDeclSyntax(
+    var wasmExportedFunction = FunctionDeclSyntax(
         name: context.makeUniqueName("init"),
         signature: FunctionSignatureSyntax(
             parameterClause: FunctionParameterClauseSyntax(
@@ -41,16 +44,22 @@ fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context
         body: bodySyntax
     )
     
-    exportedFunction.attributes = """
+    wasmExportedFunction.attributes = """
     #if WASM
     @_expose(wasm, "init")
     @_cdecl("init")
-    #else
-    @_silgen_name("__swiftVMInitialize")
     #endif
     """
     
-    return exportedFunction
+    let swiftVmInitClass: DeclSyntax = """
+    #if !WASM
+    class __ContractInit: SwiftVMInit {
+        required init() \(bodySyntax)
+    }
+    #endif
+    """
+    
+    return (wasmExportedFunction: wasmExportedFunction, swiftVmInitClass: swiftVmInitClass)
 }
 
 fileprivate func getInitVariablesDeclarations(
