@@ -11,6 +11,7 @@ open class ContractTestCase: XCTestCase {
     open override func setUp() {
         super.setUp()
         
+        print("api global lock")
         API.globalLock.lock()
         
         var world = WorldState()
@@ -22,6 +23,7 @@ open class ContractTestCase: XCTestCase {
     open override func tearDown() {
         super.tearDown()
         
+        print("api global unlock")
         API.globalLock.unlock()
     }
     
