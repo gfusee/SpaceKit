@@ -4,6 +4,27 @@ import SpaceKit
 
 let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
 
+@Init func initialize(
+    pingAmount: BigUint,
+    durationInSeconds: UInt64,
+    optActivationTimestamp: UInt64?,
+    maxFunds: OptionalArgument<BigUint>
+) {
+    var controller = PingPong()
+    
+    controller.pingAmount = pingAmount
+    let activationTimestamp = if let activationTimestamp = optActivationTimestamp {
+        activationTimestamp
+    } else {
+        Blockchain.getBlockTimestamp()
+    }
+    
+    let deadline = activationTimestamp + durationInSeconds
+    controller.deadline = deadline
+    controller.activationTimestamp = activationTimestamp
+    controller.maxFunds = maxFunds.intoOptional()
+}
+
 @Contract struct PingPong {
     @Storage(key: "pingAmount") var pingAmount: BigUint
     @Storage(key: "deadline") var deadline: UInt64
@@ -12,25 +33,6 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
     @UserMapping(key: "user") var users: UserMapper
     @Mapping(key: "userStatus") var userStatus: StorageMap<UInt32, UserStatus>
     @Storage(key: "pongAllLastUser") var pongAllLastUser: UInt32
-    
-    init(
-        pingAmount: BigUint,
-        durationInSeconds: UInt64,
-        optActivationTimestamp: UInt64?,
-        maxFunds: OptionalArgument<BigUint>
-    ) {
-        self.pingAmount = pingAmount
-        let activationTimestamp = if let activationTimestamp = optActivationTimestamp {
-            activationTimestamp
-        } else {
-            Blockchain.getBlockTimestamp()
-        }
-        
-        let deadline = activationTimestamp + durationInSeconds
-        self.deadline = deadline
-        self.activationTimestamp = activationTimestamp
-        self.maxFunds = maxFunds.intoOptional()
-    }
     
     public mutating func ping() {
         let payment = Message.egldValue

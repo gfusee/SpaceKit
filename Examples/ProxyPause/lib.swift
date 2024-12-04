@@ -5,14 +5,16 @@ import SpaceKit
     case unpause
 }
 
+@Init func initialize() {
+    let controller = PauseProxy()
+    
+    let _ = controller.allOwners.insert(value: Message.caller)
+}
+
 @Contract struct PauseProxy {
     
     @SetMapping<Address>(key: "owners") var allOwners
     @SetMapping<Address>(key: "contracts") var allContracts
-    
-    init() {
-        let _ = self.allOwners.insert(value: Message.caller)
-    }
     
     public func addContracts(contracts: MultiValueEncoded<Address>) {
         self.requireOwner()

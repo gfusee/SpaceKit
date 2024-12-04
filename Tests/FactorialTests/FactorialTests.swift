@@ -31,7 +31,7 @@ final class FactorialTests: ContractTestCase {
     }
     
     func testZero() throws {
-        let contract = try Factorial.testable("factorial")
+        let contract = try self.deployContract(Factorial.self, at: "factorial")
         
         let result = try contract.factorial(value: 0)
         
@@ -39,7 +39,7 @@ final class FactorialTests: ContractTestCase {
     }
     
     func testOne() throws {
-        let contract = try Factorial.testable("factorial")
+        let contract = try self.deployContract(Factorial.self, at: "factorial")
         
         let result = try contract.factorial(value: 1)
         
@@ -47,7 +47,7 @@ final class FactorialTests: ContractTestCase {
     }
     
     func testTen() throws {
-        let contract = try Factorial.testable("factorial")
+        let contract = try self.deployContract(Factorial.self, at: "factorial")
         
         let result = try contract.factorial(value: 10)
         

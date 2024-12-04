@@ -134,15 +134,15 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallEndpointWithoutParameter() throws {
-        let _ = try CalleeContract.testable("callee")
-        var caller = try CallerContract.testable("caller")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee")
+        var caller = try self.deployContract(CallerContract.self, at: "caller")
         
         try caller.callEndpointWithoutParameter(calleeAddress: "callee")
     }
     
     func testCallEndpointWithOneParameter() throws {
-        let _ = try CalleeContract.testable("callee")
-        var caller = try CallerContract.testable("caller")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee")
+        var caller = try self.deployContract(CallerContract.self, at: "caller")
         
         let result = try caller.callEndpointWithOneParameter(calleeAddress: "callee", arg: 5)
         
@@ -150,8 +150,8 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallEndpointOnTheSameLine() throws {
-        let _ = try CalleeContract.testable("callee")
-        var caller = try CallerContract.testable("caller")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee")
+        var caller = try self.deployContract(CallerContract.self, at: "caller")
         
         let result = try caller.callEndpointOnTheSameLine(calleeAddress: "callee", arg: "buffer")
         
@@ -159,8 +159,8 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallEndpointWithMultipleParameters() throws {
-        let _ = try CalleeContract.testable("callee")
-        var caller = try CallerContract.testable("caller")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee")
+        var caller = try self.deployContract(CallerContract.self, at: "caller")
         
         let result = try caller.callEndpointWithMultipleParameters(calleeAddress: "callee", firstArg: 2, secondArg: "buffer")
         
@@ -168,8 +168,8 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallEndpointWithNonNamedParameters() throws {
-        let _ = try CalleeContract.testable("callee")
-        var caller = try CallerContract.testable("caller")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee")
+        var caller = try self.deployContract(CallerContract.self, at: "caller")
         
         let result = try caller.callEndpointWithMultipleParametersNonNamed(calleeAddress: "callee", firstArg: 2, secondArg: "buffer")
         
@@ -177,7 +177,7 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallEndpointCalleeNotRegistered() throws {
-        var caller = try CallerContract.testable("caller")
+        var caller = try self.deployContract(CallerContract.self, at: "caller")
         
         do {
             try caller.callEndpointWithoutParameter(calleeAddress: "callee")
@@ -189,8 +189,8 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallEndpointThrowError() throws {
-        let _ = try CalleeContract.testable("callee")
-        var caller = try CallerContract.testable("caller")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee")
+        var caller = try self.deployContract(CallerContract.self, at: "caller")
         
         do {
             try caller.callEndpointThrowError(calleeAddress: "callee")
@@ -202,8 +202,8 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallReturnEgldNotEnoughCallerBalance() throws {
-        let _ = try CalleeContract.testable("callee")
-        var caller = try CallerContract.testable("caller")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee")
+        var caller = try self.deployContract(CallerContract.self, at: "caller")
         
         do {
             let _ = try caller.callReturnEgldValue(calleeAddress: "callee", egldValue: 100)
@@ -215,8 +215,8 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallReturnEgld() throws {
-        let _ = try CalleeContract.testable("callee")
-        var caller = try CallerContract.testable("callerWithBalance")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee")
+        var caller = try self.deployContract(CallerContract.self, at: "callerWithBalance")
         
         let result = try caller.callReturnEgldValue(calleeAddress: "callee", egldValue: 100)
         
@@ -226,9 +226,9 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallNestedCallEndpointWithMultipleParameters() throws {
-        let _ = try CalleeContract.testable("callee")
-        let _ = try CalleeContract.testable("callee2")
-        var caller = try CallerContract.testable("caller")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee2")
+        var caller = try self.deployContract(CallerContract.self, at: "caller")
         
         let result = try caller.callNestedCallEndpointWithMultipleParameters(calleeAddress: "callee", secondCalleeAddress: "callee2", firstArg: 2, secondArg: "buffer")
         
@@ -236,9 +236,9 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallNestedEndpointThrowError() throws {
-        let _ = try CalleeContract.testable("callee")
-        let _ = try CalleeContract.testable("callee2")
-        var caller = try CallerContract.testable("caller")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee")
+        let _ = try self.deployContract(CalleeContract.self, at: "callee2")
+        var caller = try self.deployContract(CallerContract.self, at: "caller")
         
         do {
             try caller.callNestedCallThrowError(calleeAddress: "callee", secondCalleeAddress: "callee2")

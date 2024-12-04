@@ -240,7 +240,7 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntTooLargeBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("contract").testTopDecodeIntTooLargeBufferShouldFail()
+            try self.deployContract(IntTestsContract.self, at: "contract").testTopDecodeIntTooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -295,7 +295,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntEmptyBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("contract").testNestedDecodeIntEmptyBufferShouldFail()
+            try self.deployContract(IntTestsContract.self, at: "contract").testNestedDecodeIntEmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -305,7 +305,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntTooSmallBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("contract").testNestedDecodeIntTooSmallBufferShouldFail()
+            try self.deployContract(IntTestsContract.self, at: "contract").testNestedDecodeIntTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -336,7 +336,7 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeTwoIntsTooSmallBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("contract").testNestedDecodeTwoIntsTooSmallBufferShouldFail()
+            try self.deployContract(IntTestsContract.self, at: "contract").testNestedDecodeTwoIntsTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {

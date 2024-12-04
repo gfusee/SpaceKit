@@ -189,7 +189,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testTopDecodeUInt64TooLargeBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("contract").testTopDecodeUInt64TooLargeBufferShouldFail()
+            try self.deployContract(UInt64TestsContract.self, at: "contract").testTopDecodeUInt64TooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -235,7 +235,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64EmptyBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("contract").testNestedDecodeUInt64EmptyBufferShouldFail()
+            try self.deployContract(UInt64TestsContract.self, at: "contract").testNestedDecodeUInt64EmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -245,7 +245,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64TooSmallBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("contract").testNestedDecodeUInt64TooSmallBufferShouldFail()
+            try self.deployContract(UInt64TestsContract.self, at: "contract").testNestedDecodeUInt64TooSmallBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -276,7 +276,7 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeTwoUInt64sTooSmallBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("contract").testNestedDecodeTwoUInt64sTooSmallBufferShouldFail()
+            try self.deployContract(UInt64TestsContract.self, at: "contract").testNestedDecodeTwoUInt64sTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {

@@ -54,8 +54,8 @@ final class ExecuteOnDestContextTests: ContractTestCase {
     }
     
     func testSendNoToken() throws {
-        let sender = try ExecuteOnDestContextTestsContract.Testable("sender")
-        let receiver = try ExecuteOnDestContextTestsContract.Testable("receiver")
+        let sender = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "sender")
+        let receiver = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "receiver")
         
         let esdtValue: Vector<TokenPayment> = Vector()
         
@@ -74,8 +74,8 @@ final class ExecuteOnDestContextTests: ContractTestCase {
     }
 
     func testSendOneFungibleToken() throws {
-        let sender = try ExecuteOnDestContextTestsContract.Testable("sender")
-        let receiver = try ExecuteOnDestContextTestsContract.Testable("receiver")
+        let sender = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "sender")
+        let receiver = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "receiver")
         
         var esdtValue: Vector<TokenPayment> = Vector()
         
@@ -132,8 +132,8 @@ final class ExecuteOnDestContextTests: ContractTestCase {
     }
     
     func testSendOneNonFungibleToken() throws {
-        let sender = try ExecuteOnDestContextTestsContract.Testable("sender")
-        let receiver = try ExecuteOnDestContextTestsContract.Testable("receiver")
+        let sender = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "sender")
+        let receiver = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "receiver")
         
         var esdtValue: Vector<TokenPayment> = Vector()
         
@@ -190,8 +190,8 @@ final class ExecuteOnDestContextTests: ContractTestCase {
     }
     
     func testSendMultipleTokens() throws {
-        let sender = try ExecuteOnDestContextTestsContract.Testable("sender")
-        let receiver = try ExecuteOnDestContextTestsContract.Testable("receiver")
+        let sender = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "sender")
+        let receiver = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "receiver")
         
         var esdtValue: Vector<TokenPayment> = Vector()
         

@@ -1,4 +1,4 @@
-@propertyWrapper public struct SetMapping<V: TopEncode & NestedEncode & TopDecode> {
+@propertyWrapper public struct SetMapping<V: SpaceCodable> {
     
     private let key: Buffer
     

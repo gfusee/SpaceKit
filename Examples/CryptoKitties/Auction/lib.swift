@@ -7,6 +7,23 @@ import SpaceKit
     case approveSiringAndReturnKitty(approvedAddress: Address, kittyOwner: Address, kittyId: UInt32)
 }
 
+@Init func initialize(
+    genZeroKittyStartingPrice: BigUint,
+    genZeroKittyEndingPrice: BigUint,
+    genZeroKittyAuctionDuration: UInt64,
+    optKittyOwnershipContractAddress: OptionalArgument<Address>
+) {
+    var controller = CryptoKittiesAuction()
+    
+    controller.genZeroKittyStartingPrice = genZeroKittyStartingPrice
+    controller.genZeroKittyEndingPrice = genZeroKittyEndingPrice
+    controller.genZeroKittyAuctionDuration = genZeroKittyAuctionDuration
+    
+    if let kittyOwnershipContractAddress = optKittyOwnershipContractAddress.intoOptional() {
+        controller.kittyOwnershipContractAddress = kittyOwnershipContractAddress
+    }
+}
+
 @Contract struct CryptoKittiesAuction {
     @Storage(key: "kittyOwnershipContractAddress") var kittyOwnershipContractAddress: Address
     @Storage(key: "genZeroKittyStartingPrice") var genZeroKittyStartingPrice: BigUint
@@ -14,21 +31,6 @@ import SpaceKit
     @Storage(key: "genZeroKittyAuctionDuration") var genZeroKittyAuctionDuration: UInt64
     @Mapping<UInt32, Auction>(key: "auction") var auctionForKittyId
     
-    
-    init(
-        genZeroKittyStartingPrice: BigUint,
-        genZeroKittyEndingPrice: BigUint,
-        genZeroKittyAuctionDuration: UInt64,
-        optKittyOwnershipContractAddress: OptionalArgument<Address>
-    ) {
-        self.genZeroKittyStartingPrice = genZeroKittyStartingPrice
-        self.genZeroKittyEndingPrice = genZeroKittyEndingPrice
-        self.genZeroKittyAuctionDuration = genZeroKittyAuctionDuration
-        
-        if let kittyOwnershipContractAddress = optKittyOwnershipContractAddress.intoOptional() {
-            self.kittyOwnershipContractAddress = kittyOwnershipContractAddress
-        }
-    }
     
     public mutating func setKittyOwnershipContractAddress(address: Address) {
         assertOwner()

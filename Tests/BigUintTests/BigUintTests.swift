@@ -105,7 +105,7 @@ final class BigUintTests: ContractTestCase {
     
     func testSubstractTwoBigUintNegativeShouldFail() throws {
         do {
-            try BigUintTestsContract.testable("contract").testSubstractTwoBigUintNegativeShouldFail()
+            try self.deployContract(BigUintTestsContract.self, at: "contract").testSubstractTwoBigUintNegativeShouldFail()
             
             XCTFail()
         } catch {
@@ -151,7 +151,7 @@ final class BigUintTests: ContractTestCase {
     
     func testDivideTwoBigUintZeroRightSideShouldFail() throws {
         do {
-            try BigUintTestsContract.testable("contract").testDivideTwoBigUintZeroRightSideShouldFail()
+            try self.deployContract(BigUintTestsContract.self, at: "contract").testDivideTwoBigUintZeroRightSideShouldFail()
             
             XCTFail()
         } catch {
@@ -188,7 +188,7 @@ final class BigUintTests: ContractTestCase {
     
     func testModuloTwoBigUintZeroRightSideShouldFail() throws {
         do {
-            try BigUintTestsContract.testable("contract").testModuloTwoBigUintZeroRightSideShouldFail()
+            try self.deployContract(BigUintTestsContract.self, at: "contract").testModuloTwoBigUintZeroRightSideShouldFail()
             
             XCTFail()
         } catch {

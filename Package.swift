@@ -34,6 +34,7 @@ var libraryDependencies: [Target.Dependency] = [
     "ContractMacro",
     "CodableMacro",
     "EventMacro",
+    "InitMacro",
     "ProxyMacro"
 ]
 
@@ -410,6 +411,18 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .target(
+            name: "MultiFile",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/MultiFile",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
             name: "Multisig",
             dependencies: [
                 "SpaceKit"
@@ -451,6 +464,10 @@ let package = Package(
                 "SpaceKit"
             ],
             path: "Examples/SendTests",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
@@ -496,6 +513,14 @@ let package = Package(
         ),
         .macro(
             name: "EventMacro",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+            ]
+        ),
+        .macro(
+            name: "InitMacro",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),

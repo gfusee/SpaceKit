@@ -50,6 +50,9 @@ extension Optional: TopDecode where Wrapped: NestedDecode {
 
 extension Optional: TopDecodeMulti where Wrapped: NestedDecode & TopDecodeMulti {}
 
+// TODO: add tests
+extension Optional: TopEncodeMulti where Wrapped: NestedEncode & TopEncodeMulti {}
+
 extension Optional: NestedDecode where Wrapped: NestedDecode {
     public init(depDecode input: inout some NestedDecodeInput) {
         let discriminant = UInt8(depDecode: &input)

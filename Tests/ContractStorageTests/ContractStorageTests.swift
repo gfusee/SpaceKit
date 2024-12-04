@@ -31,7 +31,7 @@ final class ContractStorageTests: ContractTestCase {
     }
     
     func testGetCounterBeforeAnyIncrease() throws {
-        let contract = try CounterContract.testable("counter")
+        let contract = try self.deployContract(CounterContract.self, at: "counter")
         
         let globalCounterValue = try contract.getGlobalCounterValue()
         
@@ -39,7 +39,7 @@ final class ContractStorageTests: ContractTestCase {
     }
     
     func testIncreaseCounterOnce() throws {
-        var contract = try CounterContract.testable("counter")
+        var contract = try self.deployContract(CounterContract.self, at: "counter")
         
         try contract.increaseByOne()
         
@@ -49,7 +49,7 @@ final class ContractStorageTests: ContractTestCase {
     }
     
     func testIncreaseCounterTwice() throws {
-        var contract = try CounterContract.testable("counter")
+        var contract = try self.deployContract(CounterContract.self, at: "counter")
         
         try contract.increaseByOne()
         try contract.increaseByOne()
@@ -60,10 +60,10 @@ final class ContractStorageTests: ContractTestCase {
     }
     
     func testIncreaseCounterTwoContracts() throws {
-        var contract1 = try CounterContract.testable("counter1")
+        var contract1 = try self.deployContract(CounterContract.self, at: "counter1")
         try contract1.increaseByOne()
         
-        var contract2 = try CounterContract.testable("counter2")
+        var contract2 = try self.deployContract(CounterContract.self, at: "counter2")
         try contract2.increaseByOne()
         try contract2.increaseByOne()
         
@@ -75,7 +75,7 @@ final class ContractStorageTests: ContractTestCase {
     }
     
     func testIncreaseCounterErrorInTransactionShouldRevert() throws {
-        var contract = try CounterContract.testable("counter")
+        var contract = try self.deployContract(CounterContract.self, at: "counter")
         
         try? contract.increaseByOneThrowError()
         

@@ -32,7 +32,7 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendEgld() throws {
-        let contract = try EgldTransferContract.testable("contract")
+        let contract = try self.deployContract(EgldTransferContract.self, at: "contract")
         let user = self.getAccount(address: "user")!
         
         let contractBalanceBefore = self.getAccount(address: "contract")!.getBalance()
@@ -51,7 +51,7 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendAllEgldBalance() throws {
-        let contract = try EgldTransferContract.testable("contract")
+        let contract = try self.deployContract(EgldTransferContract.self, at: "contract")
         let user = self.getAccount(address: "user")!
         
         try contract.transferEgld(to: user.toAddress(), value: 100)
@@ -64,7 +64,7 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendEgldTransactionFailedShouldRevert() throws {
-        let contract = try EgldTransferContract.testable("contract")
+        let contract = try self.deployContract(EgldTransferContract.self, at: "contract")
         let user = self.getAccount(address: "user")!
         
         try? contract.transferEgldThenFail(to: user.toAddress(), value: 10)
@@ -77,7 +77,7 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendEgldNotEnoughBalanceShouldRevert() throws {
-        let contract = try EgldTransferContract.testable("contract")
+        let contract = try self.deployContract(EgldTransferContract.self, at: "contract")
         let user = self.getAccount(address: "user")!
         
         do {

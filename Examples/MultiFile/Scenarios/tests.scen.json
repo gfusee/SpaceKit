@@ -1,0 +1,96 @@
+{
+    "name": "multifile tests",
+    "comment": "",
+    "gasSchedule": "v3",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "1",
+                    "balance": "0"
+                }
+            },
+            "newAddresses": [
+                {
+                    "creatorAddress": "address:owner",
+                    "creatorNonce": "1",
+                    "newAddress": "sc:multifile"
+                }
+            ]
+        },
+        {
+            "step": "scDeploy",
+            "id": "1",
+            "tx": {
+                "from": "address:owner",
+                "contractCode": "file:../output/MultiFile.wasm",
+                "arguments": [
+                    "str:first",
+                    "str:second"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": "*",
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "2",
+            "tx": {
+                "to": "sc:multifile",
+                "function": "getFirstControllerStoredValue",
+                "arguments": []
+            },
+            "expect": {
+                "out": [
+                    "str:first"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "3",
+            "tx": {
+                "to": "sc:multifile",
+                "function": "getSecondControllerStoredValue",
+                "arguments": []
+            },
+            "expect": {
+                "out": [
+                    "str:second"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "storage": {},
+                    "code": ""
+                },
+                "sc:multifile": {
+                    "nonce": "0",
+                    "balance": "0",
+                    "storage": {
+                        "str:firstControllerStoredValue": "str:first",
+                        "str:secondControllerStoredValue": "str:second"
+                    },
+                    "code": "file:../output/MultiFile.wasm"
+                }
+            }
+        }
+    ]
+}

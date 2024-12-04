@@ -2,6 +2,16 @@ import SpaceKit
 
 let PERCENTAGE_TOTAL: UInt64 = 100
 
+// TODO: use TokenIdentifier type once implemented
+@Init func initialize(tokenIdentifier: Buffer) {
+    // TODO: add a require to check that the token identifier is valid (same as the Rust contract)
+    
+    var controller = TokenRelease()
+    
+    controller.tokenIdentifier = tokenIdentifier
+    controller.setupPeriodStatus = true
+}
+
 @Contract struct TokenRelease {
     @Storage(key: "activationTimestamp") var activationTimestamp: UInt64
     @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
@@ -12,14 +22,6 @@ let PERCENTAGE_TOTAL: UInt64 = 100
     @Mapping<Address, Vector<Buffer>>(key: "userGroups") var userGroupsForAddress
     @Mapping<Buffer, UInt64>(key: "usersInGroup") var usersInGroupForGroupIdentifier
     @Mapping<Address, BigUint>(key: "claimedBalance") var claimedBalanceForAddress
-    
-    // TODO: use TokenIdentifier type once implemented
-    init(tokenIdentifier: Buffer) {
-        // TODO: add a require to check that the token identifier is valid (same as the Rust contract)
-        
-        self.tokenIdentifier = tokenIdentifier
-        self.setupPeriodStatus = true
-    }
     
     public mutating func addFixedAmountGroup(
         groupIdentifier: Buffer,

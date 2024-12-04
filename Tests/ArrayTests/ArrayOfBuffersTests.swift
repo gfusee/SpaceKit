@@ -161,7 +161,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("contract").testGetOutOfRangeShouldFail()
+            try self.deployContract(ArrayOfBuffersTestsContract.self, at: "contract").testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -388,7 +388,7 @@ final class ArrayOfBuffersTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("contract").testReplacedOutOfRangeShouldFail()
+            try self.deployContract(ArrayOfBuffersTestsContract.self, at: "contract").testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

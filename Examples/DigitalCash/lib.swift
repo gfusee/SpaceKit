@@ -1,10 +1,12 @@
 import SpaceKit
 
-@Contract struct DigitalCash {
-    init(fee: BigUint, token: Buffer) {
-        self.whitelistFeeTokenLogic(fee: fee, token: token)
-    }
+@Init func initialize(fee: BigUint, token: Buffer) {
+    let controller = DigitalCash()
     
+    controller.whitelistFeeTokenLogic(fee: fee, token: token)
+}
+
+@Contract struct DigitalCash {
     public func payFeeAndFundESDT(
         address: Address,
         valability: UInt64

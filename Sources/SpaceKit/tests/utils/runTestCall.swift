@@ -2,19 +2,19 @@
 import Foundation
 import BigInt
 
-public func runTestCall<each InputArg: TopEncodeMulti & TopDecodeMulti, ReturnType: TopEncodeMulti & TopDecodeMulti>(
+public func runTestCall<ReturnType: TopDecodeMulti>(
     contractAddress: String,
     endpointName: String,
-    args: (repeat each InputArg),
     transactionInput: TransactionInput,
     transactionOutput: TransactionOutput = TransactionOutput(),
-    operation: @escaping (repeat each InputArg) -> Void
-) throws(TransactionError) -> ReturnType {
+    for returnType: ReturnType.Type, // So Swift doesn't complain of ReturnType not used in the function signature
+    operation: @escaping () -> Void
+) throws(TransactionError) -> ReturnType.SwiftVMDecoded {
     let results = try API.runTransactions(
         transactionInput: transactionInput,
         transactionOutput: transactionOutput,
         operations: UncheckedClosure {
-            operation(repeat each args)
+            operation()
         }
     ).results
     
@@ -24,24 +24,23 @@ public func runTestCall<each InputArg: TopEncodeMulti & TopDecodeMulti, ReturnTy
         extractedResultBuffers = extractedResultBuffers.appended(Buffer(data: Array(bytes)))
     }
     
-    let extractedResult = ReturnType(topDecodeMulti: &extractedResultBuffers)
+    let extractedResult = ReturnType.fromTopDecodeMultiInput(&extractedResultBuffers)
     
     return extractedResult
 }
 
-public func runTestCall<each InputArg: TopEncodeMulti & TopDecodeMulti>(
+public func runTestCall(
     contractAddress: String,
     endpointName: String,
-    args: (repeat each InputArg),
     transactionInput: TransactionInput,
     transactionOutput: TransactionOutput = TransactionOutput(),
-    operation: @escaping (repeat each InputArg) -> Void
+    operation: @escaping () -> Void
 ) throws(TransactionError) {
     let _ = try API.runTransactions(
         transactionInput: transactionInput,
         transactionOutput: transactionOutput,
         operations: UncheckedClosure {
-            operation(repeat each args)
+            operation()
         }
     )
 }

@@ -1,17 +1,17 @@
 import SpaceKit
 
-@Contract struct Pair {
-    // TODO: use TokenIdentifier when available
-    init(
-        firstTokenIdentifier: Buffer,
-        secondTokenIdentifier: Buffer
-    ) {
-        var storageModule = StorageModule()
-        
-        storageModule.firstTokenIdentifier = firstTokenIdentifier
-        storageModule.secondTokenIdentifier = secondTokenIdentifier
-    }
+// TODO: use TokenIdentifier when available
+@Init func initialize(
+    firstTokenIdentifier: Buffer,
+    secondTokenIdentifier: Buffer
+) {
+    var storageController = StorageModule()
     
+    storageController.firstTokenIdentifier = firstTokenIdentifier
+    storageController.secondTokenIdentifier = secondTokenIdentifier
+}
+
+@Contract struct Pair {
     public func createBuyOrder(params: OrderInputParams) {
         let globalOperationModule = GlobalOperationModule()
         

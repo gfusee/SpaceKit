@@ -1,6 +1,6 @@
 fileprivate let MAPPED_VALUE_IDENTIFIER: StaticString = ".mapped"
 
-public struct MapMapper<K: TopEncode & NestedEncode & TopDecode, V: TopEncode & NestedEncode & TopDecode> {
+public struct MapMapper<K: SpaceCodable, V: SpaceCodable> {
     // TODO: add tests
     private let baseKey: Buffer
     private let keysSetMapper: SetMapper<K>

@@ -22,7 +22,9 @@ extension Contract: ExtensionMacro {
         let functionDecls = structDecl.memberBlock.members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         
         let contractEndpointSelectorConformance = try getContractEndpointSelectorConformance(structDecl: structDecl, functions: functionDecls)
+        let swiftVMCompatibleConformance = try getSwiftVMCompatibleConformance(structDecl: structDecl)
         
+        results.append(swiftVMCompatibleConformance)
         results.append(contractEndpointSelectorConformance)
         #endif
         
@@ -65,6 +67,22 @@ func getContractEndpointSelectorConformance(
                 API.throwFunctionNotFoundError()
             }
         }
+        """
+    }
+    
+    return extensionSyntax
+}
+
+func getSwiftVMCompatibleConformance(
+    structDecl: StructDeclSyntax
+) throws -> ExtensionDeclSyntax {
+    let structName = structDecl.name.trimmed
+    
+    let extensionSyntax = try ExtensionDeclSyntax(
+        "extension \(structName): SwiftVMCompatibleContract"
+    ) {
+        """
+        typealias TestableContractType = Self.Testable
         """
     }
     
