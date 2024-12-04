@@ -279,10 +279,7 @@ fileprivate func getStaticInitializerDeclarations(
     initDecl: InitializerDeclSyntax
 ) -> FunctionDeclSyntax {
     let bodySyntax = CodeBlockSyntax(statements: """
-    if let symbol = dlsym(dlopen(nil, RTLD_LAZY), "__swiftVMInitialize") {
-        typealias InitializeType = @convention(c) () -> Void
-        unsafeBitCast(symbol, to: InitializeType.self)()
-    }
+    dynamicInitSymbolCalling()
     """)
     
     let staticEndpointSyntax = FunctionDeclSyntax(
