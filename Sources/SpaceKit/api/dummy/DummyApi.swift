@@ -23,7 +23,6 @@ public class DummyApi {
         executionType: TransactionContainerExecutionType = .sync,
         operations: UncheckedClosure
     ) throws(TransactionError) -> (results: [Data], asyncError: TransactionError?) {
-        print("container lock")
         self.containerLock.lock()
         
         while let transactionContainer = self.transactionContainer {
@@ -88,7 +87,6 @@ public class DummyApi {
         }
         
         self.transactionContainer = nil
-        print("container unlock")
         self.containerLock.unlock()
         
         if let error = error {

@@ -464,6 +464,10 @@ let package = Package(
                 "SpaceKit"
             ],
             path: "Examples/SendTests",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
