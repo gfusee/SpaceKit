@@ -6,7 +6,7 @@ import SpaceKit
     case getTotalDepositedAmount
 }
 
-@Contract struct MyContract {
+@Controller struct MyContract {
     public func callDeposit(receiverAddress: Address) {
         let payment = Message.egldValue
     }

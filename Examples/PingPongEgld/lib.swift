@@ -1,6 +1,6 @@
 import SpaceKit
 
-// TODO: Assert in the @Contract macro that OptionalArgument args are the last ones
+// TODO: Assert in the @Controller macro that OptionalArgument args are the last ones
 
 let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
 
@@ -25,7 +25,7 @@ let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
     controller.maxFunds = maxFunds.intoOptional()
 }
 
-@Contract struct PingPong {
+@Controller struct PingPongController {
     @Storage(key: "pingAmount") var pingAmount: BigUint
     @Storage(key: "deadline") var deadline: UInt64
     @Storage(key: "activationTimestamp") var activationTimestamp: UInt64

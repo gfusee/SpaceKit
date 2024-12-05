@@ -1,3 +1,3 @@
 import SpaceKit
 
-@Contract struct Empty {}
+@Controller struct EmptyController {}

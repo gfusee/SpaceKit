@@ -7,7 +7,7 @@ import XCTest
     case third
 }
 
-@Contract struct ArrayOfCustomEnumsTestsContract {
+@Controller struct ArrayOfCustomEnumsTestsController {
     
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<Buffer> = ["Hello!", "Bonjour!", "¡Hola!"]

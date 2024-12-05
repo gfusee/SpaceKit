@@ -1,7 +1,7 @@
 import SpaceKit
 import XCTest
 
-@Contract struct ErrorContract {
+@Controller struct ErrorController {
     
     public func throwError(errorMessage: Buffer) {
         smartContractError(message: errorMessage)

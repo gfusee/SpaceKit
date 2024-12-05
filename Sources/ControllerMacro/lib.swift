@@ -1,11 +1,11 @@
 import SwiftSyntaxMacros
 import SwiftCompilerPlugin
 
-public struct Contract {}
+public struct Controller {}
 
 @main
-struct ContractMacroPlugin: CompilerPlugin {
+struct ControllerMacroPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        Contract.self,
+        Controller.self,
     ]
 }

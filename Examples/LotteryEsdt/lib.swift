@@ -4,7 +4,7 @@ let PERCENTAGE_TOTAL: UInt32 = 100
 let THIRTY_DAYS_IN_SECONDS: UInt64 = 60 * 60 * 24 * 30
 let MAX_TICKETS: UInt32 = 800
 
-@Contract struct Lottery {
+@Controller struct LotteryController {
     @Mapping(key: "lotteryInfo") var lotteryInfoForLotteryName: StorageMap<Buffer, LotteryInfo>
     @Mapping(key: "burnPercentageForLottery") var burnPercentageForLottery: StorageMap<Buffer, BigUint>
     

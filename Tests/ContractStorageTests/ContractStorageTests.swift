@@ -1,8 +1,7 @@
 import SpaceKit
 import XCTest
 
-@Contract
-struct CounterContract {
+@Controller struct CounterController {
     @Storage(key: "globalCounter") var globalCounter: BigUint
     
     public mutating func increaseByOne() {

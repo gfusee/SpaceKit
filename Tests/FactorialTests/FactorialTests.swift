@@ -1,8 +1,7 @@
 import XCTest
 import SpaceKit
 
-@Contract
-struct Factorial {
+@Controller struct FactorialController {
     public func factorial(value: BigUint) -> BigUint {
         let one: BigUint = 1
         

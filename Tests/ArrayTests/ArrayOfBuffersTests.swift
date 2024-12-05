@@ -1,7 +1,7 @@
 @testable import SpaceKit
 import XCTest
 
-@Contract struct ArrayOfBuffersTestsContract {
+@Controller struct ArrayOfBuffersTestsController {
     
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<Buffer> = ["Hey!"]

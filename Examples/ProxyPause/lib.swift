@@ -11,7 +11,7 @@ import SpaceKit
     let _ = controller.allOwners.insert(value: Message.caller)
 }
 
-@Contract struct PauseProxy {
+@Controller struct PauseProxyController {
     
     @SetMapping<Address>(key: "owners") var allOwners
     @SetMapping<Address>(key: "contracts") var allContracts

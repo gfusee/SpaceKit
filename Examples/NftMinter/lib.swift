@@ -4,7 +4,7 @@ import SpaceKit
     let creationTimestamp: UInt64
 }
 
-@Contract struct NftMinter {
+@Controller struct NftMinterController {
     
     // TODO: use TokenIdentifier type once implemented
     public func createNft(

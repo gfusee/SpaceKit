@@ -5,7 +5,7 @@ import XCTest
     case endpointWithoutParameter
 }
 
-@Contract struct CodableMacroEnumImplTestsContract {
+@Controller struct CodableMacroEnumImplTestsController {
     // Temp test which has for sole goal to compile
     // TODO: add real tests once the SwiftVM supports async calls
     public func testRegisterPromise() {

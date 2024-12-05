@@ -6,7 +6,7 @@ import SpaceKit
     controller.whitelistFeeTokenLogic(fee: fee, token: token)
 }
 
-@Contract struct DigitalCash {
+@Controller struct DigitalCashController {
     public func payFeeAndFundESDT(
         address: Address,
         valability: UInt64

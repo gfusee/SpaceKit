@@ -1,7 +1,7 @@
 import XCTest
 import SpaceKit
 
-@Contract struct BigUintTestsContract {
+@Controller struct BigUintTestsController {
     public func testSubstractTwoBigUintNegativeShouldFail() {
         let bigUint1: BigUint = 1
         let bigUint2: BigUint = 2

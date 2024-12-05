@@ -8,7 +8,7 @@ import XCTest
     let fourthElement: Buffer
 }
 
-@Contract struct ArrayOfCustomStructsTestsContract {
+@Controller struct ArrayOfCustomStructsTestsController {
     
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<Buffer> = ["Hello!", "Bonjour!", "¡Hola!"]

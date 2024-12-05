@@ -2,7 +2,7 @@ import SpaceKit
 import CryptoKittiesCommon
 import CryptoKittiesRandom
 
-@Contract struct KittyGeneticAlg {
+@Controller struct KittyGeneticAlgController {
     public func generateKittyGenes(
         matron: Kitty,
         sire: Kitty

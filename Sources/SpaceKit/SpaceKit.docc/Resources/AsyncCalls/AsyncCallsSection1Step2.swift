@@ -4,6 +4,6 @@ import SpaceKit
     case deposit
 }
 
-@Contract struct MyContract {
+@Controller struct MyContract {
     
 }

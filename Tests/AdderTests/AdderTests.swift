@@ -7,7 +7,7 @@ import XCTest
     controller.sum = initialValue
 }
 
-@Contract struct Adder {
+@Controller struct AdderController {
     @Storage(key: "sum") var sum: BigUint
     
     public mutating func add(value: BigUint) {

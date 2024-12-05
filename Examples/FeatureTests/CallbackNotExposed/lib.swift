@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Contract struct Factorial {
+@Controller struct FactorialController {
     public func testEndpoint() {
         let callback = self.$dummyCallback(arg: 4, gasForCallback: 50000000)
         

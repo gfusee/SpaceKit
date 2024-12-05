@@ -21,7 +21,7 @@ nonisolated(unsafe) public var API = DummyApi()
 #if !WASM
 @attached(extension, conformances: ContractEndpointSelector & SwiftVMCompatibleContract, names: arbitrary)
 #endif
-public macro Contract() = #externalMacro(module: "ContractMacro", type: "Contract")
+public macro Controller() = #externalMacro(module: "ControllerMacro", type: "Controller")
 
 @attached(extension, conformances: TopEncode & TopEncodeMulti & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode & ArrayItem, names: arbitrary)
 public macro Codable() = #externalMacro(module: "CodableMacro", type: "Codable")

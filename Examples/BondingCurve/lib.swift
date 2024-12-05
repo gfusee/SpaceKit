@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Contract struct BondingCurveContract {
+@Controller struct BondingCurveController {
     public func sellToken() {
         UserEndpointsModule.sellToken(dummy: FunctionSelector.none)
     }

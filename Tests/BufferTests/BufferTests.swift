@@ -1,7 +1,7 @@
 import XCTest
 import SpaceKit
 
-@Contract struct BufferTestsContract {
+@Controller struct BufferTestsController {
     public func testNonEmptyBufferGetTooLongSubBufferShouldFail() {
         let buffer: Buffer = "Hello World!"
         let _ = buffer.getSubBuffer(startIndex: 2, length: 100)

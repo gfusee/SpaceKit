@@ -1,14 +1,14 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-extension Contract: MemberMacro {
+extension Controller: MemberMacro {
     public static func expansion(
         of node: AttributeSyntax,
         providingMembersOf declaration: some DeclGroupSyntax,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
         guard let structDecl = declaration.as(StructDeclSyntax.self) else {
-            throw ContractMacroError.onlyApplicableToStruct
+            throw ControllerMacroError.onlyApplicableToStruct
         }
         
         try structDecl.isValidStruct()

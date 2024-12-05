@@ -24,7 +24,7 @@ import XCTest
     case esdt(Buffer, UInt64, BigUint), none
 }
 
-@Contract struct CodableMacroEnumImplTestsContract {
+@Controller struct CodableMacroEnumImplTestsController {
     public func testTopDecodeForEnumInputTooLargeError() {
         let input = Buffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e800".hexadecimal))
         let _ = PaymentType(topDecode: input)

@@ -5,7 +5,7 @@ import XCTest
     case receiveTokens
 }
 
-@Contract struct ExecuteOnDestContextTestsContract {
+@Controller struct ExecuteOnDestContextTestsController {
     @Storage(key: "lastReceivedTokens") var lastReceivedTokens: Vector<TokenPayment>
     
     public mutating func receiveTokens() {

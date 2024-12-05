@@ -20,7 +20,7 @@ import SpaceKit
     let winner: Address
 }
 
-@Contract struct CryptoBubbles {
+@Controller struct CryptoBubblesController {
     
     @Mapping(key: "playerBalance") var playerBalance: StorageMap<Address, BigUint>
     

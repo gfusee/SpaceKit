@@ -1,7 +1,7 @@
 import XCTest
 import SpaceKit
 
-@Contract struct ErrorTestsContract {
+@Controller struct ErrorTestsController {
     public func testUserErrorStopsTheExecution() {
         let bigUint1: BigUint = 1
         let bigUint2: BigUint = 2

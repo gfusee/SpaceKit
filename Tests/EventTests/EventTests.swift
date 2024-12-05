@@ -26,7 +26,7 @@ import SpaceKit
     ).emit(data: "")
 }
 
-@Contract struct EventTestsContract {
+@Controller struct EventTestsController {
     public func emitNoEvent() {
         
     }

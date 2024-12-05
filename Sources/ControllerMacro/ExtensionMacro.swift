@@ -1,7 +1,7 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-extension Contract: ExtensionMacro {
+extension Controller: ExtensionMacro {
     public static func expansion(
         of node: AttributeSyntax,
         attachedTo declaration: some DeclGroupSyntax,
@@ -10,7 +10,7 @@ extension Contract: ExtensionMacro {
         in context: some MacroExpansionContext
     ) throws -> [ExtensionDeclSyntax] {
         guard let structDecl = declaration.as(StructDeclSyntax.self) else {
-            throw ContractMacroError.onlyApplicableToStruct
+            throw ControllerMacroError.onlyApplicableToStruct
         }
         
         try structDecl.isValidStruct()

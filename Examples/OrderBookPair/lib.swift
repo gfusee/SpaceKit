@@ -11,7 +11,7 @@ import SpaceKit
     storageController.secondTokenIdentifier = secondTokenIdentifier
 }
 
-@Contract struct Pair {
+@Controller struct PairController {
     public func createBuyOrder(params: OrderInputParams) {
         let globalOperationModule = GlobalOperationModule()
         

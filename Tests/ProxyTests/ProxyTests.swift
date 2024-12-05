@@ -13,7 +13,7 @@ import XCTest
     case callThrowError(calleeAddress: Address)
 }
 
-@Contract struct CalleeContract {
+@Controller struct CalleeController {
     public mutating func endpointWithoutParameter() {}
     
     public mutating func endpointWithOneParameter(arg: BigUint) -> BigUint {
@@ -65,7 +65,7 @@ import XCTest
     }
 }
 
-@Contract struct CallerContract {
+@Controller struct CallerController {
     public mutating func callEndpointWithoutParameter(calleeAddress: Address) {
         CalleeProxy.endpointWithoutParameter.callAndIgnoreResult(receiver: calleeAddress)
     }

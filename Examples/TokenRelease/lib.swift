@@ -12,7 +12,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
     controller.setupPeriodStatus = true
 }
 
-@Contract struct TokenRelease {
+@Controller struct TokenReleaseController {
     @Storage(key: "activationTimestamp") var activationTimestamp: UInt64
     @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
     @Storage(key: "tokenTotalSupply") var tokenTotalSupply: BigUint

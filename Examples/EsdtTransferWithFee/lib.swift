@@ -5,7 +5,7 @@ import SpaceKit
     let nonce: UInt64
 }
 
-@Contract struct EsdtTransferWithFee {
+@Controller struct EsdtTransferWithFeeController {
     
     @Mapping<Buffer, Fee>(key: "token_fee") var tokenFeeForToken
     

@@ -6,6 +6,6 @@ import SpaceKit
     case getTotalDepositedAmount
 }
 
-@Contract struct MyContract {
+@Controller struct MyContract {
     
 }

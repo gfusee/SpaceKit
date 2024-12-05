@@ -62,9 +62,9 @@
             }
 
             @Step {
-                Declare the contract by annotating a struct with `@Contract`. For this project, we’ll declare the `Counter` contract.
+                Declare the contract by annotating a struct with `@Controller`. For this project, we’ll declare the `Counter` contract.
 
-                **Note:** You should have only one `@Contract` struct. The logic can be spread across multiple files, but the `@Contract` struct remains central.
+                **Note:** You should have only one `@Controller` struct. The logic can be spread across multiple files, but the `@Controller` struct remains central.
 
                 @Code(name: "lib.swift", file: "CodingFirstContractSection2Step3.swift")
             }

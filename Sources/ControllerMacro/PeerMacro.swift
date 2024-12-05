@@ -1,14 +1,14 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-extension Contract: PeerMacro {
+extension Controller: PeerMacro {
     public static func expansion(
         of node: AttributeSyntax,
         providingPeersOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
         guard let structDecl = declaration.as(StructDeclSyntax.self) else {
-            throw ContractMacroError.onlyApplicableToStruct
+            throw ControllerMacroError.onlyApplicableToStruct
         }
         
         try structDecl.isValidStruct()
@@ -18,7 +18,7 @@ extension Contract: PeerMacro {
         let functionDecls = structDecl.memberBlock.members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         for function in functionDecls {
             guard !function.attributes.contains(where: { $0.description.trimmingCharacters(in: .whitespacesAndNewlines) == "@Init" }) else {
-                throw ContractMacroError.initAnnotatedFunctionShouldBeGlobal
+                throw ControllerMacroError.initAnnotatedFunctionShouldBeGlobal
             }
             
             if let decl = getEndpointExportDeclaration(structName: structDecl.name, function: function, context: context) {

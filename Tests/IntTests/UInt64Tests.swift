@@ -1,7 +1,7 @@
 import XCTest
 import SpaceKit
 
-@Contract struct UInt64TestsContract {
+@Controller struct UInt64TestsController {
     public func testTopDecodeUInt64TooLargeBufferShouldFail() {
         let input = Buffer(data: Array("000000000000000000".hexadecimal))
         let _ = UInt64(topDecode: input)

@@ -31,7 +31,7 @@ var packageDependencies: [Package.Dependency] = [
 
 var libraryDependencies: [Target.Dependency] = [
     "CallbackMacro",
-    "ContractMacro",
+    "ControllerMacro",
     "CodableMacro",
     "EventMacro",
     "InitMacro",
@@ -93,9 +93,9 @@ if !isWasm {
             ]
         ),
         .testTarget(
-            name: "ContractMacroTests",
+            name: "ControllerMacroTests",
             dependencies: [
-                "ContractMacro",
+                "ControllerMacro",
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
@@ -496,7 +496,7 @@ let package = Package(
             ]
         ),
         .macro(
-            name: "ContractMacro",
+            name: "ControllerMacro",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),

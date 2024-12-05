@@ -2,17 +2,17 @@ import XCTest
 import SwiftSyntax
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
-import ContractMacro
+import ControllerMacro
 
 let testMacros: [String: Macro.Type] = [
-    "Contract": Contract.self,
+    "Controller": Controller.self,
 ]
 
-final class ContractMacroBasicTests: XCTestCase {
+final class ControllerMacroBasicTests: XCTestCase {
     /*
     func testExpandClassShouldFail() throws {
         let source = """
-        @Contract
+        @Controller
         class Contract {}
         """
         
@@ -25,12 +25,12 @@ final class ContractMacroBasicTests: XCTestCase {
             expandedSource: expected,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "@Contract can only be applied to a structure.",
+                    message: "@Controller can only be applied to a structure.",
                     line: 1,
                     column: 1
                 ),
                 DiagnosticSpec(
-                    message: "@Contract can only be applied to a structure.",
+                    message: "@Controller can only be applied to a structure.",
                     line: 1,
                     column: 1
                 )
@@ -41,7 +41,7 @@ final class ContractMacroBasicTests: XCTestCase {
      
     func testExpandEmptyStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {}
         """
 
@@ -89,7 +89,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandStructWithTwoInitShouldFail() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             init(arg: Int) {}
             init(arg: String) {}
@@ -108,12 +108,12 @@ final class ContractMacroBasicTests: XCTestCase {
             expandedSource: expected,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "Only one or zero initializer is allowed in a structure marked @Contract.",
+                    message: "Only one or zero initializer is allowed in a structure marked @Controller.",
                     line: 1,
                     column: 1
                 ),
                 DiagnosticSpec(
-                    message: "Only one or zero initializer is allowed in a structure marked @Contract.",
+                    message: "Only one or zero initializer is allowed in a structure marked @Controller.",
                     line: 1,
                     column: 1
                 )
@@ -124,7 +124,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandNonPublicFunctionStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             func notAnEndpoint() {}
         }
@@ -176,7 +176,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandSingleVoidInitStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             init() {
                 let testBuffer: Buffer = "Hello World!"
@@ -229,7 +229,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandSingleOneParamInitStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             init(buffer: Buffer) {
                 let testBuffer: Buffer = "Hello World!"
@@ -284,7 +284,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandSingleTwoParamsInitStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             init(buffer: Buffer, number: BigUint) {
                 let testBuffer: Buffer = "Hello World!"
@@ -340,7 +340,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandSingleVoidFunctionStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             public func singleFunction() {
         
@@ -413,7 +413,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandSingleOneParamFunctionStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             public func singleFunction(buffer: Buffer) {
                 
@@ -487,7 +487,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandSingleTwoParamsFunctionStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             public func singleFunction(buffer: Buffer, number: BigUint) {
                 
@@ -562,7 +562,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandSingleFunctionWithReturnStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             public func singleFunction() -> Buffer {
                 return "Hello World!"
@@ -640,7 +640,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandSingleFunctionWithOneParamAndReturnStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             public func singleFunction(buffer: Buffer) -> BigUint {
                 return BigUint(topDecode: buffer)
@@ -719,7 +719,7 @@ final class ContractMacroBasicTests: XCTestCase {
     
     func testExpandMultipleFunctionsStruct() throws {
         let source = """
-        @Contract
+        @Controller
         struct Contract {
             public func firstFunction() {
         

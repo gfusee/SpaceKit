@@ -7,7 +7,7 @@ import SpaceKit
     controller.address = Message.caller
 }
 
-@Contract struct MessageContract {
+@Controller struct MessageController {
     @Storage(key: "address") var address: Address
     
     public func getCallerAddress() -> Address {

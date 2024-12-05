@@ -38,7 +38,7 @@ import CryptoKittiesRandom
     controller.createGenesisKitty()
 }
 
-@Contract struct CryptoKittiesOwnership {
+@Controller struct CryptoKittiesOwnershipController {
     @Storage(key: "geneScienceContractAddress") var geneScienceContractAddress: Address
     @Storage(key: "kittyAuctionContractAddress") var kittyAuctionContractAddress: Address
     @Storage(key: "birthFee") var birthFee: BigUint

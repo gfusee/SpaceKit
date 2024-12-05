@@ -13,7 +13,7 @@ import SpaceKit
     genZeroKittyAuctionDuration: UInt64,
     optKittyOwnershipContractAddress: OptionalArgument<Address>
 ) {
-    var controller = CryptoKittiesAuction()
+    var controller = CryptoKittiesAuctionController()
     
     controller.genZeroKittyStartingPrice = genZeroKittyStartingPrice
     controller.genZeroKittyEndingPrice = genZeroKittyEndingPrice
@@ -24,7 +24,7 @@ import SpaceKit
     }
 }
 
-@Contract struct CryptoKittiesAuction {
+@Controller struct CryptoKittiesAuctionController {
     @Storage(key: "kittyOwnershipContractAddress") var kittyOwnershipContractAddress: Address
     @Storage(key: "genZeroKittyStartingPrice") var genZeroKittyStartingPrice: BigUint
     @Storage(key: "genZeroKittyEndingPrice") var genZeroKittyEndingPrice: BigUint

@@ -2,7 +2,7 @@ import SpaceKit
 import XCTest
 import BigInt
 
-@Contract struct EgldTransferContract {
+@Controller struct EgldTransferController {
     
     public func transferEgld(to: Address, value: BigUint) {
         to.send(egldValue: value)

@@ -1,7 +1,7 @@
 import XCTest
 import SpaceKit
 
-@Contract struct CalleeContract {
+@Controller struct CalleeController {
     @Storage(key: "counter") var counter: BigUint
     @Storage(key: "address") var address: Address
     
@@ -53,7 +53,7 @@ import SpaceKit
     case getCounter
 }
 
-@Contract struct AsyncCallsTestsContract {
+@Controller struct AsyncCallsTestsController {
     @Storage(key: "counter") var counter: BigUint
     @Storage(key: "address") var address: Address
     @Storage(key: "storedErrorCode") var storedErrorCode: UInt32

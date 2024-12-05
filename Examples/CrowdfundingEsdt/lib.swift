@@ -5,7 +5,7 @@ import SpaceKit
     deadline: UInt64,
     tokenIdentifier: Buffer
 ) {
-    var controller = CrowdfundingEsdt()
+    var controller = CrowdfundingEsdtController()
     
     require(target > 0, "Target must be more than 0")
     controller.target = target
@@ -20,7 +20,7 @@ import SpaceKit
     controller.tokenIdentifier = tokenIdentifier
 }
 
-@Contract struct CrowdfundingEsdt {
+@Controller struct CrowdfundingEsdtController {
     @Storage(key: "target") var target: BigUint
     @Storage(key: "deadline") var deadline: UInt64
     @Mapping(key: "deposit") var depositForDonor: StorageMap<Address, BigUint>

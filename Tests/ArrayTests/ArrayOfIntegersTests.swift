@@ -1,7 +1,7 @@
 @testable import SpaceKit
 import XCTest
 
-@Contract struct ArrayOfIntegersTestsContract {
+@Controller struct ArrayOfIntegersTestsController {
     
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<UInt64> = [10]

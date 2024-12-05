@@ -7,7 +7,7 @@ import XCTest
     let field: Buffer // Dummy comment
 }
 
-@Contract struct CodableMacroStructImplTestsContract {
+@Controller struct CodableMacroStructImplTestsController {
     public func testTopDecodeForCustomInputTooLargeError() {
         let input = Buffer(data: Array("0000000a5346542d616263646566000000000000000a000000016400".hexadecimal))
         let _ = TokenPayment(topDecode: input)
