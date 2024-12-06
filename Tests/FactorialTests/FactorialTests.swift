@@ -25,30 +25,38 @@ final class FactorialTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "factorial")
+            WorldAccount(
+                address: "factorial",
+                controllers: [
+                    FactorialController.self
+                ]
+            )
         ]
     }
     
     func testZero() throws {
-        let contract = try self.deployContract(Factorial.self, at: "factorial")
+        try self.deployContract(at: "factorial")
+        let controller = self.instantiateController(FactorialController.self, for: "factorial")!
         
-        let result = try contract.factorial(value: 0)
+        let result = try controller.factorial(value: 0)
         
         XCTAssertEqual(result, 1)
     }
     
     func testOne() throws {
-        let contract = try self.deployContract(Factorial.self, at: "factorial")
+        try self.deployContract(at: "factorial")
+        let controller = self.instantiateController(FactorialController.self, for: "factorial")!
         
-        let result = try contract.factorial(value: 1)
+        let result = try controller.factorial(value: 1)
         
         XCTAssertEqual(result, 1)
     }
     
     func testTen() throws {
-        let contract = try self.deployContract(Factorial.self, at: "factorial")
+        try self.deployContract(at: "factorial")
+        let controller = self.instantiateController(FactorialController.self, for: "factorial")!
         
-        let result = try contract.factorial(value: 10)
+        let result = try controller.factorial(value: 10)
         
         XCTAssertEqual(result, 3628800)
     }

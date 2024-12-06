@@ -43,67 +43,77 @@ final class MultiArgsTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    MultiArgsController.self
+                ]
+            )
         ]
     }
 
     func testMultiValueEncodedWithNoArgument() throws {
-        var contract = try self.deployContract(MultiArgsContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        var controller = self.instantiateController(MultiArgsController.self, for: "contract")!
         
-        try contract.endpointWithOnlyMultiValueEncoded(value: MultiValueEncoded())
+        try controller.endpointWithOnlyMultiValueEncoded(value: MultiValueEncoded())
 
-        let result = try contract.getConcatenated()
+        let result = try controller.getConcatenated()
 
         XCTAssertEqual(result, "")
     }
     
     func testMultiValueEncodedWithOneArgument() throws {
-        var contract = try self.deployContract(MultiArgsContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        var controller = self.instantiateController(MultiArgsController.self, for: "contract")!
         
         var input = MultiValueEncoded<Buffer>()
         input = input.appended(value: "Hello")
         
-        try contract.endpointWithOnlyMultiValueEncoded(value: input)
+        try controller.endpointWithOnlyMultiValueEncoded(value: input)
 
-        let result = try contract.getConcatenated()
+        let result = try controller.getConcatenated()
 
         XCTAssertEqual(result, "Hello")
     }
     
     func testMultiValueEncodedWithMultipleArguments() throws {
-        var contract = try self.deployContract(MultiArgsContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        var controller = self.instantiateController(MultiArgsController.self, for: "contract")!
         
         var input = MultiValueEncoded<Buffer>()
         input = input.appended(value: "Hello")
         input = input.appended(value: " World")
         input = input.appended(value: " !")
         
-        try contract.endpointWithOnlyMultiValueEncoded(value: input)
+        try controller.endpointWithOnlyMultiValueEncoded(value: input)
 
-        let result = try contract.getConcatenated()
+        let result = try controller.getConcatenated()
 
         XCTAssertEqual(result, "Hello World !")
     }
     
     func testMultiValueEncodedWithMultipleArgumentsAndArgsBefore() throws {
-        var contract = try self.deployContract(MultiArgsContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        var controller = self.instantiateController(MultiArgsController.self, for: "contract")!
         
         var input = MultiValueEncoded<Buffer>()
         input = input.appended(value: "Hello")
         input = input.appended(value: " World")
         input = input.appended(value: " !")
         
-        try contract.endpointWithBigUintAndMultiValueEncoded(biguint: 5, value: input)
+        try controller.endpointWithBigUintAndMultiValueEncoded(biguint: 5, value: input)
 
-        let result = try contract.getConcatenated()
+        let result = try controller.getConcatenated()
 
         XCTAssertEqual(result, "5Hello World !")
     }
     
     func getMultiValueEncoded() throws {
-        let contract = try self.deployContract(MultiArgsContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(MultiArgsController.self, for: "contract")!
 
-        let result = try contract.getDummyMultiValueEncoded()
+        let result = try controller.getDummyMultiValueEncoded()
         
         var expected = MultiValueEncoded<Buffer>()
         expected = expected.appended(value: "Hello")

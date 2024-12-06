@@ -35,7 +35,12 @@ final class CodableMacroEnumImplTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    CodableMacroEnumImplTestsController.self
+                ]
+            )
         ]
     }
     
@@ -128,7 +133,10 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopDecodeForEnumInputTooLargeError() throws {
         do {
-            try self.deployContract(CodableMacroEnumImplTestsContract.self, at: "contract").testTopDecodeForEnumInputTooLargeError()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(CodableMacroEnumImplTestsController.self, for: "contract")!
+            
+            try controller.testTopDecodeForEnumInputTooLargeError()
             
             XCTFail()
         } catch {

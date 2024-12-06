@@ -18,7 +18,12 @@ final class CodableMacroStructImplTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    CodableMacroStructImplTestsController.self
+                ]
+            )
         ]
     }
     
@@ -53,7 +58,10 @@ final class CodableMacroStructImplTests: ContractTestCase {
     
     func testTopDecodeForCustomInputTooLargeError() throws {
         do {
-            try self.deployContract(CodableMacroStructImplTestsContract.self, at: "contract").testTopDecodeForCustomInputTooLargeError()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(CodableMacroStructImplTestsController.self, for: "contract")!
+            
+            try controller.testTopDecodeForCustomInputTooLargeError()
             
             XCTFail()
         } catch {

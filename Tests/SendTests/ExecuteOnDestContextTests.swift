@@ -48,18 +48,31 @@ final class ExecuteOnDestContextTests: ContractTestCase {
                     ]
                 ]
             ),
-            WorldAccount(address: "sender"),
-            WorldAccount(address: "receiver")
+            WorldAccount(
+                address: "sender",
+                controllers: [
+                    ExecuteOnDestContextTestsController.self
+                ]
+            ),
+            WorldAccount(
+                address: "receiver",
+                controllers: [
+                    ExecuteOnDestContextTestsController.self
+                ]
+            )
         ]
     }
     
     func testSendNoToken() throws {
-        let sender = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "sender")
-        let receiver = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "receiver")
+        try self.deployContract(at: "sender")
+        let senderController = self.instantiateController(ExecuteOnDestContextTestsController.self, for: "sender")!
+        
+        try self.deployContract(at: "receiver")
+        let receiverController = self.instantiateController(ExecuteOnDestContextTestsController.self, for: "receiver")!
         
         let esdtValue: Vector<TokenPayment> = Vector()
         
-        try sender.sendTokens(
+        try senderController.sendTokens(
             receiver: "receiver",
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "owner",
@@ -67,15 +80,18 @@ final class ExecuteOnDestContextTests: ContractTestCase {
             )
         )
         
-        let receiverLastReceivedTokens = try receiver.getLastReceivedTokens()
+        let receiverLastReceivedTokens = try receiverController.getLastReceivedTokens()
         let expectedReceiverLastReceivedTokens: Vector<TokenPayment> = Vector()
         
         XCTAssertEqual(receiverLastReceivedTokens, expectedReceiverLastReceivedTokens)
     }
 
     func testSendOneFungibleToken() throws {
-        let sender = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "sender")
-        let receiver = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "receiver")
+        try self.deployContract(at: "sender")
+        let senderController = self.instantiateController(ExecuteOnDestContextTestsController.self, for: "sender")!
+        
+        try self.deployContract(at: "receiver")
+        let receiverController = self.instantiateController(ExecuteOnDestContextTestsController.self, for: "receiver")!
         
         var esdtValue: Vector<TokenPayment> = Vector()
         
@@ -87,7 +103,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
             )
         )
         
-        try sender.sendTokens(
+        try senderController.sendTokens(
             receiver: "receiver",
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "owner",
@@ -95,7 +111,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
             )
         )
         
-        let receiverLastReceivedTokens = try receiver.getLastReceivedTokens()
+        let receiverLastReceivedTokens = try receiverController.getLastReceivedTokens()
         let ownerWEGLDBalance = self.getAccount(address: "owner")!
             .getEsdtBalance(
                 tokenIdentifier: "WEGLD-abcdef",
@@ -132,8 +148,11 @@ final class ExecuteOnDestContextTests: ContractTestCase {
     }
     
     func testSendOneNonFungibleToken() throws {
-        let sender = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "sender")
-        let receiver = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "receiver")
+        try self.deployContract(at: "sender")
+        let senderController = self.instantiateController(ExecuteOnDestContextTestsController.self, for: "sender")!
+        
+        try self.deployContract(at: "receiver")
+        let receiverController = self.instantiateController(ExecuteOnDestContextTestsController.self, for: "receiver")!
         
         var esdtValue: Vector<TokenPayment> = Vector()
         
@@ -145,7 +164,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
             )
         )
         
-        try sender.sendTokens(
+        try senderController.sendTokens(
             receiver: "receiver",
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "owner",
@@ -153,7 +172,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
             )
         )
         
-        let receiverLastReceivedTokens = try receiver.getLastReceivedTokens()
+        let receiverLastReceivedTokens = try receiverController.getLastReceivedTokens()
         let ownerSFTBalance = self.getAccount(address: "owner")!
             .getEsdtBalance(
                 tokenIdentifier: "SFT-abcdef",
@@ -190,8 +209,11 @@ final class ExecuteOnDestContextTests: ContractTestCase {
     }
     
     func testSendMultipleTokens() throws {
-        let sender = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "sender")
-        let receiver = try self.deployContract(ExecuteOnDestContextTestsContract.self, at: "receiver")
+        try self.deployContract(at: "sender")
+        let senderController = self.instantiateController(ExecuteOnDestContextTestsController.self, for: "sender")!
+        
+        try self.deployContract(at: "receiver")
+        let receiverController = self.instantiateController(ExecuteOnDestContextTestsController.self, for: "receiver")!
         
         var esdtValue: Vector<TokenPayment> = Vector()
         
@@ -219,7 +241,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
             )
         )
 
-        try sender.sendTokens(
+        try senderController.sendTokens(
             receiver: "receiver",
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "owner",
@@ -227,7 +249,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
             )
         )
         
-        let receiverLastReceivedTokens = try receiver.getLastReceivedTokens()
+        let receiverLastReceivedTokens = try receiverController.getLastReceivedTokens()
         let ownerSFT2Balance = self.getAccount(address: "owner")!
             .getEsdtBalance(
                 tokenIdentifier: "SFT-abcdef",

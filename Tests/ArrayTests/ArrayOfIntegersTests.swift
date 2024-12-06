@@ -27,7 +27,12 @@ final class ArrayOfIntegersTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    ArrayOfIntegersTestsController.self
+                ]
+            )
         ]
     }
     
@@ -161,7 +166,10 @@ final class ArrayOfIntegersTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try self.deployContract(ArrayOfIntegersTestsContract.self, at: "contract").testGetOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfIntegersTestsController.self, for: "contract")!
+            
+            try controller.testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -379,7 +387,10 @@ final class ArrayOfIntegersTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try self.deployContract(ArrayOfIntegersTestsContract.self, at: "contract").testReplacedOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfIntegersTestsController.self, for: "contract")!
+            
+            try controller.testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

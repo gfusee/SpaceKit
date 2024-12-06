@@ -11,9 +11,7 @@ import XCTest
 @Controller struct ArrayOfCustomStructsTestsController {
     
     public func testGetOutOfRangeShouldFail() {
-        let array: Vector<Buffer> = ["Hello!", "Bonjour!", "¡Hola!"]
-        
-        let _: Vector<CustomCodableStruct> = [
+        let array: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -58,7 +56,12 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    ArrayOfCustomStructsTestsController.self
+                ]
+            )
         ]
     }
     
@@ -445,7 +448,10 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try self.deployContract(ArrayOfBuffersTestsContract.self, at: "contract").testGetOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfCustomStructsTestsController.self, for: "contract")!
+                
+            try controller.testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -925,7 +931,10 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try self.deployContract(ArrayOfBuffersTestsContract.self, at: "contract").testReplacedOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfCustomStructsTestsController.self, for: "contract")!
+                
+            try controller.testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

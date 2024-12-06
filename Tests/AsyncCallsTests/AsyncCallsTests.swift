@@ -398,138 +398,173 @@ final class AsyncCallsTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "callee"),
+            WorldAccount(
+                address: "callee",
+                controllers: [
+                    CalleeController.self
+                ]
+            ),
             WorldAccount(
                 address: "caller",
-                balance: 1000
+                balance: 1000,
+                controllers: [
+                    AsyncCallsTestsController.self
+                ]
             )
         ]
     }
     
     func testIncreaseCounter() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try! self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallIncreaseCounter(receiver: "callee")
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        let counter = try callee.getCounter()
+        try callerController.asyncCallIncreaseCounter(receiver: "callee")
+        
+        let counter = try calleeController.getCounter()
         
         XCTAssertEqual(counter, 1)
     }
     
     func testIncreaseCounterWithSimpleCallback() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        try callerController.asyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
+        
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         
         XCTAssertEqual(calleeCounter, 1)
         XCTAssertEqual(callerCounter, 1)
     }
     
     func testMultiIncreaseCounterWithSimpleCallback() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.multiAsyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        try callerController.multiAsyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
+        
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         
         XCTAssertEqual(calleeCounter, 3)
         XCTAssertEqual(callerCounter, 3)
     }
     
     func testMultiIncreaseCounterWithSimpleCallbackOneNoCallback() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.multiAsyncCallIncreaseCounterWithSimpleCallbackOneNoCallback(receiver: "callee")
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        try callerController.multiAsyncCallIncreaseCounterWithSimpleCallbackOneNoCallback(receiver: "callee")
+        
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         
         XCTAssertEqual(calleeCounter, 4)
         XCTAssertEqual(callerCounter, 3)
     }
     
     func testIncreaseCounterWithCallbackWithOneParameter() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallIncreaseCounterWithCallbackWithOneParameter(
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        try callerController.asyncCallIncreaseCounterWithCallbackWithOneParameter(
             receiver: "callee",
             callbackValue: 50
         )
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         
         XCTAssertEqual(calleeCounter, 1)
         XCTAssertEqual(callerCounter, 50)
     }
     
     func testIncreaseCounterWithCallbackWithResult() throws {
-        var callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        var calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try callee.increaseCounterBy(value: 100)
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        try caller.asyncCallGetCounterWithCallback(receiver: "callee")
+        try calleeController.increaseCounterBy(value: 100)
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        try callerController.asyncCallGetCounterWithCallback(receiver: "callee")
+        
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         
         XCTAssertEqual(calleeCounter, 100)
         XCTAssertEqual(callerCounter, 100)
     }
     
     func testMultiIncreaseCounterWithCallbackWithResult() throws {
-        var callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        var calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try callee.increaseCounterBy(value: 100)
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        try caller.multiAsyncCallGetCounterWithCallback(receiver: "callee")
+        try calleeController.increaseCounterBy(value: 100)
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        try callerController.multiAsyncCallGetCounterWithCallback(receiver: "callee")
+        
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         
         XCTAssertEqual(calleeCounter, 100)
         XCTAssertEqual(callerCounter, 300)
     }
     
     func testMultiIncreaseCounterWithDifferentCallbacks() throws {
-        var callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        var calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try callee.increaseCounterBy(value: 100)
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        try caller.multiAsyncCallGetCounterWithDifferentCallbacks(receiver: "callee")
+        try calleeController.increaseCounterBy(value: 100)
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        try callerController.multiAsyncCallGetCounterWithDifferentCallbacks(receiver: "callee")
+        
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         
         XCTAssertEqual(calleeCounter, 100)
         XCTAssertEqual(callerCounter, 102)
     }
     
     func testMultiIncreaseCounterWithCallbackWithResultOneFailure() throws {
-        var callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        var calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try callee.increaseCounterBy(value: 100)
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        try caller.multiAsyncCallGetCounterWithCallbackOneFailure(receiver: "callee")
+        try calleeController.increaseCounterBy(value: 100)
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        try callerController.multiAsyncCallGetCounterWithCallbackOneFailure(receiver: "callee")
         
-        let callerStoredErrorCode = try caller.getStoredErrorCode()
-        let callerStoredErrorMessage = try caller.getStoredErrorMessage()
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
+        
+        let callerStoredErrorCode = try callerController.getStoredErrorCode()
+        let callerStoredErrorMessage = try callerController.getStoredErrorMessage()
         
         XCTAssertEqual(calleeCounter, 100)
         XCTAssertEqual(callerCounter, 200)
@@ -539,60 +574,72 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testIncreaseCounterWithCallback() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        try callerController.asyncCallIncreaseCounterWithSimpleCallback(receiver: "callee")
+        
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         
         XCTAssertEqual(calleeCounter, 1)
         XCTAssertEqual(callerCounter, 1)
     }
     
     func testIncreaseCounterBy() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallIncreaseCounterBy(
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        try callerController.asyncCallIncreaseCounterBy(
             receiver: "callee",
             value: 150
         )
         
-        let counter = try callee.getCounter()
+        let counter = try calleeController.getCounter()
         
         XCTAssertEqual(counter, 150)
     }
     
     func testChangeStorageAndStartFailableAsyncCall() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        var caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallIncreaseCounterAndFail(
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        try callerController.asyncCallIncreaseCounterAndFail(
             receiver: "callee"
         )
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         
         XCTAssertEqual(calleeCounter, 0)
         XCTAssertEqual(callerCounter, 250)
     }
     
     func testChangeStorageAndStartFailableAsyncCallWithCallback() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        var caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallIncreaseCounterAndFailWithCallback(
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        try callerController.asyncCallIncreaseCounterAndFailWithCallback(
             receiver: "callee"
         )
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         
-        let callerStoredErrorCode = try caller.getStoredErrorCode()
-        let callerStoredErrorMessage = try caller.getStoredErrorMessage()
+        let callerStoredErrorCode = try callerController.getStoredErrorCode()
+        let callerStoredErrorMessage = try callerController.getStoredErrorMessage()
         
         XCTAssertEqual(calleeCounter, 0)
         XCTAssertEqual(callerCounter, 250)
@@ -602,12 +649,15 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testReturnEgldNoCallback() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallReturnEgldValueNoCallback(receiver: "callee", paymentValue: 150)
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        let calleeCounter = try callee.getCounter()
+        try callerController.asyncCallReturnEgldValueNoCallback(receiver: "callee", paymentValue: 150)
+        
+        let calleeCounter = try calleeController.getCounter()
         let calleeBalance = self.getAccount(address: "callee")?.balance
         let callerBalance = self.getAccount(address: "caller")?.balance
         
@@ -617,13 +667,16 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testIncreaseCounterAndFailWithEgldWithCallback() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallIncreaseCounterAndFailWithEgld(receiver: "callee", paymentValue: 150)
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        let calleeCounter = try callee.getCounter()
-        let callerCounter = try caller.getCounter()
+        try callerController.asyncCallIncreaseCounterAndFailWithEgld(receiver: "callee", paymentValue: 150)
+        
+        let calleeCounter = try calleeController.getCounter()
+        let callerCounter = try callerController.getCounter()
         let calleeBalance = self.getAccount(address: "callee")?.balance
         let callerBalance = self.getAccount(address: "caller")?.balance
         
@@ -634,36 +687,44 @@ final class AsyncCallsTests: ContractTestCase {
     }
     
     func testAsyncCallStoreCallerNoCallback() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallStoreCallerNoCallback(receiver: "callee")
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        let calleeStoredAddress = try callee.getAddress()
+        try callerController.asyncCallStoreCallerNoCallback(receiver: "callee")
+        
+        let calleeStoredAddress = try calleeController.getAddress()
         
         XCTAssertEqual(calleeStoredAddress, "caller")
     }
     
     func testAsyncCallStoreCallerWithCallback() throws {
-        let callee = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
-        try caller.asyncCallStoreCallerWithCallback(receiver: "callee")
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        let calleeStoredAddress = try callee.getAddress()
-        let callerStoredAddress = try caller.getAddress()
+        try callerController.asyncCallStoreCallerWithCallback(receiver: "callee")
+        
+        let calleeStoredAddress = try calleeController.getAddress()
+        let callerStoredAddress = try callerController.getAddress()
         
         XCTAssertEqual(calleeStoredAddress, "caller")
         XCTAssertEqual(callerStoredAddress, "callee")
     }
     
     func testAsyncCallIncreaseCounterAndFailWithStoreCallerCallback() throws {
-        _ = try self.deployContract(CalleeContract.self, at: "callee")
-        let caller = try self.deployContract(AsyncCallsTestsContract.self, at: "caller")
+        try self.deployContract(at: "callee")
         
-        try caller.asyncCallIncreaseCounterAndFailWithStoreCallerCallback(receiver: "callee")
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
         
-        let callerStoredAddress = try caller.getAddress()
+        try callerController.asyncCallIncreaseCounterAndFailWithStoreCallerCallback(receiver: "callee")
+        
+        let callerStoredAddress = try callerController.getAddress()
         
         XCTAssertEqual(callerStoredAddress, "callee")
     }

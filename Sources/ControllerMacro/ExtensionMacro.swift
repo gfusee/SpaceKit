@@ -38,7 +38,13 @@ func getContractEndpointSelectorConformance(
 ) throws -> ExtensionDeclSyntax {
     let structName = structDecl.name.trimmed
     
-    var endpointCasesList: [String] = []
+    var endpointCasesList: [String] = [
+        """
+        case "init":
+            Self.__contractInit()
+            return true
+        """
+    ]
     
     for function in functions {
         guard function.isEndpoint() else {
@@ -50,6 +56,7 @@ func getContractEndpointSelectorConformance(
         endpointCasesList.append("""
         case "\(functionName)":
             \(structName).\(functionName)()
+            return true
         """)
     }
     
@@ -60,11 +67,11 @@ func getContractEndpointSelectorConformance(
     ) {
         """
         @inline(__always)
-        public mutating func _callEndpoint(name: String) {
+        public mutating func _callEndpoint(name: String) -> Bool {
             switch name {
             \(raw: endpointCases)
             default:
-                API.throwFunctionNotFoundError()
+                return false
             }
         }
         """

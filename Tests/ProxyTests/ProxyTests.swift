@@ -111,12 +111,33 @@ final class ProxyTests: ContractTestCase {
     
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "callee"),
-            WorldAccount(address: "callee2"),
-            WorldAccount(address: "caller"),
+            WorldAccount(
+                address: "callee",
+                controllers: [
+                    CalleeController.self
+                ]
+            ),
+            WorldAccount(
+                address: "callee2",
+                controllers: [
+                    CalleeController.self
+                ]
+            ),
+            WorldAccount(
+                address: "calleeNotRegistered"
+            ),
+            WorldAccount(
+                address: "caller",
+                controllers: [
+                    CallerController.self
+                ]
+            ),
             WorldAccount(
                 address: "callerWithBalance",
-                balance: 150
+                balance: 150,
+                controllers: [
+                    CallerController.self
+                ]
             ),
             WorldAccount(
                 address: "callerWithEsdtBalances",
@@ -128,72 +149,88 @@ final class ProxyTests: ContractTestCase {
                         EsdtBalance(nonce: 1, balance: 100),
                         EsdtBalance(nonce: 2, balance: 100)
                     ]
+                ],
+                controllers: [
+                    CallerController.self
                 ]
             )
         ]
     }
     
     func testCallEndpointWithoutParameter() throws {
-        let _ = try self.deployContract(CalleeContract.self, at: "callee")
-        var caller = try self.deployContract(CallerContract.self, at: "caller")
+        try self.deployContract(at: "callee")
         
-        try caller.callEndpointWithoutParameter(calleeAddress: "callee")
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(CallerController.self, for: "caller")!
+        
+        try callerController.callEndpointWithoutParameter(calleeAddress: "callee")
     }
     
     func testCallEndpointWithOneParameter() throws {
-        let _ = try self.deployContract(CalleeContract.self, at: "callee")
-        var caller = try self.deployContract(CallerContract.self, at: "caller")
+        try self.deployContract(at: "callee")
         
-        let result = try caller.callEndpointWithOneParameter(calleeAddress: "callee", arg: 5)
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(CallerController.self, for: "caller")!
+        
+        let result = try callerController.callEndpointWithOneParameter(calleeAddress: "callee", arg: 5)
         
         XCTAssertEqual(result, 5)
     }
     
     func testCallEndpointOnTheSameLine() throws {
-        let _ = try self.deployContract(CalleeContract.self, at: "callee")
-        var caller = try self.deployContract(CallerContract.self, at: "caller")
+        try self.deployContract(at: "callee")
         
-        let result = try caller.callEndpointOnTheSameLine(calleeAddress: "callee", arg: "buffer")
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(CallerController.self, for: "caller")!
+        
+        let result = try callerController.callEndpointOnTheSameLine(calleeAddress: "callee", arg: "buffer")
         
         XCTAssertEqual(result, "buffer")
     }
     
     func testCallEndpointWithMultipleParameters() throws {
-        let _ = try self.deployContract(CalleeContract.self, at: "callee")
-        var caller = try self.deployContract(CallerContract.self, at: "caller")
+        try self.deployContract(at: "callee")
         
-        let result = try caller.callEndpointWithMultipleParameters(calleeAddress: "callee", firstArg: 2, secondArg: "buffer")
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(CallerController.self, for: "caller")!
+        
+        let result = try callerController.callEndpointWithMultipleParameters(calleeAddress: "callee", firstArg: 2, secondArg: "buffer")
         
         XCTAssertEqual(result, "bufferbufferbuffer")
     }
     
     func testCallEndpointWithNonNamedParameters() throws {
-        let _ = try self.deployContract(CalleeContract.self, at: "callee")
-        var caller = try self.deployContract(CallerContract.self, at: "caller")
+        try self.deployContract(at: "callee")
         
-        let result = try caller.callEndpointWithMultipleParametersNonNamed(calleeAddress: "callee", firstArg: 2, secondArg: "buffer")
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(CallerController.self, for: "caller")!
+        
+        let result = try callerController.callEndpointWithMultipleParametersNonNamed(calleeAddress: "callee", firstArg: 2, secondArg: "buffer")
         
         XCTAssertEqual(result, "bufferbufferbuffer")
     }
     
     func testCallEndpointCalleeNotRegistered() throws {
-        var caller = try self.deployContract(CallerContract.self, at: "caller")
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(CallerController.self, for: "caller")!
         
         do {
-            try caller.callEndpointWithoutParameter(calleeAddress: "callee")
+            try callerController.callEndpointWithoutParameter(calleeAddress: "calleeNotRegistered")
             
             XCTFail()
         } catch {
-            XCTAssertEqual(error, .worldError(message: "Contract not registered for address: \(self.getAccount(address: "callee")!.addressData.hexEncodedString())"))
+            XCTAssertEqual(error, .worldError(message: "Contract not registered for address: \(self.getAccount(address: "calleeNotRegistered")!.addressData.hexEncodedString())"))
         }
     }
     
     func testCallEndpointThrowError() throws {
-        let _ = try self.deployContract(CalleeContract.self, at: "callee")
-        var caller = try self.deployContract(CallerContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(CallerController.self, for: "caller")!
         
         do {
-            try caller.callEndpointThrowError(calleeAddress: "callee")
+            try callerController.callEndpointThrowError(calleeAddress: "callee")
             
             XCTFail()
         } catch {
@@ -202,11 +239,13 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallReturnEgldNotEnoughCallerBalance() throws {
-        let _ = try self.deployContract(CalleeContract.self, at: "callee")
-        var caller = try self.deployContract(CallerContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(CallerController.self, for: "caller")!
         
         do {
-            let _ = try caller.callReturnEgldValue(calleeAddress: "callee", egldValue: 100)
+            let _ = try callerController.callReturnEgldValue(calleeAddress: "callee", egldValue: 100)
             
             XCTFail()
         } catch {
@@ -215,10 +254,12 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallReturnEgld() throws {
-        let _ = try self.deployContract(CalleeContract.self, at: "callee")
-        var caller = try self.deployContract(CallerContract.self, at: "callerWithBalance")
+        try self.deployContract(at: "callee")
         
-        let result = try caller.callReturnEgldValue(calleeAddress: "callee", egldValue: 100)
+        try self.deployContract(at: "callerWithBalance")
+        var callerController = self.instantiateController(CallerController.self, for: "callerWithBalance")!
+        
+        let result = try callerController.callReturnEgldValue(calleeAddress: "callee", egldValue: 100)
         
         XCTAssertEqual(self.getAccount(address: "callerWithBalance")!.balance, 50)
         XCTAssertEqual(self.getAccount(address: "callee")!.balance, 100)
@@ -226,22 +267,26 @@ final class ProxyTests: ContractTestCase {
     }
     
     func testCallNestedCallEndpointWithMultipleParameters() throws {
-        let _ = try self.deployContract(CalleeContract.self, at: "callee")
-        let _ = try self.deployContract(CalleeContract.self, at: "callee2")
-        var caller = try self.deployContract(CallerContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        try self.deployContract(at: "callee2")
         
-        let result = try caller.callNestedCallEndpointWithMultipleParameters(calleeAddress: "callee", secondCalleeAddress: "callee2", firstArg: 2, secondArg: "buffer")
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(CallerController.self, for: "caller")!
+        
+        let result = try callerController.callNestedCallEndpointWithMultipleParameters(calleeAddress: "callee", secondCalleeAddress: "callee2", firstArg: 2, secondArg: "buffer")
         
         XCTAssertEqual(result, "bufferbufferbuffer")
     }
     
     func testCallNestedEndpointThrowError() throws {
-        let _ = try self.deployContract(CalleeContract.self, at: "callee")
-        let _ = try self.deployContract(CalleeContract.self, at: "callee2")
-        var caller = try self.deployContract(CallerContract.self, at: "caller")
+        try self.deployContract(at: "callee")
+        try self.deployContract(at: "callee2")
+        
+        try self.deployContract(at: "caller")
+        var callerController = self.instantiateController(CallerController.self, for: "caller")!
         
         do {
-            try caller.callNestedCallThrowError(calleeAddress: "callee", secondCalleeAddress: "callee2")
+            try callerController.callNestedCallThrowError(calleeAddress: "callee", secondCalleeAddress: "callee2")
             
             XCTFail()
         } catch {

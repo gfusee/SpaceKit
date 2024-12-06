@@ -21,17 +21,20 @@ public struct WorldAccount {
     package var balance: BigInt
     package var esdtBalances: [Data : [EsdtBalance]]
     package var owner: Data?
+    package var controllers: [any (ContractEndpointSelector & SwiftVMCompatibleContract).Type]?
     
     public init(
         address: String,
         balance: BigInt = 0,
         esdtBalances: [String : [EsdtBalance]] = [:],
-        owner: String? = nil
+        owner: String? = nil,
+        controllers: [any (ContractEndpointSelector & SwiftVMCompatibleContract).Type]? = nil
     ) {
         self.addressData = address.toAddressData()
         self.balance = balance
         self.esdtBalances = Dictionary(uniqueKeysWithValues: esdtBalances.map { ($0.key.data(using: .utf8)!, $0.value) })
         self.owner = owner?.toAddressData() ?? nil
+        self.controllers = controllers
     }
     
     public func toAddress() -> Address {

@@ -28,7 +28,12 @@ final class IntTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    IntTestsController.self
+                ]
+            )
         ]
     }
     
@@ -240,7 +245,10 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntTooLargeBufferShouldFail() throws {
         do {
-            try self.deployContract(IntTestsContract.self, at: "contract").testTopDecodeIntTooLargeBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(IntTestsController.self, for: "contract")!
+            
+            try controller.testTopDecodeIntTooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -295,7 +303,10 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntEmptyBufferShouldFail() throws {
         do {
-            try self.deployContract(IntTestsContract.self, at: "contract").testNestedDecodeIntEmptyBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(IntTestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeIntEmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -305,7 +316,10 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntTooSmallBufferShouldFail() throws {
         do {
-            try self.deployContract(IntTestsContract.self, at: "contract").testNestedDecodeIntTooSmallBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(IntTestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeIntTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -336,7 +350,10 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeTwoIntsTooSmallBufferShouldFail() throws {
         do {
-            try self.deployContract(IntTestsContract.self, at: "contract").testNestedDecodeTwoIntsTooSmallBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(IntTestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeTwoIntsTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {

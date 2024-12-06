@@ -92,18 +92,6 @@ package final class TransactionContainer: @unchecked Sendable {
         return currentHandle
     }
     
-    package func registerContractEndpointSelectorForContractAccount(
-        contractAddress: Data,
-        selector: any ContractEndpointSelector
-    ) {
-        let contractAccount = self.getAccount(address: contractAddress)
-        
-        self.state.addContractEndpointSelectorForContractAccount(
-            contractAccount: contractAccount,
-            selector: selector
-        )
-    }
-    
     private func getAccount(address: Data) -> WorldAccount {
         guard let account = self.state.getAccount(addressData: address) else {
             self.throwError(error: .worldError(message: "Account not found: \(address.hexEncodedString())"))
@@ -145,11 +133,11 @@ package final class TransactionContainer: @unchecked Sendable {
     }
     
     private func getContractEndpointSelectorForContractAccount(contractAccount: WorldAccount) -> any ContractEndpointSelector {
-        guard let selector = self.state.contractEndpointSelectorForContractAddress[contractAccount.addressData] else {
+        guard let selector = contractAccount.controllers else {
             self.throwError(error: .worldError(message: "Contract not registered for address: \(contractAccount.addressData.hexEncodedString())"))
         }
         
-        return selector
+        return selector as [ContractEndpointSelector.Type]
     }
     
     private func getCurrentContractAddress() -> Data {
@@ -333,7 +321,9 @@ package final class TransactionContainer: @unchecked Sendable {
             self.nestedCallTransactionContainer = nestedCallTransactionContainer
         }
         
-        selector._callEndpoint(name: endpointName)
+        guard selector._callEndpoint(name: endpointName) else {
+            API.throwFunctionNotFoundError()
+        }
         
         if shouldBePerformedInAChildContainer {
             guard let nestedCallTransactionContainer = self.nestedCallTransactionContainer else {

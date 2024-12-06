@@ -15,15 +15,21 @@ final class ErrorTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    ErrorTestsController.self
+                ]
+            )
         ]
     }
     
     func testUserErrorStopsTheExecution() throws {
         do {
-            let contract = try self.deployContract(ErrorTestsContract.self, at: "contract")
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ErrorTestsController.self, for: "contract")!
             
-            try contract.testUserErrorStopsTheExecution()
+            try controller.testUserErrorStopsTheExecution()
             
             XCTFail()
         } catch {
