@@ -131,4 +131,26 @@ final class CounterTests: ContractTestCase {
         
         XCTAssertEqual(result, 10)
     }
+    
+    func testDecreaseTooMuchShouldFail() throws {
+        try self.deployContract(
+            at: COUNTER_ADDRESS,
+            arguments: [
+                15 // Initial value
+            ]
+        )
+        
+        var controller = self.instantiateController(
+            CounterController.self,
+            for: COUNTER_ADDRESS
+        )
+        
+        do {
+            try controller.decrease(value: 16)
+            
+            XCTFail() // Decrease fails, so this line should not be executed
+        } catch {
+            XCTAssertEqual(error, .userError(message: "cannot subtract because result would be negative"))
+        }
+    }
 }
