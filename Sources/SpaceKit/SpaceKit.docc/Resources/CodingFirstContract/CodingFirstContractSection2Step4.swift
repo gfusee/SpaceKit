@@ -1,5 +1,5 @@
 import SpaceKit
 
-@Controller public struct Counter {
+@Controller public struct CounterController {
     @Storage(key: "counter") var counter: BigUint
 }

@@ -1,5 +1,5 @@
 import SpaceKit
 
-@Controller struct MyContract {
+@Controller struct MyController {
     
 }

@@ -1,11 +1,13 @@
 import SpaceKit
 
-@Controller public struct Counter {
-    @Storage(key: "counter") var counter: BigUint
+@Init func initialize(initialValue: BigUint) {
+    var controller = CounterController()
     
-    init(initialValue: BigUint) {
-        self.counter = initialValue
-    }
+    controller.counter = initialValue
+}
+
+@Controller public struct CounterController {
+    @Storage(key: "counter") var counter: BigUint
     
     public mutating func increase(value: BigUint) {
         self.counter = self.counter + value

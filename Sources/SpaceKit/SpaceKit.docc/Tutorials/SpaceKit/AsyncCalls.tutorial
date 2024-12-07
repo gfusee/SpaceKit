@@ -20,7 +20,7 @@
             @Step {
                 Review the contract provided in the previous chapter.
 
-                @Code(name: "CalleeContractProxy.swift", file: "AsyncCallsSection1Step1.swift")
+                @Code(name: "CalleeControllerProxy.swift", file: "AsyncCallsSection1Step1.swift")
             }
 
             @Step {

@@ -1,12 +1,12 @@
 import SpaceKit
 
-@Proxy enum CalleeContractProxy {
+@Proxy enum CalleeControllerProxy {
     case deposit
     case withdraw(amount: BigUint)
     case getTotalDepositedAmount
 }
 
-@Controller struct MyContract {
+@Controller struct MyController {
     public func callDeposit(receiverAddress: Address) {
         
     }

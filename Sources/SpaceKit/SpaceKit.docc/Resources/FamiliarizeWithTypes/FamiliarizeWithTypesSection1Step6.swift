@@ -1,7 +1,7 @@
 import SpaceKit
 import Foundation // Don't do this ❌
 
-@Controller struct MyContract {
+@Controller struct MyController {
     public func myEndpoint() {
         let myString: String = "Hey!" // Won't compile! ❌
         let myBuffer: Buffer = "Hey!" // Fine ✅

@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct MyContract {
+@Controller struct MyController {
     public func myEndpoint(myStruct: MyStruct) {
         // Do what you want here
     }

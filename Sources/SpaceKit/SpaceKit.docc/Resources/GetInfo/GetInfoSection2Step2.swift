@@ -2,7 +2,7 @@ import SpaceKit
 
 let secondsInADay: UInt64 = 86_400
 
-@Controller struct MyContract {
+@Controller struct MyController {
     @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
     @Mapping<Address, BigUint>(key: "depositedTokens") var depositedTokensForAddress
     

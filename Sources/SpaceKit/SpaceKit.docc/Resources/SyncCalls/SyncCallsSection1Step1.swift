@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct CalleeContract {
+@Controller struct CalleeController {
     public func deposit() {
         // Implements the logic to handle a deposit.
         // This endpoint requires an input EGLD payment.
