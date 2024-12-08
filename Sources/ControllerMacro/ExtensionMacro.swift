@@ -89,7 +89,7 @@ func getSwiftVMCompatibleConformance(
         "extension \(structName): SwiftVMCompatibleContract"
     ) {
         """
-        typealias TestableContractType = Self.Testable
+        public typealias TestableContractType = Self.Testable
         """
     }
     
