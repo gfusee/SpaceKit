@@ -13,20 +13,6 @@ extension Controller: MemberMacro {
         
         try structDecl.isValidStruct()
         
-        let initDecl = InitializerDeclSyntax(
-            modifiers: [
-                DeclModifierSyntax(name: TokenSyntax.keyword(.public))
-            ],
-            signature: FunctionSignatureSyntax(
-                parameterClause: FunctionParameterClauseSyntax(
-                    parameters: []
-                )
-            ),
-            body: CodeBlockSyntax(
-                statements: ""
-            )
-        )
-        
         let functionDecls = structDecl.memberBlock.members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         
         let testableStructDecl = getTestableStructDeclaration(
@@ -34,7 +20,7 @@ extension Controller: MemberMacro {
             functions: functionDecls
         )
         
-        let contractInitDecl = getStaticInitializerDeclarations(structDecl: structDecl, initDecl: initDecl)
+        let contractInitDecl = getStaticInitializerDeclarations(structDecl: structDecl)
         
         let testableDeclSyntax = """
         #if !WASM
@@ -72,6 +58,9 @@ extension Controller: MemberMacro {
             results.insert(
                 DeclSyntax(
                     InitializerDeclSyntax(
+                        modifiers: [
+                            DeclModifierSyntax(name: TokenSyntax.keyword(.public))
+                        ],
                         signature: FunctionSignatureSyntax(
                             parameterClause: FunctionParameterClauseSyntax(
                                 parameters: []
@@ -94,19 +83,6 @@ fileprivate func getTestableStructDeclaration(
     structDecl: StructDeclSyntax,
     functions: [FunctionDeclSyntax]
 ) -> StructDeclSyntax {
-    let optionalInitDecl = structDecl.memberBlock.members.first(where: { $0.decl.as(InitializerDeclSyntax.self) != nil } )
-    
-    let initDecl = optionalInitDecl?.decl.as(InitializerDeclSyntax.self) ?? InitializerDeclSyntax(
-        signature: FunctionSignatureSyntax(
-            parameterClause: FunctionParameterClauseSyntax(
-                parameters: []
-            )
-        ),
-        body: CodeBlockSyntax(
-            statements: ""
-        )
-    )
-    
     let transactionInputOptionalParameters: [FunctionParameterSyntax] = [
         "transactionInput: ContractCallTransactionInput? = nil,",
         "transactionOutput: TransactionOutput = TransactionOutput()"
@@ -115,16 +91,10 @@ fileprivate func getTestableStructDeclaration(
     
     let testableStaticInitializerParameters: FunctionParameterListSyntax = ["address: String"]
     
-    var parameterNamesList: [String] = []
-    var initCallParametersList: [String] = []
-    
-    for parameter in initDecl.signature.parameterClause.parameters {
-        let parameterName = parameter.secondName ?? parameter.firstName
-        initCallParametersList.append("\(parameterName): \(parameterName)")
-        parameterNamesList.append("\(parameterName)")
-    }
-    
     let testableInitDecl = InitializerDeclSyntax(
+        modifiers: [
+            DeclModifierSyntax(name: .keyword(.public)),
+        ],
         signature: FunctionSignatureSyntax(
             parameterClause: FunctionParameterClauseSyntax(
                 parameters: testableStaticInitializerParameters // Same as the static func testable
@@ -306,8 +276,7 @@ fileprivate func getStaticEndpointDeclarations(
 }
 
 fileprivate func getStaticInitializerDeclarations(
-    structDecl: StructDeclSyntax,
-    initDecl: InitializerDeclSyntax
+    structDecl: StructDeclSyntax
 ) -> FunctionDeclSyntax {
     let bodySyntax = CodeBlockSyntax(statements: """
     let bundle = Bundle(for: type(of: __BundleHelper()))
