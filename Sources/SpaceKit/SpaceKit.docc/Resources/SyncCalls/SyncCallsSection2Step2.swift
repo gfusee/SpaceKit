@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Proxy enum CalleeControllerProxy {
+@Proxy enum CalleeProxy {
     case deposit
     case withdraw(amount: BigUint)
     case getTotalDepositedAmount

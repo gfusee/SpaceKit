@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Proxy enum CalleeControllerProxy {
+@Proxy enum CalleeProxy {
     case deposit
 }
 
@@ -9,7 +9,7 @@ import SpaceKit
     public mutating func initiateDeposit(receiverAddress: Address) {
         let payment = Message.egldValue
         
-        CalleeControllerProxy
+        CalleeProxy
             .deposit
             .registerPromise(
                 receiver: receiverAddress,

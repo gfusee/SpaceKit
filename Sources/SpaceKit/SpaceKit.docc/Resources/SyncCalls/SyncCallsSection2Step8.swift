@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Proxy enum CalleeControllerProxy {
+@Proxy enum CalleeProxy {
     case deposit
     case withdraw(amount: BigUint)
     case getTotalDepositedAmount
@@ -10,7 +10,7 @@ import SpaceKit
     public func callDeposit(receiverAddress: Address) {
         let payment = Message.egldValue
         
-        CalleeControllerProxy
+        CalleeProxy
             .deposit
             .callAndIgnoreResult(
                 receiver: receiverAddress,
@@ -22,7 +22,7 @@ import SpaceKit
         receiverAddress: Address,
         amount: BigUint
     ) {
-        CalleeControllerProxy
+        CalleeProxy
             .withdraw(amount: amount)
     }
 }

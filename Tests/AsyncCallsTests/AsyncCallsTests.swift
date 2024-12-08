@@ -43,7 +43,7 @@ import SpaceKit
     }
 }
 
-@Proxy enum CalleeControllerProxy {
+@Proxy enum CalleeProxy {
     case increaseCounter
     case increaseCounterBy(value: BigUint)
     case increaseCounterAndFail
@@ -60,7 +60,7 @@ import SpaceKit
     @Storage(key: "storedErrorMessage") var storedErrorMessage: Buffer
     
     public func asyncCallIncreaseCounter(receiver: Address) {
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounter
             .registerPromise(
                 receiver: receiver,
@@ -69,7 +69,7 @@ import SpaceKit
     }
     
     public func asyncCallIncreaseCounterWithSimpleCallback(receiver: Address) {
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounter
             .registerPromise(
                 receiver: receiver,
@@ -79,7 +79,7 @@ import SpaceKit
     }
     
     public func multiAsyncCallIncreaseCounterWithSimpleCallback(receiver: Address) {
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounter
             .registerPromise(
                 receiver: receiver,
@@ -87,7 +87,7 @@ import SpaceKit
                 callback: self.$simpleCallback(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounter
             .registerPromise(
                 receiver: receiver,
@@ -95,7 +95,7 @@ import SpaceKit
                 callback: self.$simpleCallback(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounter
             .registerPromise(
                 receiver: receiver,
@@ -105,7 +105,7 @@ import SpaceKit
     }
     
     public func multiAsyncCallIncreaseCounterWithSimpleCallbackOneNoCallback(receiver: Address) {
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounter
             .registerPromise(
                 receiver: receiver,
@@ -113,7 +113,7 @@ import SpaceKit
                 callback: self.$simpleCallback(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounter
             .registerPromise(
                 receiver: receiver,
@@ -121,7 +121,7 @@ import SpaceKit
                 callback: self.$simpleCallback(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounter
             .registerPromise(
                 receiver: receiver,
@@ -129,7 +129,7 @@ import SpaceKit
                 callback: self.$simpleCallback(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounter
             .registerPromise(
                 receiver: receiver,
@@ -141,7 +141,7 @@ import SpaceKit
         receiver: Address,
         callbackValue: BigUint
     ) {
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounter
             .registerPromise(
                 receiver: receiver,
@@ -157,7 +157,7 @@ import SpaceKit
         receiver: Address,
         value: BigUint
     ) {
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounterBy(value: value)
             .registerPromise(
                 receiver: receiver,
@@ -168,7 +168,7 @@ import SpaceKit
     public mutating func asyncCallIncreaseCounterAndFail(receiver: Address) {
         self.counter += 100
         
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounterAndFail
             .registerPromise(
                 receiver: receiver,
@@ -181,7 +181,7 @@ import SpaceKit
     public mutating func asyncCallIncreaseCounterAndFailWithCallback(receiver: Address) {
         self.counter += 100
         
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounterAndFail
             .registerPromise(
                 receiver: receiver,
@@ -193,7 +193,7 @@ import SpaceKit
     }
     
     public func asyncCallGetCounterWithCallback(receiver: Address) {
-        CalleeControllerProxy
+        CalleeProxy
             .getCounter
             .registerPromise(
                 receiver: receiver,
@@ -203,7 +203,7 @@ import SpaceKit
     }
     
     public func multiAsyncCallGetCounterWithCallback(receiver: Address) {
-        CalleeControllerProxy
+        CalleeProxy
             .getCounter
             .registerPromise(
                 receiver: receiver,
@@ -211,7 +211,7 @@ import SpaceKit
                 callback: self.$callbackWithResult(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .getCounter
             .registerPromise(
                 receiver: receiver,
@@ -219,7 +219,7 @@ import SpaceKit
                 callback: self.$callbackWithResult(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .getCounter
             .registerPromise(
                 receiver: receiver,
@@ -229,7 +229,7 @@ import SpaceKit
     }
     
     public func multiAsyncCallGetCounterWithDifferentCallbacks(receiver: Address) {
-        CalleeControllerProxy
+        CalleeProxy
             .getCounter
             .registerPromise(
                 receiver: receiver,
@@ -237,7 +237,7 @@ import SpaceKit
                 callback: self.$simpleCallback(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .getCounter
             .registerPromise(
                 receiver: receiver,
@@ -245,7 +245,7 @@ import SpaceKit
                 callback: self.$simpleCallback(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .getCounter
             .registerPromise(
                 receiver: receiver,
@@ -255,7 +255,7 @@ import SpaceKit
     }
     
     public func multiAsyncCallGetCounterWithCallbackOneFailure(receiver: Address) {
-        CalleeControllerProxy
+        CalleeProxy
             .getCounter
             .registerPromise(
                 receiver: receiver,
@@ -263,7 +263,7 @@ import SpaceKit
                 callback: self.$callbackWithResult(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounterAndFail
             .registerPromise(
                 receiver: receiver,
@@ -271,7 +271,7 @@ import SpaceKit
                 callback: self.$callbackWithResult(gasForCallback: 5_000_000)
             )
         
-        CalleeControllerProxy
+        CalleeProxy
             .getCounter
             .registerPromise(
                 receiver: receiver,
@@ -284,7 +284,7 @@ import SpaceKit
         receiver: Address,
         paymentValue: BigUint
     ) {
-        CalleeControllerProxy
+        CalleeProxy
             .returnEgldValue
             .registerPromise(
                 receiver: receiver,
@@ -297,7 +297,7 @@ import SpaceKit
         receiver: Address,
         paymentValue: BigUint
     ) {
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounterAndFail
             .registerPromise(
                 receiver: receiver,
@@ -310,7 +310,7 @@ import SpaceKit
     public func asyncCallStoreCallerNoCallback(
         receiver: Address
     ) {
-        CalleeControllerProxy
+        CalleeProxy
             .storeCaller
             .registerPromise(
                 receiver: receiver,
@@ -321,7 +321,7 @@ import SpaceKit
     public func asyncCallStoreCallerWithCallback(
         receiver: Address
     ) {
-        CalleeControllerProxy
+        CalleeProxy
             .storeCaller
             .registerPromise(
                 receiver: receiver,
@@ -333,7 +333,7 @@ import SpaceKit
     public func asyncCallIncreaseCounterAndFailWithStoreCallerCallback(
         receiver: Address
     ) {
-        CalleeControllerProxy
+        CalleeProxy
             .increaseCounterAndFail
             .registerPromise(
                 receiver: receiver,
