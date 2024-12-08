@@ -27,6 +27,6 @@ final class CounterTests: ContractTestCase {
         let controller = self.instantiateController(
             CounterController.self,
             for: COUNTER_ADDRESS
-        )
+        )!
     }
 }

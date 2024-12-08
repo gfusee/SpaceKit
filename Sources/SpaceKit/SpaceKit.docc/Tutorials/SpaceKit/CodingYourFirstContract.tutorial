@@ -24,7 +24,9 @@
             }
 
             @Step {
-                Open the "Counter" directory in your preferred Swift IDE. Xcode or VSCode (with the official Swift extension) are recommended. In this tutorial, Xcode is used. If using other environments, consult their respective guides.
+                Open the "Counter" directory in your preferred Swift IDE. Xcode or VSCode (with the official Swift extension) are recommended.
+                
+                In this tutorial, Xcode is used. If using other environments, consult their respective guides.
 
                 @Image(source: "CodingFirstContractSection1Step3.png", alt: "Xcode project selection screen with 'Counter' highlighted.")
             }
@@ -90,7 +92,9 @@
             }
 
             @Step {
-                Implement a view function `getCounter` to retrieve the counter value. This function does not modify the contract’s state.
+                Implement a view function `getCounter` to retrieve the counter value.
+                
+                This function does not modify the contract’s state, that's why we call it "view".
 
                 @Code(name: "lib.swift", file: "CodingFirstContractSection2Step7.swift")
             }

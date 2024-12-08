@@ -13,9 +13,10 @@ extension Controller: MemberMacro {
         
         try structDecl.isValidStruct()
         
-        let optionalInitDecl = structDecl.memberBlock.members.first(where: { $0.decl.as(InitializerDeclSyntax.self) != nil } )
-        
-        let initDecl = optionalInitDecl?.decl.as(InitializerDeclSyntax.self) ?? InitializerDeclSyntax(
+        let initDecl = InitializerDeclSyntax(
+            modifiers: [
+                DeclModifierSyntax(name: TokenSyntax.keyword(.public))
+            ],
             signature: FunctionSignatureSyntax(
                 parameterClause: FunctionParameterClauseSyntax(
                     parameters: []
