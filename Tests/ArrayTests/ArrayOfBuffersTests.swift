@@ -1,7 +1,7 @@
 @testable import SpaceKit
 import XCTest
 
-@Contract struct ArrayOfBuffersTestsContract {
+@Controller struct ArrayOfBuffersTestsController {
     
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<Buffer> = ["Hey!"]
@@ -27,7 +27,12 @@ final class ArrayOfBuffersTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    ArrayOfBuffersTestsController.self
+                ]
+            )
         ]
     }
     
@@ -161,7 +166,10 @@ final class ArrayOfBuffersTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try self.deployContract(ArrayOfBuffersTestsContract.self, at: "contract").testGetOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfBuffersTestsController.self, for: "contract")!
+            
+            try controller.testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -388,7 +396,10 @@ final class ArrayOfBuffersTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try self.deployContract(ArrayOfBuffersTestsContract.self, at: "contract").testReplacedOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfBuffersTestsController.self, for: "contract")!
+                
+            try controller.testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

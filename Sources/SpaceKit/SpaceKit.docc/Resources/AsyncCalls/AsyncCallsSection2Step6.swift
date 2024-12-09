@@ -1,15 +1,15 @@
 import SpaceKit
 
-@Proxy enum CalleeContractProxy {
+@Proxy enum CalleeProxy {
     case deposit
 }
 
-@Contract struct MyContract {
+@Controller struct MyController {
     
     public mutating func initiateDeposit(receiverAddress: Address) {
         let payment = Message.egldValue
         
-        CalleeContractProxy
+        CalleeProxy
             .deposit
             .registerPromise(
                 receiver: receiverAddress,

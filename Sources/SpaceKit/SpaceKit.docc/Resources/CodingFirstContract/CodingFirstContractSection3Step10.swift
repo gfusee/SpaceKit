@@ -7,55 +7,48 @@ let COUNTER_ADDRESS = "counter"
 final class CounterTests: ContractTestCase {
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: COUNTER_ADDRESS)
+            WorldAccount(
+                address: COUNTER_ADDRESS,
+                controllers: [
+                    CounterController.self
+                ]
+            )
         ]
     }
     
     func testDeployCounterInitialValueZero() throws {
-        let contract = try Counter.testable(
-            COUNTER_ADDRESS,
-            initialValue: 0
+        try self.deployContract(
+            at: COUNTER_ADDRESS,
+            arguments: [
+                0 // Initial value
+            ]
         )
         
-        let result = try contract.getCounter()
+        let controller = self.instantiateController(
+            CounterController.self,
+            for: COUNTER_ADDRESS
+        )!
+        
+        let result = try controller.getCounter()
         
         XCTAssertEqual(result, 0)
     }
     
     func testDeployCounterInitialValueNonZero() throws {
-        let contract = try Counter.testable(
-            COUNTER_ADDRESS,
-            initialValue: 15
+        try self.deployContract(
+            at: COUNTER_ADDRESS,
+            arguments: [
+                15 // Initial value
+            ]
         )
         
-        let result = try contract.getCounter()
+        let controller = self.instantiateController(
+            CounterController.self,
+            for: COUNTER_ADDRESS
+        )!
+        
+        let result = try controller.getCounter()
         
         XCTAssertEqual(result, 15)
-    }
-    
-    func testIncreaseZero() throws {
-        var contract = try Counter.testable(
-            COUNTER_ADDRESS,
-            initialValue: 15
-        )
-        
-        try contract.increase(value: 0)
-        
-        let result = try contract.getCounter()
-        
-        XCTAssertEqual(result, 15)
-    }
-    
-    func testIncreaseMoreThanZero() throws {
-        var contract = try Counter.testable(
-            COUNTER_ADDRESS,
-            initialValue: 15
-        )
-        
-        try contract.increase(value: 5)
-        
-        let result = try contract.getCounter()
-        
-        XCTAssertEqual(result, 20)
     }
 }

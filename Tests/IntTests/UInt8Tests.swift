@@ -1,7 +1,7 @@
 import XCTest
 import SpaceKit
 
-@Contract struct UInt8TestsContract {
+@Controller struct UInt8TestsController {
     public func testTopDecodeUInt8TooLargeBufferShouldFail() {
         let input = Buffer(data: Array("0000".hexadecimal))
         let _ = UInt8(topDecode: input)
@@ -23,7 +23,12 @@ final class UInt8Tests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    UInt8TestsController.self
+                ]
+            )
         ]
     }
     
@@ -153,7 +158,10 @@ final class UInt8Tests: ContractTestCase {
     
     func testTopDecodeUInt8TooLargeBufferShouldFail() throws {
         do {
-            try self.deployContract(UInt8TestsContract.self, at: "contract").testTopDecodeUInt8TooLargeBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(UInt8TestsController.self, for: "contract")!
+            
+            try controller.testTopDecodeUInt8TooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -190,7 +198,10 @@ final class UInt8Tests: ContractTestCase {
     
     func testNestedDecodeUInt8EmptyBufferShouldFail() throws {
         do {
-            try self.deployContract(UInt8TestsContract.self, at: "contract").testNestedDecodeUInt8EmptyBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(UInt8TestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeUInt8EmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -212,7 +223,10 @@ final class UInt8Tests: ContractTestCase {
     
     func testNestedDecodeTwoUInt8sTooSmallBufferShouldFail() throws {
         do {
-            try self.deployContract(UInt8TestsContract.self, at: "contract").testNestedDecodeTwoUInt8sTooSmallBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(UInt8TestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeTwoUInt8sTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {

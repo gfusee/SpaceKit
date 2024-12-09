@@ -7,12 +7,9 @@ import XCTest
     case third
 }
 
-@Contract struct ArrayOfCustomEnumsTestsContract {
-    
+@Controller struct ArrayOfCustomEnumsTestsController {
     public func testGetOutOfRangeShouldFail() {
-        let array: Vector<Buffer> = ["Hello!", "Bonjour!", "¡Hola!"]
-        
-        let _: Vector<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -57,7 +54,12 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    ArrayOfCustomEnumsTestsController.self
+                ]
+            )
         ]
     }
     
@@ -477,7 +479,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try self.deployContract(ArrayOfBuffersTestsContract.self, at: "contract").testGetOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfCustomEnumsTestsController.self, for: "contract")!
+                
+            try controller.testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -1052,7 +1057,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try self.deployContract(ArrayOfBuffersTestsContract.self, at: "contract").testReplacedOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfCustomEnumsTestsController.self, for: "contract")!
+                
+            try controller.testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

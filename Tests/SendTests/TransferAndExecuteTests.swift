@@ -2,7 +2,7 @@ import SpaceKit
 import XCTest
 import BigInt
 
-@Contract struct EgldTransferContract {
+@Controller struct EgldTransferController {
     
     public func transferEgld(to: Address, value: BigUint) {
         to.send(egldValue: value)
@@ -22,7 +22,10 @@ final class TransferAndExecuteTests: ContractTestCase {
         [
             WorldAccount(
                 address: "contract",
-                balance: 100
+                balance: 100,
+                controllers: [
+                    EgldTransferController.self
+                ]
             ),
             WorldAccount(
                 address: "user",
@@ -32,7 +35,9 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendEgld() throws {
-        let contract = try self.deployContract(EgldTransferContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EgldTransferController.self, for: "contract")!
+        
         let user = self.getAccount(address: "user")!
         
         let contractBalanceBefore = self.getAccount(address: "contract")!.getBalance()
@@ -41,7 +46,7 @@ final class TransferAndExecuteTests: ContractTestCase {
         XCTAssertEqual(contractBalanceBefore, 100)
         XCTAssertEqual(userBalanceBefore, 100)
         
-        try contract.transferEgld(to: user.toAddress(), value: 10)
+        try controller.transferEgld(to: user.toAddress(), value: 10)
         
         let userBalanceAfter = self.getAccount(address: "user")!.getBalance()
         let contractBalanceAfter = self.getAccount(address: "contract")!.getBalance()
@@ -51,10 +56,12 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendAllEgldBalance() throws {
-        let contract = try self.deployContract(EgldTransferContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EgldTransferController.self, for: "contract")!
+        
         let user = self.getAccount(address: "user")!
         
-        try contract.transferEgld(to: user.toAddress(), value: 100)
+        try controller.transferEgld(to: user.toAddress(), value: 100)
         
         let userBalance = self.getAccount(address: "user")!.getBalance()
         let contractBalance = self.getAccount(address: "contract")!.getBalance()
@@ -64,10 +71,12 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendEgldTransactionFailedShouldRevert() throws {
-        let contract = try self.deployContract(EgldTransferContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EgldTransferController.self, for: "contract")!
+        
         let user = self.getAccount(address: "user")!
         
-        try? contract.transferEgldThenFail(to: user.toAddress(), value: 10)
+        try? controller.transferEgldThenFail(to: user.toAddress(), value: 10)
         
         let userBalance = self.getAccount(address: "user")!.getBalance()
         let contractBalance = self.getAccount(address: "contract")!.getBalance()
@@ -77,11 +86,13 @@ final class TransferAndExecuteTests: ContractTestCase {
     }
     
     func testSendEgldNotEnoughBalanceShouldRevert() throws {
-        let contract = try self.deployContract(EgldTransferContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EgldTransferController.self, for: "contract")!
+        
         let user = self.getAccount(address: "user")!
         
         do {
-            try contract.transferEgld(to: user.toAddress(), value: 101)
+            try controller.transferEgld(to: user.toAddress(), value: 101)
             
             XCTFail()
         } catch {

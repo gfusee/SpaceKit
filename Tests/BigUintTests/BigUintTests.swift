@@ -1,7 +1,7 @@
 import XCTest
 import SpaceKit
 
-@Contract struct BigUintTestsContract {
+@Controller struct BigUintTestsController {
     public func testSubstractTwoBigUintNegativeShouldFail() {
         let bigUint1: BigUint = 1
         let bigUint2: BigUint = 2
@@ -25,7 +25,12 @@ final class BigUintTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    BigUintTestsController.self
+                ]
+            )
         ]
     }
     
@@ -105,7 +110,10 @@ final class BigUintTests: ContractTestCase {
     
     func testSubstractTwoBigUintNegativeShouldFail() throws {
         do {
-            try self.deployContract(BigUintTestsContract.self, at: "contract").testSubstractTwoBigUintNegativeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(BigUintTestsController.self, for: "contract")!
+            
+            try controller.testSubstractTwoBigUintNegativeShouldFail()
             
             XCTFail()
         } catch {
@@ -151,7 +159,10 @@ final class BigUintTests: ContractTestCase {
     
     func testDivideTwoBigUintZeroRightSideShouldFail() throws {
         do {
-            try self.deployContract(BigUintTestsContract.self, at: "contract").testDivideTwoBigUintZeroRightSideShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(BigUintTestsController.self, for: "contract")!
+            
+            try controller.testDivideTwoBigUintZeroRightSideShouldFail()
             
             XCTFail()
         } catch {
@@ -188,7 +199,10 @@ final class BigUintTests: ContractTestCase {
     
     func testModuloTwoBigUintZeroRightSideShouldFail() throws {
         do {
-            try self.deployContract(BigUintTestsContract.self, at: "contract").testModuloTwoBigUintZeroRightSideShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(BigUintTestsController.self, for: "contract")!
+            
+            try controller.testModuloTwoBigUintZeroRightSideShouldFail()
             
             XCTFail()
         } catch {

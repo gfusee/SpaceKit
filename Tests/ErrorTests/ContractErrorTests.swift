@@ -1,7 +1,7 @@
 import SpaceKit
 import XCTest
 
-@Contract struct ErrorContract {
+@Controller struct ErrorController {
     
     public func throwError(errorMessage: Buffer) {
         smartContractError(message: errorMessage)
@@ -21,15 +21,21 @@ final class ContractErrorTests: ContractTestCase {
     
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    ErrorController.self
+                ]
+            )
         ]
     }
     
     func testUserError() throws {
-        let contract = try self.deployContract(ErrorContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(ErrorController.self, for: "contract")!
         
         do {
-            try contract.throwError(errorMessage: "This is an user error message")
+            try controller.throwError(errorMessage: "This is an user error message")
             
             XCTFail()
         } catch {
@@ -38,10 +44,11 @@ final class ContractErrorTests: ContractTestCase {
     }
     
     func testUserErrorThroughRequire() throws {
-        let contract = try self.deployContract(ErrorContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(ErrorController.self, for: "contract")!
         
         do {
-            try contract.throwErrorThroughRequire()
+            try controller.throwErrorThroughRequire()
             
             XCTFail()
         } catch {
@@ -50,9 +57,10 @@ final class ContractErrorTests: ContractTestCase {
     }
     
     func testRequireNoError() throws {
-        let contract = try self.deployContract(ErrorContract.self, at: "contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(ErrorController.self, for: "contract")!
         
-        try contract.dontThrowErrorThroughRequire()
+        try controller.dontThrowErrorThroughRequire()
     }
     
 }

@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Contract struct MyContract {
+@Controller struct MyController {
     public func myEndpoint() {
         let myString: String = "Hey!" // Won't compile! ❌
     }

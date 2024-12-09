@@ -1,9 +1,9 @@
 import SpaceKit
 
-@Proxy enum CalleeContractProxy {
+@Proxy enum CalleeProxy {
     
 }
 
-@Contract struct MyContract {
+@Controller struct MyController {
     
 }

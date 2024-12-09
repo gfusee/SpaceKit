@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Contract struct MyContract {
+@Controller struct MyController {
     @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
     @Mapping<Address, BigUint>(key: "depositedTokens") var depositedTokensForAddress
 }

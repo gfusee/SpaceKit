@@ -31,13 +31,12 @@ open class ContractTestCase: XCTestCase {
         return API.getAccount(addressData: addressData)
     }
     
-    final public func deployContract<T: ContractEndpointSelector & SwiftVMCompatibleContract>(
-        _ contractType: T.Type,
+    final public func deployContract(
         at address: String,
         arguments: [any TopEncodeMulti & TopDecodeMulti] = [],
         transactionInput: ContractCallTransactionInput? = nil,
         transactionOutput: TransactionOutput = TransactionOutput()
-    ) throws(TransactionError) -> T.TestableContractType {
+    ) throws(TransactionError) {
         let transactionInput = transactionInput ?? ContractCallTransactionInput()
         
         let actualTransactionInput = transactionInput.toTransactionInput(
@@ -54,15 +53,29 @@ open class ContractTestCase: XCTestCase {
             let ownerAddress = transactionInput.callerAddress?.toAddressData() ?? address.toAddressData()
             API.setCurrentSCOwnerAddress(owner: ownerAddress)
 
-            T.__contractInit()
-
-            API.registerContractEndpointSelectorForContractAddress(
-                contractAddress: ownerAddress,
-                selector: T()
-            )
+            guard var selector = self.getAccount(address: address)?.controllers as? [ContractEndpointSelector.Type] else {
+                API.throwFunctionNotFoundError()
+            }
+            
+            guard selector._callEndpoint(name: "init") else {
+                API.throwFunctionNotFoundError()
+            }
+        }
+    }
+    
+    final public func instantiateController<T: SwiftVMCompatibleContract>(
+        _ controllerType: T.Type,
+        for address: String
+    ) -> T.TestableContractType? {
+        guard let accountControllers = self.getAccount(address: address)?.controllers else {
+            return nil
         }
         
-        return T.TestableContractType(address: address)
+        guard accountControllers.first(where: { $0 == controllerType }) != nil else {
+            return nil
+        }
+        
+        return T.TestableContractType.init(address: address)
     }
     
 }

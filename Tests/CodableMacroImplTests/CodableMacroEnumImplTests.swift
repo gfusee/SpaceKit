@@ -24,7 +24,7 @@ import XCTest
     case esdt(Buffer, UInt64, BigUint), none
 }
 
-@Contract struct CodableMacroEnumImplTestsContract {
+@Controller struct CodableMacroEnumImplTestsController {
     public func testTopDecodeForEnumInputTooLargeError() {
         let input = Buffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e800".hexadecimal))
         let _ = PaymentType(topDecode: input)
@@ -35,7 +35,12 @@ final class CodableMacroEnumImplTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    CodableMacroEnumImplTestsController.self
+                ]
+            )
         ]
     }
     
@@ -128,7 +133,10 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopDecodeForEnumInputTooLargeError() throws {
         do {
-            try self.deployContract(CodableMacroEnumImplTestsContract.self, at: "contract").testTopDecodeForEnumInputTooLargeError()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(CodableMacroEnumImplTestsController.self, for: "contract")!
+            
+            try controller.testTopDecodeForEnumInputTooLargeError()
             
             XCTFail()
         } catch {

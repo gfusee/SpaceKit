@@ -114,16 +114,6 @@ public class DummyApi {
         self.numberOfShards = shards
     }
     
-    public func registerContractEndpointSelectorForContractAddress(
-        contractAddress: Data,
-        selector: any ContractEndpointSelector
-    ) {
-        self.getCurrentContainer().registerContractEndpointSelectorForContractAccount(
-            contractAddress: contractAddress,
-            selector: selector
-        )
-    }
-    
     // TODO: If we are in a transaction context and another thread wants to perform operations on the static, it will modify instead the transaction container.
     
     package func getCurrentContainer() -> TransactionContainer {
