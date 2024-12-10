@@ -4,6 +4,7 @@ import SpaceKit
 @Controller struct CalleeController {
     @Storage(key: "counter") var counter: BigUint
     @Storage(key: "address") var address: Address
+    @Storage(key: "lastReceivedTokens") var lastReceivedTokens: Vector<TokenPayment>
     
     public mutating func increaseCounter() {
         self.counter += 1
@@ -34,6 +35,14 @@ import SpaceKit
         return value
     }
     
+    public mutating func receiveTokens() {
+        self.lastReceivedTokens = Message.allEsdtTransfers
+    }
+    
+    public func getLastReceivedTokens() -> Vector<TokenPayment> {
+        self.lastReceivedTokens
+    }
+    
     public func getCounter() -> BigUint {
         self.counter
     }
@@ -50,6 +59,7 @@ import SpaceKit
     case storeCaller
     case returnValueNoInput
     case returnEgldValue
+    case receiveTokens
     case getCounter
 }
 
@@ -342,6 +352,43 @@ import SpaceKit
             )
     }
     
+    public func asyncCallSendTokensNoCallback(
+        receiver: Address
+    ) {
+        CalleeProxy
+            .receiveTokens
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                esdtTransfers: Message.allEsdtTransfers
+            )
+    }
+    
+    public func asyncCallSendTokensFailNoCallback(
+        receiver: Address
+    ) {
+        CalleeProxy
+            .increaseCounterAndFail
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                esdtTransfers: Message.allEsdtTransfers
+            )
+    }
+    
+    public func asyncCallSendTokensFailWithCallback(
+        receiver: Address
+    ) {
+        CalleeProxy
+            .increaseCounterAndFail
+            .registerPromise(
+                receiver: receiver,
+                gas: 10_000_000,
+                esdtTransfers: Message.allEsdtTransfers,
+                callback: self.$sendTokensFailureCallback(caller: Message.caller, gasForCallback: 15_000_000)
+            )
+    }
+    
     public func getCounter() -> BigUint {
         self.counter
     }
@@ -392,12 +439,40 @@ import SpaceKit
     @Callback public mutating func storeCallerCallback() {
         self.address = Message.caller
     }
+    
+    @Callback public func sendTokensFailureCallback(caller: Address) {
+        let result: AsyncCallResult<IgnoreValue> = Message.asyncCallResult()
+        
+        switch result {
+        case .success(_):
+            fatalError("Must not be executed")
+        case .error(_):
+            let returnedTokens = Message.allEsdtTransfers
+            
+            caller.send(payments: returnedTokens)
+        }
+    }
 }
 
 final class AsyncCallsTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
+            WorldAccount(
+                address: "user",
+                esdtBalances: [
+                    "WEGLD-abcdef": [
+                        EsdtBalance(nonce: 0, balance: 1000)
+                    ],
+                    "SFT-abcdef": [
+                        EsdtBalance(nonce: 2, balance: 1000),
+                        EsdtBalance(nonce: 10, balance: 1000)
+                    ],
+                    "OTHER-abcdef": [
+                        EsdtBalance(nonce: 3, balance: 1000),
+                    ]
+                ]
+            ),
             WorldAccount(
                 address: "callee",
                 controllers: [
@@ -727,5 +802,117 @@ final class AsyncCallsTests: ContractTestCase {
         let callerStoredAddress = try callerController.getAddress()
         
         XCTAssertEqual(callerStoredAddress, "callee")
+    }
+    
+    func testSendOneFungibleTokenNoCallback() throws {
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
+        
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        var esdtValue: Vector<TokenPayment> = Vector()
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment.new(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0,
+                amount: 100
+            )
+        )
+        
+        try callerController.asyncCallSendTokensNoCallback(
+            receiver: "callee",
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                esdtValue: esdtValue
+            )
+        )
+        
+        let calleeLastReceivedTokens = try calleeController.getLastReceivedTokens()
+        
+        let userWEGLDBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
+        let callerWEGLDBalance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
+        let calleeWEGLDBalance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
+        
+        var expectedCalleeLastReceivedTokens: Vector<TokenPayment> = Vector()
+        let expectedUserWEGLDBalance: BigUint = 900
+        let expectedCallerWEGLDBalance: BigUint = 0
+        let expectedCalleeWEGLDBalance: BigUint = 100
+        
+        expectedCalleeLastReceivedTokens = expectedCalleeLastReceivedTokens.appended(
+            TokenPayment.new(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0,
+                amount: 100
+            )
+        )
+        
+        XCTAssertEqual(calleeLastReceivedTokens, expectedCalleeLastReceivedTokens)
+        XCTAssertEqual(userWEGLDBalance, expectedUserWEGLDBalance)
+        XCTAssertEqual(callerWEGLDBalance, expectedCallerWEGLDBalance)
+        XCTAssertEqual(calleeWEGLDBalance, expectedCalleeWEGLDBalance)
+    }
+    
+    func testSendOneFungibleTokenFailWithCallback() throws {
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
+        
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        var esdtValue: Vector<TokenPayment> = Vector()
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment.new(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0,
+                amount: 100
+            )
+        )
+        
+        try callerController.asyncCallSendTokensFailWithCallback(
+            receiver: "callee",
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                esdtValue: esdtValue
+            )
+        )
+        
+        let userWEGLDBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
+        let callerWEGLDBalance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
+        let calleeWEGLDBalance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
+        
+        let expectedUserWEGLDBalance: BigUint = 1000
+        let expectedCallerWEGLDBalance: BigUint = 0
+        let expectedCalleeWEGLDBalance: BigUint = 0
+        
+        XCTAssertEqual(userWEGLDBalance, expectedUserWEGLDBalance)
+        XCTAssertEqual(callerWEGLDBalance, expectedCallerWEGLDBalance)
+        XCTAssertEqual(calleeWEGLDBalance, expectedCalleeWEGLDBalance)
     }
 }
