@@ -733,7 +733,10 @@ extension DummyApi: SendApiProtocol {
             let tokenIdentifier = self.getCurrentContainer().getBufferData(handle: tokenPayment.tokenIdentifier.handle)
             let value = self.getCurrentContainer().getBigIntData(handle: tokenPayment.amount.handle)
             
-            if value > sender.balance {
+            let senderBalanceForTokenIdentifier = (sender.esdtBalances[tokenIdentifier] ?? [])
+            let senderBalanceForToken = senderBalanceForTokenIdentifier.first(where: { $0.nonce == tokenPayment.nonce })?.balance ?? 0
+            
+            if value > senderBalanceForToken {
                 self.throwExecutionFailed(reason: "insufficient funds")
             }
             

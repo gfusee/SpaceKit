@@ -134,6 +134,14 @@ final class TransferAndExecuteTests: ContractTestCase {
         
         esdtValue = esdtValue.appended(
             TokenPayment.new(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0,
+                amount: 50
+            )
+        )
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment.new(
                 tokenIdentifier: "SFT-abcdef",
                 nonce: 2,
                 amount: 100
@@ -163,6 +171,17 @@ final class TransferAndExecuteTests: ContractTestCase {
                 esdtValue: esdtValue
             )
         )
+        
+        let userWEGLDBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
+        let user2WEGLDBalance = self.getAccount(address: "user2")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
         
         let userSFT2Balance = self.getAccount(address: "user")!
             .getEsdtBalance(
@@ -197,14 +216,20 @@ final class TransferAndExecuteTests: ContractTestCase {
                 nonce: 3
             )
         
+        let expectedUserWEGLDBalance: BigUint = 950
+        let expectedUser2WEGLDBalance: BigUint = 50
+        
         let expectedUserSFT2Balance: BigUint = 900
-        let expectedUser2SFT2Balance: BigUint = 0
+        let expectedUser2SFT2Balance: BigUint = 100
         
         let expectedUserSFT10Balance: BigUint = 850
-        let expectedUser2SFT10Balance: BigUint = 0
+        let expectedUser2SFT10Balance: BigUint = 150
         
         let expectedUserOtherBalance: BigUint = 800
-        let expectedUser2OtherBalance: BigUint = 0
+        let expectedUser2OtherBalance: BigUint = 200
+        
+        XCTAssertEqual(userWEGLDBalance, expectedUserWEGLDBalance)
+        XCTAssertEqual(user2WEGLDBalance, expectedUser2WEGLDBalance)
         
         XCTAssertEqual(userSFT2Balance, expectedUserSFT2Balance)
         XCTAssertEqual(user2SFT2Balance, expectedUser2SFT2Balance)

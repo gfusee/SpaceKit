@@ -866,6 +866,56 @@ final class AsyncCallsTests: ContractTestCase {
         XCTAssertEqual(calleeWEGLDBalance, expectedCalleeWEGLDBalance)
     }
     
+    func testSendOneFungibleTokenFailNoCallback() throws {
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
+        
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        var esdtValue: Vector<TokenPayment> = Vector()
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment.new(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0,
+                amount: 100
+            )
+        )
+        
+        try callerController.asyncCallSendTokensFailNoCallback(
+            receiver: "callee",
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                esdtValue: esdtValue
+            )
+        )
+        
+        let userWEGLDBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
+        let callerWEGLDBalance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
+        let calleeWEGLDBalance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "WEGLD-abcdef",
+                nonce: 0
+            )
+        
+        let expectedUserWEGLDBalance: BigUint = 900
+        let expectedCallerWEGLDBalance: BigUint = 100
+        let expectedCalleeWEGLDBalance: BigUint = 0
+        
+        XCTAssertEqual(userWEGLDBalance, expectedUserWEGLDBalance)
+        XCTAssertEqual(callerWEGLDBalance, expectedCallerWEGLDBalance)
+        XCTAssertEqual(calleeWEGLDBalance, expectedCalleeWEGLDBalance)
+    }
+    
     func testSendOneFungibleTokenFailWithCallback() throws {
         try self.deployContract(at: "callee")
         let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
