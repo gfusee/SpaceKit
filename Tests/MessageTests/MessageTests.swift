@@ -132,11 +132,11 @@ final class MessageTests: ContractTestCase {
         let value = try controller.getAllEsdtTransfers(
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "user",
-                esdtValue: [TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)]
+                esdtValue: [TokenPayment(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)]
             )
         )
         
-        XCTAssertEqual(value, [TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)])
+        XCTAssertEqual(value, [TokenPayment(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)])
         XCTAssertEqual(self.getAccount(address: "contract")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 100)
         XCTAssertEqual(self.getAccount(address: "user")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 900)
     }
@@ -149,17 +149,17 @@ final class MessageTests: ContractTestCase {
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "user",
                 esdtValue: [
-                    TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
-                    TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
-                    TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
+                    TokenPayment(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
+                    TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
+                    TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
                 ]
             )
         )
 
         let expected: Vector<TokenPayment> = [
-            TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
-            TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
-            TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
+            TokenPayment(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
+            TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
+            TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
         ]
         
         XCTAssertEqual(value, expected)

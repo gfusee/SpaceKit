@@ -32,7 +32,7 @@ import CryptoKittiesRandom
         
         let kittyMeowPower = matron.genes.meowPower / 2 + sire.genes.meowPower / 2
         
-        return KittyGenes.new(
+        return KittyGenes(
             furColor: kittyFurColor,
             eyeColor: kittyEyeColor,
             meowPower: kittyMeowPower

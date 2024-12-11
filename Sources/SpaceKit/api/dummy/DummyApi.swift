@@ -690,7 +690,7 @@ extension DummyApi: CallValueApiProtocol {
         var array: Vector<TokenPayment> = []
         for payment in payments {
             array = array.appended(
-                TokenPayment.new(
+                TokenPayment(
                     tokenIdentifier: Buffer(data: Array(payment.tokenIdentifier)),
                     nonce: payment.nonce,
                     amount: BigUint(bigInt: payment.amount)

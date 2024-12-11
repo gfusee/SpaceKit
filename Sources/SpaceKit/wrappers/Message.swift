@@ -25,7 +25,7 @@ public struct Message {
         let allEsdtTransfersCount = allEsdtTransfers.count
         
         if allEsdtTransfersCount == 0 {
-            return TokenPayment.new(
+            return TokenPayment(
                 tokenIdentifier: "EGLD", // TODO: no hardcoded EGLD
                 nonce: 0,
                 amount: self.egldValue

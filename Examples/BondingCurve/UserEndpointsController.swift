@@ -245,7 +245,7 @@ import SpaceKit
             }
             
             tokensToSend = tokensToSend.appended(
-                TokenPayment.new(
+                TokenPayment(
                     tokenIdentifier: token,
                     nonce: nonce,
                     amount: amountToSend

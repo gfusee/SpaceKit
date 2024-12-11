@@ -12,7 +12,7 @@ import SpaceKit
         assertOwner()
         
         self.tokenFeeForToken[token] = Fee.exactValue(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: feeToken,
                 nonce: 0,
                 amount: feeAmount
@@ -38,7 +38,7 @@ import SpaceKit
         
         paidFeesMapper.forEach { key, amount in
             fees = fees.appended(
-                TokenPayment.new(
+                TokenPayment(
                     tokenIdentifier: key.tokenIdentifier,
                     nonce: key.nonce,
                     amount: amount
