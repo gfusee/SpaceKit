@@ -43,7 +43,7 @@ import SpaceKit
             if token == "EGLD" { // TODO: no hardcoded EGLD
                 caller.send(egldValue: fee)
             } else {
-                let collectedFee = TokenPayment.new(
+                let collectedFee = TokenPayment(
                     tokenIdentifier: token,
                     nonce: 0,
                     amount: fee

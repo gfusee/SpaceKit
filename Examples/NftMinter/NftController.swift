@@ -106,7 +106,7 @@ let ROYALTIES_MAX: UInt32 = 10_000
         Blockchain.issueNonFungibleToken(
             tokenDisplayName: tokenName,
             tokenTicker: tokenTicker,
-            properties: NonFungibleTokenProperties.new(
+            properties: NonFungibleTokenProperties(
                 canFreeze: true,
                 canWipe: true,
                 canPause: true,

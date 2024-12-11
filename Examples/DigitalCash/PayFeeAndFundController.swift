@@ -34,7 +34,7 @@ import SpaceKit
         
         fund = fund - feeValue
         
-        let fee = TokenPayment.new(
+        let fee = TokenPayment(
             tokenIdentifier: "EGLD", // TODO: no hardcoded EGLD
             nonce: 0,
             amount: feeValue
@@ -95,7 +95,7 @@ import SpaceKit
         Helpers().updateFees(
             callerAddress: caller,
             address: address,
-            payment: TokenPayment.new(
+            payment: TokenPayment(
                 tokenIdentifier: "EGLD", // TODO: no hardcoded EGLD
                 nonce: 0,
                 amount: payment

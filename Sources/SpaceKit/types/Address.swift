@@ -67,7 +67,7 @@ public struct Address {
         } else {
             // TODO: instantiating a Vector<TokenPayment> through a literal expression causes heap allocation, while instantiating some other types, such as Vector<UInt64> doesn't. I should investigate on this
             let payments: Vector<TokenPayment> = Vector()
-                .appended(TokenPayment.new(
+                .appended(TokenPayment(
                     tokenIdentifier: tokenIdentifier,
                     nonce: nonce,
                     amount: amount

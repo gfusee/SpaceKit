@@ -6,19 +6,6 @@ import SpaceKit
     public let eyeColor: Color
     public let meowPower: UInt8
     
-    // TODO: remove this helper when @Codable exposes the default init as public
-    public static func new(
-        furColor: Color,
-        eyeColor: Color,
-        meowPower: UInt8
-    ) -> KittyGenes {
-        return KittyGenes(
-            furColor: furColor,
-            eyeColor: eyeColor,
-            meowPower: meowPower
-        )
-    }
-    
     public static func getDefault() -> KittyGenes {
         return KittyGenes(
             furColor: Color.getDefault(),

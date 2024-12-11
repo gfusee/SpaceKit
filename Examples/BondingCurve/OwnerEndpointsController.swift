@@ -75,7 +75,7 @@ import SpaceKit
                 let nonceAmountMapper = storage.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: token, nonce: nonce)]
                 
                 tokensToClaim = tokensToClaim.appended(
-                    TokenPayment.new(
+                    TokenPayment(
                         tokenIdentifier: token,
                         nonce: nonce,
                         amount: nonceAmountMapper.get()
@@ -163,7 +163,7 @@ import SpaceKit
                 availableSupply: amount,
                 balance: amount
             )
-            payment = TokenPayment.new(
+            payment = TokenPayment(
                 tokenIdentifier: paymentTokenIdentifier,
                 nonce: 0,
                 amount: 0
