@@ -814,7 +814,7 @@ final class AsyncCallsTests: ContractTestCase {
         var esdtValue: Vector<TokenPayment> = Vector()
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "WEGLD-abcdef",
                 nonce: 0,
                 amount: 100
@@ -853,7 +853,7 @@ final class AsyncCallsTests: ContractTestCase {
         let expectedCalleeWEGLDBalance: BigUint = 100
         
         expectedCalleeLastReceivedTokens = expectedCalleeLastReceivedTokens.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "WEGLD-abcdef",
                 nonce: 0,
                 amount: 100
@@ -868,7 +868,6 @@ final class AsyncCallsTests: ContractTestCase {
     
     func testSendOneFungibleTokenFailNoCallback() throws {
         try self.deployContract(at: "callee")
-        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
         try self.deployContract(at: "caller")
         let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
@@ -876,7 +875,7 @@ final class AsyncCallsTests: ContractTestCase {
         var esdtValue: Vector<TokenPayment> = Vector()
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "WEGLD-abcdef",
                 nonce: 0,
                 amount: 100
@@ -918,7 +917,6 @@ final class AsyncCallsTests: ContractTestCase {
     
     func testSendOneFungibleTokenFailWithCallback() throws {
         try self.deployContract(at: "callee")
-        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
         try self.deployContract(at: "caller")
         let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
@@ -926,7 +924,7 @@ final class AsyncCallsTests: ContractTestCase {
         var esdtValue: Vector<TokenPayment> = Vector()
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "WEGLD-abcdef",
                 nonce: 0,
                 amount: 100
@@ -964,5 +962,377 @@ final class AsyncCallsTests: ContractTestCase {
         XCTAssertEqual(userWEGLDBalance, expectedUserWEGLDBalance)
         XCTAssertEqual(callerWEGLDBalance, expectedCallerWEGLDBalance)
         XCTAssertEqual(calleeWEGLDBalance, expectedCalleeWEGLDBalance)
+    }
+    
+    func testSendMultiTokensNoCallback() throws {
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
+        
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        var esdtValue: Vector<TokenPayment> = Vector()
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2,
+                amount: 100
+            )
+        )
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10,
+                amount: 150
+            )
+        )
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3,
+                amount: 200
+            )
+        )
+        
+        try callerController.asyncCallSendTokensNoCallback(
+            receiver: "callee",
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                esdtValue: esdtValue
+            )
+        )
+        
+        let calleeLastReceivedTokens = try calleeController.getLastReceivedTokens()
+        
+        let userSFT2Balance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2
+            )
+        let callerSFT2Balance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2
+            )
+        let calleeSFT2Balance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2
+            )
+        
+        let userSFT10Balance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10
+            )
+        let callerSFT10Balance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10
+            )
+        let calleeSFT10Balance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10
+            )
+        
+        let userOtherBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3
+            )
+        let callerOtherBalance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3
+            )
+        let calleeOtherBalance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3
+            )
+        
+        var expectedCalleeLastReceivedTokens: Vector<TokenPayment> = Vector()
+        
+        let expectedUserSFT2Balance: BigUint = 900
+        let expectedCallerSFT2Balance: BigUint = 0
+        let expectedCalleeSFT2Balance: BigUint = 100
+        
+        let expectedUserSFT10Balance: BigUint = 850
+        let expectedCallerSFT10Balance: BigUint = 0
+        let expectedCalleeSFT10Balance: BigUint = 150
+        
+        let expectedUserOtherBalance: BigUint = 800
+        let expectedCallerOtherBalance: BigUint = 0
+        let expectedCalleeOtherBalance: BigUint = 200
+        
+        expectedCalleeLastReceivedTokens = expectedCalleeLastReceivedTokens.appended(
+            TokenPayment(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2,
+                amount: 100
+            )
+        )
+        
+        expectedCalleeLastReceivedTokens = expectedCalleeLastReceivedTokens.appended(
+            TokenPayment(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10,
+                amount: 150
+            )
+        )
+        
+        expectedCalleeLastReceivedTokens = expectedCalleeLastReceivedTokens.appended(
+            TokenPayment(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3,
+                amount: 200
+            )
+        )
+        
+        XCTAssertEqual(calleeLastReceivedTokens, expectedCalleeLastReceivedTokens)
+        
+        XCTAssertEqual(userSFT2Balance, expectedUserSFT2Balance)
+        XCTAssertEqual(callerSFT2Balance, expectedCallerSFT2Balance)
+        XCTAssertEqual(calleeSFT2Balance, expectedCalleeSFT2Balance)
+        
+        XCTAssertEqual(userSFT10Balance, expectedUserSFT10Balance)
+        XCTAssertEqual(callerSFT10Balance, expectedCallerSFT10Balance)
+        XCTAssertEqual(calleeSFT10Balance, expectedCalleeSFT10Balance)
+        
+        XCTAssertEqual(userOtherBalance, expectedUserOtherBalance)
+        XCTAssertEqual(callerOtherBalance, expectedCallerOtherBalance)
+        XCTAssertEqual(calleeOtherBalance, expectedCalleeOtherBalance)
+    }
+    
+    func testSendMultiTokensFailWithCallback() throws {
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
+        
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        var esdtValue: Vector<TokenPayment> = Vector()
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2,
+                amount: 100
+            )
+        )
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10,
+                amount: 150
+            )
+        )
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3,
+                amount: 200
+            )
+        )
+        
+        try callerController.asyncCallSendTokensFailWithCallback(
+            receiver: "callee",
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                esdtValue: esdtValue
+            )
+        )
+        
+        let userSFT2Balance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2
+            )
+        let callerSFT2Balance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2
+            )
+        let calleeSFT2Balance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2
+            )
+        
+        let userSFT10Balance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10
+            )
+        let callerSFT10Balance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10
+            )
+        let calleeSFT10Balance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10
+            )
+        
+        let userOtherBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3
+            )
+        let callerOtherBalance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3
+            )
+        let calleeOtherBalance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3
+            )
+        
+        let expectedUserSFT2Balance: BigUint = 1000
+        let expectedCallerSFT2Balance: BigUint = 0
+        let expectedCalleeSFT2Balance: BigUint = 0
+        
+        let expectedUserSFT10Balance: BigUint = 1000
+        let expectedCallerSFT10Balance: BigUint = 0
+        let expectedCalleeSFT10Balance: BigUint = 0
+        
+        let expectedUserOtherBalance: BigUint = 1000
+        let expectedCallerOtherBalance: BigUint = 0
+        let expectedCalleeOtherBalance: BigUint = 0
+        
+        XCTAssertEqual(userSFT2Balance, expectedUserSFT2Balance)
+        XCTAssertEqual(callerSFT2Balance, expectedCallerSFT2Balance)
+        XCTAssertEqual(calleeSFT2Balance, expectedCalleeSFT2Balance)
+        
+        XCTAssertEqual(userSFT10Balance, expectedUserSFT10Balance)
+        XCTAssertEqual(callerSFT10Balance, expectedCallerSFT10Balance)
+        XCTAssertEqual(calleeSFT10Balance, expectedCalleeSFT10Balance)
+        
+        XCTAssertEqual(userOtherBalance, expectedUserOtherBalance)
+        XCTAssertEqual(callerOtherBalance, expectedCallerOtherBalance)
+        XCTAssertEqual(calleeOtherBalance, expectedCalleeOtherBalance)
+    }
+    
+    func testSendMultiTokensFailNoCallback() throws {
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
+        
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        var esdtValue: Vector<TokenPayment> = Vector()
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2,
+                amount: 100
+            )
+        )
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10,
+                amount: 150
+            )
+        )
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3,
+                amount: 200
+            )
+        )
+        
+        try callerController.asyncCallSendTokensFailNoCallback(
+            receiver: "callee",
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                esdtValue: esdtValue
+            )
+        )
+        
+        let userSFT2Balance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2
+            )
+        let callerSFT2Balance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2
+            )
+        let calleeSFT2Balance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 2
+            )
+        
+        let userSFT10Balance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10
+            )
+        let callerSFT10Balance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10
+            )
+        let calleeSFT10Balance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "SFT-abcdef",
+                nonce: 10
+            )
+        
+        let userOtherBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3
+            )
+        let callerOtherBalance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3
+            )
+        let calleeOtherBalance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "OTHER-abcdef",
+                nonce: 3
+            )
+        
+        let expectedUserSFT2Balance: BigUint = 900
+        let expectedCallerSFT2Balance: BigUint = 100
+        let expectedCalleeSFT2Balance: BigUint = 0
+        
+        let expectedUserSFT10Balance: BigUint = 850
+        let expectedCallerSFT10Balance: BigUint = 150
+        let expectedCalleeSFT10Balance: BigUint = 0
+        
+        let expectedUserOtherBalance: BigUint = 800
+        let expectedCallerOtherBalance: BigUint = 200
+        let expectedCalleeOtherBalance: BigUint = 0
+        
+        XCTAssertEqual(userSFT2Balance, expectedUserSFT2Balance)
+        XCTAssertEqual(callerSFT2Balance, expectedCallerSFT2Balance)
+        XCTAssertEqual(calleeSFT2Balance, expectedCalleeSFT2Balance)
+        
+        XCTAssertEqual(userSFT10Balance, expectedUserSFT10Balance)
+        XCTAssertEqual(callerSFT10Balance, expectedCallerSFT10Balance)
+        XCTAssertEqual(calleeSFT10Balance, expectedCalleeSFT10Balance)
+        
+        XCTAssertEqual(userOtherBalance, expectedUserOtherBalance)
+        XCTAssertEqual(callerOtherBalance, expectedCallerOtherBalance)
+        XCTAssertEqual(calleeOtherBalance, expectedCalleeOtherBalance)
     }
 }

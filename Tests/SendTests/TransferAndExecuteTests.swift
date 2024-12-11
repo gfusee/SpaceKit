@@ -133,7 +133,7 @@ final class TransferAndExecuteTests: ContractTestCase {
         var esdtValue: Vector<TokenPayment> = Vector()
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "WEGLD-abcdef",
                 nonce: 0,
                 amount: 50
@@ -141,7 +141,7 @@ final class TransferAndExecuteTests: ContractTestCase {
         )
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "SFT-abcdef",
                 nonce: 2,
                 amount: 100
@@ -149,7 +149,7 @@ final class TransferAndExecuteTests: ContractTestCase {
         )
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "SFT-abcdef",
                 nonce: 10,
                 amount: 150
@@ -157,7 +157,7 @@ final class TransferAndExecuteTests: ContractTestCase {
         )
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "OTHER-abcdef",
                 nonce: 3,
                 amount: 200
