@@ -96,7 +96,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
         var esdtValue: Vector<TokenPayment> = Vector()
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "WEGLD-abcdef",
                 nonce: 0,
                 amount: 100
@@ -134,7 +134,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
         let expectedReceiverWEGLDBalance: BigUint = 100
         
         expectedReceiverLastReceivedTokens = expectedReceiverLastReceivedTokens.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "WEGLD-abcdef",
                 nonce: 0,
                 amount: 100
@@ -157,7 +157,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
         var esdtValue: Vector<TokenPayment> = Vector()
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "SFT-abcdef",
                 nonce: 2,
                 amount: 100
@@ -195,7 +195,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
         let expectedReceiverSFTBalance: BigUint = 100
         
         expectedReceiverLastReceivedTokens = expectedReceiverLastReceivedTokens.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "SFT-abcdef",
                 nonce: 2,
                 amount: 100
@@ -218,7 +218,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
         var esdtValue: Vector<TokenPayment> = Vector()
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "SFT-abcdef",
                 nonce: 2,
                 amount: 100
@@ -226,7 +226,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
         )
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "SFT-abcdef",
                 nonce: 10,
                 amount: 150
@@ -234,7 +234,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
         )
         
         esdtValue = esdtValue.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "OTHER-abcdef",
                 nonce: 3,
                 amount: 200
@@ -314,7 +314,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
         let expectedReceiverOtherBalance: BigUint = 200
 
         expectedReceiverLastReceivedTokens = expectedReceiverLastReceivedTokens.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "SFT-abcdef",
                 nonce: 2,
                 amount: 100
@@ -323,7 +323,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
         
         
         expectedReceiverLastReceivedTokens = expectedReceiverLastReceivedTokens.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "SFT-abcdef",
                 nonce: 10,
                 amount: 150
@@ -331,7 +331,7 @@ final class ExecuteOnDestContextTests: ContractTestCase {
         )
         
         expectedReceiverLastReceivedTokens = expectedReceiverLastReceivedTokens.appended(
-            TokenPayment.new(
+            TokenPayment(
                 tokenIdentifier: "OTHER-abcdef",
                 nonce: 3,
                 amount: 200

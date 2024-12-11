@@ -9,7 +9,7 @@ let ESDT_NFT_BURN_FUNC_NAME: StaticString = "ESDTNFTBurn"
 }
 
 extension TokenPayment {
-    // TODO: remove the below function once the default init is made public in the @Codable macro
+    @available(*, deprecated, message: "This will be removed in a future version. Please use the public init.")
     public static func new(tokenIdentifier: Buffer, nonce: UInt64, amount: BigUint) -> TokenPayment {
         return TokenPayment(tokenIdentifier: tokenIdentifier, nonce: nonce, amount: amount)
     }

@@ -10,7 +10,7 @@ import SpaceKit
         let allEsdtTransfers = Message.allEsdtTransfers
         let payment: TokenPayment = switch allEsdtTransfers.count {
             case 0:
-                TokenPayment.new(
+                TokenPayment(
                     tokenIdentifier: "EGLD", // TODO: no hardcoded EGLD
                     nonce: 0,
                     amount: Message.egldValue

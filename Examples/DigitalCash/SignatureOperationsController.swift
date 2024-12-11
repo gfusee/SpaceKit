@@ -25,7 +25,7 @@ import SpaceKit
             egldFunds = egldFunds + paidFeeToken.amount
         } else {
             esdtFunds = esdtFunds.appended(
-                TokenPayment.new(
+                TokenPayment(
                     tokenIdentifier: paidFeeToken.tokenIdentifier,
                     nonce: 0,
                     amount: paidFeeToken.amount

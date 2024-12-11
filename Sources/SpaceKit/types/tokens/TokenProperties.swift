@@ -24,7 +24,7 @@
 }
 
 extension FungibleTokenProperties {
-    // TODO: remove once @Codable creates a public default init
+    @available(*, deprecated, message: "This will be removed in a future version. Please use the public init.")
     public static func new(
         numDecimals: UInt32,
         canFreeze: Bool,
@@ -61,7 +61,7 @@ extension FungibleTokenProperties {
 }
 
 extension NonFungibleTokenProperties {
-    // TODO: remove once @Codable creates a public default init
+    @available(*, deprecated, message: "This will be removed in a future version. Please use the public init.")
     public static func new(
         canFreeze: Bool,
         canWipe: Bool,
