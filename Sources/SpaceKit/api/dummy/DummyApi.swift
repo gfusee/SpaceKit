@@ -39,6 +39,12 @@ public class DummyApi {
             byTransferringDataFrom: self.staticContainer
         )
         
+        let isCallback = if case .callback = executionType {
+            true
+        } else {
+            false
+        }
+        
         self.transactionContainer = transactionContainer
         
         nonisolated(unsafe) var hasThreadStartedExecution = false
@@ -46,12 +52,14 @@ public class DummyApi {
         let thread = Thread {
             hasThreadStartedExecution = true
             
-            transactionContainer.performEgldOrEsdtTransfers(
-                senderAddress: transactionInput.callerAddress,
-                receiverAddress: transactionInput.contractAddress,
-                egldValue: transactionInput.egldValue,
-                esdtValue: transactionInput.esdtValue
-            )
+            if !isCallback {
+                transactionContainer.performEgldOrEsdtTransfers(
+                    senderAddress: transactionInput.callerAddress,
+                    receiverAddress: transactionInput.contractAddress,
+                    egldValue: transactionInput.egldValue,
+                    esdtValue: transactionInput.esdtValue
+                )
+            }
             
             operations.closure()
         }
@@ -247,7 +255,7 @@ public class DummyApi {
                     contractAddress: execution.input.callerAddress,
                     callerAddress: execution.input.contractAddress,
                     egldValue: 0,
-                    esdtValue: [],
+                    esdtValue: execution.input.esdtValue,
                     arguments: asyncCallResults
                 ),
                 callbackClosure: errorCallback.args,
@@ -714,13 +722,21 @@ extension DummyApi: SendApiProtocol {
         let sender = self.getCurrentContainer().getCurrentSCAccount()
         let receiver = self.getCurrentContainer().getBufferData(handle: dstHandle)
         
-        var tokenTransfersBufferInput = BufferNestedDecodeInput(buffer: Buffer(handle: tokenTransfersHandle).clone())
+        let tokenTransfersVec = Vector<TokenPayment>(handle: tokenTransfersHandle)
+        var tokenTransfersBuffer = Buffer()
+        
+        tokenTransfersVec.topEncode(output: &tokenTransfersBuffer)
+        
+        var tokenTransfersBufferInput = BufferNestedDecodeInput(buffer: tokenTransfersBuffer.clone())
         while tokenTransfersBufferInput.canDecodeMore() { // TODO: use managed vec once implemented
             let tokenPayment = TokenPayment(depDecode: &tokenTransfersBufferInput)
             let tokenIdentifier = self.getCurrentContainer().getBufferData(handle: tokenPayment.tokenIdentifier.handle)
             let value = self.getCurrentContainer().getBigIntData(handle: tokenPayment.amount.handle)
             
-            if value > sender.balance {
+            let senderBalanceForTokenIdentifier = (sender.esdtBalances[tokenIdentifier] ?? [])
+            let senderBalanceForToken = senderBalanceForTokenIdentifier.first(where: { $0.nonce == tokenPayment.nonce })?.balance ?? 0
+            
+            if value > senderBalanceForToken {
                 self.throwExecutionFailed(reason: "insufficient funds")
             }
             
@@ -820,15 +836,23 @@ extension DummyApi: SendApiProtocol {
         // TODO: implement and test
         let currentTransactionContainer = self.getCurrentContainer()
         
-        let sender = currentTransactionContainer.getCurrentSCAccount().addressData
-        let receiver = currentTransactionContainer.getBufferData(handle: dstHandle)
-        let value = currentTransactionContainer.getBigIntData(handle: valueHandle)
-        let function = currentTransactionContainer.getBufferData(handle: functionHandle)
+        let senderData = currentTransactionContainer.getCurrentSCAccount().addressData
+        let receiverData = currentTransactionContainer.getBufferData(handle: dstHandle)
+        let valueData = currentTransactionContainer.getBigIntData(handle: valueHandle)
+        let functionData = currentTransactionContainer.getBufferData(handle: functionHandle)
         
         let argumentsArray: Vector<Buffer> = Vector(handle: argumentsHandle)
-        var arguments: [Data] = []
+        var argumentsData: [Data] = []
         
-        argumentsArray.forEach { arguments.append(Data($0.toBytes())) }
+        argumentsArray.forEach { argumentsData.append(Data($0.toBytes())) }
+        
+        let parsed = self.parseContractCall(
+            function: functionData,
+            sender: senderData,
+            receiver: receiverData,
+            value: valueData,
+            arguments: argumentsData
+        )
         
         var successCallback: AsyncCallCallbackInput? = nil
         if successLength > 0 {
@@ -853,13 +877,13 @@ extension DummyApi: SendApiProtocol {
         }
         
         currentTransactionContainer.registerAsyncCallPromise(
-            function: function,
+            function: parsed.function,
             input: TransactionInput(
-                contractAddress: receiver,
-                callerAddress: sender,
-                egldValue: value,
-                esdtValue: [], // TODO: implement and test
-                arguments: arguments
+                contractAddress: parsed.receiver,
+                callerAddress: parsed.sender,
+                egldValue: parsed.value,
+                esdtValue: parsed.tokenTransfers, // TODO: implement and test
+                arguments: parsed.arguments
             ),
             successCallback: successCallback,
             errorCallback: errorCallback

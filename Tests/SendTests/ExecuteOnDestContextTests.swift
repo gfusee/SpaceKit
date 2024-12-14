@@ -321,7 +321,6 @@ final class ExecuteOnDestContextTests: ContractTestCase {
             )
         )
         
-        
         expectedReceiverLastReceivedTokens = expectedReceiverLastReceivedTokens.appended(
             TokenPayment(
                 tokenIdentifier: "SFT-abcdef",
