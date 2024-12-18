@@ -23,8 +23,9 @@ nonisolated(unsafe) public var API = DummyApi()
 #endif
 public macro Controller() = #externalMacro(module: "ControllerMacro", type: "Controller")
 
+@attached(peer)
 @attached(member, names: arbitrary)
-@attached(extension, conformances: TopEncode & TopEncodeMulti & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode & ArrayItem, names: arbitrary)
+@attached(extension, conformances: TopEncode & TopEncodeMulti & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode & ArrayItem & ABITypeExtractor, names: arbitrary)
 public macro Codable() = #externalMacro(module: "CodableMacro", type: "Codable")
 
 @attached(peer, names: arbitrary)

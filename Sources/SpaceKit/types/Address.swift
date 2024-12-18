@@ -145,6 +145,14 @@ extension Address: ArrayItem {
 }
 
 #if !WASM
+extension Address: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "Address"
+    }
+}
+#endif
+
+#if !WASM
 extension Address: ExpressibleByStringLiteral {
     public init(stringLiteral value: StaticString) {
         self.init(buffer: Buffer(data: Array("\(value)".toAddressData())))

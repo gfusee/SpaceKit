@@ -69,3 +69,11 @@ extension Bool: ArrayItem {
         return payload
     }
 }
+
+#if !WASM
+extension Bool: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "bool"
+    }
+}
+#endif

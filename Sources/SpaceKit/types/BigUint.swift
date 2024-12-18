@@ -200,6 +200,14 @@ extension BigUint: ArrayItem {
     }
 }
 
+#if !WASM
+extension BigUint: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "BigUint"
+    }
+}
+#endif
+
 extension BigUint: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: IntegerLiteralType) {
         #if WASM

@@ -310,6 +310,14 @@ extension Buffer: ArrayItem {
     }
 }
 
+#if !WASM
+extension Buffer: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "bytes"
+    }
+}
+#endif
+
 extension Buffer: Equatable {
     public static func == (lhs: Buffer, rhs: Buffer) -> Bool {
         return API.bufferEqual(handle1: lhs.handle, handle2: rhs.handle) > 0

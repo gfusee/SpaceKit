@@ -84,3 +84,11 @@ extension UInt32: ArrayItem {
     }
     
 }
+
+#if !WASM
+extension UInt32: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "u32"
+    }
+}
+#endif

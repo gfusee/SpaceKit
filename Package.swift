@@ -57,6 +57,12 @@ if !isWasm {
     
     testTargets.append(contentsOf: [
         .testTarget(
+            name: "ABITests",
+            dependencies: [
+                "SpaceKit"
+            ]
+        ),
+        .testTarget(
             name: "AsyncCallsTests",
             dependencies: [
                 "SpaceKit"
@@ -534,6 +540,10 @@ let package = Package(
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ]
+        ),
+        .plugin(
+            name: "ABIGeneration",
+            capability: .buildTool
         )
     ] + testTargets
 )
