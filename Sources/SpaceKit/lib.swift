@@ -19,7 +19,7 @@ nonisolated(unsafe) public var API = DummyApi()
 @attached(peer)
 @attached(member, names: arbitrary)
 #if !WASM
-@attached(extension, conformances: ContractEndpointSelector & SwiftVMCompatibleContract, names: arbitrary)
+@attached(extension, conformances: ContractEndpointSelector & SwiftVMCompatibleContract & ABIEndpointsExtractor, names: arbitrary)
 #endif
 public macro Controller() = #externalMacro(module: "ControllerMacro", type: "Controller")
 

@@ -1,5 +1,5 @@
 #if !WASM
-public enum ABIEndpointPayableInTokens: String, Codable {
-    case wildcard
+public enum ABIEndpointPayableInTokens: String, Encodable {
+    case wildcard = "*"
 }
 #endif

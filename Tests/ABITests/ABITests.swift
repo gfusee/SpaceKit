@@ -2,6 +2,52 @@ import SpaceKit
 import XCTest
 import Foundation
 
+@Controller struct AdderController {
+    @Storage(key: "sum") var sum: BigUint
+    
+    public mutating func add(value: BigUint) {
+        self.sum += value
+    }
+
+    public func getSum() -> BigUint {
+        self.sum
+    }
+}
+
+@Controller struct MultiValueController {
+    public func returnMultiValues(
+        values: MultiValueEncoded<BigUint>
+    ) -> MultiValueEncoded<BigUint> {
+        values
+    }
+    
+    public func returnOptionalValue(
+        optValue: OptionalArgument<BigUint>
+    ) -> OptionalArgument<BigUint> {
+        optValue
+    }
+}
+
+@Controller struct OnlyOwnerController {
+    public func onlyOwnerEndpoint() {
+        assertOwner()
+    }
+    
+    public func onlyOwnerEndpointWithSpaceKit() {
+        SpaceKit.assertOwner()
+    }
+    
+    public func onlyOwnerEndpointWithComment() {
+        // This is a dummy comment
+        assertOwner()
+    }
+    
+    public func notOnlyOwnerEndpointBecauseIsAtSecondStatement() {
+        _ = BigUint(integerLiteral: 3) + 6
+        assertOwner()
+    }
+}
+
 @Codable struct User {
     let name: Buffer
     let balance: BigUint
@@ -28,14 +74,14 @@ final class ABITests: XCTestCase {
     func testGetSimpleStructABIPart() throws {
         let userAbi = User._extractABIType!
         
-        let jsonEncoder = JSONEncoder()
-        jsonEncoder.outputFormatting = .prettyPrinted.union(.sortedKeys)
+        let jsonEncoder = ABIJSONEncoder()
 
         let jsonData = try! jsonEncoder.encode(userAbi)
         let json = String(data: jsonData, encoding: .utf8)!
         
         let expected = """
         {
+          "type" : "struct",
           "fields" : [
             {
               "name" : "name",
@@ -45,8 +91,7 @@ final class ABITests: XCTestCase {
               "name" : "balance",
               "type" : "BigUint"
             }
-          ],
-          "type" : "struct"
+          ]
         }
         """
         
@@ -56,8 +101,7 @@ final class ABITests: XCTestCase {
     func testGetSimpleEnumABIPart() throws {
         let userAbi = UserType._extractABIType!
         
-        let jsonEncoder = JSONEncoder()
-        jsonEncoder.outputFormatting = .prettyPrinted.union(.sortedKeys)
+        let jsonEncoder = ABIJSONEncoder()
 
         let jsonData = try! jsonEncoder.encode(userAbi)
         let json = String(data: jsonData, encoding: .utf8)!
@@ -67,12 +111,12 @@ final class ABITests: XCTestCase {
           "type" : "enum",
           "variants" : [
             {
-              "discriminant" : 0,
-              "name" : "staker"
+              "name" : "staker",
+              "discriminant" : 0
             },
             {
-              "discriminant" : 1,
-              "name" : "admin"
+              "name" : "admin",
+              "discriminant" : 1
             }
           ]
         }
@@ -84,14 +128,14 @@ final class ABITests: XCTestCase {
     func testGetStructWithOtherStructABIPart() throws {
         let userAbi = Account._extractABIType!
         
-        let jsonEncoder = JSONEncoder()
-        jsonEncoder.outputFormatting = .prettyPrinted.union(.sortedKeys)
+        let jsonEncoder = ABIJSONEncoder()
 
         let jsonData = try! jsonEncoder.encode(userAbi)
         let json = String(data: jsonData, encoding: .utf8)!
         
         let expected = """
         {
+          "type" : "struct",
           "fields" : [
             {
               "name" : "address",
@@ -101,8 +145,7 @@ final class ABITests: XCTestCase {
               "name" : "user",
               "type" : "User"
             }
-          ],
-          "type" : "struct"
+          ]
         }
         """
         
@@ -112,8 +155,7 @@ final class ABITests: XCTestCase {
     func testGetEnumWithAssociatedValuesABIPart() throws {
         let userAbi = DepositType._extractABIType!
         
-        let jsonEncoder = JSONEncoder()
-        jsonEncoder.outputFormatting = .prettyPrinted.union(.sortedKeys)
+        let jsonEncoder = ABIJSONEncoder()
 
         let jsonData = try! jsonEncoder.encode(userAbi)
         let json = String(data: jsonData, encoding: .utf8)!
@@ -123,20 +165,21 @@ final class ABITests: XCTestCase {
           "type" : "enum",
           "variants" : [
             {
-              "discriminant" : 0,
-              "name" : "none"
+              "name" : "none",
+              "discriminant" : 0
             },
             {
+              "name" : "egld",
               "discriminant" : 1,
               "fields" : [
                 {
                   "name" : "0",
                   "type" : "BigUint"
                 }
-              ],
-              "name" : "egld"
+              ]
             },
             {
+              "name" : "esdt",
               "discriminant" : 2,
               "fields" : [
                 {
@@ -151,8 +194,7 @@ final class ABITests: XCTestCase {
                   "name" : "2",
                   "type" : "BigUint"
                 }
-              ],
-              "name" : "esdt"
+              ]
             }
           ]
         }
@@ -163,11 +205,10 @@ final class ABITests: XCTestCase {
     
     func testGetAllDeclaredTypes() throws {
         // Scans the runtime to find all the @Codable types
-        // declared from the smart contract dev or any dependency used such as SpaceKit
+        // declared by the smart contract dev or any dependency used such as SpaceKit
         let exportableTypes = getAllABIExportableTypes()
         
-        let jsonEncoder = JSONEncoder()
-        jsonEncoder.outputFormatting = .prettyPrinted.union(.sortedKeys)
+        let jsonEncoder = ABIJSONEncoder()
 
         let jsonData = try! jsonEncoder.encode(exportableTypes)
         let json = String(data: jsonData, encoding: .utf8)!
@@ -175,6 +216,7 @@ final class ABITests: XCTestCase {
         let expected = """
         {
           "Account" : {
+            "type" : "struct",
             "fields" : [
               {
                 "name" : "address",
@@ -184,27 +226,27 @@ final class ABITests: XCTestCase {
                 "name" : "user",
                 "type" : "User"
               }
-            ],
-            "type" : "struct"
+            ]
           },
           "DepositType" : {
             "type" : "enum",
             "variants" : [
               {
-                "discriminant" : 0,
-                "name" : "none"
+                "name" : "none",
+                "discriminant" : 0
               },
               {
+                "name" : "egld",
                 "discriminant" : 1,
                 "fields" : [
                   {
                     "name" : "0",
                     "type" : "BigUint"
                   }
-                ],
-                "name" : "egld"
+                ]
               },
               {
+                "name" : "esdt",
                 "discriminant" : 2,
                 "fields" : [
                   {
@@ -219,12 +261,12 @@ final class ABITests: XCTestCase {
                     "name" : "2",
                     "type" : "BigUint"
                   }
-                ],
-                "name" : "esdt"
+                ]
               }
             ]
           },
           "TokenPayment" : {
+            "type" : "struct",
             "fields" : [
               {
                 "name" : "tokenIdentifier",
@@ -238,10 +280,10 @@ final class ABITests: XCTestCase {
                 "name" : "amount",
                 "type" : "BigUint"
               }
-            ],
-            "type" : "struct"
+            ]
           },
           "User" : {
+            "type" : "struct",
             "fields" : [
               {
                 "name" : "name",
@@ -251,23 +293,344 @@ final class ABITests: XCTestCase {
                 "name" : "balance",
                 "type" : "BigUint"
               }
-            ],
-            "type" : "struct"
+            ]
           },
           "UserType" : {
             "type" : "enum",
             "variants" : [
               {
-                "discriminant" : 0,
-                "name" : "staker"
+                "name" : "staker",
+                "discriminant" : 0
               },
               {
-                "discriminant" : 1,
-                "name" : "admin"
+                "name" : "admin",
+                "discriminant" : 1
               }
             ]
           }
         }
+        """
+        
+        XCTAssertEqual(json, expected)
+    }
+    
+    func testGetSimpleControllerABIPart() throws {
+        let controllerAbi = AdderController._extractABIEndpoints
+        
+        let jsonEncoder = ABIJSONEncoder()
+
+        let jsonData = try! jsonEncoder.encode(controllerAbi)
+        let json = String(data: jsonData, encoding: .utf8)!
+        
+        let expected = """
+        [
+          {
+            "name" : "add",
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+              {
+                "name" : "value",
+                "type" : "BigUint"
+              }
+            ],
+            "outputs" : [
+
+            ]
+          },
+          {
+            "name" : "getSum",
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+
+            ],
+            "outputs" : [
+              {
+                "type" : "BigUint"
+              }
+            ]
+          }
+        ]
+        """
+        
+        XCTAssertEqual(json, expected)
+    }
+    
+    func testGetMultiValueControllerABIPart() throws {
+        let controllerAbi = MultiValueController._extractABIEndpoints
+        
+        let jsonEncoder = ABIJSONEncoder()
+
+        let jsonData = try! jsonEncoder.encode(controllerAbi)
+        let json = String(data: jsonData, encoding: .utf8)!
+        
+        let expected = """
+        [
+          {
+            "name" : "returnMultiValues",
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+              {
+                "name" : "values",
+                "type" : "variadic<BigUint>",
+                "multi_arg" : true
+              }
+            ],
+            "outputs" : [
+              {
+                "type" : "variadic<BigUint>",
+                "multi_result" : true
+              }
+            ]
+          },
+          {
+            "name" : "returnOptionalValue",
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+              {
+                "name" : "optValue",
+                "type" : "optional<BigUint>",
+                "multi_arg" : true
+              }
+            ],
+            "outputs" : [
+              {
+                "type" : "optional<BigUint>",
+                "multi_result" : true
+              }
+            ]
+          }
+        ]
+        """
+        
+        XCTAssertEqual(json, expected)
+    }
+    
+    func testGetOnlyOwnerControllerABIPart() throws {
+        let controllerAbi = OnlyOwnerController._extractABIEndpoints
+        
+        let jsonEncoder = ABIJSONEncoder()
+
+        let jsonData = try! jsonEncoder.encode(controllerAbi)
+        let json = String(data: jsonData, encoding: .utf8)!
+        
+        print(json)
+        
+        let expected = """
+        [
+          {
+            "name" : "onlyOwnerEndpoint",
+            "onlyOwner" : true,
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+
+            ],
+            "outputs" : [
+
+            ]
+          },
+          {
+            "name" : "onlyOwnerEndpointWithSpaceKit",
+            "onlyOwner" : true,
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+
+            ],
+            "outputs" : [
+
+            ]
+          },
+          {
+            "name" : "onlyOwnerEndpointWithComment",
+            "onlyOwner" : true,
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+
+            ],
+            "outputs" : [
+
+            ]
+          },
+          {
+            "name" : "notOnlyOwnerEndpointBecauseIsAtSecondStatement",
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+
+            ],
+            "outputs" : [
+
+            ]
+          }
+        ]
+        """
+        
+        XCTAssertEqual(json, expected)
+    }
+
+    func testGetAllDeclaredControllersABIParts() throws {
+        // Scans the runtime to find all the @Controller types
+        // declared by the smart contract dev
+        let exportableEndpoints = getAllABIExportableEndpoints()
+        
+        let jsonEncoder = ABIJSONEncoder()
+
+        let jsonData = try! jsonEncoder.encode(exportableEndpoints)
+        let json = String(data: jsonData, encoding: .utf8)!
+        
+        print(json)
+        
+        let expected = """
+        [
+          {
+            "name" : "onlyOwnerEndpoint",
+            "onlyOwner" : true,
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+
+            ],
+            "outputs" : [
+
+            ]
+          },
+          {
+            "name" : "onlyOwnerEndpointWithSpaceKit",
+            "onlyOwner" : true,
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+
+            ],
+            "outputs" : [
+
+            ]
+          },
+          {
+            "name" : "onlyOwnerEndpointWithComment",
+            "onlyOwner" : true,
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+
+            ],
+            "outputs" : [
+
+            ]
+          },
+          {
+            "name" : "notOnlyOwnerEndpointBecauseIsAtSecondStatement",
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+
+            ],
+            "outputs" : [
+
+            ]
+          },
+          {
+            "name" : "returnMultiValues",
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+              {
+                "name" : "values",
+                "type" : "variadic<BigUint>",
+                "multi_arg" : true
+              }
+            ],
+            "outputs" : [
+              {
+                "type" : "variadic<BigUint>",
+                "multi_result" : true
+              }
+            ]
+          },
+          {
+            "name" : "returnOptionalValue",
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+              {
+                "name" : "optValue",
+                "type" : "optional<BigUint>",
+                "multi_arg" : true
+              }
+            ],
+            "outputs" : [
+              {
+                "type" : "optional<BigUint>",
+                "multi_result" : true
+              }
+            ]
+          },
+          {
+            "name" : "add",
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+              {
+                "name" : "value",
+                "type" : "BigUint"
+              }
+            ],
+            "outputs" : [
+
+            ]
+          },
+          {
+            "name" : "getSum",
+            "mutability" : "mutable",
+            "payableInTokens" : [
+              "*"
+            ],
+            "inputs" : [
+
+            ],
+            "outputs" : [
+              {
+                "type" : "BigUint"
+              }
+            ]
+          }
+        ]
         """
         
         XCTAssertEqual(json, expected)

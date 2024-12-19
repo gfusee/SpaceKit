@@ -78,3 +78,17 @@ extension MultiValueEncoded: TopDecodeMulti {
         self = MultiValueEncoded(rawBuffers: rawBuffersField)
     }
 }
+
+#if !WASM
+extension MultiValueEncoded: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        let itemTypeName = Item._abiTypeName
+        
+        return "variadic<\(itemTypeName)>"
+    }
+    
+    public static var _isMulti: Bool {
+        true
+    }
+}
+#endif

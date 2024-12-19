@@ -1,5 +1,5 @@
 #if !WASM
 public protocol ABIEndpointsExtractor {
-    static func extractABIEndpoints() -> [ABIEndpoint]
+    static var _extractABIEndpoints: [ABIEndpoint] { get }
 }
 #endif

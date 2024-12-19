@@ -23,9 +23,11 @@ extension Controller: ExtensionMacro {
         
         let contractEndpointSelectorConformance = try getContractEndpointSelectorConformance(structDecl: structDecl, functions: functionDecls)
         let swiftVMCompatibleConformance = try getSwiftVMCompatibleConformance(structDecl: structDecl)
+        let abiEndpointsExtractorConformance = (try getABIEndpointsExtractorConformance(structDecl: structDecl, functions: functionDecls)).as(ExtensionDeclSyntax.self)!
         
         results.append(swiftVMCompatibleConformance)
         results.append(contractEndpointSelectorConformance)
+        results.append(abiEndpointsExtractorConformance)
         #endif
         
         return results
@@ -94,4 +96,121 @@ func getSwiftVMCompatibleConformance(
     }
     
     return extensionSyntax
+}
+
+func getABIEndpointsExtractorConformance(
+    structDecl: StructDeclSyntax,
+    functions: [FunctionDeclSyntax]
+) throws -> DeclSyntax {
+    let structName = structDecl.name.trimmed
+    
+    var abiEndpointsInitList: [String] = []
+    
+    for function in functions {
+        var function = function
+        guard function.isEndpoint() else {
+            continue
+        }
+        
+        if function.isCallback() {
+            function.attributes = function.attributes.filter { attributes in
+                attributes.description.trimmingCharacters(in: .whitespacesAndNewlines) != "@Callback"
+            }
+        }
+        
+        var abiInputsList: [String] = []
+        for parameter in function.signature.parameterClause.parameters {
+            let variableName = (parameter.secondName ?? parameter.firstName).trimmed
+            let paramType = parameter.type.trimmed
+            let paramTypeABIType = "\(paramType)._abiTypeName"
+            let paramIsMulti = "\(paramType)._isMulti"
+            
+            abiInputsList.append(
+                """
+                ABIInput(
+                   name: "\(variableName)",
+                   type: \(paramTypeABIType),
+                   multiArg: \(paramIsMulti) ? true : nil
+                )
+                """
+            )
+        }
+        
+        let returnType = function.signature.returnClause?.type.trimmed
+        
+        var abiOutputsList: [String] = []
+        
+        if let returnType = returnType {
+            let returnABIType = "\(returnType.trimmed)._abiTypeName"
+            let returnIsMulti = "\(returnType.trimmed)._isMulti"
+            
+            abiOutputsList.append(
+                """
+                ABIOutput(
+                   type: \(returnABIType),
+                   multiResult: \(returnIsMulti) ? true : nil
+                )
+                """
+            )
+        }
+        
+        let functionName = function.name.trimmed
+        
+        var isOnlyOwner: Bool? = nil
+        if let functionBody = function.body {
+            if let firstStatement = functionBody.statements.first {
+                let firstStatementDescription = firstStatement.trimmed.description
+                
+                if firstStatementDescription.starts(with: "assertOwner()") || firstStatementDescription.starts(with: "SpaceKit.assertOwner()") {
+                    isOnlyOwner = true
+                }
+            }
+        }
+        
+        let isOnlyOwnerString = isOnlyOwner != nil ? "\(isOnlyOwner!)" : "nil"
+        
+        let abiInputs = abiInputsList.joined(separator: ",\n")
+        let abiOutputs = abiOutputsList.joined(separator: ",\n")
+
+        let abiEndpointsInitParamsList: [String] = [
+            """
+            name: "\(functionName)"
+            """,
+            "onlyOwner: \(isOnlyOwnerString)",
+            "mutability: .mutable",
+            "payableInTokens: [ABIEndpointPayableInTokens.wildcard]",
+            """
+            inputs: [
+                \(abiInputs)
+            ]
+            """,
+            """
+            outputs: [
+                \(abiOutputs)
+            ]
+            """
+        ]
+        
+        let abiEndpointsInitParams = abiEndpointsInitParamsList.joined(separator: ",\n")
+        
+        abiEndpointsInitList.append(
+            """
+            ABIEndpoint(
+                \(abiEndpointsInitParams)
+            )
+            """
+        )
+    }
+    
+    let abiEndpointsInit = abiEndpointsInitList.joined(separator: ",\n")
+    
+    return """
+    extension \(structName): ABIEndpointsExtractor {
+       public static var _extractABIEndpoints: [ABIEndpoint] {
+          [
+             \(raw: abiEndpointsInit)
+          ]
+       }
+    } 
+    """
 }
