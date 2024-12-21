@@ -31,7 +31,8 @@ public macro Codable() = #externalMacro(module: "CodableMacro", type: "Codable")
 @attached(peer, names: arbitrary)
 public macro Callback() = #externalMacro(module: "CallbackMacro", type: "Callback");
 
-@attached(extension, names: arbitrary)
+@attached(peer)
+@attached(extension, conformances: ABIEventExtractor, names: arbitrary)
 public macro Event(dataType: TopEncode.Type? = nil) = #externalMacro(module: "EventMacro", type: "Event")
 
 @attached(peer, names: named(__ContractInit))

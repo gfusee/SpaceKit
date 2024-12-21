@@ -80,6 +80,16 @@ import Foundation
     case esdt(Buffer, UInt64, BigUint)
 }
 
+@Event struct NoDataEvent {
+    let firstIndexedValue: Buffer
+    let secondIndexedValue: BigUint
+}
+
+@Event(dataType: Bool) struct DataEvent {
+    let firstIndexedValue: Buffer
+    let secondIndexedValue: BigUint
+}
+
 final class ABITests: XCTestCase {
 
     func testGetSimpleStructABIPart() throws {
@@ -714,6 +724,126 @@ final class ABITests: XCTestCase {
         XCTAssertEqual(json, expected)
     }
     
+    func testGetEventWithoutDataABIPart() throws {
+        let eventABI = NoDataEvent._extractABIEvent
+        
+        let jsonEncoder = ABIJSONEncoder()
+
+        let jsonData = try! jsonEncoder.encode(eventABI)
+        let json = String(data: jsonData, encoding: .utf8)!
+        
+        print(json)
+        
+        let expected = """
+        {
+          "identifier" : "NoDataEvent",
+          "inputs" : [
+            {
+              "name" : "firstIndexedValue",
+              "type" : "bytes",
+              "indexed" : true
+            },
+            {
+              "name" : "secondIndexedValue",
+              "type" : "BigUint",
+              "indexed" : true
+            }
+          ]
+        }
+        """
+        
+        XCTAssertEqual(json, expected)
+    }
+    
+    func testGetEventWithDataABIPart() throws {
+        let eventABI = DataEvent._extractABIEvent
+        
+        let jsonEncoder = ABIJSONEncoder()
+
+        let jsonData = try! jsonEncoder.encode(eventABI)
+        let json = String(data: jsonData, encoding: .utf8)!
+        
+        print(json)
+        
+        let expected = """
+        {
+          "identifier" : "DataEvent",
+          "inputs" : [
+            {
+              "name" : "firstIndexedValue",
+              "type" : "bytes",
+              "indexed" : true
+            },
+            {
+              "name" : "secondIndexedValue",
+              "type" : "BigUint",
+              "indexed" : true
+            },
+            {
+              "name" : "_data",
+              "type" : "bool"
+            }
+          ]
+        }
+        """
+        
+        XCTAssertEqual(json, expected)
+    }
+    
+    func testGetAllDeclaredEventsABIParts() throws {
+        // Scans the runtime to find all the @Event types
+        // declared by the smart contract dev
+        let exportableEvents = getAllABIExportableEvents()
+        
+        let jsonEncoder = ABIJSONEncoder()
+
+        let jsonData = try! jsonEncoder.encode(exportableEvents)
+        let json = String(data: jsonData, encoding: .utf8)!
+        
+        print(json)
+        
+        let expected = """
+        [
+          {
+            "identifier" : "DataEvent",
+            "inputs" : [
+              {
+                "name" : "firstIndexedValue",
+                "type" : "bytes",
+                "indexed" : true
+              },
+              {
+                "name" : "secondIndexedValue",
+                "type" : "BigUint",
+                "indexed" : true
+              },
+              {
+                "name" : "_data",
+                "type" : "bool"
+              }
+            ]
+          },
+          {
+            "identifier" : "NoDataEvent",
+            "inputs" : [
+              {
+                "name" : "firstIndexedValue",
+                "type" : "bytes",
+                "indexed" : true
+              },
+              {
+                "name" : "secondIndexedValue",
+                "type" : "BigUint",
+                "indexed" : true
+              }
+            ]
+          }
+        ]
+        """
+        
+        XCTAssertEqual(json, expected)
+    }
+
     func testGetFullABI() throws {
         let abi = getABIFromRuntime(
             name: "ABITestsContract",
@@ -724,6 +854,8 @@ final class ABITests: XCTestCase {
 
         let jsonData = try! jsonEncoder.encode(abi)
         let json = String(data: jsonData, encoding: .utf8)!
+        
+        print(json)
         
         let expected = """
         {
@@ -888,6 +1020,42 @@ final class ABITests: XCTestCase {
               "outputs" : [
                 {
                   "type" : "BigUint"
+                }
+              ]
+            }
+          ],
+          "events" : [
+            {
+              "identifier" : "DataEvent",
+              "inputs" : [
+                {
+                  "name" : "firstIndexedValue",
+                  "type" : "bytes",
+                  "indexed" : true
+                },
+                {
+                  "name" : "secondIndexedValue",
+                  "type" : "BigUint",
+                  "indexed" : true
+                },
+                {
+                  "name" : "_data",
+                  "type" : "bool"
+                }
+              ]
+            },
+            {
+              "identifier" : "NoDataEvent",
+              "inputs" : [
+                {
+                  "name" : "firstIndexedValue",
+                  "type" : "bytes",
+                  "indexed" : true
+                },
+                {
+                  "name" : "secondIndexedValue",
+                  "type" : "BigUint",
+                  "indexed" : true
                 }
               ]
             }

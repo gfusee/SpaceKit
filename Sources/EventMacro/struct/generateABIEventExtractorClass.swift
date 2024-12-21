@@ -1,7 +1,7 @@
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-func generateABIEndpointsExtractorClass(
+func generateABIEventExtractorClass(
     structDecl: StructDeclSyntax,
     context: some MacroExpansionContext
 ) throws -> DeclSyntax {
@@ -10,9 +10,9 @@ func generateABIEndpointsExtractorClass(
     
     return """
     #if !WASM
-    class \(generatedClassName): ABIEndpointsExtractor {
-        public static var _extractABIEndpoints: [ABIEndpoint] {
-            \(structName)._extractABIEndpoints
+    class \(generatedClassName): ABIEventExtractor {
+        public static var _extractABIEvent: ABIEvent {
+            \(structName)._extractABIEvent
         }
     }
     #endif

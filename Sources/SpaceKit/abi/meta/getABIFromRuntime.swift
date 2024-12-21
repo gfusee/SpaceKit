@@ -17,6 +17,7 @@ public func getABIFromRuntime(
         name: name,
         constructor: constructor,
         endpoints: getAllABIExportableEndpoints(),
+        events: getAllABIExportableEvents(),
         types: getAllABIExportableTypes()
     )
 }

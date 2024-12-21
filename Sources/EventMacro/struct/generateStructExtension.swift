@@ -16,9 +16,17 @@ func generateStructExtension(
     let structName = structDecl.name.trimmed
     let fields = structDecl.memberBlock.members.compactMap { $0.decl.as(VariableDeclSyntax.self) }
     
-    return [
-        try generateEmitExtension(structName: structName, fields: fields, dataTypeName: dataTypeName)
+    var results = [
+        try generateEmitExtension(structName: structName, fields: fields, dataTypeName: dataTypeName),
     ]
+    
+    #if !WASM
+    results.append(
+        (try generateABIEventExtractorExtension(structName: structName, fields: fields, dataTypeName: dataTypeName)).as(ExtensionDeclSyntax.self)!
+    )
+    #endif
+    
+    return results
 }
 
 fileprivate func generateEmitExtension(
@@ -71,4 +79,55 @@ fileprivate func generateEmitExtension(
         }
         """
     )
+}
+
+fileprivate func generateABIEventExtractorExtension(
+    structName: TokenSyntax,
+    fields: [VariableDeclSyntax],
+    dataTypeName: String?
+) throws -> DeclSyntax {
+    var inputInitsList: [String] = []
+    for field in fields {
+        guard let fieldType = field.bindings.first!.typeAnnotation?.type else {
+            throw EventMacroError.allFieldsShouldHaveAType
+        }
+        
+        let fieldName = field.bindings.first!.pattern
+        inputInitsList.append(
+            """
+                            ABIEventInput(
+                                name: "\(fieldName)",
+                                type: \(fieldType)._abiTypeName,
+                                indexed: true
+                            )
+            """
+        )
+    }
+    
+    if let dataTypeName = dataTypeName {
+        inputInitsList.append(
+            """
+                            ABIEventInput(
+                                name: "_data",
+                                type: \(dataTypeName)._abiTypeName,
+                                indexed: nil
+                            )
+            """
+        )
+    }
+    
+    let inputInits = inputInitsList.joined(separator: ",\n")
+    
+    return """
+    extension \(structName): ABIEventExtractor {
+        public static var _extractABIEvent: ABIEvent {
+            ABIEvent(
+                identifier: "\(structName)",
+                inputs: [
+                    \(raw: inputInits)
+                ]
+            )
+        }
+    }
+    """
 }

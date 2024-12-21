@@ -4,6 +4,7 @@ public struct ABI: Encodable {
     let name: String
     let constructor: ABIConstructor
     let endpoints: [ABIEndpoint]
+    let events: [ABIEvent]
     let types: [String : ABIType]
 }
 #endif
