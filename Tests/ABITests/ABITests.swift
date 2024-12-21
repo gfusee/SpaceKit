@@ -390,8 +390,6 @@ final class ABITests: XCTestCase {
         let jsonData = try! jsonEncoder.encode(controllerAbi)
         let json = String(data: jsonData, encoding: .utf8)!
         
-        print(json)
-        
         let expected = """
         [
           {
@@ -468,8 +466,6 @@ final class ABITests: XCTestCase {
         let jsonData = try! jsonEncoder.encode(controllerAbi)
         let json = String(data: jsonData, encoding: .utf8)!
         
-        print(json)
-        
         let expected = """
         [
           {
@@ -542,8 +538,6 @@ final class ABITests: XCTestCase {
 
         let jsonData = try! jsonEncoder.encode(exportableEndpoints)
         let json = String(data: jsonData, encoding: .utf8)!
-        
-        print(json)
         
         let expected = """
         [
@@ -732,8 +726,6 @@ final class ABITests: XCTestCase {
         let jsonData = try! jsonEncoder.encode(eventABI)
         let json = String(data: jsonData, encoding: .utf8)!
         
-        print(json)
-        
         let expected = """
         {
           "identifier" : "NoDataEvent",
@@ -762,8 +754,6 @@ final class ABITests: XCTestCase {
 
         let jsonData = try! jsonEncoder.encode(eventABI)
         let json = String(data: jsonData, encoding: .utf8)!
-        
-        print(json)
         
         let expected = """
         {
@@ -799,8 +789,6 @@ final class ABITests: XCTestCase {
 
         let jsonData = try! jsonEncoder.encode(exportableEvents)
         let json = String(data: jsonData, encoding: .utf8)!
-        
-        print(json)
         
         let expected = """
         [
@@ -854,8 +842,6 @@ final class ABITests: XCTestCase {
 
         let jsonData = try! jsonEncoder.encode(abi)
         let json = String(data: jsonData, encoding: .utf8)!
-        
-        print(json)
         
         let expected = """
         {

@@ -86,7 +86,7 @@ import SpaceKit
             }
             
             let bondingCurveMapper = storage.$bondingCurveForTokenIdentifier[token]
-            let bondingCurve = BondingCurve<FunctionSelector>(topDecode: bondingCurveMapper.get())
+            let bondingCurve = BondingCurve(topDecode: bondingCurveMapper.get())
             
             if bondingCurve.payment.tokenIdentifier != "EGLD" { // TODO: no hardcoded EGLD
                 tokensToClaim = tokensToClaim.appended(
@@ -132,7 +132,7 @@ import SpaceKit
         
         storage.$bondingCurveForTokenIdentifier[identifier]
             .update { buffer in
-                var bondingCurve = BondingCurve<FunctionSelector>(topDecode: buffer)
+                var bondingCurve = BondingCurve(topDecode: buffer)
                 
                 bondingCurve.curve = function
                 bondingCurve.sellAvailability = sellAvailability
@@ -170,7 +170,7 @@ import SpaceKit
             )
             sellAvailability = false
         } else {
-            let bondingCurve = BondingCurve<FunctionSelector>(topDecode: bondingCurveMapper.get())
+            let bondingCurve = BondingCurve(topDecode: bondingCurveMapper.get())
             
             payment = bondingCurve.payment
             curve = bondingCurve.curve

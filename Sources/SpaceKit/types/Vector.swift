@@ -357,6 +357,16 @@ extension Vector: ArrayItem {
 }
 
 #if !WASM
+extension Vector: ABITypeExtractor where T: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        let itemTypeName = T._abiTypeName
+        
+        return "List<\(itemTypeName)>"
+    }
+}
+#endif
+
+#if !WASM
 extension Vector: CustomDebugStringConvertible where T: CustomDebugStringConvertible {
     public var debugDescription: String {
         var itemDebugDescriptions: [String] = []

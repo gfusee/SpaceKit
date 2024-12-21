@@ -51,3 +51,11 @@ extension Int32: NestedDecode {
         self = Int32(topDecode: buffer)
     }
 }
+
+#if !WASM
+extension Int32: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "i32"
+    }
+}
+#endif

@@ -11,8 +11,8 @@ extension CurveArguments {
     }
 }
 
-@Codable struct BondingCurve<T: CurveFunction & SpaceCodable & Default & Equatable> {
-    var curve: T
+@Codable struct BondingCurve {
+    var curve: FunctionSelector
     var arguments: CurveArguments
     var sellAvailability: Bool
     var payment: TokenPayment
@@ -21,7 +21,7 @@ extension CurveArguments {
 extension BondingCurve {
     func requireIsSet() {
         require(
-            self.curve != T(default: ()),
+            self.curve != FunctionSelector(default: ()),
             "The token price was not set yet!"
         )
     }

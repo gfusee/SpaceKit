@@ -93,6 +93,12 @@ extension CodeMetadata: ArrayItem {
     public func intoArrayPayload() -> Buffer {
         return self.getFlag().intoArrayPayload()
     }
-    
-    
 }
+
+#if !WASM
+extension CodeMetadata: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        UInt16._abiTypeName
+    }
+}
+#endif

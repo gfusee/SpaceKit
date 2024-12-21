@@ -113,3 +113,15 @@ extension UserMapper: TopDecodeMulti {
     }
 }
 #endif
+
+#if !WASM
+extension UserMapper: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        MultiValueEncoded<Address>._abiTypeName
+    }
+    
+    public static var _isMulti: Bool {
+        MultiValueEncoded<Address>._isMulti
+    }
+}
+#endif

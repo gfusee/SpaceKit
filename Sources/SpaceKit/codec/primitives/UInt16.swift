@@ -81,3 +81,12 @@ extension UInt16: ArrayItem {
         Buffer(data: self.asBigEndianBytes())
     }
 }
+
+#if !WASM
+extension UInt16: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "u16"
+    }
+}
+#endif
+

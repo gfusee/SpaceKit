@@ -2,6 +2,10 @@ import SwiftSyntax
 
 extension EnumDeclSyntax {
     func isValidEnum() throws(CodableMacroError) {
+        guard self.genericParameterClause == nil else {
+            throw CodableMacroError.shouldNotHaveGenericParameter
+        }
+        
         if let inheritenceClause = self.inheritanceClause {
             let allowedTypes = ["Equatable"]
             for type in inheritenceClause.inheritedTypes {

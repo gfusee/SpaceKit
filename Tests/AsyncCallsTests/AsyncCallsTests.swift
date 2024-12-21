@@ -1110,7 +1110,6 @@ final class AsyncCallsTests: ContractTestCase {
     
     func testSendMultiTokensFailWithCallback() throws {
         try self.deployContract(at: "callee")
-        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
         try self.deployContract(at: "caller")
         let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
@@ -1224,7 +1223,6 @@ final class AsyncCallsTests: ContractTestCase {
     
     func testSendMultiTokensFailNoCallback() throws {
         try self.deployContract(at: "callee")
-        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
         try self.deployContract(at: "caller")
         let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!

@@ -66,3 +66,13 @@ extension Optional: NestedDecode where Wrapped: NestedDecode {
         }
     }
 }
+
+#if !WASM
+extension Optional: ABITypeExtractor where Wrapped: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        let wrappedTypeName = Wrapped._abiTypeName
+        
+        return "Option<\(wrappedTypeName)>"
+    }
+}
+#endif
