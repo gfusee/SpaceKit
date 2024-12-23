@@ -42,7 +42,8 @@ var testTargets: [Target] = []
 
 var products: [Product] = [
     // Products define the executables and libraries a package produces, making them visible to other packages.
-    .library(name: "SpaceKit", targets: ["SpaceKit"])
+    .library(name: "SpaceKit", targets: ["SpaceKit"]),
+    .library(name: "SpaceKitTesting", targets: ["SpaceKitTesting"])
 ]
 
 if !isWasm {
@@ -59,43 +60,50 @@ if !isWasm {
         .testTarget(
             name: "ABITests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "AsyncCallsTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BufferTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BigUintTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "IntTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ContractStorageTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "TestEngineTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
@@ -119,67 +127,78 @@ if !isWasm {
         .testTarget(
             name: "CodableMacroImplTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "CallbackMacroImplTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "AdderTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ArrayTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "EventTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "FactorialTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BlockchainTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "MessageTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "MultiArgsTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ProxyTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "SendTests",
             dependencies: [
                 "SpaceKit",
+                "SpaceKitTesting",
                 "BigInt"
             ]
         ),
@@ -187,6 +206,7 @@ if !isWasm {
             name: "ErrorTests",
             dependencies: [
                 "SpaceKit",
+                "SpaceKitTesting",
                 "BigInt"
             ]
         )
@@ -491,6 +511,13 @@ let package = Package(
         .target(
             name: "SpaceKit",
             dependencies: libraryDependencies,
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "SpaceKitTesting",
+            dependencies: [
+                "SpaceKit"
+            ],
             swiftSettings: swiftSettings
         ),
         .macro(

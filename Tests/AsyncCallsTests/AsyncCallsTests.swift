@@ -1,5 +1,5 @@
-import XCTest
 import SpaceKit
+import SpaceKitTesting
 
 @Controller struct CalleeController {
     @Storage(key: "counter") var counter: BigUint

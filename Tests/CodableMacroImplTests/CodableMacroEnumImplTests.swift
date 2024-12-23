@@ -1,5 +1,5 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 
 // There was an issue with @Codable macro on enums that has only one case
 // The struct here is only here to check if it compiles

@@ -1,5 +1,5 @@
 @testable import SpaceKit
-import XCTest
+import SpaceKitTesting
 
 @Codable enum CustomCodableEnum: Equatable {
     case first(Buffer, UInt64, UInt64, Buffer)

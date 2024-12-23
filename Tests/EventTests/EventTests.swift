@@ -1,5 +1,5 @@
-import XCTest
 import SpaceKit
+import SpaceKitTesting
 
 @Event(dataType: Buffer) struct TestSingleIndexedFieldBufferDataEvent {
     let address: Address

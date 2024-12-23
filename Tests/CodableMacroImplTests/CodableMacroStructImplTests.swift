@@ -1,5 +1,5 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 
 // There was an issue with @Codable macro on structs or enums that has comments on its fields
 // The struct here is only here to check if it compiles

@@ -1,5 +1,5 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 
 @Init func initialize(initialValue: BigUint) {
     var controller = AdderController()

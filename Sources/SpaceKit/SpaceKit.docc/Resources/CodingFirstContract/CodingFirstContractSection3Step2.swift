@@ -1,3 +1,3 @@
 import SpaceKit
 import Counter
-import XCTest
+import SpaceKitTesting

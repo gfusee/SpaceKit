@@ -1,5 +1,5 @@
-import XCTest
 import SpaceKit
+import SpaceKitTesting
 
 @Controller struct IntTestsController {
     public func testTopDecodeIntTooLargeBufferShouldFail() {

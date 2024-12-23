@@ -1,5 +1,5 @@
-import SpaceKit
 import XCTest
+import SpaceKit
 import Foundation
 
 @Init func initialize(initialValue: BigUint) {
@@ -851,6 +851,7 @@ final class ABITests: XCTestCase {
               "version" : "0.0.1"
             }
           },
+          "name" : "ABITestsContract",
           "constructor" : {
             "inputs" : [
               {
@@ -1046,7 +1047,6 @@ final class ABITests: XCTestCase {
               ]
             }
           ],
-          "name" : "ABITestsContract",
           "types" : {
             "Account" : {
               "type" : "struct",

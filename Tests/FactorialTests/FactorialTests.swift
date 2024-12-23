@@ -1,5 +1,5 @@
-import XCTest
 import SpaceKit
+import SpaceKitTesting
 
 @Controller struct FactorialController {
     public func factorial(value: BigUint) -> BigUint {

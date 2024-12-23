@@ -1,5 +1,5 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 
 @Controller struct CounterController {
     @Storage(key: "globalCounter") var globalCounter: BigUint

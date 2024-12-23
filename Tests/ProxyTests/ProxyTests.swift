@@ -1,5 +1,5 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 
 @Proxy enum CalleeProxy {
     case endpointWithoutParameter
