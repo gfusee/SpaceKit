@@ -25,14 +25,22 @@ public macro Controller() = #externalMacro(module: "ControllerMacro", type: "Con
 
 @attached(peer)
 @attached(member, names: arbitrary)
+#if WASM
+@attached(extension, conformances: TopEncode & TopEncodeMulti & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode & ArrayItem, names: arbitrary)
+#else
 @attached(extension, conformances: TopEncode & TopEncodeMulti & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode & ArrayItem & ABITypeExtractor, names: arbitrary)
+#endif
 public macro Codable() = #externalMacro(module: "CodableMacro", type: "Codable")
 
 @attached(peer, names: arbitrary)
 public macro Callback() = #externalMacro(module: "CallbackMacro", type: "Callback");
 
 @attached(peer)
+#if WASM
+@attached(extension, names: arbitrary)
+#else
 @attached(extension, conformances: ABIEventExtractor, names: arbitrary)
+#endif
 public macro Event(dataType: TopEncode.Type? = nil) = #externalMacro(module: "EventMacro", type: "Event")
 
 @attached(peer, names: named(__ContractInit))

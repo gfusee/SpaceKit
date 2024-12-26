@@ -23,6 +23,13 @@ let swiftSettings: [SwiftSetting] = isWasm ? [
     ])
 ] : []
 
+let macroSwiftSettings: [SwiftSetting] = isWasm ? [
+    .unsafeFlags([
+        "-D",
+        "WASM"
+    ])
+] : []
+
 let experimentalFeatures: [String] = []
 
 var packageDependencies: [Package.Dependency] = [
@@ -526,7 +533,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "ControllerMacro",
@@ -534,7 +542,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "CodableMacro",
@@ -542,7 +551,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "EventMacro",
@@ -550,7 +560,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "InitMacro",
@@ -558,7 +569,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "ProxyMacro",
@@ -566,7 +578,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .plugin(
             name: "ABIGeneration",
