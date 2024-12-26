@@ -10,7 +10,7 @@ func generateABIEventExtractorClass(
     
     return """
     #if !WASM
-    class \(generatedClassName): ABIEventExtractor {
+    public class \(generatedClassName): ABIEventExtractor {
         public static var _extractABIEvent: ABIEvent {
             \(structName)._extractABIEvent
         }

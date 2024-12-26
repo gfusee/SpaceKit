@@ -10,7 +10,7 @@ func generateABIEndpointsExtractorClass(
     
     return """
     #if !WASM
-    class \(generatedClassName): ABIEndpointsExtractor {
+    public class \(generatedClassName): ABIEndpointsExtractor {
         public static var _extractABIEndpoints: [ABIEndpoint] {
             \(structName)._extractABIEndpoints
         }

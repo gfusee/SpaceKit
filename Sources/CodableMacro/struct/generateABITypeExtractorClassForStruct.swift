@@ -10,7 +10,7 @@ func generateABITypeExtractorClassForStruct(
     
     return """
     #if !WASM
-    class \(generatedClassName): ABITypeExtractor {
+    public class \(generatedClassName): ABITypeExtractor {
         public static var _abiTypeName: String {
             \(structName)._abiTypeName
         }
