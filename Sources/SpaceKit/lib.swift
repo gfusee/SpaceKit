@@ -24,7 +24,6 @@ nonisolated(unsafe) public var API = DummyApi()
 #endif
 public macro Controller() = #externalMacro(module: "ControllerMacro", type: "Controller")
 
-@attached(peer)
 @attached(member, names: arbitrary)
 #if WASM
 @attached(extension, conformances: TopEncode & TopEncodeMulti & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode & ArrayItem, names: arbitrary)
@@ -36,7 +35,7 @@ public macro Codable() = #externalMacro(module: "CodableMacro", type: "Codable")
 @attached(peer, names: arbitrary)
 public macro Callback() = #externalMacro(module: "CallbackMacro", type: "Callback");
 
-@attached(peer)
+@attached(extension, names: arbitrary)
 #if WASM
 @attached(extension, names: arbitrary)
 #else

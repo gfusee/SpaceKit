@@ -13,9 +13,7 @@ extension Controller: PeerMacro {
         
         try structDecl.isValidStruct()
         
-        var results: [DeclSyntax] = [
-            try generateABIEndpointsExtractorClass(structDecl: structDecl, context: context)
-        ]
+        var results: [DeclSyntax] = []
         
         let functionDecls = structDecl.memberBlock.members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         for function in functionDecls {

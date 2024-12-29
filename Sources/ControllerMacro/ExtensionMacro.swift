@@ -104,6 +104,7 @@ func getABIEndpointsExtractorConformance(
 ) throws -> DeclSyntax {
     let structName = structDecl.name.trimmed
     
+    var requiredABITypesExpressionsList: [String] = []
     var abiEndpointsInitList: [String] = []
     
     for function in functions {
@@ -122,17 +123,22 @@ func getABIEndpointsExtractorConformance(
         for parameter in function.signature.parameterClause.parameters {
             let variableName = (parameter.secondName ?? parameter.firstName).trimmed
             let paramType = parameter.type.trimmed
-            let paramTypeABIType = "\(paramType)._abiTypeName"
+            let paramTypeABITypeName = "\(paramType)._abiTypeName"
+            let paramTypeABIType = "\(paramType)._extractABIType"
             let paramIsMulti = "\(paramType)._isMulti"
             
             abiInputsList.append(
                 """
                 ABIInput(
                    name: "\(variableName)",
-                   type: \(paramTypeABIType),
+                   type: \(paramTypeABITypeName),
                    multiArg: \(paramIsMulti) ? true : nil
                 )
                 """
+            )
+            
+            requiredABITypesExpressionsList.append(
+                "types[\"\(paramType)\"] = \(paramTypeABIType)"
             )
         }
         
@@ -140,17 +146,22 @@ func getABIEndpointsExtractorConformance(
         
         var abiOutputsList: [String] = []
         
-        if let returnType = returnType {
-            let returnABIType = "\(returnType.trimmed)._abiTypeName"
-            let returnIsMulti = "\(returnType.trimmed)._isMulti"
+        if let returnType = returnType?.trimmed {
+            let returnABITypeName = "\(returnType)._abiTypeName"
+            let returnTypeABIType = "\(returnType)._extractABIType"
+            let returnIsMulti = "\(returnType)._isMulti"
             
             abiOutputsList.append(
                 """
                 ABIOutput(
-                   type: \(returnABIType),
+                   type: \(returnABITypeName),
                    multiResult: \(returnIsMulti) ? true : nil
                 )
                 """
+            )
+            
+            requiredABITypesExpressionsList.append(
+                "types[\"\(returnType)\"] = \(returnTypeABIType)"
             )
         }
         
@@ -203,6 +214,7 @@ func getABIEndpointsExtractorConformance(
     }
     
     let abiEndpointsInit = abiEndpointsInitList.joined(separator: ",\n")
+    let requiredABITypesExpressions = requiredABITypesExpressionsList.joined(separator: "\n")
     
     return """
     extension \(structName): ABIEndpointsExtractor {
@@ -210,6 +222,13 @@ func getABIEndpointsExtractorConformance(
           [
              \(raw: abiEndpointsInit)
           ]
+       }
+    
+       public static var _extractRequiredABITypes: [String : ABIType] {
+          var types: [String : ABIType] = [:]
+          \(raw: requiredABITypesExpressions)
+    
+          return types
        }
     } 
     """

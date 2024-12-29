@@ -63,14 +63,21 @@ func getExtractABIFromSymbolGraphsFunction(graphJSONContents: [String], spaceKit
         .map { "\($0)._extractABIEndpoints" }
         .joined(separator: ",\n")
     
-    let typeExtractionExpressions = structsConformingToABITypeExtractorDisplayNames
-        .map { """
-            if let abiType = \($0)._extractABIType  {
-                types[\($0)._abiTypeName] = abiType 
+    let requiredTypesExtractionArrayItems = structsConformingToABIEndpointsExtractorDisplayNames
+        .map { "\($0)._extractRequiredABITypes" }
+        .joined(separator: ",\n")
+    
+    let typeExtractionExpressions = """
+        let requiredTypesArrayOfMaps = [
+            \(requiredTypesExtractionArrayItems)
+        ]
+        
+        for map in requiredTypesArrayOfMaps {
+            requiredTypes.merge(map) { _, new in
+                new
             }
-            """
         }
-        .joined(separator: "\n")
+        """
     
     let eventExtractionArrayItems = structsConformingToABIEventExtractorDisplayNames
         .map { "\($0)._extractABIEvent" }
@@ -84,7 +91,7 @@ func getExtractABIFromSymbolGraphsFunction(graphJSONContents: [String], spaceKit
             \(raw: endpointsExtractionArrayItems)
         ].flatMap { $0 }
     
-        var types: [String : ABIType] = [:]
+        var requiredTypes: [String : ABIType] = [:]
         \(raw: typeExtractionExpressions)
     
         let events: [ABIEvent] = [
@@ -102,7 +109,7 @@ func getExtractABIFromSymbolGraphsFunction(graphJSONContents: [String], spaceKit
             constructor: constructor,
             endpoints: endpoints,
             events: events,
-            types: types
+            types: requiredTypes
         )
     }
     """
