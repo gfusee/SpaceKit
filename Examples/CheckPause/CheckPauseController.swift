@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct CheckPauseController {
+@Controller public struct CheckPauseController {
     @Storage(key: "isContractPaused") var isContractPaused: Bool
     
     public func isPaused() -> Bool {

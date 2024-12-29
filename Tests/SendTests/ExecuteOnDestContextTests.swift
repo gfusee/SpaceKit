@@ -5,7 +5,7 @@ import SpaceKitTesting
     case receiveTokens
 }
 
-@Controller struct ExecuteOnDestContextTestsController {
+@Controller public struct ExecuteOnDestContextTestsController {
     @Storage(key: "lastReceivedTokens") var lastReceivedTokens: Vector<TokenPayment>
     
     public mutating func receiveTokens() {

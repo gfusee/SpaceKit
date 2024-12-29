@@ -5,12 +5,12 @@ fileprivate let INFO_IDENTIFIER: StaticString = ".info"
 fileprivate let NODE_IDENTIFIER: StaticString = ".node_links"
 fileprivate let VALUE_IDENTIFIER: StaticString = ".value"
 
-@Codable package struct Node {
+@Codable public struct Node {
     var previous: UInt32
     var next: UInt32
 }
 
-@Codable package struct QueueMapperInfo {
+@Codable public struct QueueMapperInfo {
     var len: UInt32
     var front: UInt32
     var back: UInt32

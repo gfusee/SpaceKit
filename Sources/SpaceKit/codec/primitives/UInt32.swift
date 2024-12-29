@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 // TODO: add tests for the below extensions
 
 private let intSize: Int32 = 4

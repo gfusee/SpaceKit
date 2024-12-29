@@ -1,5 +1,5 @@
 import SpaceKit
 
-@Controller struct MyController {
+@Controller public struct MyController {
     @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
 }

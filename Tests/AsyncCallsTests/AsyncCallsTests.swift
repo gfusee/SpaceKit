@@ -1,7 +1,7 @@
 import SpaceKit
 import SpaceKitTesting
 
-@Controller struct CalleeController {
+@Controller public struct CalleeController {
     @Storage(key: "counter") var counter: BigUint
     @Storage(key: "address") var address: Address
     @Storage(key: "lastReceivedTokens") var lastReceivedTokens: Vector<TokenPayment>
@@ -63,7 +63,7 @@ import SpaceKitTesting
     case getCounter
 }
 
-@Controller struct AsyncCallsTestsController {
+@Controller public struct AsyncCallsTestsController {
     @Storage(key: "counter") var counter: BigUint
     @Storage(key: "address") var address: Address
     @Storage(key: "storedErrorCode") var storedErrorCode: UInt32

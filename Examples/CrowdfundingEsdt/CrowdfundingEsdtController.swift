@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct CrowdfundingEsdtController {
+@Controller public struct CrowdfundingEsdtController {
     @Storage(key: "target") var target: BigUint
     @Storage(key: "deadline") var deadline: UInt64
     @Mapping(key: "deposit") var depositForDonor: StorageMap<Address, BigUint>

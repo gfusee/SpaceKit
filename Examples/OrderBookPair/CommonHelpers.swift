@@ -6,17 +6,17 @@ let FEE_PENALTY_INCREASE_PERCENT: UInt64 = 1_000
 let FEE_PENALTY_INCREASE_EPOCH: UInt64 = 5
 let FREE_ORDER_FROM_STORAGE_MIN_PENALTIES: UInt64 = 6
 
-@Codable struct Payment {
+@Codable public struct Payment {
     let tokenIdentifier: Buffer
     var amount: BigUint
 }
 
-@Codable struct Transfer {
+@Codable public struct Transfer {
     let to: Address
     var payment: Payment
 }
 
-@Codable struct Order {
+@Codable public struct Order {
     let id: UInt64
     let creator: Address
     let matchProvider: Address
@@ -28,30 +28,30 @@ let FREE_ORDER_FROM_STORAGE_MIN_PENALTIES: UInt64 = 6
     let orderType: OrderType
 }
 
-@Codable struct OrderInputParams {
+@Codable public struct OrderInputParams {
     let amount: BigUint
     let matchProvider: Address
     let feeConfig: FeeConfig
     let dealConfig: DealConfig
 }
 
-@Codable enum OrderType {
+@Codable public enum OrderType {
     case buy
     case sell
 }
 
-@Codable enum FeeConfigEnum {
+@Codable public enum FeeConfigEnum {
     case fixed
     case percent
 }
 
-@Codable struct FeeConfig {
+@Codable public struct FeeConfig {
     let feeType: FeeConfigEnum
     let fixedFee: BigUint
     let percentFee: UInt64
 }
 
-@Codable struct DealConfig {
+@Codable public struct DealConfig {
     let matchProviderPercent: UInt64
 }
 

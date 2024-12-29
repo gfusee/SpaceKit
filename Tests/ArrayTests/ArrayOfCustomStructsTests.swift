@@ -1,14 +1,14 @@
 @testable import SpaceKit
 import SpaceKitTesting
 
-@Codable struct CustomCodableStruct: Equatable {
+@Codable public struct CustomCodableStruct: Equatable {
     let firstElement: Buffer
     let secondElement: UInt64
     let thirdElement: UInt64
     let fourthElement: Buffer
 }
 
-@Controller struct ArrayOfCustomStructsTestsController {
+@Controller public struct ArrayOfCustomStructsTestsController {
     
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<CustomCodableStruct> = [

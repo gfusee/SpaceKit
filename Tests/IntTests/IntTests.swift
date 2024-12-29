@@ -1,7 +1,7 @@
 import SpaceKit
 import SpaceKitTesting
 
-@Controller struct IntTestsController {
+@Controller public struct IntTestsController {
     public func testTopDecodeIntTooLargeBufferShouldFail() {
         let input = Buffer(data: Array("0001020304".hexadecimal))
         _ = Int(topDecode: input)

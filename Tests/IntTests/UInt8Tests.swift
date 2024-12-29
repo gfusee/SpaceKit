@@ -1,7 +1,7 @@
 import SpaceKit
 import SpaceKitTesting
 
-@Controller struct UInt8TestsController {
+@Controller public struct UInt8TestsController {
     public func testTopDecodeUInt8TooLargeBufferShouldFail() {
         let input = Buffer(data: Array("0000".hexadecimal))
         let _ = UInt8(topDecode: input)

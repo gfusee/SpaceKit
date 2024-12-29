@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 // TODO: add tests
 
 public struct MultiValueEncoded<Item: SpaceCodable>: Equatable {

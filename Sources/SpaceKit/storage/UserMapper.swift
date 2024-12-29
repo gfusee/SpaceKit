@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 fileprivate let ADDRESS_TO_ID_SUFFIX: StaticString = "_address_to_id"
 fileprivate let ID_TO_ADDRESS_SUFFIX: StaticString = "_id_to_address"
 fileprivate let COUNT_SUFFIX: StaticString = "_count"

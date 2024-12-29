@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Codable enum FunctionSelector: Equatable {
+@Codable public enum FunctionSelector: Equatable {
     case linear(LinearFunction)
     case customExample(BigUint)
     case none

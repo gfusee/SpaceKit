@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 // TODO: add tests for the below extensions
 
 extension Optional: TopEncode where Wrapped: NestedEncode {

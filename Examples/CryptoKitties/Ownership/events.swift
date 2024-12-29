@@ -1,12 +1,12 @@
 import SpaceKit
 
-@Event struct TransferEvent {
+@Event public struct TransferEvent {
     let from: Address
     let to: Address
     let tokenId: UInt32
 }
 
-@Event struct ApproveEvent {
+@Event public struct ApproveEvent {
     let owner: Address
     let approved: Address
     let tokenId: UInt32

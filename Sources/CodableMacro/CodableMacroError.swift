@@ -11,6 +11,7 @@ enum CodableMacroError: CustomStringConvertible, Error {
     case enumShouldBeEquatable
     case noEnumInheritenceOrRawValueAllowed
     case enumAssociatedValuesShouldNotBeNamed
+    case shouldBePublic
     
     var description: String {
         switch self {
@@ -24,6 +25,7 @@ enum CodableMacroError: CustomStringConvertible, Error {
         case .noEnumInheritenceOrRawValueAllowed: return "An enumeration annotated with @Codable should neither inherit unknown protocols nor have raw values.\n\nHowever, you have to inherit the following protocol: Equatable."
         case .tooManyEnumCases: return "An enumeration annotated with @Codable should have at maximum 255 cases."
         case .enumAssociatedValuesShouldNotBeNamed: return "Associated values in an enumeration annotated with @Codable should not be named. For example, `case myCase(String)` is valid while `case myCase(value: String)` is not."
+        case .shouldBePublic: return "A structure or enum annotated @Codable should be public."
         }
     }
 }

@@ -1,20 +1,12 @@
 import SpaceKit
 
-@Event(dataType: Order) struct OrderEvent {
+@Event(dataType: Order) public struct OrderEvent {
     let caller: Address
     let epoch: UInt64
     let orderType: OrderType
 }
 
-@Event struct MatchOrderEvent {
-    let caller: Address
-    let epoch: UInt64
-    let orderType: OrderType
-    let orderId: UInt64
-    let orderCreator: Address
-}
-
-@Event struct FreeOrderEvent {
+@Event public struct MatchOrderEvent {
     let caller: Address
     let epoch: UInt64
     let orderType: OrderType
@@ -22,7 +14,15 @@ import SpaceKit
     let orderCreator: Address
 }
 
-@Event struct CancelOrderEvent {
+@Event public struct FreeOrderEvent {
+    let caller: Address
+    let epoch: UInt64
+    let orderType: OrderType
+    let orderId: UInt64
+    let orderCreator: Address
+}
+
+@Event public struct CancelOrderEvent {
     let caller: Address
     let epoch: UInt64
     let orderType: OrderType

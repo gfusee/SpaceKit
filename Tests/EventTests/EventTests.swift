@@ -1,15 +1,15 @@
 import SpaceKit
 import SpaceKitTesting
 
-@Event(dataType: Buffer) struct TestSingleIndexedFieldBufferDataEvent {
+@Event(dataType: Buffer) public struct TestSingleIndexedFieldBufferDataEvent {
     let address: Address
 }
 
-@Event(dataType: BigUint) struct TestSingleIndexedFieldBigUintDataEvent {
+@Event(dataType: BigUint) public struct TestSingleIndexedFieldBigUintDataEvent {
     let address: Address
 }
 
-@Event(dataType: Buffer) struct TestMultipleIndexedFieldEvent {
+@Event(dataType: Buffer) public struct TestMultipleIndexedFieldEvent {
     let address: Address
     let number: BigUint
     let buffer: Buffer
@@ -26,7 +26,7 @@ import SpaceKitTesting
     ).emit(data: "")
 }
 
-@Controller struct EventTestsController {
+@Controller public struct EventTestsController {
     public func emitNoEvent() {
         
     }

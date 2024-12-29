@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Codable struct CurveArguments {
+@Codable public struct CurveArguments {
     var availableSupply: BigUint
     var balance: BigUint
 }
@@ -11,7 +11,7 @@ extension CurveArguments {
     }
 }
 
-@Codable struct BondingCurve {
+@Codable public struct BondingCurve {
     var curve: FunctionSelector
     var arguments: CurveArguments
     var sellAvailability: Bool
@@ -27,7 +27,7 @@ extension BondingCurve {
     }
 }
 
-@Codable struct TokenOwnershipData {
+@Codable public struct TokenOwnershipData {
     var tokenNonces: Vector<UInt64>
     let owner: Address
 }

@@ -1,13 +1,13 @@
 @testable import SpaceKit
 import SpaceKitTesting
 
-@Codable enum CustomCodableEnum: Equatable {
+@Codable public enum CustomCodableEnum: Equatable {
     case first(Buffer, UInt64, UInt64, Buffer)
     case second(UInt64)
     case third
 }
 
-@Controller struct ArrayOfCustomEnumsTestsController {
+@Controller public struct ArrayOfCustomEnumsTestsController {
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(

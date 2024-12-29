@@ -1,7 +1,7 @@
 import SpaceKit
 
 
-@Controller struct UserEndpointsController {
+@Controller public struct UserEndpointsController {
     // The "dummy" parameter is useless, I'm just a lazy developer that wants the Swift compiler to stop complaining
     // Don't try this at home
     public func sellToken() {

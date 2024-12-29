@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 // TODO: add tests
 
 fileprivate extension UInt8 {

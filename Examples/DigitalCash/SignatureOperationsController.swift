@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct SignatureOperationsController {
+@Controller public struct SignatureOperationsController {
     public func withdraw(address: Address) {
         let depositMapper = Storage().$depositForDonor[address]
         

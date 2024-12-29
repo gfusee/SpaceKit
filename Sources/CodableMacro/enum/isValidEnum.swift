@@ -2,6 +2,10 @@ import SwiftSyntax
 
 extension EnumDeclSyntax {
     func isValidEnum() throws(CodableMacroError) {
+        guard self.modifiers.contains(where: { $0.name.tokenKind == .keyword(.public) }) else {
+            throw CodableMacroError.shouldBePublic
+        }
+        
         guard self.genericParameterClause == nil else {
             throw CodableMacroError.shouldNotHaveGenericParameter
         }

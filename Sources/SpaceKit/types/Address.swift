@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 private let ADDRESS_LENGTH: Int32 = 32
 
 public struct Address {

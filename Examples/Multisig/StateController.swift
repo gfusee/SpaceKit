@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct StateController {
+@Controller public struct StateController {
     public func sign(actionId: UInt32) {
         let storageController = StorageController()
         

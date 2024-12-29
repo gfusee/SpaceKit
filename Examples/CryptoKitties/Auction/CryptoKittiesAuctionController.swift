@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct CryptoKittiesAuctionController {
+@Controller public struct CryptoKittiesAuctionController {
     @Storage(key: "kittyOwnershipContractAddress") var kittyOwnershipContractAddress: Address
     @Storage(key: "genZeroKittyStartingPrice") var genZeroKittyStartingPrice: BigUint
     @Storage(key: "genZeroKittyEndingPrice") var genZeroKittyEndingPrice: BigUint

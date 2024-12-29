@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Codable enum Status {
+@Codable public enum Status {
     case fundingPeriod
     case successful
     case failed

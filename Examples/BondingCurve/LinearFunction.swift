@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Codable struct LinearFunction: Equatable {
+@Codable public struct LinearFunction: Equatable {
     let initialPrice: BigUint
     let linearCoefficient: BigUint
 }

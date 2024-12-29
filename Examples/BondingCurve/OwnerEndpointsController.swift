@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct OwnerEndpointsController {
+@Controller public struct OwnerEndpointsController {
     // TODO: use TokenIdentifier type once implemented
     public func deposit(
         paymentToken: OptionalArgument<Buffer>

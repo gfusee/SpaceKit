@@ -8,7 +8,7 @@ let secondsInADay: UInt64 = 86_400
     controller.tokenIdentifier = tokenIdentifier
 }
 
-@Controller struct MyController {
+@Controller public struct MyController {
     @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
     @Mapping<Address, UInt64>(key: "lastDepositTime") var lastDepositTimeForAddress
     @Mapping<Address, BigUint>(key: "depositedTokens") var depositedTokensForAddress

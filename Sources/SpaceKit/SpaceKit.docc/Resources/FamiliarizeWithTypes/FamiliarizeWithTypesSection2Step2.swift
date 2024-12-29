@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct MyController {
+@Controller public struct MyController {
     public func myEndpoint() {
         var myBuffer: Buffer = "Hello"
     }

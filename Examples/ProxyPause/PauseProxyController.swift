@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct PauseProxyController {
+@Controller public struct PauseProxyController {
     @SetMapping<Address>(key: "owners") var allOwners
     @SetMapping<Address>(key: "contracts") var allContracts
     

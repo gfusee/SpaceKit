@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct OrdersController {
+@Controller public struct OrdersController {
     public func createBuyOrder(params: OrderInputParams) {
         GlobalOperationHelpers().requireGlobalOperationNotOngoing()
         ValidationHelpers().requireValidOrderInputParams(params: params)

@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 @inline(__always)
 fileprivate func initFromBytesPointer(handle: Int32, pointer: UnsafeMutableRawBufferPointer) {
     guard let baseAddress = pointer.baseAddress else {

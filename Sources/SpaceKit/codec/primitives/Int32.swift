@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 private let intSize: Int32 = 4
 
 extension Int32: TopEncode {

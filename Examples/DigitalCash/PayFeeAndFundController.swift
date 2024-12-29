@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct PayFeeAndFundController {
+@Controller public struct PayFeeAndFundController {
     public func payFeeAndFundESDT(
         address: Address,
         valability: UInt64

@@ -1,6 +1,7 @@
 // TODO: report a Swift error in which Int64(<Int32 or UInt64 variable>) and UInt64(<Int32 or Int64 variable>) don't work in -no-allocations mode
 
 #if !WASM
+@_exported import SpaceKitABI
 
 #if !canImport (Foundation)
 #error("Foundation framework is required when not compiling to WebAssembly.")
@@ -43,8 +44,13 @@ public macro Callback() = #externalMacro(module: "CallbackMacro", type: "Callbac
 #endif
 public macro Event(dataType: TopEncode.Type? = nil) = #externalMacro(module: "EventMacro", type: "Event")
 
-@attached(peer, names: named(__ContractInit))
+@attached(peer, names: named(__ContractInit), named(SpaceKitInitConstructorExtractor))
 public macro Init() = #externalMacro(module: "InitMacro", type: "Init")
 
 @attached(extension, names: arbitrary)
 public macro Proxy() = #externalMacro(module: "ProxyMacro", type: "Proxy")
+
+#if !WASM
+@attached(member, names: arbitrary)
+public macro ABIMeta(graphJSONContents: [String], spaceKitGraphJSONContent: String) = #externalMacro(module: "ABIMetaMacro", type: "ABIMeta")
+#endif

@@ -1,5 +1,5 @@
 import SpaceKit
 
-@Controller struct DepositController {
+@Controller public struct DepositController {
     public func deposit() {}
 }

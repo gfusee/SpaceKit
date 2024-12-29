@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 public struct BigUint {
     let handle: Int32
     

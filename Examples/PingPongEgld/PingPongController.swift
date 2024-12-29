@@ -4,7 +4,7 @@ import SpaceKit
 
 let PONG_ALL_LOW_GAS_LIMIT: UInt64 = 3_000_000
 
-@Controller struct PingPongController {
+@Controller public struct PingPongController {
     @Storage(key: "pingAmount") var pingAmount: BigUint
     @Storage(key: "deadline") var deadline: UInt64
     @Storage(key: "activationTimestamp") var activationTimestamp: UInt64

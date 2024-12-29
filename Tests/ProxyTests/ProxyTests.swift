@@ -13,7 +13,7 @@ import SpaceKitTesting
     case callThrowError(calleeAddress: Address)
 }
 
-@Controller struct CalleeController {
+@Controller public struct CalleeController {
     public mutating func endpointWithoutParameter() {}
     
     public mutating func endpointWithOneParameter(arg: BigUint) -> BigUint {
@@ -65,7 +65,7 @@ import SpaceKitTesting
     }
 }
 
-@Controller struct CallerController {
+@Controller public struct CallerController {
     public mutating func callEndpointWithoutParameter(calleeAddress: Address) {
         CalleeProxy.endpointWithoutParameter.callAndIgnoreResult(receiver: calleeAddress)
     }

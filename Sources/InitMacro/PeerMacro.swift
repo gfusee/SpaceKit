@@ -19,12 +19,13 @@ extension Init: PeerMacro {
         
         return [
             DeclSyntax(initDeclarations.wasmExportedFunction),
-            DeclSyntax(initDeclarations.swiftVmInitClass)
+            initDeclarations.swiftVmInitClass,
+            initDeclarations.abiConstructorExtractorStruct
         ]
     }
 }
 
-fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context: some MacroExpansionContext) -> (wasmExportedFunction: FunctionDeclSyntax, swiftVmInitClass: DeclSyntax) {
+fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context: some MacroExpansionContext) -> (wasmExportedFunction: FunctionDeclSyntax, swiftVmInitClass: DeclSyntax, abiConstructorExtractorStruct: DeclSyntax) {
     let endpointParams = getInitVariablesDeclarations(
         functionParameters: funcDecl.signature.parameterClause.parameters
     )
@@ -93,9 +94,15 @@ fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context
     
     let swiftVmInitClass: DeclSyntax = """
     #if !WASM
-    class __ContractInit: SwiftVMInit, ABIConstructorExtractor {
+    class __ContractInit: SwiftVMInit {
         required init() \(bodySyntax)
+    }
+    #endif
+    """
     
+    let abiConstructorExtractorStruct: DeclSyntax = """
+    #if !WASM
+    public struct SpaceKitInitConstructorExtractor: ABIConstructorExtractor {
         public static var _extractABIConstructor: ABIConstructor {
            ABIConstructor(
               inputs: [
@@ -110,7 +117,7 @@ fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context
     #endif
     """
     
-    return (wasmExportedFunction: wasmExportedFunction, swiftVmInitClass: swiftVmInitClass)
+    return (wasmExportedFunction: wasmExportedFunction, swiftVmInitClass: swiftVmInitClass, abiConstructorExtractorStruct: abiConstructorExtractorStruct)
 }
 
 fileprivate func getInitVariablesDeclarations(

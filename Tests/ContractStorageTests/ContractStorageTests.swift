@@ -1,7 +1,7 @@
 import SpaceKit
 import SpaceKitTesting
 
-@Controller struct CounterController {
+@Controller public struct CounterController {
     @Storage(key: "globalCounter") var globalCounter: BigUint
     
     public mutating func increaseByOne() {

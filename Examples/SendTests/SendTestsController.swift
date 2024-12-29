@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct SendTestsController {
+@Controller public struct SendTestsController {
     @Storage(key: "lastReceivedTokens") var lastReceivedTokens: Vector<TokenPayment>
     
     public mutating func receiveTokens() {

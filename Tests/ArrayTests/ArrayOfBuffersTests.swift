@@ -1,7 +1,7 @@
 @testable import SpaceKit
 import SpaceKitTesting
 
-@Controller struct ArrayOfBuffersTestsController {
+@Controller public struct ArrayOfBuffersTestsController {
     
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<Buffer> = ["Hey!"]

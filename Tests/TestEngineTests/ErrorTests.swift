@@ -1,7 +1,7 @@
 import SpaceKit
 import SpaceKitTesting
 
-@Controller struct ErrorTestsController {
+@Controller public struct ErrorTestsController {
     public func testUserErrorStopsTheExecution() {
         let bigUint1: BigUint = 1
         let bigUint2: BigUint = 2

@@ -1,23 +1,23 @@
 import SpaceKit
 
-@Codable struct FixedAmountUnlockType {
+@Codable public struct FixedAmountUnlockType {
     let periodUnlockAmount: BigUint
     let releasePeriod: UInt64
     let releaseTicks: UInt64
 }
 
-@Codable struct PercentageUnlockType {
+@Codable public struct PercentageUnlockType {
     let periodUnlockPercentage: UInt8
     let releasePeriod: UInt64
     let releaseTicks: UInt64
 }
 
-@Codable enum UnlockType {
+@Codable public enum UnlockType {
     case fixedAmount(FixedAmountUnlockType)
     case percentage(PercentageUnlockType)
 }
 
-@Codable struct Schedule {
+@Codable public struct Schedule {
     let groupTotalAmount: BigUint
     let unlockType: UnlockType
 }

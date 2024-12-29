@@ -33,10 +33,13 @@ let macroSwiftSettings: [SwiftSetting] = isWasm ? [
 let experimentalFeatures: [String] = []
 
 var packageDependencies: [Package.Dependency] = [
-    .package(url: "https://github.com/apple/swift-syntax", from: "510.0.1")
+    .package(url: "https://github.com/apple/swift-syntax", from: "510.0.1"),
+    .package(url: "https://github.com/apple/swift-docc-symbolkit.git", revision: "2dc63aa752c807f016a925e7661e649ba6c56017"),
 ]
 
 var libraryDependencies: [Target.Dependency] = [
+    "SpaceKitABI",
+    "ABIMetaMacro",
     "CallbackMacro",
     "ControllerMacro",
     "CodableMacro",
@@ -50,7 +53,8 @@ var testTargets: [Target] = []
 var products: [Product] = [
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(name: "SpaceKit", targets: ["SpaceKit"]),
-    .library(name: "SpaceKitTesting", targets: ["SpaceKitTesting"])
+    .library(name: "SpaceKitTesting", targets: ["SpaceKitTesting"]),
+    .library(name: "SpaceKitABI", targets: ["SpaceKitABI"])
 ]
 
 if !isWasm {
@@ -527,6 +531,21 @@ let package = Package(
             ],
             swiftSettings: swiftSettings
         ),
+        .target(
+            name: "SpaceKitABI",
+            swiftSettings: swiftSettings
+        ),
+        .macro(
+            name: "ABIMetaMacro",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                "SpaceKitABI",
+                .product(name: "SymbolKit", package: "swift-docc-symbolkit")
+            ],
+            swiftSettings: swiftSettings
+        ),
         .macro(
             name: "CallbackMacro",
             dependencies: [
@@ -580,10 +599,6 @@ let package = Package(
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ],
             swiftSettings: macroSwiftSettings
-        ),
-        .plugin(
-            name: "ABIGeneration",
-            capability: .buildTool
         )
     ] + testTargets
 )
