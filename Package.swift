@@ -38,7 +38,6 @@ var packageDependencies: [Package.Dependency] = [
 ]
 
 var libraryDependencies: [Target.Dependency] = [
-    "ABIMetaMacro",
     "CallbackMacro",
     "ControllerMacro",
     "CodableMacro",
@@ -64,6 +63,7 @@ if !isWasm {
     
     libraryDependencies.append(contentsOf: [
         "SpaceKitABI",
+        "ABIMetaMacro",
         .product(name: "BigInt", package: "BigInt")
     ])
     
