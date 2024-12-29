@@ -33,8 +33,8 @@ let macroSwiftSettings: [SwiftSetting] = isWasm ? [
 let experimentalFeatures: [String] = []
 
 var packageDependencies: [Package.Dependency] = [
-    .package(url: "https://github.com/apple/swift-syntax", from: "510.0.1"),
-    .package(url: "https://github.com/apple/swift-docc-symbolkit.git", revision: "2dc63aa752c807f016a925e7661e649ba6c56017"),
+    .package(url: "https://github.com/swiftlang/swift-syntax", from: "510.0.1"),
+    .package(url: "https://github.com/swiftlang/swift-docc-symbolkit.git", revision: "2dc63aa752c807f016a925e7661e649ba6c56017"),
 ]
 
 var libraryDependencies: [Target.Dependency] = [
