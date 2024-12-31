@@ -215,6 +215,7 @@ func getABIEndpointsExtractorConformance(
     
     let abiEndpointsInit = abiEndpointsInitList.joined(separator: ",\n")
     let requiredABITypesExpressions = requiredABITypesExpressionsList.joined(separator: "\n")
+    let typesInstantiationKeywork = requiredABITypesExpressionsList.isEmpty ? "let" : "var"
     
     return """
     extension \(structName): ABIEndpointsExtractor {
@@ -225,7 +226,7 @@ func getABIEndpointsExtractorConformance(
        }
     
        public static var _extractRequiredABITypes: [String : ABIType] {
-          var types: [String : ABIType] = [:]
+          \(raw: typesInstantiationKeywork) types: [String : ABIType] = [:]
           \(raw: requiredABITypesExpressions)
     
           return types
