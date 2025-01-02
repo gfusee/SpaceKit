@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct StorageController {
+@Controller public struct StorageController {
     @Storage(key: "first_token_id") var firstTokenIdentifier: Buffer
     @Storage(key: "second_token_id") var secondTokenIdentifier: Buffer
     @Storage(key: "order_id_counter") var orderIdCounter: UInt64

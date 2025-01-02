@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 private let ADDRESS_LENGTH: Int32 = 32
 
 public struct Address {
@@ -143,6 +147,14 @@ extension Address: ArrayItem {
         self.buffer.intoArrayPayload()
     }
 }
+
+#if !WASM
+extension Address: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "Address"
+    }
+}
+#endif
 
 #if !WASM
 extension Address: ExpressibleByStringLiteral {

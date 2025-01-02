@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct FactorialController {
+@Controller public struct FactorialController {
     public func factorial(value: BigUint) -> BigUint {
         let one: BigUint = 1
         

@@ -5,6 +5,6 @@ import SpaceKit
     case withdraw(amount: BigUint)
 }
 
-@Controller struct MyController {
+@Controller public struct MyController {
     
 }

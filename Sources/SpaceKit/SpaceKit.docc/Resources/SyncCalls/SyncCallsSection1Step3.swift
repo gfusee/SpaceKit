@@ -4,6 +4,6 @@ import SpaceKit
     
 }
 
-@Controller struct MyController {
+@Controller public struct MyController {
     
 }

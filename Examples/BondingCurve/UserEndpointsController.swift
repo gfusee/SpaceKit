@@ -1,7 +1,7 @@
 import SpaceKit
 
 
-@Controller struct UserEndpointsController {
+@Controller public struct UserEndpointsController {
     // The "dummy" parameter is useless, I'm just a lazy developer that wants the Swift compiler to stop complaining
     // Don't try this at home
     public func sellToken() {
@@ -12,7 +12,7 @@ import SpaceKit
         
         let (calculatedPrice, paymentToken) = storage.$bondingCurveForTokenIdentifier[offeredPayment.tokenIdentifier]
             .update { buffer in
-                var bondingCurve = BondingCurve<FunctionSelector>(topDecode: buffer)
+                var bondingCurve = BondingCurve(topDecode: buffer)
                 
                 let _ = self.checkOwnedReturnPaymentToken(
                     bondingCurve: bondingCurve,
@@ -80,7 +80,7 @@ import SpaceKit
         
         let calculatedPrice = storage.$bondingCurveForTokenIdentifier[requestedToken]
             .update { buffer in
-                var bondingCurve = BondingCurve<FunctionSelector>(topDecode: buffer)
+                var bondingCurve = BondingCurve(topDecode: buffer)
                 
                 let paymentToken = self.checkOwnedReturnPaymentToken(
                     bondingCurve: bondingCurve,
@@ -152,8 +152,8 @@ import SpaceKit
     }
     
     // TODO: use TokenIdentifier type once implemented
-    private func checkOwnedReturnPaymentToken<T: CurveFunction & SpaceCodable & Default & Equatable>(
-        bondingCurve: BondingCurve<T>,
+    private func checkOwnedReturnPaymentToken(
+        bondingCurve: BondingCurve,
         amount: BigUint
     ) -> Buffer {
         bondingCurve.requireIsSet()
@@ -176,8 +176,8 @@ import SpaceKit
     }
     
     // TODO: use TokenIdentifier type once implemented
-    private func computeBuyPrice<T: CurveFunction & SpaceCodable & Default & Equatable>(
-        bondingCurve: BondingCurve<T>,
+    private func computeBuyPrice(
+        bondingCurve: BondingCurve,
         amount: BigUint
     ) -> BigUint {
         let arguments = bondingCurve.arguments
@@ -193,8 +193,8 @@ import SpaceKit
     }
     
     // TODO: use TokenIdentifier type once implemented
-    private func computeSellPrice<T: CurveFunction & SpaceCodable & Default & Equatable>(
-        bondingCurve: BondingCurve<T>,
+    private func computeSellPrice(
+        bondingCurve: BondingCurve,
         amount: BigUint
     ) -> BigUint {
         let arguments = bondingCurve.arguments

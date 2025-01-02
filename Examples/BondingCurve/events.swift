@@ -1,11 +1,11 @@
 import SpaceKit
 
-@Event struct SellTokenEvent {
+@Event public struct SellTokenEvent {
     let user: Address
     let amount: BigUint
 }
 
-@Event struct BuyTokenEvent {
+@Event public struct BuyTokenEvent {
     let user: Address
     let amount: BigUint
 }

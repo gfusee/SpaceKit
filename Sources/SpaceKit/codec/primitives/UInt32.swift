@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 // TODO: add tests for the below extensions
 
 private let intSize: Int32 = 4
@@ -84,3 +88,11 @@ extension UInt32: ArrayItem {
     }
     
 }
+
+#if !WASM
+extension UInt32: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "u32"
+    }
+}
+#endif

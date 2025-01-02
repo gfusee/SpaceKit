@@ -1,5 +1,5 @@
-import XCTest
 import SpaceKit
+import SpaceKitTesting
 
 @Init func initialize() {
     var controller = MessageController()
@@ -7,7 +7,7 @@ import SpaceKit
     controller.address = Message.caller
 }
 
-@Controller struct MessageController {
+@Controller public struct MessageController {
     @Storage(key: "address") var address: Address
     
     public func getCallerAddress() -> Address {

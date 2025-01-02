@@ -1,5 +1,6 @@
-#if !WASM && canImport(XCTest)
+#if canImport(XCTest)
 import XCTest
+import SpaceKit
 
 open class ContractTestCase: XCTestCase {
     open var initialAccounts: [WorldAccount] {

@@ -68,3 +68,11 @@ extension UInt64: ArrayItem {
     }
     
 }
+
+#if !WASM
+extension UInt64: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "u64"
+    }
+}
+#endif

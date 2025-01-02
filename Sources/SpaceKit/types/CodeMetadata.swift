@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 let UPGRADABLE_FLAG: UInt16 = 0b0000_0001_0000_0000
 let READABLE_FLAG: UInt16 = 0b0000_0100_0000_0000
 let PAYABLE_FLAG: UInt16 = 0b0000_0000_0000_0010
@@ -93,6 +97,12 @@ extension CodeMetadata: ArrayItem {
     public func intoArrayPayload() -> Buffer {
         return self.getFlag().intoArrayPayload()
     }
-    
-    
 }
+
+#if !WASM
+extension CodeMetadata: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        UInt16._abiTypeName
+    }
+}
+#endif

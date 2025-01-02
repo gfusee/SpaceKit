@@ -1,5 +1,5 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 
 @Init func initialize(initialValue: BigUint) {
     var controller = AdderController()
@@ -7,7 +7,7 @@ import XCTest
     controller.sum = initialValue
 }
 
-@Controller struct AdderController {
+@Controller public struct AdderController {
     @Storage(key: "sum") var sum: BigUint
     
     public mutating func add(value: BigUint) {

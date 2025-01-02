@@ -68,6 +68,12 @@ extension UInt8: ArrayItem {
         
         return payload
     }
-    
-    
 }
+
+#if !WASM
+extension UInt8: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "u8"
+    }
+}
+#endif

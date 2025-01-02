@@ -4,7 +4,7 @@ import SpaceKit
     case deposit
 }
 
-@Controller struct MyController {
+@Controller public struct MyController {
     
     public mutating func initiateDeposit(receiverAddress: Address) {
         

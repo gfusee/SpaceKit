@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct StorageController {
+@Controller public struct StorageController {
     @UserMapping(key: "user") var userMapper
     @Mapping<UInt32, UserRole>(key: "user_role") var userIdToRole
     @Storage(key: "num_board_members") var numBoardMembers: UInt32

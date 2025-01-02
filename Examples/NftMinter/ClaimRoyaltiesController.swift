@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct ClaimRoyaltiesController {
+@Controller public struct ClaimRoyaltiesController {
     // TODO: use TokenIdentifier type once implemented
     
     

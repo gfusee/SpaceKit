@@ -1,8 +1,8 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 import BigInt
 
-@Controller struct EgldTransferController {
+@Controller public struct EgldTransferController {
     
     public func transferEgld(to: Address, value: BigUint) {
         to.send(egldValue: value)

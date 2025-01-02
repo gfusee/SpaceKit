@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct DigitalCashController {
+@Controller public struct DigitalCashController {
     public mutating func whitelistFeeToken(
         fee: BigUint,
         token: Buffer

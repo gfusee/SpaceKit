@@ -3,7 +3,7 @@ import SpaceKit
 let NFT_AMOUNT: UInt32 = 1
 let ROYALTIES_MAX: UInt32 = 10_000
 
-@Controller struct NftController {
+@Controller public struct NftController {
     @Storage(key: "nftTokenId") var nftTokenId: Buffer // TODO: use TokenIdentifier type once implemented
     @Mapping<UInt64, PriceTag>(key: "priceTag") var priceTagForNftNonce
     

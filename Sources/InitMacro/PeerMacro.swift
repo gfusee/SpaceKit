@@ -19,12 +19,13 @@ extension Init: PeerMacro {
         
         return [
             DeclSyntax(initDeclarations.wasmExportedFunction),
-            DeclSyntax(initDeclarations.swiftVmInitClass)
+            initDeclarations.swiftVmInitClass,
+            initDeclarations.abiConstructorExtractorStruct
         ]
     }
 }
 
-fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context: some MacroExpansionContext) -> (wasmExportedFunction: FunctionDeclSyntax, swiftVmInitClass: DeclSyntax) {
+fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context: some MacroExpansionContext) -> (wasmExportedFunction: FunctionDeclSyntax, swiftVmInitClass: DeclSyntax, abiConstructorExtractorStruct: DeclSyntax) {
     let endpointParams = getInitVariablesDeclarations(
         functionParameters: funcDecl.signature.parameterClause.parameters
     )
@@ -51,6 +52,46 @@ fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context
     #endif
     """
     
+    // TODO: duplicate from ControllerMacro's ExtensionMacro.swift
+    var abiInputsList: [String] = []
+    for parameter in funcDecl.signature.parameterClause.parameters {
+        let variableName = (parameter.secondName ?? parameter.firstName).trimmed
+        let paramType = parameter.type.trimmed
+        let paramTypeABIType = "\(paramType)._abiTypeName"
+        let paramIsMulti = "\(paramType)._isMulti"
+        
+        abiInputsList.append(
+            """
+            ABIInput(
+               name: "\(variableName)",
+               type: \(paramTypeABIType),
+               multiArg: \(paramIsMulti) ? true : nil
+            )
+            """
+        )
+    }
+    
+    let returnType = funcDecl.signature.returnClause?.type.trimmed
+    
+    var abiOutputsList: [String] = []
+    
+    if let returnType = returnType {
+        let returnABIType = "\(returnType.trimmed)._abiTypeName"
+        let returnIsMulti = "\(returnType.trimmed)._isMulti"
+        
+        abiOutputsList.append(
+            """
+            ABIOutput(
+               type: \(returnABIType),
+               multiResult: \(returnIsMulti) ? true : nil
+            )
+            """
+        )
+    }
+    
+    let abiInputs = abiInputsList.joined(separator: ",\n")
+    let abiOutputs = abiOutputsList.joined(separator: ",\n")
+    
     let swiftVmInitClass: DeclSyntax = """
     #if !WASM
     class __ContractInit: SwiftVMInit {
@@ -59,7 +100,24 @@ fileprivate func getInitExportDeclarations(funcDecl: FunctionDeclSyntax, context
     #endif
     """
     
-    return (wasmExportedFunction: wasmExportedFunction, swiftVmInitClass: swiftVmInitClass)
+    let abiConstructorExtractorStruct: DeclSyntax = """
+    #if !WASM
+    public struct SpaceKitInitConstructorExtractor: ABIConstructorExtractor {
+        public static var _extractABIConstructor: ABIConstructor {
+           ABIConstructor(
+              inputs: [
+                 \(raw: abiInputs)
+              ],
+              outputs: [
+                 \(raw: abiOutputs)
+              ]
+           )
+        }
+    }
+    #endif
+    """
+    
+    return (wasmExportedFunction: wasmExportedFunction, swiftVmInitClass: swiftVmInitClass, abiConstructorExtractorStruct: abiConstructorExtractorStruct)
 }
 
 fileprivate func getInitVariablesDeclarations(

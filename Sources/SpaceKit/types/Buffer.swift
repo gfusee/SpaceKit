@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 @inline(__always)
 fileprivate func initFromBytesPointer(handle: Int32, pointer: UnsafeMutableRawBufferPointer) {
     guard let baseAddress = pointer.baseAddress else {
@@ -309,6 +313,14 @@ extension Buffer: ArrayItem {
         return Buffer(data: self.handle.toBytes4())
     }
 }
+
+#if !WASM
+extension Buffer: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "bytes"
+    }
+}
+#endif
 
 extension Buffer: Equatable {
     public static func == (lhs: Buffer, rhs: Buffer) -> Bool {

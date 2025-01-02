@@ -1,7 +1,7 @@
 import SpaceKit
 
 // TODO: use TokenIdentifier type once implemented
-@Codable struct NonceAmountMappingKey {
+@Codable public struct NonceAmountMappingKey {
     let identifier: Buffer
     let nonce: UInt64
 }

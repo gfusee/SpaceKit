@@ -1,5 +1,5 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 
 @Proxy enum CalleeProxy {
     case endpointWithoutParameter
@@ -13,7 +13,7 @@ import XCTest
     case callThrowError(calleeAddress: Address)
 }
 
-@Controller struct CalleeController {
+@Controller public struct CalleeController {
     public mutating func endpointWithoutParameter() {}
     
     public mutating func endpointWithOneParameter(arg: BigUint) -> BigUint {
@@ -65,7 +65,7 @@ import XCTest
     }
 }
 
-@Controller struct CallerController {
+@Controller public struct CallerController {
     public mutating func callEndpointWithoutParameter(calleeAddress: Address) {
         CalleeProxy.endpointWithoutParameter.callAndIgnoreResult(receiver: calleeAddress)
     }

@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct TestCallbackNotExposedController {
+@Controller public struct TestCallbackNotExposedController {
     public func testEndpoint() {
         let callback = self.$dummyCallback(arg: 4, gasForCallback: 50000000)
         

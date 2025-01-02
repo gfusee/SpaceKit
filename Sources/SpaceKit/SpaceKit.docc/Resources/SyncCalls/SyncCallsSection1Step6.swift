@@ -6,6 +6,6 @@ import SpaceKit
     case getTotalDepositedAmount
 }
 
-@Controller struct MyController {
+@Controller public struct MyController {
     
 }

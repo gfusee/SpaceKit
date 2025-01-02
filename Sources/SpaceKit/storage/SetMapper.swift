@@ -119,6 +119,18 @@ extension SetMapper: TopEncodeMulti {
 }
 
 #if !WASM
+extension SetMapper: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        MultiValueEncoded<V>._abiTypeName
+    }
+    
+    public static var _isMulti: Bool {
+        MultiValueEncoded<V>._isMulti
+    }
+}
+#endif
+
+#if !WASM
 extension SetMapper: TopDecodeMulti {
     public typealias SwiftVMDecoded = MultiValueEncoded<V>
     

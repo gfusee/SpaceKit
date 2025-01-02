@@ -1,7 +1,7 @@
-import XCTest
 import SpaceKit
+import SpaceKitTesting
 
-@Controller struct BlockchainController {
+@Controller public struct BlockchainController {
     
     public func getSelfAddress() -> Address {
         return Blockchain.getSCAddress()

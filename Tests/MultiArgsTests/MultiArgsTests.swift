@@ -1,7 +1,7 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 
-@Controller struct MultiArgsController {
+@Controller public struct MultiArgsController {
     @Storage(key: "concatenated") var concatenated: Buffer
     
     public mutating func endpointWithOnlyMultiValueEncoded(value: MultiValueEncoded<Buffer>) {

@@ -23,10 +23,18 @@ let swiftSettings: [SwiftSetting] = isWasm ? [
     ])
 ] : []
 
+let macroSwiftSettings: [SwiftSetting] = isWasm ? [
+    .unsafeFlags([
+        "-D",
+        "WASM"
+    ])
+] : []
+
 let experimentalFeatures: [String] = []
 
 var packageDependencies: [Package.Dependency] = [
-    .package(url: "https://github.com/apple/swift-syntax", from: "510.0.1")
+    .package(url: "https://github.com/swiftlang/swift-syntax", from: "510.0.1"),
+    .package(url: "https://github.com/swiftlang/swift-docc-symbolkit.git", revision: "2dc63aa752c807f016a925e7661e649ba6c56017"),
 ]
 
 var libraryDependencies: [Target.Dependency] = [
@@ -42,7 +50,9 @@ var testTargets: [Target] = []
 
 var products: [Product] = [
     // Products define the executables and libraries a package produces, making them visible to other packages.
-    .library(name: "SpaceKit", targets: ["SpaceKit"])
+    .library(name: "SpaceKit", targets: ["SpaceKit"]),
+    .library(name: "SpaceKitTesting", targets: ["SpaceKitTesting"]),
+    .library(name: "SpaceKitABI", targets: ["SpaceKitABI"])
 ]
 
 if !isWasm {
@@ -52,44 +62,59 @@ if !isWasm {
     ])
     
     libraryDependencies.append(contentsOf: [
+        "SpaceKitABI",
+        "ABIMetaMacro",
         .product(name: "BigInt", package: "BigInt")
     ])
     
     testTargets.append(contentsOf: [
         .testTarget(
+            name: "ABITests",
+            dependencies: [
+                "SpaceKit",
+                "SpaceKitTesting"
+            ]
+        ),
+        .testTarget(
             name: "AsyncCallsTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BufferTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BigUintTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "IntTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ContractStorageTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "TestEngineTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
@@ -113,67 +138,78 @@ if !isWasm {
         .testTarget(
             name: "CodableMacroImplTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "CallbackMacroImplTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "AdderTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ArrayTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "EventTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "FactorialTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BlockchainTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "MessageTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "MultiArgsTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ProxyTests",
             dependencies: [
-                "SpaceKit"
+                "SpaceKit",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "SendTests",
             dependencies: [
                 "SpaceKit",
+                "SpaceKitTesting",
                 "BigInt"
             ]
         ),
@@ -181,6 +217,7 @@ if !isWasm {
             name: "ErrorTests",
             dependencies: [
                 "SpaceKit",
+                "SpaceKitTesting",
                 "BigInt"
             ]
         )
@@ -487,13 +524,36 @@ let package = Package(
             dependencies: libraryDependencies,
             swiftSettings: swiftSettings
         ),
+        .target(
+            name: "SpaceKitTesting",
+            dependencies: [
+                "SpaceKit"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "SpaceKitABI",
+            swiftSettings: swiftSettings
+        ),
+        .macro(
+            name: "ABIMetaMacro",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                "SpaceKitABI",
+                .product(name: "SymbolKit", package: "swift-docc-symbolkit")
+            ],
+            swiftSettings: swiftSettings
+        ),
         .macro(
             name: "CallbackMacro",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "ControllerMacro",
@@ -501,7 +561,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "CodableMacro",
@@ -509,7 +570,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "EventMacro",
@@ -517,7 +579,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "InitMacro",
@@ -525,7 +588,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "ProxyMacro",
@@ -533,7 +597,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         )
     ] + testTargets
 )

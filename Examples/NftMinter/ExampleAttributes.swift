@@ -1,5 +1,5 @@
 import SpaceKit
 
-@Codable struct ExampleAttributes {
+@Codable public struct ExampleAttributes {
     let creationTimestamp: UInt64
 }

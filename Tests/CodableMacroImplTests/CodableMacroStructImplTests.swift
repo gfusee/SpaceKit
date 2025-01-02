@@ -1,13 +1,13 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 
 // There was an issue with @Codable macro on structs or enums that has comments on its fields
 // The struct here is only here to check if it compiles
-@Codable struct TestStruct {
+@Codable public struct TestStruct {
     let field: Buffer // Dummy comment
 }
 
-@Controller struct CodableMacroStructImplTestsController {
+@Controller public struct CodableMacroStructImplTestsController {
     public func testTopDecodeForCustomInputTooLargeError() {
         let input = Buffer(data: Array("0000000a5346542d616263646566000000000000000a000000016400".hexadecimal))
         let _ = TokenPayment(topDecode: input)

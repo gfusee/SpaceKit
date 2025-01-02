@@ -1,20 +1,20 @@
 import SpaceKit
 
-@Event(dataType: ActionFullInfo) struct StartPerformAction {}
+@Event(dataType: ActionFullInfo) public struct StartPerformAction {}
 
-@Event struct PerformChangeUser {
+@Event public struct PerformChangeUser {
     let actionId: UInt32
     let changedUser: Address
     let oldRole: UserRole
     let newRole: UserRole
 }
 
-@Event struct PerformChangeQuorum {
+@Event public struct PerformChangeQuorum {
     let actionId: UInt32
     let newQuorum: UInt32
 }
 
-@Event struct PerformTransferExecute {
+@Event public struct PerformTransferExecute {
     let actionId: UInt32
     let to: Address
     let egldValue: BigUint
@@ -23,7 +23,7 @@ import SpaceKit
     let arguments: MultiValueEncoded<Buffer>
 }
 
-@Event struct PerformAsyncCall {
+@Event public struct PerformAsyncCall {
     let actionId: UInt32
     let to: Address
     let egldValue: BigUint
@@ -32,16 +32,16 @@ import SpaceKit
     let arguments: MultiValueEncoded<Buffer>
 }
 
-@Event struct AsyncCallSuccess {
+@Event public struct AsyncCallSuccess {
     let results: MultiValueEncoded<Buffer>
 }
 
-@Event struct AsyncCallError {
+@Event public struct AsyncCallError {
     let errorCode: UInt32
     let errorMessage: Buffer
 }
 
-@Event struct PerformDeployFromSource {
+@Event public struct PerformDeployFromSource {
     let actionId: UInt32
     let egldValue: BigUint
     let sourceAddress: Address
@@ -50,7 +50,7 @@ import SpaceKit
     let arguments: MultiValueEncoded<Buffer>
 }
 
-@Event struct PerformUpgradeFromSource {
+@Event public struct PerformUpgradeFromSource {
     let actionId: UInt32
     let targetAddress: Address
     let egldValue: BigUint

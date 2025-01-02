@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct CryptoBubblesController {
+@Controller public struct CryptoBubblesController {
     @Mapping(key: "playerBalance") var playerBalance: StorageMap<Address, BigUint>
     
     public mutating func topUp() {

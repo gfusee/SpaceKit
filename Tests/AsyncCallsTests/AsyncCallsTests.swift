@@ -1,7 +1,7 @@
-import XCTest
 import SpaceKit
+import SpaceKitTesting
 
-@Controller struct CalleeController {
+@Controller public struct CalleeController {
     @Storage(key: "counter") var counter: BigUint
     @Storage(key: "address") var address: Address
     @Storage(key: "lastReceivedTokens") var lastReceivedTokens: Vector<TokenPayment>
@@ -63,7 +63,7 @@ import SpaceKit
     case getCounter
 }
 
-@Controller struct AsyncCallsTestsController {
+@Controller public struct AsyncCallsTestsController {
     @Storage(key: "counter") var counter: BigUint
     @Storage(key: "address") var address: Address
     @Storage(key: "storedErrorCode") var storedErrorCode: UInt32
@@ -1110,7 +1110,6 @@ final class AsyncCallsTests: ContractTestCase {
     
     func testSendMultiTokensFailWithCallback() throws {
         try self.deployContract(at: "callee")
-        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
         try self.deployContract(at: "caller")
         let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
@@ -1224,7 +1223,6 @@ final class AsyncCallsTests: ContractTestCase {
     
     func testSendMultiTokensFailNoCallback() throws {
         try self.deployContract(at: "callee")
-        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
         
         try self.deployContract(at: "caller")
         let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!

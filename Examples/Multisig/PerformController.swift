@@ -14,7 +14,7 @@ fileprivate func addSignedInt32ToUnsignedInt32(value: UInt32, delta: Int32) -> U
     }
 }
 
-@Controller struct PerformController {
+@Controller public struct PerformController {
     public func performAction(actionId: UInt32) -> OptionalArgument<Address> {
         let (_, callerRole) = StateController().getCallerIdAndRole()
         

@@ -22,6 +22,8 @@ package struct WorldState {
         
         self.accounts = accounts
     }
+    
+    public init() {}
 }
 
 #endif

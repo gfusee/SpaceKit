@@ -13,7 +13,7 @@ extension Controller: PeerMacro {
         
         try structDecl.isValidStruct()
         
-        var results: [FunctionDeclSyntax] = []
+        var results: [DeclSyntax] = []
         
         let functionDecls = structDecl.memberBlock.members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
         for function in functionDecls {
@@ -22,7 +22,7 @@ extension Controller: PeerMacro {
             }
             
             if let decl = getEndpointExportDeclaration(structName: structDecl.name, function: function, context: context) {
-                results.append(decl)
+                results.append(DeclSyntax(decl))
             }
         }
         

@@ -1,11 +1,11 @@
 import SpaceKit
-import XCTest
+import SpaceKitTesting
 
 @Proxy enum ExecuteOnDestContextTestsProxy {
     case receiveTokens
 }
 
-@Controller struct ExecuteOnDestContextTestsController {
+@Controller public struct ExecuteOnDestContextTestsController {
     @Storage(key: "lastReceivedTokens") var lastReceivedTokens: Vector<TokenPayment>
     
     public mutating func receiveTokens() {

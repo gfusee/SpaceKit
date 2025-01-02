@@ -1,10 +1,10 @@
 import SpaceKit
 
-@Codable enum MyEnum {
+@Codable public enum MyEnum {
     case firstCase(BigUint)
 }
 
-@Codable struct MyStruct {
+@Codable public struct MyStruct {
     let myBiguint: BigUint
     let myInteger: UInt64
     let myBuffer: Buffer

@@ -2,7 +2,7 @@ import SpaceKit
 
 let PERCENTAGE_TOTAL: UInt64 = 100
 
-@Controller struct TokenReleaseController {
+@Controller public struct TokenReleaseController {
     @Storage(key: "activationTimestamp") var activationTimestamp: UInt64
     @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
     @Storage(key: "tokenTotalSupply") var tokenTotalSupply: BigUint

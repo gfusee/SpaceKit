@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct EsdtTransferWithFeeController {
+@Controller public struct EsdtTransferWithFeeController {
     @Mapping<Buffer, Fee>(key: "token_fee") var tokenFeeForToken
     
     // TODO: use TokenIdentifier type

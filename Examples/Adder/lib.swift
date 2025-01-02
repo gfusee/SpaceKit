@@ -6,7 +6,7 @@ import SpaceKit
     controller.sum = initialValue
 }
 
-@Controller struct AdderController {
+@Controller public struct AdderController {
     @Storage(key: "sum") var sum: BigUint
     
     public mutating func add(value: BigUint) {

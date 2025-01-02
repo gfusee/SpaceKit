@@ -1,4 +1,4 @@
-public enum OptionalArgument<Wrapped: TopEncode & TopEncodeMulti & TopDecode & TopDecodeMulti & NestedEncode & NestedDecode> {
+public enum OptionalArgument<Wrapped: SpaceCodable> {
     case some(Wrapped)
     case none
 }
@@ -67,3 +67,17 @@ extension OptionalArgument: NestedDecode {
         self = Self(optional: Optional<Wrapped>(depDecode: &input))   
     }
 }
+
+#if !WASM
+extension OptionalArgument: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        let itemTypeName = Wrapped._abiTypeName
+        
+        return "optional<\(itemTypeName)>"
+    }
+    
+    public static var _isMulti: Bool {
+        true
+    }
+}
+#endif

@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 // TODO: add tests
 
 fileprivate extension UInt8 {
@@ -69,3 +73,11 @@ extension Bool: ArrayItem {
         return payload
     }
 }
+
+#if !WASM
+extension Bool: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "bool"
+    }
+}
+#endif

@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 public struct BigUint {
     let handle: Int32
     
@@ -199,6 +203,14 @@ extension BigUint: ArrayItem {
         return Buffer(data: self.handle.toBytes4())
     }
 }
+
+#if !WASM
+extension BigUint: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "BigUint"
+    }
+}
+#endif
 
 extension BigUint: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: IntegerLiteralType) {

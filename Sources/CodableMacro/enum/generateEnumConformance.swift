@@ -24,7 +24,7 @@ func generateEnumConformance(
     
     let discriminantsAndCases = getDiscriminantForCase(cases: cases)
     
-    return [
+    var results = [
         try generateTopEncodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
         try generateTopEncodeMultiExtension(enumName: enumName),
         try generateNestedEncodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
@@ -33,6 +33,12 @@ func generateEnumConformance(
         try generateNestedDecodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
         try generateArrayItemExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases)
     ]
+    
+    #if !WASM
+    results.append((try generateABITypeExtractorExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases)).as(ExtensionDeclSyntax.self)!)
+    #endif
+    
+    return results
 }
 
 fileprivate func generateTopEncodeExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> ExtensionDeclSyntax {
@@ -389,5 +395,86 @@ fileprivate func getTopDecodeWhenEmptyIfPossible(enumName: TokenSyntax, firstCas
     
     return """
     self = .\(firstCase.name.trimmed)
+    """
+}
+
+fileprivate func generateABITypeExtractorExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> DeclSyntax {
+    var variantsInitsList: [String] = []
+    for discriminantAndCase in discriminantsAndCases {
+        let caseName = discriminantAndCase.1.name.trimmed
+        
+        var fieldsInitsList: [String] = []
+        
+        if let associatedValues = discriminantAndCase.1.parameterClause?.parameters {
+            var associatedValueName = 0
+            
+            for associatedValue in associatedValues {
+                guard associatedValue.firstName == nil && associatedValue.secondName == nil else {
+                    throw CodableMacroError.enumAssociatedValuesShouldNotBeNamed
+                }
+                
+                let typeName = associatedValue.type.trimmed
+                
+                fieldsInitsList.append(
+                    """
+                    ABITypeStructField(
+                        name: "\(associatedValueName)",
+                        type: \(typeName)._abiTypeName
+                    )
+                    """
+                )
+                
+                associatedValueName += 1
+            }
+        }
+        
+        var initParametersLists = [
+            """
+            name: "\(caseName)"
+            """,
+            """
+            discriminant: \(discriminantAndCase.0)
+            """
+        ]
+        
+        if !fieldsInitsList.isEmpty {
+            let fieldsInits = fieldsInitsList.joined(separator: ",\n")
+            
+            initParametersLists.append(
+                """
+                fields: [
+                    \(fieldsInits)
+                ]
+                """
+            )
+        }
+        
+        let initParameters = initParametersLists.joined(separator: ",\n")
+        
+        variantsInitsList.append(
+            """
+                            ABITypeEnumVariant(
+                                \(initParameters)
+                            )
+            """
+        )
+    }
+    
+    let variantsInits = variantsInitsList.joined(separator: ",\n")
+    
+    return """
+    extension \(enumName): ABITypeExtractor {
+        public static var _abiTypeName: String {
+            "\(enumName)"
+        }
+    
+        public static var _extractABIType: ABIType? {
+            ABIType.enum(
+                variants: [
+                    \(raw: variantsInits)
+                ]
+            )
+        }
+    }
     """
 }

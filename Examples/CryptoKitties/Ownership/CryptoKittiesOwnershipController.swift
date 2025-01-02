@@ -2,7 +2,7 @@ import SpaceKit
 import CryptoKittiesCommon
 import CryptoKittiesRandom
 
-@Controller struct CryptoKittiesOwnershipController {
+@Controller public struct CryptoKittiesOwnershipController {
     @Storage(key: "geneScienceContractAddress") var geneScienceContractAddress: Address
     @Storage(key: "kittyAuctionContractAddress") var kittyAuctionContractAddress: Address
     @Storage(key: "birthFee") var birthFee: BigUint

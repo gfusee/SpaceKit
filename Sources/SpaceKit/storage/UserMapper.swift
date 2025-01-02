@@ -1,3 +1,7 @@
+#if !WASM
+import SpaceKitABI
+#endif
+
 fileprivate let ADDRESS_TO_ID_SUFFIX: StaticString = "_address_to_id"
 fileprivate let ID_TO_ADDRESS_SUFFIX: StaticString = "_id_to_address"
 fileprivate let COUNT_SUFFIX: StaticString = "_count"
@@ -110,6 +114,18 @@ extension UserMapper: TopDecodeMulti {
     
     public init(topDecodeMulti input: inout some TopDecodeMultiInput) {
         smartContractError(message: "UserMapper should not be decoded using TopDecodeMulti in the SwiftVM. If you encounter this error please open an issue on GitHub.")
+    }
+}
+#endif
+
+#if !WASM
+extension UserMapper: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        MultiValueEncoded<Address>._abiTypeName
+    }
+    
+    public static var _isMulti: Bool {
+        MultiValueEncoded<Address>._isMulti
     }
 }
 #endif

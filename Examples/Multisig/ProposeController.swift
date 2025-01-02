@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct ProposeController {
+@Controller public struct ProposeController {
     public func proposeAddBoardMember(
         boardMemberAddress: Address
     ) -> UInt32 {
