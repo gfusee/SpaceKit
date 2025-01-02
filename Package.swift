@@ -538,11 +538,11 @@ let package = Package(
         .macro(
             name: "ABIMetaMacro",
             dependencies: [
-                .product(name: "SwiftSyntax", package: "swift-syntax"),
-                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                .product(name: "SwiftSyntax", package: "swift-syntax", moduleAliases: ["SymbolKit": "ChildSymbolKit"]),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax", moduleAliases: ["SymbolKit": "ChildSymbolKit"]),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax", moduleAliases: ["SymbolKit": "ChildSymbolKit"]),
                 "SpaceKitABI",
-                .product(name: "SymbolKit", package: "symbolkit", moduleAliases: ["SymbolKit": "SymbolKitStable"])
+                .product(name: "SymbolKit", package: "symbolkit")
             ],
             swiftSettings: swiftSettings
         ),
