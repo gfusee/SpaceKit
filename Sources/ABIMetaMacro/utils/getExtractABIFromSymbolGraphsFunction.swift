@@ -7,10 +7,6 @@ import SwiftSyntax
 func getExtractABIFromSymbolGraphsFunction(graphJSONContents: [String], spaceKitGraphJSONContent: String) throws(ABIMetaMacroError) -> DeclSyntax {
     let spaceKitSymbolGraph = try parseSymbolGraphFromJSON(for: spaceKitGraphJSONContent)
     
-    guard let abiConstructorExtractorProtocolIdentifier = getIdentifierOfStructOrProtocolFromSymbolGraph(symbolGraph: spaceKitSymbolGraph, displayName: "ABIConstructorExtractor") else {
-        throw ABIMetaMacroError.noABIConstructorExtractorSymbolFound
-    }
-    
     guard let abiEndpointsExtractorProtocolIdentifier = getIdentifierOfStructOrProtocolFromSymbolGraph(symbolGraph: spaceKitSymbolGraph, displayName: "ABIEndpointsExtractor") else {
         throw ABIMetaMacroError.noABIEndpointsExtractorSymbolFound
     }
