@@ -84,7 +84,7 @@ func getExtractABIFromSymbolGraphsFunction(graphJSONContents: [String], spaceKit
         .joined(separator: ",\n")
     
     return """
-    public static func getABI() -> ABI {
+    public static func getABI(contractName: String, version: String) -> ABI {
         \(raw: constructorExtractionExpression)
     
         let endpoints: [ABIEndpoint] = [
@@ -102,10 +102,10 @@ func getExtractABIFromSymbolGraphsFunction(graphJSONContents: [String], spaceKit
             buildInfo: ABIBuildInfo(
                 framework: ABIBuildInfoFramework(
                     name: "SpaceKit",
-                    version: ""
+                    version: version
                 )
             ),
-            name: "",
+            name: contractName,
             constructor: constructor,
             endpoints: endpoints,
             events: events,
