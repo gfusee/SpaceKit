@@ -34,7 +34,7 @@ let experimentalFeatures: [String] = []
 
 var packageDependencies: [Package.Dependency] = [
     .package(url: "https://github.com/swiftlang/swift-syntax", from: "510.0.1"),
-    .package(url: "https://github.com/gfusee/symbolkit.git", exact: "6.0.2"),
+    .package(url: "https://github.com/swiftlang/swift-docc-symbolkit.git", exact: "1.0.0"),
 ]
 
 var libraryDependencies: [Target.Dependency] = [
@@ -538,11 +538,11 @@ let package = Package(
         .macro(
             name: "ABIMetaMacro",
             dependencies: [
-                .product(name: "SwiftSyntax", package: "swift-syntax", moduleAliases: ["SymbolKit": "ChildSymbolKit"]),
-                .product(name: "SwiftSyntaxMacros", package: "swift-syntax", moduleAliases: ["SymbolKit": "ChildSymbolKit"]),
-                .product(name: "SwiftCompilerPlugin", package: "swift-syntax", moduleAliases: ["SymbolKit": "ChildSymbolKit"]),
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
                 "SpaceKitABI",
-                .product(name: "SymbolKit", package: "symbolkit")
+                .product(name: "SymbolKit", package: "swift-docc-symbolkit")
             ],
             swiftSettings: swiftSettings
         ),
