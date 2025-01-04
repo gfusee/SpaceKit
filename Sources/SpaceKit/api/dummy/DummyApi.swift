@@ -270,6 +270,29 @@ public class DummyApi {
     public func getNextHandle() -> Int32 {
         self.getCurrentContainer().getNextHandle()
     }
+    
+    /// Used by the SwiftVM's ESDT system contract to send a newly issued token
+    package func registerToken(
+        tickerHandle: Int32,
+        initialSupplyHandle: Int32,
+        propertiesHandle: Int32,
+        resultHandle: Int32
+    ) {
+        let callerData = self.getCurrentContainer().getCurrentCallerAccount().addressData
+        let tickerData = self.getCurrentContainer().getBufferData(handle: tickerHandle)
+        let initialSupply = self.getCurrentContainer().getBigIntData(handle: initialSupplyHandle)
+        let propertiesBuffer = Buffer(data: Array(self.getCurrentContainer().getBufferData(handle: propertiesHandle)))
+        let properties = TokenProperties(topDecode: propertiesBuffer)
+        
+        let newTokenIdentifier = self.getCurrentContainer().registerToken(
+            caller: callerData,
+            ticker: tickerData,
+            initialSupply: initialSupply,
+            properties: properties
+        )
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = newTokenIdentifier
+    }
 }
 
 extension DummyApi: BufferApiProtocol {

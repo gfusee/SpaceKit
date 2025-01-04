@@ -341,7 +341,7 @@ package final class TransactionContainer: @unchecked Sendable {
         }
     }
     
-    private func addEsdtToAddressBalance(address: Data, token: Data, nonce: UInt64, value: BigInt) {
+    package func addEsdtToAddressBalance(address: Data, token: Data, nonce: UInt64, value: BigInt) {
         var account = self.getAccount(address: address)
         var allBalances = account.esdtBalances[token] ?? []
         var tokenBalance = EsdtBalance(nonce: nonce, balance: 0)
@@ -381,6 +381,31 @@ package final class TransactionContainer: @unchecked Sendable {
     // Avoid a wrong warning about infinite recursion
     private func throwExecutionFailed() -> Never {
         self.throwError(error: .executionFailed(reason: "execution failed"))
+    }
+    
+    package func registerToken(
+        caller: Data,
+        ticker: Data,
+        initialSupply: BigInt,
+        properties: TokenProperties
+    ) -> Data {
+        let newTokenIdentifier = self.state.getNextRandomTokenIdentifier(for: ticker)
+        
+        self.state.registerToken(
+            tokenIdentifier: newTokenIdentifier,
+            properties: properties
+        )
+        
+        if initialSupply > 0 {
+            self.addEsdtToAddressBalance(
+                address: caller,
+                token: ticker,
+                nonce: 0,
+                value: initialSupply
+            )
+        }
+        
+        return newTokenIdentifier
     }
 }
 
