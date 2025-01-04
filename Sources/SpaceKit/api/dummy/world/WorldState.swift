@@ -4,7 +4,14 @@ import BigInt
 
 package struct WorldState {
     package var storageForContractAddress: [Data : [Data : Data]] = [:] // TODO: set the setter private
-    package private(set) var accounts: [WorldAccount] = []
+    package private(set) var accounts: [WorldAccount] = [
+        WorldAccount(
+            address: "000000000000000000010000000000000000000000000000000000000002ffff".hexadecimal,
+            controllers: [
+                ESDTSystemContract.self
+            ]
+        )
+    ]
     package private(set) var registeredTokens: [Data : TokenProperties] = [:]
     
     public func getAccount(addressData: Data) -> WorldAccount? {

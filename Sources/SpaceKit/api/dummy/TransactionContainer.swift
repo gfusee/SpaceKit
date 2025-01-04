@@ -391,15 +391,16 @@ package final class TransactionContainer: @unchecked Sendable {
     ) -> Data {
         let newTokenIdentifier = self.state.getNextRandomTokenIdentifier(for: ticker)
         
-        self.state.registerToken(
-            tokenIdentifier: newTokenIdentifier,
-            properties: properties
-        )
+        self.state
+            .registerToken(
+                tokenIdentifier: newTokenIdentifier,
+                properties: properties
+            )
         
         if initialSupply > 0 {
             self.addEsdtToAddressBalance(
                 address: caller,
-                token: ticker,
+                token:  newTokenIdentifier,
                 nonce: 0,
                 value: initialSupply
             )

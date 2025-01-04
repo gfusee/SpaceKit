@@ -278,18 +278,19 @@ public class DummyApi {
         propertiesHandle: Int32,
         resultHandle: Int32
     ) {
-        let callerData = self.getCurrentContainer().getCurrentCallerAccount().addressData
+        let callerData = self.getCurrentContainer().getCurrentSCAccount().addressData
         let tickerData = self.getCurrentContainer().getBufferData(handle: tickerHandle)
         let initialSupply = self.getCurrentContainer().getBigIntData(handle: initialSupplyHandle)
         let propertiesBuffer = Buffer(data: Array(self.getCurrentContainer().getBufferData(handle: propertiesHandle)))
         let properties = TokenProperties(topDecode: propertiesBuffer)
         
-        let newTokenIdentifier = self.getCurrentContainer().registerToken(
-            caller: callerData,
-            ticker: tickerData,
-            initialSupply: initialSupply,
-            properties: properties
-        )
+        let newTokenIdentifier = self.getCurrentContainer()
+            .registerToken(
+                caller: callerData,
+                ticker: tickerData,
+                initialSupply: initialSupply,
+                properties: properties
+            )
         
         self.getCurrentContainer().managedBuffersData[resultHandle] = newTokenIdentifier
     }
