@@ -383,6 +383,18 @@ package final class TransactionContainer: @unchecked Sendable {
         self.throwError(error: .executionFailed(reason: "execution failed"))
     }
     
+    package func getTokenManagerAddress(
+        tokenIdentifier: Data
+    ) -> Data? {
+        self.state.getTokenManagerAddress(tokenIdentifier: tokenIdentifier)
+    }
+
+    package func getTokenProperties(
+        tokenIdentifier: Data
+    ) -> TokenProperties? {
+        self.state.getTokenProperties(tokenIdentifier: tokenIdentifier)
+    }
+    
     package func registerToken(
         caller: Data,
         ticker: Data,
@@ -393,6 +405,7 @@ package final class TransactionContainer: @unchecked Sendable {
         
         self.state
             .registerToken(
+                managerAddress: caller,
                 tokenIdentifier: newTokenIdentifier,
                 properties: properties
             )
@@ -407,6 +420,54 @@ package final class TransactionContainer: @unchecked Sendable {
         }
         
         return newTokenIdentifier
+    }
+    
+    package func createNewNonFungibleNonce(
+        caller: Data,
+        tokenIdentifier: Data,
+        initialQuantity: BigInt
+    ) -> UInt64 {
+        let newNonce = self.state.createNewNonFungibleNonce(tokenIdentifier: tokenIdentifier)
+        
+        if initialQuantity > 0 {
+            self.addEsdtToAddressBalance(
+                address: caller,
+                token: tokenIdentifier,
+                nonce: newNonce,
+                value: initialQuantity
+            )
+        }
+        
+        return newNonce
+    }
+    
+    package func setAddressTokenRoles(
+        tokenIdentifier: Data,
+        address: Data,
+        roles: EsdtLocalRoles
+    ) {
+        var addressRoles = self.state.getAddressTokenRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: address
+        )
+        
+        addressRoles.addRoles(roles: roles)
+        
+        self.state.setTokenRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: address,
+            roles: roles
+        )
+    }
+    
+    package func getAddressTokenRoles(
+        tokenIdentifier: Data,
+        address: Data
+    ) -> EsdtLocalRoles {
+        self.state.getAddressTokenRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: address
+        )
     }
 }
 

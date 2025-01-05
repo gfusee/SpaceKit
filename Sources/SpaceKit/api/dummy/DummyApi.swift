@@ -294,6 +294,81 @@ public class DummyApi {
         
         self.getCurrentContainer().managedBuffersData[resultHandle] = newTokenIdentifier
     }
+    
+    package func getTokenManagerAddress(
+        tokenIdentifierHandle: Int32,
+        resultHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        guard let managerAddressData = self.getCurrentContainer().getTokenManagerAddress(tokenIdentifier: tokenIdentifierData) else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = managerAddressData
+    }
+
+    package func getTokenProperties(
+        tokenIdentifierHandle: Int32,
+        resultHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        guard let properties = self.getCurrentContainer().getTokenProperties(tokenIdentifier: tokenIdentifierData) else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        var encodedProperties = Buffer()
+        properties.topEncode(output: &encodedProperties)
+        let propertiesData = Data(encodedProperties.toBytes())
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = propertiesData
+    }
+    
+    package func createNonFungibleToken(
+        tokenIdentifierHandle: Int32,
+        initialQuantityHandle: Int32
+    ) -> UInt64 {
+        let callerData = self.getCurrentContainer().getCurrentSCAccount().addressData
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let initialQuantity = self.getCurrentContainer().getBigIntData(handle: initialQuantityHandle)
+        
+        return self.getCurrentContainer().createNewNonFungibleNonce(
+            caller: callerData,
+            tokenIdentifier: tokenIdentifierData,
+            initialQuantity: initialQuantity
+        )
+    }
+    
+    package func getAddressTokenRoles(
+        tokenIdentifierHandle: Int32,
+        addressHandle: Int32
+    ) -> Int32 {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
+        
+        let roles = self.getCurrentContainer().getAddressTokenRoles(
+            tokenIdentifier: tokenIdentifierData,
+            address: addressData
+        )
+        
+        return roles.flags
+    }
+    
+    package func setAddressTokenRoles(
+        tokenIdentifierHandle: Int32,
+        addressHandle: Int32,
+        roles: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
+        
+        self.getCurrentContainer().setAddressTokenRoles(
+            tokenIdentifier: tokenIdentifierData,
+            address: addressData,
+            roles: EsdtLocalRoles(flags: roles)
+        )
+    }
 }
 
 extension DummyApi: BufferApiProtocol {
@@ -1058,10 +1133,16 @@ extension DummyApi: SendApiProtocol {
             actualTokenTransfers = []
         }
         
+        let esdtSystemContractEndpoints = [
+            "ESDTNFTCreate"
+        ].map { $0.data(using: .utf8)! }
+        
+        let isReceiverEsdtSystemContract = actualReceiver == actualSender && esdtSystemContractEndpoints.contains(actualFunction)
+        
         return (
             function: actualFunction,
             sender: actualSender,
-            receiver: actualReceiver,
+            receiver: isReceiverEsdtSystemContract ? esdtSystemContractAddress : actualReceiver,
             value: actualValue,
             tokenTransfers: actualTokenTransfers,
             arguments: actualArguments

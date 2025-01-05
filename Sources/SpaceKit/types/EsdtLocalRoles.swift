@@ -1,4 +1,4 @@
-public enum EsdtLocalRolesFlag: Int64 {
+public enum EsdtLocalRolesFlag: Int32 {
     case none = 0b00000000
     case mint = 0b00000001
     case burn = 0b00000010
@@ -34,9 +34,9 @@ public enum EsdtLocalRolesFlag: Int64 {
 }
 
 public struct EsdtLocalRoles {
-    let flags: Int64
+    public private(set) var flags: Int32
     
-    public init(flags: Int64) {
+    public init(flags: Int32) {
         self.flags = flags
     }
     
@@ -50,7 +50,7 @@ public struct EsdtLocalRoles {
         canUpdateNftAttributes: Bool = false,
         canTransfer: Bool = false
     ) {
-        var flags: Int64 = EsdtLocalRolesFlag.none.rawValue
+        var flags: Int32 = EsdtLocalRolesFlag.none.rawValue
         
         if canMint {
             flags |= EsdtLocalRolesFlag.mint.rawValue
@@ -123,6 +123,12 @@ public struct EsdtLocalRoles {
         
         if self.contains(flag: .transfer) {
             try operations(.transfer)
+        }
+    }
+    
+    package mutating func addRoles(roles: EsdtLocalRoles) {
+        roles.forEachFlag { role in
+            self.flags |= role.rawValue
         }
     }
 }

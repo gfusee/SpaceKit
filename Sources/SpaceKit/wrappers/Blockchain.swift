@@ -124,7 +124,7 @@ public struct Blockchain {
     public static func getESDTLocalRoles(tokenIdentifier: Buffer) -> EsdtLocalRoles { // TODO: use TokenIdentifier type
         let flags = API.getESDTLocalRoles(tokenIdHandle: tokenIdentifier.handle)
         
-        return EsdtLocalRoles(flags: flags)
+        return EsdtLocalRoles(flags: Int32(flags))
     }
     
     public static func deploySCFromSource(
@@ -379,7 +379,7 @@ public struct Blockchain {
         
         let contractCall = ContractCall(
             receiver: Address(bytes: ESDT_SYSTEM_SC_ADDRESS_BYTES),
-            endpointName: "setSpecialRoles",
+            endpointName: "setSpecialRole",
             argBuffer: argBuffer
         )
         

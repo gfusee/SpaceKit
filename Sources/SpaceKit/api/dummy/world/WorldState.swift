@@ -2,6 +2,8 @@
 import Foundation
 import BigInt
 
+package let esdtSystemContractAddress = "000000000000000000010000000000000000000000000000000000000002ffff".hexadecimal
+
 package struct WorldState {
     package var storageForContractAddress: [Data : [Data : Data]] = [:] // TODO: set the setter private
     package private(set) var accounts: [WorldAccount] = [
@@ -13,6 +15,11 @@ package struct WorldState {
         )
     ]
     package private(set) var registeredTokens: [Data : TokenProperties] = [:]
+    
+    // First key = token identifier, nested key = address
+    package private(set) var tokenRolesForAddress: [Data : [Data : EsdtLocalRoles]] = [:]
+    package private(set) var nextNonceForNonFungibleToken: [Data : UInt64] = [:]
+    package private(set) var managerForToken: [Data : Data] = [:]
     
     public func getAccount(addressData: Data) -> WorldAccount? {
         return self.accounts.first { $0.addressData == addressData }
@@ -31,11 +38,60 @@ package struct WorldState {
         self.accounts = accounts
     }
     
+    package mutating func getAddressTokenRoles(
+        tokenIdentifier: Data,
+        address: Data
+    ) -> EsdtLocalRoles {
+        if let rolesForAddressMap = self.tokenRolesForAddress[tokenIdentifier] {
+            if let addressRoles = rolesForAddressMap[address] {
+                return addressRoles
+            }
+        }
+        
+        return EsdtLocalRoles()
+    }
+    
+    package mutating func setTokenRoles(
+        tokenIdentifier: Data,
+        address: Data,
+        roles: EsdtLocalRoles
+    ) {
+        var rolesForAddressMap = self.tokenRolesForAddress[tokenIdentifier] ?? [:]
+        
+        rolesForAddressMap[address] = roles
+        
+        self.tokenRolesForAddress[tokenIdentifier] = rolesForAddressMap
+    }
+    
     package mutating func registerToken(
+        managerAddress: Data,
         tokenIdentifier: Data,
         properties: TokenProperties
     ) {
         self.registeredTokens[tokenIdentifier] = properties
+        self.managerForToken[tokenIdentifier] = managerAddress
+    }
+    
+    package mutating func createNewNonFungibleNonce(
+        tokenIdentifier: Data
+    ) -> UInt64 {
+        let newNonce = self.nextNonceForNonFungibleToken[tokenIdentifier] ?? 1
+        
+        self.nextNonceForNonFungibleToken[tokenIdentifier] = newNonce + 1
+        
+        return newNonce
+    }
+    
+    package func getTokenManagerAddress(
+        tokenIdentifier: Data
+    ) -> Data? {
+        self.managerForToken[tokenIdentifier]
+    }
+    
+    package func getTokenProperties(
+        tokenIdentifier: Data
+    ) -> TokenProperties? {
+        self.registeredTokens[tokenIdentifier]
     }
     
     package func getNextRandomTokenIdentifier(for ticker: Data) -> Data {

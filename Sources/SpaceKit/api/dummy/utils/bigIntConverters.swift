@@ -3,7 +3,7 @@ import Foundation
 import BigInt
 
 extension BigInt {
-    init(bigUint: BigUint) {
+    public init(bigUint: BigUint) {
         var hexString = bigUint.toBytesBigEndianBuffer().hexDescription
 
         if hexString.isEmpty {
@@ -28,7 +28,7 @@ extension BigInt {
 }
 
 extension BigUint {
-    init(bigInt: BigInt) {
+    public init(bigInt: BigInt) {
         self = BigUint(bigEndianBuffer: Buffer(data: Array(bigInt.toBigEndianUnsignedData())))
     }
 }
