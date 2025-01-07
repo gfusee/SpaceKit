@@ -397,6 +397,7 @@ package final class TransactionContainer: @unchecked Sendable {
     
     package func registerToken(
         caller: Data,
+        managerAddress: Data,
         ticker: Data,
         initialSupply: BigInt,
         properties: TokenProperties
@@ -405,7 +406,7 @@ package final class TransactionContainer: @unchecked Sendable {
         
         self.state
             .registerToken(
-                managerAddress: caller,
+                managerAddress: managerAddress,
                 tokenIdentifier: newTokenIdentifier,
                 properties: properties
             )

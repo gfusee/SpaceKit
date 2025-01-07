@@ -23,6 +23,7 @@
 
         API.registerToken(
             tickerHandle: tokenTicker.handle,
+            managerAddressHandle: Message.caller.buffer.handle,
             initialSupplyHandle: initialSupply.handle,
             propertiesHandle: encodedProperties.handle,
             resultHandle: newTokenIdentifier.handle
@@ -61,6 +62,7 @@
 
         API.registerToken(
             tickerHandle: tokenTicker.handle,
+            managerAddressHandle: Message.caller.buffer.handle,
             initialSupplyHandle: BigUint(0).handle,
             propertiesHandle: encodedProperties.handle,
             resultHandle: newTokenIdentifier.handle
@@ -121,7 +123,18 @@
         let tokenProperties = TokenProperties(topDecode: tokenPropertiesBuffer)
         
         guard tokenProperties.canAddSpecialRoles else {
-            smartContractError(message: "Cannot add special roles on this token.")
+            smartContractError(message: "Cannot add special roles on this token.") // TODO: use the same error as the WASM VM
+        }
+        
+        let managerAddress = Address()
+        
+        API.getTokenManagerAddress(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            resultHandle: managerAddress.buffer.handle
+        )
+        
+        guard Message.caller == managerAddress else {
+            smartContractError(message: "Only the manager of the token can add special roles.") // TODO: use the same error as the WASM VM
         }
         
         var parsedRoles = EsdtLocalRoles()

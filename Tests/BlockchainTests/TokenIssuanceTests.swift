@@ -88,7 +88,10 @@ import SpaceKitTesting
             tokenIdentifier: tokenIdentifier,
             roles: EsdtLocalRoles(flags: roles)
         )
-        .registerPromise(gas: 100_000_000)
+        .registerPromise(
+            gas: 100_000_000,
+            callback: self.$setSpecialRolesCallback(gasForCallback: 100_000_000)
+        )
     }
     
     public func getLastIssuedTokenIdentifier() -> Buffer {
@@ -120,6 +123,17 @@ import SpaceKitTesting
             self.lastErrorMessage = asyncCallError.errorMessage
         }
     }
+    
+    @Callback public mutating func setSpecialRolesCallback() {
+        let asyncResult: AsyncCallResult<IgnoreValue> = Message.asyncCallResult()
+        
+        switch asyncResult {
+        case .success(_):
+            break
+        case .error(let error):
+            self.lastErrorMessage = error.errorMessage
+        }
+    }
 }
 
 final class TokenIssuanceTests: ContractTestCase {
@@ -133,6 +147,12 @@ final class TokenIssuanceTests: ContractTestCase {
             ),
             WorldAccount(
                 address: "contract",
+                controllers: [
+                    TokenIssuanceController.self
+                ]
+            ),
+            WorldAccount(
+                address: "contract2",
                 controllers: [
                     TokenIssuanceController.self
                 ]
@@ -366,5 +386,114 @@ final class TokenIssuanceTests: ContractTestCase {
             )
         
         XCTAssertEqual(userTestBalance, 100)
+    }
+    
+    func testSetSpecialRolesButCannotAddSpecialRoleShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: false
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "Cannot add special roles on this token.")
+    }
+    
+    func testCreateNonFungibleTokenButDoesntHaveTheCreateRoleShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: false
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        do {
+            try controller.createAndSendNonFungibleToken(
+                tokenIdentifier: issuedTokenIdentifier,
+                amount: 100,
+                to: "user"
+            )
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "execution failed"))
+        }
+    }
+
+    func testSetSpecialRolesButNotManagerShouldFail() throws {
+        try self.deployContract(at: "contract")
+        try self.deployContract(at: "contract2")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller2 = self.instantiateController(TokenIssuanceController.self, for: "contract2")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller2.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        let lastErrorMessage = try controller2.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "Only the manager of the token can add special roles.")
     }
 }
