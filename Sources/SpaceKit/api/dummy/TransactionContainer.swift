@@ -388,6 +388,12 @@ package final class TransactionContainer: @unchecked Sendable {
     ) -> Data? {
         self.state.getTokenManagerAddress(tokenIdentifier: tokenIdentifier)
     }
+    
+    package func getTokenType(
+        tokenIdentifier: Data
+    ) -> TokenType? {
+        self.state.getTokenType(tokenIdentifier: tokenIdentifier)
+    }
 
     package func getTokenProperties(
         tokenIdentifier: Data
@@ -400,6 +406,7 @@ package final class TransactionContainer: @unchecked Sendable {
         managerAddress: Data,
         ticker: Data,
         initialSupply: BigInt,
+        tokenType: TokenType,
         properties: TokenProperties
     ) -> Data {
         let newTokenIdentifier = self.state.getNextRandomTokenIdentifier(for: ticker)
@@ -408,6 +415,7 @@ package final class TransactionContainer: @unchecked Sendable {
             .registerToken(
                 managerAddress: managerAddress,
                 tokenIdentifier: newTokenIdentifier,
+                tokenType: tokenType,
                 properties: properties
             )
         
@@ -421,6 +429,21 @@ package final class TransactionContainer: @unchecked Sendable {
         }
         
         return newTokenIdentifier
+    }
+    
+    package func mintTokens(
+        caller: Data,
+        tokenIdentifier: Data,
+        amount: BigInt
+    ) {
+        if amount > 0 {
+            self.addEsdtToAddressBalance(
+                address: caller,
+                token: tokenIdentifier,
+                nonce: 0,
+                value: amount
+            )
+        }
     }
     
     package func createNewNonFungibleNonce(
@@ -471,5 +494,4 @@ package final class TransactionContainer: @unchecked Sendable {
         )
     }
 }
-
 #endif

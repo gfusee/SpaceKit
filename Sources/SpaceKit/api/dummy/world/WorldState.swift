@@ -15,6 +15,7 @@ package struct WorldState {
         )
     ]
     package private(set) var registeredTokens: [Data : TokenProperties] = [:]
+    package private(set) var tokenTypeForToken: [Data : TokenType] = [:]
     
     // First key = token identifier, nested key = address
     package private(set) var tokenRolesForAddress: [Data : [Data : EsdtLocalRoles]] = [:]
@@ -66,10 +67,12 @@ package struct WorldState {
     package mutating func registerToken(
         managerAddress: Data,
         tokenIdentifier: Data,
+        tokenType: TokenType,
         properties: TokenProperties
     ) {
-        self.registeredTokens[tokenIdentifier] = properties
         self.managerForToken[tokenIdentifier] = managerAddress
+        self.tokenTypeForToken[tokenIdentifier] = tokenType
+        self.registeredTokens[tokenIdentifier] = properties
     }
     
     package mutating func createNewNonFungibleNonce(
@@ -86,6 +89,12 @@ package struct WorldState {
         tokenIdentifier: Data
     ) -> Data? {
         self.managerForToken[tokenIdentifier]
+    }
+    
+    package func getTokenType(
+        tokenIdentifier: Data
+    ) -> TokenType? {
+        self.tokenTypeForToken[tokenIdentifier]
     }
     
     package func getTokenProperties(

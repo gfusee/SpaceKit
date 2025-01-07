@@ -276,6 +276,7 @@ public class DummyApi {
         tickerHandle: Int32,
         managerAddressHandle: Int32,
         initialSupplyHandle: Int32,
+        tokenTypeHandle: Int32,
         propertiesHandle: Int32,
         resultHandle: Int32
     ) {
@@ -283,6 +284,8 @@ public class DummyApi {
         let tickerData = self.getCurrentContainer().getBufferData(handle: tickerHandle)
         let managerAddressData = self.getCurrentContainer().getBufferData(handle: managerAddressHandle)
         let initialSupply = self.getCurrentContainer().getBigIntData(handle: initialSupplyHandle)
+        let tokenTypeBuffer = Buffer(handle: tokenTypeHandle)
+        let tokenType = TokenType(topDecode: tokenTypeBuffer)
         let propertiesBuffer = Buffer(data: Array(self.getCurrentContainer().getBufferData(handle: propertiesHandle)))
         let properties = TokenProperties(topDecode: propertiesBuffer)
         
@@ -292,10 +295,27 @@ public class DummyApi {
                 managerAddress: managerAddressData,
                 ticker: tickerData,
                 initialSupply: initialSupply,
+                tokenType: tokenType,
                 properties: properties
             )
         
         self.getCurrentContainer().managedBuffersData[resultHandle] = newTokenIdentifier
+    }
+    
+    /// Used by the SwiftVM's ESDT system contract to send a newly issued token
+    package func mintTokens(
+        tokenIdentifierHandle: Int32,
+        amountHandle: Int32
+    ) {
+        let callerData = self.getCurrentContainer().getCurrentSCAccount().addressData
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let amount = self.getCurrentContainer().getBigIntData(handle: amountHandle)
+        
+        self.getCurrentContainer().mintTokens(
+            caller: callerData,
+            tokenIdentifier: tokenIdentifierData,
+            amount: amount
+        )
     }
     
     package func getTokenManagerAddress(
@@ -309,6 +329,23 @@ public class DummyApi {
         }
         
         self.getCurrentContainer().managedBuffersData[resultHandle] = managerAddressData
+    }
+    
+    package func getTokenType(
+        tokenIdentifierHandle: Int32,
+        resultHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        guard let tokenType = self.getCurrentContainer().getTokenType(tokenIdentifier: tokenIdentifierData) else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        var tokenTypeBuffer = Buffer()
+        tokenType.topEncode(output: &tokenTypeBuffer)
+        let tokenTypeData = Data(tokenTypeBuffer.toBytes())
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = tokenTypeData
     }
 
     package func getTokenProperties(

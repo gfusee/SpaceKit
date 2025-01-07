@@ -20,11 +20,15 @@
         tokenProperties.topEncode(output: &encodedProperties)
         
         let newTokenIdentifier = Buffer()
+        
+        var tokenTypeBuffer = Buffer()
+        TokenType.fungible.topEncode(output: &tokenTypeBuffer)
 
         API.registerToken(
             tickerHandle: tokenTicker.handle,
             managerAddressHandle: Message.caller.buffer.handle,
             initialSupplyHandle: initialSupply.handle,
+            tokenTypeHandle: tokenTypeBuffer.handle,
             propertiesHandle: encodedProperties.handle,
             resultHandle: newTokenIdentifier.handle
         )
@@ -58,17 +62,52 @@
         var encodedProperties = Buffer()
         tokenProperties.topEncode(output: &encodedProperties)
         
+        var tokenTypeBuffer = Buffer()
+        TokenType.nonFungible.topEncode(output: &tokenTypeBuffer)
+
         let newTokenIdentifier = Buffer()
 
         API.registerToken(
             tickerHandle: tokenTicker.handle,
             managerAddressHandle: Message.caller.buffer.handle,
             initialSupplyHandle: BigUint(0).handle,
+            tokenTypeHandle: tokenTypeBuffer.handle,
             propertiesHandle: encodedProperties.handle,
             resultHandle: newTokenIdentifier.handle
         )
         
         return newTokenIdentifier
+    }
+    
+    public func ESDTLocalMint(
+        tokenIdentifier: Buffer,
+        amount: BigUint
+    ) {
+        let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
+        
+        guard tokenType == .fungible else {
+            smartContractError(message: "Token is not a fungible token.") // TODO: use the same error as the WASM VM
+        }
+        
+        let tokenProperties = self.getTokenProperties(tokenIdentifier: tokenIdentifier)
+        
+        guard tokenProperties.canAddSpecialRoles else {
+            smartContractError(message: "Token is not mintable.") // TODO: use the same error as the WASM VM
+        }
+        
+        API.mintTokens(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            amountHandle: amount.handle
+        )
+        
+        if amount > 0 {
+            Message.caller
+                .send(
+                    tokenIdentifier: tokenIdentifier,
+                    nonce: 0,
+                    amount: amount
+                )
+        }
     }
     
     public func ESDTNFTCreate(
@@ -79,6 +118,12 @@
         attributes: Buffer,
         uris: MultiValueEncoded<Buffer>
     ) -> UInt64 {
+        let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
+        
+        guard tokenType == .nonFungible else {
+            smartContractError(message: "Token is not a non fungible token.") // TODO: use the same error as the WASM VM
+        }
+        
         let caller = Message.caller
         
         let flags = API.getAddressTokenRoles(
@@ -113,14 +158,7 @@
         address: Address,
         roles: MultiValueEncoded<Buffer>
     ) {
-        let tokenPropertiesBuffer = Buffer()
-        
-        API.getTokenProperties(
-            tokenIdentifierHandle: tokenIdentifier.handle,
-            resultHandle: tokenPropertiesBuffer.handle
-        )
-        
-        let tokenProperties = TokenProperties(topDecode: tokenPropertiesBuffer)
+        let tokenProperties = self.getTokenProperties(tokenIdentifier: tokenIdentifier)
         
         guard tokenProperties.canAddSpecialRoles else {
             smartContractError(message: "Cannot add special roles on this token.") // TODO: use the same error as the WASM VM
@@ -236,6 +274,32 @@
             canUpgrade: canUpgrade,
             canAddSpecialRoles: canAddSpecialRoles
         )
+    }
+    
+    private func getTokenProperties(
+        tokenIdentifier: Buffer
+    ) -> TokenProperties {
+        let tokenPropertiesBuffer = Buffer()
+        
+        API.getTokenProperties(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            resultHandle: tokenPropertiesBuffer.handle
+        )
+        
+        return TokenProperties(topDecode: tokenPropertiesBuffer)
+    }
+    
+    private func getTokenType(
+        tokenIdentifier: Buffer
+    ) -> TokenType {
+        let tokenPropertiesBuffer = Buffer()
+        
+        API.getTokenType(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            resultHandle: tokenPropertiesBuffer.handle
+        )
+        
+        return TokenType(topDecode: tokenPropertiesBuffer)
     }
     
     private func getIssuanceCost() -> BigUint {

@@ -459,6 +459,46 @@ final class TokenIssuanceTests: ContractTestCase {
             XCTAssertEqual(error, .executionFailed(reason: "execution failed"))
         }
     }
+    
+    func testCreateNonFungibleTokenButTokenIsFungibleShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            initialSupply: 100,
+            properties: FungibleTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: false
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: 100
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        do {
+            try controller.createAndSendNonFungibleToken(
+                tokenIdentifier: issuedTokenIdentifier,
+                amount: 100,
+                to: "user"
+            )
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "execution failed"))
+        }
+    }
 
     func testSetSpecialRolesButNotManagerShouldFail() throws {
         try self.deployContract(at: "contract")
