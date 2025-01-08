@@ -1174,7 +1174,9 @@ extension DummyApi: SendApiProtocol {
         }
         
         let esdtSystemContractEndpoints = [
-            "ESDTNFTCreate"
+            "ESDTNFTCreate",
+            "ESDTLocalMint",
+            "ESDTNFTAddQuantity"
         ].map { $0.data(using: .utf8)! }
         
         let isReceiverEsdtSystemContract = actualReceiver == actualSender && esdtSystemContractEndpoints.contains(actualFunction)

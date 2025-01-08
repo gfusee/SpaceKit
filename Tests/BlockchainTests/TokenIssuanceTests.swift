@@ -56,6 +56,30 @@ import SpaceKitTesting
             )
     }
     
+    public func issueSemiFungible(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        properties: SemiFungibleTokenProperties
+    ) {
+        let caller = Message.caller
+        
+        Blockchain
+            .issueSemiFungibleToken(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                properties: properties
+            )
+            .registerPromise(
+                gas: 100_000_000,
+                value: Message.egldValue,
+                callback: self.$issueCallback(
+                    caller: caller,
+                    mintedAmount: 0,
+                    gasForCallback: 100_000_000
+                )
+            )
+    }
+
     public func createAndSendNonFungibleToken(
         tokenIdentifier: Buffer,
         amount: BigUint,
@@ -76,6 +100,28 @@ import SpaceKitTesting
             nonce: createdNonce,
             amount: amount
         )
+    }
+    
+    public func mintAndSendTokens(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        amount: BigUint
+    ) {
+        Blockchain
+            .mintTokens(
+                tokenIdentifier: tokenIdentifier,
+                nonce: nonce,
+                amount: amount
+            )
+        
+        if amount > 0 {
+            Message.caller
+                .send(
+                    tokenIdentifier: tokenIdentifier,
+                    nonce: nonce,
+                    amount: amount
+                )
+        }
     }
     
     public func setTokenRoles(
@@ -388,6 +434,104 @@ final class TokenIssuanceTests: ContractTestCase {
         XCTAssertEqual(userTestBalance, 100)
     }
     
+    func testIssueSemiFungibleToken() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.issueSemiFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: SemiFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 100,
+            to: "user"
+        )
+        
+        let userTestBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "TEST-000000",
+                nonce: 1
+            )
+        
+        XCTAssertEqual(userTestBalance, 100)
+    }
+    
+    func testIssueSemiFungibleTokenButNoPaymentShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.issueSemiFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: SemiFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user"
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "Not enough payment.")
+    }
+    
+    func testIssueSemiFungibleTokenButNotEnoughPaymentShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.issueSemiFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: SemiFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: 100
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "Not enough payment.")
+    }
+    
     func testSetSpecialRolesButCannotAddSpecialRoleShouldFail() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
@@ -456,7 +600,7 @@ final class TokenIssuanceTests: ContractTestCase {
             
             XCTFail()
         } catch {
-            XCTAssertEqual(error, .executionFailed(reason: "execution failed"))
+            XCTAssertEqual(error, .executionFailed(reason: "Caller doesn't have the role to create nft."))
         }
     }
     
@@ -481,7 +625,7 @@ final class TokenIssuanceTests: ContractTestCase {
             ),
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "user",
-                egldValue: 100
+                egldValue: BigUint(bigInt: self.issuanceCost)
             )
         )
         
@@ -496,7 +640,7 @@ final class TokenIssuanceTests: ContractTestCase {
             
             XCTFail()
         } catch {
-            XCTAssertEqual(error, .executionFailed(reason: "execution failed"))
+            XCTAssertEqual(error, .executionFailed(reason: "Token is not a non fungible token."))
         }
     }
 
@@ -535,5 +679,208 @@ final class TokenIssuanceTests: ContractTestCase {
         let lastErrorMessage = try controller2.getLastErrorMessage()
         
         XCTAssertEqual(lastErrorMessage, "Only the manager of the token can add special roles.")
+    }
+    
+    func testFungibleMintTokens() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            initialSupply: 100,
+            properties: FungibleTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: true,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canMint: true).flags
+        )
+        
+        try controller.mintAndSendTokens(
+            tokenIdentifier: issuedTokenIdentifier,
+            nonce: 0,
+            amount: 150,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user"
+            )
+        )
+        
+        let userTestBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "TEST-000000",
+                nonce: 0
+            )
+        
+        XCTAssertEqual(userTestBalance, 250)
+    }
+    
+    func testMintFungibleTokensButNotMintableShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            initialSupply: 100,
+            properties: FungibleTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canMint: true).flags
+        )
+        
+        do {
+            try controller.mintAndSendTokens(
+                tokenIdentifier: issuedTokenIdentifier,
+                nonce: 0,
+                amount: 150,
+                transactionInput: ContractCallTransactionInput(
+                    callerAddress: "user"
+                )
+            )
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "Token is not mintable."))
+        }
+    }
+    
+    func testMintFungibleTokensButDoesntHaveMintRoleShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            initialSupply: 100,
+            properties: FungibleTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: true,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        do {
+            try controller.mintAndSendTokens(
+                tokenIdentifier: issuedTokenIdentifier,
+                nonce: 0,
+                amount: 150,
+                transactionInput: ContractCallTransactionInput(
+                    callerAddress: "user"
+                )
+            )
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "Caller doesn't have the role to mint."))
+        }
+    }
+    
+    func testAddQuantitySemiFungibleTokens() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try! controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try! controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canAddNftQuantity: true).flags
+        )
+        
+        try! controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 100,
+            to: "user"
+        )
+        
+        try! controller.mintAndSendTokens(
+            tokenIdentifier: issuedTokenIdentifier,
+            nonce: 1,
+            amount: 150,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user"
+            )
+        )
+        
+        let userTestBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "TEST-000000",
+                nonce: 0
+            )
+        
+        XCTAssertEqual(userTestBalance, 250)
     }
 }

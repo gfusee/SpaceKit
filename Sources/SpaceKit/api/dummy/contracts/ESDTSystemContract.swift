@@ -79,6 +79,40 @@
         return newTokenIdentifier
     }
     
+    public func issueSemiFungible(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        tokenProperties: MultiValueEncoded<Buffer>
+    ) -> Buffer {
+        guard Message.egldValue == self.getIssuanceCost() else {
+            smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
+        }
+        
+        let tokenProperties = self.computeTokenProperties(
+            numDecimals: 0,
+            tokenProperties: tokenProperties
+        )
+        
+        var encodedProperties = Buffer()
+        tokenProperties.topEncode(output: &encodedProperties)
+        
+        var tokenTypeBuffer = Buffer()
+        TokenType.semiFungible.topEncode(output: &tokenTypeBuffer)
+
+        let newTokenIdentifier = Buffer()
+
+        API.registerToken(
+            tickerHandle: tokenTicker.handle,
+            managerAddressHandle: Message.caller.buffer.handle,
+            initialSupplyHandle: BigUint(0).handle,
+            tokenTypeHandle: tokenTypeBuffer.handle,
+            propertiesHandle: encodedProperties.handle,
+            resultHandle: newTokenIdentifier.handle
+        )
+        
+        return newTokenIdentifier
+    }
+
     public func ESDTLocalMint(
         tokenIdentifier: Buffer,
         amount: BigUint
@@ -91,8 +125,19 @@
         
         let tokenProperties = self.getTokenProperties(tokenIdentifier: tokenIdentifier)
         
-        guard tokenProperties.canAddSpecialRoles else {
+        guard tokenProperties.canMint else {
             smartContractError(message: "Token is not mintable.") // TODO: use the same error as the WASM VM
+        }
+        
+        let caller = Message.caller
+        
+        let callerRoles = self.getAddressRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: caller
+        )
+        
+        guard callerRoles.contains(flag: .mint) else {
+            smartContractError(message: "Caller doesn't have the role to mint.") // TODO: use the same error as the WASM VM
         }
         
         API.mintTokens(
@@ -101,7 +146,7 @@
         )
         
         if amount > 0 {
-            Message.caller
+            caller
                 .send(
                     tokenIdentifier: tokenIdentifier,
                     nonce: 0,
@@ -126,15 +171,13 @@
         
         let caller = Message.caller
         
-        let flags = API.getAddressTokenRoles(
-            tokenIdentifierHandle: tokenIdentifier.handle,
-            addressHandle: caller.buffer.handle
+        let callerRoles = self.getAddressRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: caller
         )
         
-        let roles = EsdtLocalRoles(flags: Int32(flags))
-        
-        guard roles.contains(flag: .nftCreate) else {
-            smartContractError(message: "Caller doesn't have the role to create a new NFT.") // TODO: use the same error as the WASM VM
+        guard callerRoles.contains(flag: .nftCreate) else {
+            smartContractError(message: "Caller doesn't have the role to create nft.") // TODO: use the same error as the WASM VM
         }
         
         let newNonce = API.createNonFungibleToken(
@@ -153,6 +196,43 @@
         return newNonce
     }
     
+    public func ESDTNFTAddQuantity(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        amount: BigUint
+    ) {
+        let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
+        
+        guard tokenType != .fungible && tokenType != .nonFungible else {
+            smartContractError(message: "Can add quantity only on SFT and Meta ESDT tokens.") // TODO: use the same error as the WASM VM
+        }
+        
+        let caller = Message.caller
+        
+        let callerRoles = self.getAddressRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: caller
+        )
+        
+        guard callerRoles.contains(flag: .nftAddQuantity) else {
+            smartContractError(message: "Caller doesn't have the role to add quantity.") // TODO: use the same error as the WASM VM
+        }
+        
+        API.mintTokens(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            amountHandle: amount.handle
+        )
+        
+        if amount > 0 {
+            caller
+                .send(
+                    tokenIdentifier: tokenIdentifier,
+                    nonce: 0,
+                    amount: amount
+                )
+        }
+    }
+
     public func setSpecialRole(
         tokenIdentifier: Buffer,
         address: Address,
@@ -300,6 +380,18 @@
         )
         
         return TokenType(topDecode: tokenPropertiesBuffer)
+    }
+    
+    private func getAddressRoles(
+        tokenIdentifier: Buffer,
+        address: Address
+    ) -> EsdtLocalRoles {
+        let flags = API.getAddressTokenRoles(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            addressHandle: address.buffer.handle
+        )
+        
+        return EsdtLocalRoles(flags: Int32(flags))
     }
     
     private func getIssuanceCost() -> BigUint {

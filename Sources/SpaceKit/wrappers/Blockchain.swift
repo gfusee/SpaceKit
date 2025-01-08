@@ -363,6 +363,32 @@ public struct Blockchain {
         )
     }
     
+    public static func issueSemiFungibleToken(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        properties: SemiFungibleTokenProperties
+    ) -> AsyncContractCall {
+        // TODO: add tests
+        return Blockchain.issueToken(
+            tokenType: .nonFungible,
+            tokenDisplayName: tokenDisplayName,
+            tokenTicker: tokenTicker,
+            initialSupply: 0,
+            properties: TokenProperties(
+                numDecimals: 0,
+                canFreeze: properties.canFreeze,
+                canWipe: properties.canWipe,
+                canPause: properties.canPause,
+                canTransferCreateRole: properties.canTransferCreateRole,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: properties.canChangeOwner,
+                canUpgrade: properties.canUpgrade,
+                canAddSpecialRoles: properties.canAddSpecialRoles
+            )
+        )
+    }
+    
     public static func setTokenRoles(
         for address: Address,
         tokenIdentifier: Buffer,

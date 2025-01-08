@@ -26,6 +26,17 @@ public enum TransactionError: Error, Equatable {
             100
         }
     }
+    
+    var isUserError: Bool {
+        switch self {
+        case .userError(_):
+            true
+        case .executionFailed(_):
+            false
+        case .worldError(_):
+            false
+        }
+    }
 }
 
 #endif

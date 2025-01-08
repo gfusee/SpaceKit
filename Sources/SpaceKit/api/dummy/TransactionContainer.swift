@@ -71,6 +71,10 @@ package final class TransactionContainer: @unchecked Sendable {
             self.error = error
             
             if let parentContainer = self.parentContainer {
+                if error.isUserError && self.getCurrentSCAccount().addressData == esdtSystemContractAddress {
+                    parentContainer.throwError(error: .executionFailed(reason: error.message)) // TODO: Is it execution failed?
+                }
+                
                 parentContainer.throwExecutionFailed()
             } else {
                 // Wait for the error to be handled from an external process, as we don't want any further instruction to be executed
@@ -379,8 +383,8 @@ package final class TransactionContainer: @unchecked Sendable {
     }
     
     // Avoid a wrong warning about infinite recursion
-    private func throwExecutionFailed() -> Never {
-        self.throwError(error: .executionFailed(reason: "execution failed"))
+    private func throwExecutionFailed(message: String = "execution failed") -> Never {
+        self.throwError(error: .executionFailed(reason: message))
     }
     
     package func getTokenManagerAddress(
