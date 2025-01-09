@@ -112,6 +112,41 @@
         
         return newTokenIdentifier
     }
+    
+    public func registerMetaESDT(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        numDecimals: UInt32,
+        tokenProperties: MultiValueEncoded<Buffer>
+    ) -> Buffer {
+        guard Message.egldValue == self.getIssuanceCost() else {
+            smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
+        }
+        
+        let tokenProperties = self.computeTokenProperties(
+            numDecimals: numDecimals,
+            tokenProperties: tokenProperties
+        )
+        
+        var encodedProperties = Buffer()
+        tokenProperties.topEncode(output: &encodedProperties)
+        
+        var tokenTypeBuffer = Buffer()
+        TokenType.meta.topEncode(output: &tokenTypeBuffer)
+
+        let newTokenIdentifier = Buffer()
+
+        API.registerToken(
+            tickerHandle: tokenTicker.handle,
+            managerAddressHandle: Message.caller.buffer.handle,
+            initialSupplyHandle: BigUint(0).handle,
+            tokenTypeHandle: tokenTypeBuffer.handle,
+            propertiesHandle: encodedProperties.handle,
+            resultHandle: newTokenIdentifier.handle
+        )
+        
+        return newTokenIdentifier
+    }
 
     public func ESDTLocalMint(
         tokenIdentifier: Buffer,

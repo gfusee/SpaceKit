@@ -70,6 +70,18 @@ extension FungibleTokenProperties {
     var canAddSpecialRoles: Bool
 }
 
+@Codable public struct MetaTokenProperties {
+    var numDecimals: UInt32
+    var canFreeze: Bool
+    var canWipe: Bool
+    var canPause: Bool
+    var canTransferCreateRole: Bool
+    var canChangeOwner: Bool
+    var canUpgrade: Bool
+    var canAddSpecialRoles: Bool
+}
+
+
 extension NonFungibleTokenProperties {
     @available(*, deprecated, message: "This will be removed in a future version. Please use the public init.")
     public static func new(

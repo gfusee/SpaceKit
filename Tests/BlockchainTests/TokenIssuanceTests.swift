@@ -79,6 +79,30 @@ import SpaceKitTesting
                 )
             )
     }
+    
+    public func registerMetaEsdt(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        properties: MetaTokenProperties
+    ) {
+        let caller = Message.caller
+        
+        Blockchain
+            .registerMetaEsdt(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                properties: properties
+            )
+            .registerPromise(
+                gas: 100_000_000,
+                value: Message.egldValue,
+                callback: self.$issueCallback(
+                    caller: caller,
+                    mintedAmount: 0,
+                    gasForCallback: 100_000_000
+                )
+            )
+    }
 
     public func createAndSendNonFungibleToken(
         tokenIdentifier: Buffer,
@@ -635,6 +659,107 @@ final class TokenIssuanceTests: ContractTestCase {
         XCTAssertEqual(lastErrorMessage, "Not enough payment.")
     }
     
+    func testRegisterMetaEsdt() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 100,
+            to: "user"
+        )
+        
+        let userTestBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "TEST-000000",
+                nonce: 1
+            )
+        
+        XCTAssertEqual(userTestBalance, 100)
+    }
+    
+    func testRegisterMetaEsdtButNoPaymentShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user"
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "Not enough payment.")
+    }
+    
+    func testRegisterMetaEsdtButNotEnoughPaymentShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: 100
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "Not enough payment.")
+    }
+
     func testSetSpecialRolesButCannotAddSpecialRoleShouldFail() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
@@ -979,7 +1104,7 @@ final class TokenIssuanceTests: ContractTestCase {
             )
         )
         
-        try! controller.burnTokens(
+        try controller.burnTokens(
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "user",
                 esdtValue: esdtPayments
@@ -1138,7 +1263,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
         
-        try! controller.issueSemiFungible(
+        try controller.issueSemiFungible(
             tokenDisplayName: "TestToken",
             tokenTicker: "TEST",
             properties: SemiFungibleTokenProperties(
@@ -1176,7 +1301,7 @@ final class TokenIssuanceTests: ContractTestCase {
             to: "user"
         )
         
-        try! controller.mintAndSendTokens(
+        try controller.mintAndSendTokens(
             tokenIdentifier: issuedTokenIdentifier,
             nonce: 1,
             amount: 150,
@@ -1198,7 +1323,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
         
-        try! controller.issueSemiFungible(
+        try controller.issueSemiFungible(
             tokenDisplayName: "TestToken",
             tokenTicker: "TEST",
             properties: SemiFungibleTokenProperties(
@@ -1246,11 +1371,125 @@ final class TokenIssuanceTests: ContractTestCase {
         }
     }
     
+    func testAddQuantityMetaEsdt() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canAddNftQuantity: true).flags
+        )
+        
+        try controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 100,
+            to: "user"
+        )
+        
+        try controller.mintAndSendTokens(
+            tokenIdentifier: issuedTokenIdentifier,
+            nonce: 1,
+            amount: 150,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user"
+            )
+        )
+        
+        let userTestBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "TEST-000000",
+                nonce: 1
+            )
+        
+        XCTAssertEqual(userTestBalance, 250)
+    }
+    
+    func testAddQuantityMetaEsdtButDoesntHaveTheRoleShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 100,
+            to: "user"
+        )
+        
+        do {
+            try controller.mintAndSendTokens(
+                tokenIdentifier: issuedTokenIdentifier,
+                nonce: 1,
+                amount: 150,
+                transactionInput: ContractCallTransactionInput(
+                    callerAddress: "user"
+                )
+            )
+
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "Caller doesn't have the role to add quantity."))
+        }
+    }
+
     func testNonFungibleBurnTokens() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
         
-        try! controller.issueNonFungible(
+        try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
             tokenTicker: "TEST",
             properties: NonFungibleTokenProperties(
@@ -1292,7 +1531,7 @@ final class TokenIssuanceTests: ContractTestCase {
             )
         )
         
-        try! controller.burnTokens(
+        try controller.burnTokens(
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "user",
                 esdtValue: esdtPayments
@@ -1319,7 +1558,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
         
-        try! controller.issueNonFungible(
+        try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
             tokenTicker: "TEST",
             properties: NonFungibleTokenProperties(
@@ -1379,7 +1618,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
         
-        try! controller.issueSemiFungible(
+        try controller.issueSemiFungible(
             tokenDisplayName: "TestToken",
             tokenTicker: "TEST",
             properties: SemiFungibleTokenProperties(
@@ -1421,7 +1660,77 @@ final class TokenIssuanceTests: ContractTestCase {
             )
         )
         
-        try! controller.burnTokens(
+        try controller.burnTokens(
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                esdtValue: esdtPayments
+            )
+        )
+        
+        let contractTestBalance = self.getAccount(address: "contract")!
+            .getEsdtBalance(
+                tokenIdentifier: "TEST-000000",
+                nonce: 0
+            )
+        
+        let userTestBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "TEST-000000",
+                nonce: 0
+            )
+        
+        XCTAssertEqual(contractTestBalance, 0)
+        XCTAssertEqual(userTestBalance, 0)
+    }
+    
+    func testMetaBurnTokens() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true, canBurnNft: true).flags
+        )
+        
+        try controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 100,
+            to: "user"
+        )
+        
+        var esdtPayments = Vector<TokenPayment>()
+        
+        esdtPayments = esdtPayments.appended(
+            TokenPayment(
+                tokenIdentifier: issuedTokenIdentifier,
+                nonce: 1,
+                amount: 100
+            )
+        )
+        
+        try controller.burnTokens(
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "user",
                 esdtValue: esdtPayments

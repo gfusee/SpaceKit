@@ -389,6 +389,32 @@ public struct Blockchain {
         )
     }
     
+    public static func registerMetaEsdt(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        properties: MetaTokenProperties
+    ) -> AsyncContractCall {
+        // TODO: add tests
+        return Blockchain.issueToken(
+            tokenType: .meta,
+            tokenDisplayName: tokenDisplayName,
+            tokenTicker: tokenTicker,
+            initialSupply: 0,
+            properties: TokenProperties(
+                numDecimals: properties.numDecimals,
+                canFreeze: properties.canFreeze,
+                canWipe: properties.canWipe,
+                canPause: properties.canPause,
+                canTransferCreateRole: properties.canTransferCreateRole,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: properties.canChangeOwner,
+                canUpgrade: properties.canUpgrade,
+                canAddSpecialRoles: properties.canAddSpecialRoles
+            )
+        )
+    }
+
     public static func setTokenRoles(
         for address: Address,
         tokenIdentifier: Buffer,
