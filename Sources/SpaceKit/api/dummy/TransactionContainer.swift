@@ -371,6 +371,37 @@ package final class TransactionContainer: @unchecked Sendable {
         self.state.setAccount(account: account)
     }
     
+    package func removeEsdtFromAddressBalance(
+        address: Data,
+        token: Data,
+        nonce: UInt64,
+        value: BigInt
+    ) {
+        var account = self.getAccount(address: address)
+        var allBalances = account.esdtBalances[token] ?? []
+        var tokenBalance = EsdtBalance(nonce: nonce, balance: 0)
+        
+        for (balanceIndex, balance) in allBalances.enumerated() {
+            if balance.nonce == nonce {
+                tokenBalance = balance
+                allBalances.remove(at: balanceIndex)
+                
+                break
+            }
+        }
+        
+        tokenBalance.balance -= value
+        
+        guard tokenBalance.balance >= 0 else {
+            fatalError()
+        }
+        
+        allBalances.append(tokenBalance)
+        account.esdtBalances[token] = allBalances
+        
+        self.state.setAccount(account: account)
+    }
+
     package func writeLog(topicsHandle: Int32, dataHandle: Int32) {
         let topicsArray: Vector<Buffer> = Vector(buffer: Buffer(data: Array(self.getBufferData(handle: topicsHandle))))
         let data = self.getBufferData(handle: dataHandle)
@@ -438,13 +469,30 @@ package final class TransactionContainer: @unchecked Sendable {
     package func mintTokens(
         caller: Data,
         tokenIdentifier: Data,
+        nonce: UInt64,
         amount: BigInt
     ) {
         if amount > 0 {
             self.addEsdtToAddressBalance(
                 address: caller,
                 token: tokenIdentifier,
-                nonce: 0,
+                nonce: nonce,
+                value: amount
+            )
+        }
+    }
+    
+    package func burnTokens(
+        address: Data,
+        tokenIdentifier: Data,
+        nonce: UInt64,
+        amount: BigInt
+    ) {
+        if amount > 0 {
+            self.removeEsdtFromAddressBalance(
+                address: address,
+                token: tokenIdentifier,
+                nonce: nonce,
                 value: amount
             )
         }
@@ -484,7 +532,7 @@ package final class TransactionContainer: @unchecked Sendable {
         self.state.setTokenRoles(
             tokenIdentifier: tokenIdentifier,
             address: address,
-            roles: roles
+            roles: addressRoles
         )
     }
     

@@ -126,9 +126,7 @@ public struct EsdtLocalRoles {
         }
     }
     
-    package mutating func addRoles(roles: EsdtLocalRoles) {
-        roles.forEachFlag { role in
-            self.flags |= role.rawValue
-        }
+    public mutating func addRoles(roles: EsdtLocalRoles) {
+        self.flags |= roles.flags
     }
 }

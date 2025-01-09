@@ -220,6 +220,14 @@ if !isWasm {
                 "SpaceKitTesting",
                 "BigInt"
             ]
+        ),
+        .testTarget(
+            name: "EsdtLocalRolesTests",
+            dependencies: [
+                "SpaceKit",
+                "SpaceKitTesting",
+                "BigInt"
+            ]
         )
     ])
 }

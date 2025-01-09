@@ -370,7 +370,7 @@ public struct Blockchain {
     ) -> AsyncContractCall {
         // TODO: add tests
         return Blockchain.issueToken(
-            tokenType: .nonFungible,
+            tokenType: .semiFungible,
             tokenDisplayName: tokenDisplayName,
             tokenTicker: tokenTicker,
             initialSupply: 0,

@@ -302,9 +302,10 @@ public class DummyApi {
         self.getCurrentContainer().managedBuffersData[resultHandle] = newTokenIdentifier
     }
     
-    /// Used by the SwiftVM's ESDT system contract to send a newly issued token
+    /// Used by the SwiftVM's ESDT system contract to mint a token
     package func mintTokens(
         tokenIdentifierHandle: Int32,
+        nonce: UInt64,
         amountHandle: Int32
     ) {
         let callerData = self.getCurrentContainer().getCurrentSCAccount().addressData
@@ -314,6 +315,26 @@ public class DummyApi {
         self.getCurrentContainer().mintTokens(
             caller: callerData,
             tokenIdentifier: tokenIdentifierData,
+            nonce: nonce,
+            amount: amount
+        )
+    }
+    
+    /// Used by the SwiftVM's ESDT system contract to burn a token
+    package func burnTokens(
+        addressHandle: Int32,
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64,
+        amountHandle: Int32
+    ) {
+        let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let amount = self.getCurrentContainer().getBigIntData(handle: amountHandle)
+        
+        self.getCurrentContainer().burnTokens(
+            address: addressData,
+            tokenIdentifier: tokenIdentifierData,
+            nonce: nonce,
             amount: amount
         )
     }
@@ -1176,6 +1197,8 @@ extension DummyApi: SendApiProtocol {
         let esdtSystemContractEndpoints = [
             "ESDTNFTCreate",
             "ESDTLocalMint",
+            "ESDTBurn",
+            "ESDTNFTBurn",
             "ESDTNFTAddQuantity"
         ].map { $0.data(using: .utf8)! }
         

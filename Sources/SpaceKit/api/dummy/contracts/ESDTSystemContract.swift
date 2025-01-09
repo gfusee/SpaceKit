@@ -142,6 +142,7 @@
         
         API.mintTokens(
             tokenIdentifierHandle: tokenIdentifier.handle,
+            nonce: 0,
             amountHandle: amount.handle
         )
         
@@ -155,6 +156,71 @@
         }
     }
     
+    public func ESDTBurn(
+        tokenIdentifier: Buffer,
+        amount: BigUint
+    ) {
+        let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
+        
+        guard tokenType == .fungible else {
+            smartContractError(message: "Token is not a fungible token.") // TODO: use the same error as the WASM VM
+        }
+        
+        let tokenProperties = self.getTokenProperties(tokenIdentifier: tokenIdentifier)
+        
+        guard tokenProperties.canBurn else {
+            smartContractError(message: "Token is not burnable.") // TODO: use the same error as the WASM VM
+        }
+        
+        let caller = Message.caller
+        
+        let callerRoles = self.getAddressRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: caller
+        )
+        
+        guard callerRoles.contains(flag: .burn) else {
+            smartContractError(message: "Caller doesn't have the role to burn.") // TODO: use the same error as the WASM VM
+        }
+        
+        API.burnTokens(
+            addressHandle: caller.buffer.handle,
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            nonce: 0,
+            amountHandle: amount.handle
+        )
+    }
+    
+    public func ESDTNFTBurn(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        amount: BigUint
+    ) {
+        let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
+        
+        guard tokenType != .fungible else {
+            smartContractError(message: "Token is not a non fungible token.") // TODO: use the same error as the WASM VM
+        }
+        
+        let caller = Message.caller
+        
+        let callerRoles = self.getAddressRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: caller
+        )
+        
+        guard callerRoles.contains(flag: .nftBurn) else {
+            smartContractError(message: "Caller doesn't have the role to burn.") // TODO: use the same error as the WASM VM
+        }
+        
+        API.burnTokens(
+            addressHandle: caller.buffer.handle,
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            nonce: nonce,
+            amountHandle: amount.handle
+        )
+    }
+
     public func ESDTNFTCreate(
         tokenIdentifier: Buffer,
         initialQuantity: BigUint,
@@ -165,8 +231,14 @@
     ) -> UInt64 {
         let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
         
-        guard tokenType == .nonFungible else {
+        guard tokenType != .fungible else {
             smartContractError(message: "Token is not a non fungible token.") // TODO: use the same error as the WASM VM
+        }
+        
+        if tokenType == .nonFungible {
+            guard initialQuantity == 1 else {
+                smartContractError(message: "NFT tokens can only have have a supply of 1.") // TODO: use the same error as the WASM VM
+            }
         }
         
         let caller = Message.caller
@@ -220,6 +292,7 @@
         
         API.mintTokens(
             tokenIdentifierHandle: tokenIdentifier.handle,
+            nonce: nonce,
             amountHandle: amount.handle
         )
         
@@ -227,7 +300,7 @@
             caller
                 .send(
                     tokenIdentifier: tokenIdentifier,
-                    nonce: 0,
+                    nonce: nonce,
                     amount: amount
                 )
         }
