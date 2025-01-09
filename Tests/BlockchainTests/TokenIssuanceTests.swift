@@ -2,217 +2,6 @@ import SpaceKit
 import BigInt
 import SpaceKitTesting
 
-@Controller public struct TokenIssuanceController {
-    @Storage(key: "lastIssuedTokenIdentifier") var lastIssuedTokenIdentifier: Buffer
-    @Storage(key: "lastErrorMessage") var lastErrorMessage: Buffer
-    
-    public func issueToken(
-        tokenDisplayName: Buffer,
-        tokenTicker: Buffer,
-        initialSupply: BigUint,
-        properties: FungibleTokenProperties
-    ) {
-        let caller = Message.caller
-        
-        Blockchain
-            .issueFungibleToken(
-                tokenDisplayName: tokenDisplayName,
-                tokenTicker: tokenTicker,
-                initialSupply: initialSupply,
-                properties: properties
-            )
-            .registerPromise(
-                gas: 100_000_000,
-                value: Message.egldValue,
-                callback: self.$issueCallback(
-                    caller: caller,
-                    mintedAmount: initialSupply,
-                    gasForCallback: 100_000_000
-                )
-            )
-    }
-    
-    public func issueNonFungible(
-        tokenDisplayName: Buffer,
-        tokenTicker: Buffer,
-        properties: NonFungibleTokenProperties
-    ) {
-        let caller = Message.caller
-        
-        Blockchain
-            .issueNonFungibleToken(
-                tokenDisplayName: tokenDisplayName,
-                tokenTicker: tokenTicker,
-                properties: properties
-            )
-            .registerPromise(
-                gas: 100_000_000,
-                value: Message.egldValue,
-                callback: self.$issueCallback(
-                    caller: caller,
-                    mintedAmount: 0,
-                    gasForCallback: 100_000_000
-                )
-            )
-    }
-    
-    public func issueSemiFungible(
-        tokenDisplayName: Buffer,
-        tokenTicker: Buffer,
-        properties: SemiFungibleTokenProperties
-    ) {
-        let caller = Message.caller
-        
-        Blockchain
-            .issueSemiFungibleToken(
-                tokenDisplayName: tokenDisplayName,
-                tokenTicker: tokenTicker,
-                properties: properties
-            )
-            .registerPromise(
-                gas: 100_000_000,
-                value: Message.egldValue,
-                callback: self.$issueCallback(
-                    caller: caller,
-                    mintedAmount: 0,
-                    gasForCallback: 100_000_000
-                )
-            )
-    }
-    
-    public func registerMetaEsdt(
-        tokenDisplayName: Buffer,
-        tokenTicker: Buffer,
-        properties: MetaTokenProperties
-    ) {
-        let caller = Message.caller
-        
-        Blockchain
-            .registerMetaEsdt(
-                tokenDisplayName: tokenDisplayName,
-                tokenTicker: tokenTicker,
-                properties: properties
-            )
-            .registerPromise(
-                gas: 100_000_000,
-                value: Message.egldValue,
-                callback: self.$issueCallback(
-                    caller: caller,
-                    mintedAmount: 0,
-                    gasForCallback: 100_000_000
-                )
-            )
-    }
-
-    public func createAndSendNonFungibleToken(
-        tokenIdentifier: Buffer,
-        amount: BigUint,
-        to: Address
-    ) {
-        let createdNonce = Blockchain.createNft(
-            tokenIdentifier: tokenIdentifier,
-            amount: amount,
-            name: "MyNFT",
-            royalties: 0,
-            hash: "",
-            attributes: IgnoreValue(),
-            uris: Vector()
-        )
-        
-        to.send(
-            tokenIdentifier: tokenIdentifier,
-            nonce: createdNonce,
-            amount: amount
-        )
-    }
-    
-    public func mintAndSendTokens(
-        tokenIdentifier: Buffer,
-        nonce: UInt64,
-        amount: BigUint
-    ) {
-        Blockchain
-            .mintTokens(
-                tokenIdentifier: tokenIdentifier,
-                nonce: nonce,
-                amount: amount
-            )
-        
-        if amount > 0 {
-            Message.caller
-                .send(
-                    tokenIdentifier: tokenIdentifier,
-                    nonce: nonce,
-                    amount: amount
-                )
-        }
-    }
-    
-    public func burnTokens() {
-        Message.allEsdtTransfers
-            .forEach { payment in
-                payment.burn()
-            }
-    }
-    
-    public func setTokenRoles(
-        tokenIdentifier: Buffer,
-        address: Address,
-        roles: Int32
-    ) {
-        Blockchain.setTokenRoles(
-            for: address,
-            tokenIdentifier: tokenIdentifier,
-            roles: EsdtLocalRoles(flags: roles)
-        )
-        .registerPromise(
-            gas: 100_000_000,
-            callback: self.$setSpecialRolesCallback(gasForCallback: 100_000_000)
-        )
-    }
-    
-    public func getLastIssuedTokenIdentifier() -> Buffer {
-        self.lastIssuedTokenIdentifier
-    }
-
-    public func getLastErrorMessage() -> Buffer {
-        self.lastErrorMessage
-    }
-    
-    @Callback public mutating func issueCallback(
-        caller: Address,
-        mintedAmount: BigUint
-    ) {
-        let asyncResult: AsyncCallResult<Buffer> = Message.asyncCallResult()
-        
-        switch asyncResult {
-        case .success(let tokenIdentifier):
-            self.lastIssuedTokenIdentifier = tokenIdentifier
-            
-            if mintedAmount > 0 {
-                caller.send(
-                    tokenIdentifier: tokenIdentifier,
-                    nonce: 0,
-                    amount: mintedAmount
-                )
-            }
-        case .error(let asyncCallError):
-            self.lastErrorMessage = asyncCallError.errorMessage
-        }
-    }
-    
-    @Callback public mutating func setSpecialRolesCallback() {
-        let asyncResult: AsyncCallResult<IgnoreValue> = Message.asyncCallResult()
-        
-        switch asyncResult {
-        case .success(_):
-            break
-        case .error(let error):
-            self.lastErrorMessage = error.errorMessage
-        }
-    }
-}
-
 final class TokenIssuanceTests: ContractTestCase {
     private let issuanceCost: BigInt = 5 * (BigInt(10).power(16))
     
@@ -225,13 +14,13 @@ final class TokenIssuanceTests: ContractTestCase {
             WorldAccount(
                 address: "contract",
                 controllers: [
-                    TokenIssuanceController.self
+                    TokenTestsController.self
                 ]
             ),
             WorldAccount(
                 address: "contract2",
                 controllers: [
-                    TokenIssuanceController.self
+                    TokenTestsController.self
                 ]
             )
         ]
@@ -239,7 +28,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testIssueFungibleToken() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -273,7 +62,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testIssueMultipleFungibleToken() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -363,7 +152,7 @@ final class TokenIssuanceTests: ContractTestCase {
 
     func testIssueFungibleTokenButNoPaymentShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -392,7 +181,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testIssueFungibleTokenButNotEnoughPaymentShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -422,7 +211,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testIssueNonFungibleToken() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
@@ -453,6 +242,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 1,
+            attributes: Buffer(),
             to: "user"
         )
         
@@ -467,7 +257,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testIssueNonFungibleTokenButNoPaymentShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
@@ -493,7 +283,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testIssueNonFungibleTokenButNotEnoughPaymentShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
@@ -520,7 +310,7 @@ final class TokenIssuanceTests: ContractTestCase {
 
     func testCreateNonFungibleTokenButQuantityMoreThanOneShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
@@ -552,6 +342,7 @@ final class TokenIssuanceTests: ContractTestCase {
             try controller.createAndSendNonFungibleToken(
                 tokenIdentifier: issuedTokenIdentifier,
                 amount: 100,
+                attributes: Buffer(),
                 to: "user"
             )
 
@@ -563,7 +354,7 @@ final class TokenIssuanceTests: ContractTestCase {
 
     func testIssueSemiFungibleToken() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueSemiFungible(
             tokenDisplayName: "TestToken",
@@ -594,6 +385,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            attributes: Buffer(),
             to: "user"
         )
         
@@ -608,7 +400,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testIssueSemiFungibleTokenButNoPaymentShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueSemiFungible(
             tokenDisplayName: "TestToken",
@@ -634,7 +426,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testIssueSemiFungibleTokenButNotEnoughPaymentShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueSemiFungible(
             tokenDisplayName: "TestToken",
@@ -661,7 +453,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testRegisterMetaEsdt() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.registerMetaEsdt(
             tokenDisplayName: "TestToken",
@@ -693,6 +485,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            attributes: Buffer(),
             to: "user"
         )
         
@@ -707,7 +500,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testRegisterMetaEsdtButNoPaymentShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.registerMetaEsdt(
             tokenDisplayName: "TestToken",
@@ -734,7 +527,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testRegisterMetaEsdtButNotEnoughPaymentShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.registerMetaEsdt(
             tokenDisplayName: "TestToken",
@@ -762,7 +555,7 @@ final class TokenIssuanceTests: ContractTestCase {
 
     func testSetSpecialRolesButCannotAddSpecialRoleShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
@@ -797,7 +590,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testCreateNonFungibleTokenButDoesntHaveTheCreateRoleShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
@@ -823,6 +616,7 @@ final class TokenIssuanceTests: ContractTestCase {
             try controller.createAndSendNonFungibleToken(
                 tokenIdentifier: issuedTokenIdentifier,
                 amount: 1,
+                attributes: Buffer(),
                 to: "user"
             )
             
@@ -834,7 +628,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testCreateNonFungibleTokenButTokenIsFungibleShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -863,6 +657,7 @@ final class TokenIssuanceTests: ContractTestCase {
             try controller.createAndSendNonFungibleToken(
                 tokenIdentifier: issuedTokenIdentifier,
                 amount: 100,
+                attributes: Buffer(),
                 to: "user"
             )
             
@@ -875,8 +670,8 @@ final class TokenIssuanceTests: ContractTestCase {
     func testSetSpecialRolesButNotManagerShouldFail() throws {
         try self.deployContract(at: "contract")
         try self.deployContract(at: "contract2")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
-        let controller2 = self.instantiateController(TokenIssuanceController.self, for: "contract2")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        let controller2 = self.instantiateController(TokenTestsController.self, for: "contract2")!
         
         try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
@@ -911,7 +706,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testFungibleMintTokens() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -962,7 +757,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testMintFungibleTokensButNotMintableShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -1011,7 +806,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testMintFungibleTokensButDoesntHaveMintRoleShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -1054,7 +849,7 @@ final class TokenIssuanceTests: ContractTestCase {
 
     func testFungibleBurnTokens() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -1129,7 +924,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testFungibleBurnTokensButTokenNotBurnableShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -1195,7 +990,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testFungibleBurnTokensButDoesnHaveTheBurnRoleShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueToken(
             tokenDisplayName: "TestToken",
@@ -1261,7 +1056,7 @@ final class TokenIssuanceTests: ContractTestCase {
 
     func testAddQuantitySemiFungibleTokens() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueSemiFungible(
             tokenDisplayName: "TestToken",
@@ -1298,6 +1093,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            attributes: Buffer(),
             to: "user"
         )
         
@@ -1319,9 +1115,68 @@ final class TokenIssuanceTests: ContractTestCase {
         XCTAssertEqual(userTestBalance, 250)
     }
     
+    func testAddQuantitySemiFungibleTokensButWrongNonceShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueSemiFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: SemiFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canAddNftQuantity: true).flags
+        )
+        
+        try controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 100,
+            attributes: Buffer(),
+            to: "user"
+        )
+        
+        do {
+            try controller.mintAndSendTokens(
+                tokenIdentifier: issuedTokenIdentifier,
+                nonce: 2,
+                amount: 150,
+                transactionInput: ContractCallTransactionInput(
+                    callerAddress: "user"
+                )
+            )
+
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "Token and nonce not found."))
+        }
+    }
+
     func testAddQuantitySemiFungibleTokensButDoesntHaveTheRoleShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueSemiFungible(
             tokenDisplayName: "TestToken",
@@ -1352,6 +1207,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            attributes: Buffer(),
             to: "user"
         )
         
@@ -1373,7 +1229,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testAddQuantityMetaEsdt() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.registerMetaEsdt(
             tokenDisplayName: "TestToken",
@@ -1411,6 +1267,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            attributes: Buffer(),
             to: "user"
         )
         
@@ -1434,7 +1291,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testAddQuantityMetaEsdtButDoesntHaveTheRoleShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.registerMetaEsdt(
             tokenDisplayName: "TestToken",
@@ -1466,6 +1323,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            attributes: Buffer(),
             to: "user"
         )
         
@@ -1487,7 +1345,7 @@ final class TokenIssuanceTests: ContractTestCase {
 
     func testNonFungibleBurnTokens() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
@@ -1518,6 +1376,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 1,
+            attributes: Buffer(),
             to: "user"
         )
         
@@ -1556,7 +1415,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testNonFungibleBurnTokensButDoesnHaveTheBurnRoleShouldFail() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueNonFungible(
             tokenDisplayName: "TestToken",
@@ -1587,6 +1446,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 1,
+            attributes: Buffer(),
             to: "user"
         )
         
@@ -1616,7 +1476,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testSemiFungibleBurnTokens() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.issueSemiFungible(
             tokenDisplayName: "TestToken",
@@ -1647,6 +1507,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            attributes: Buffer(),
             to: "user"
         )
         
@@ -1685,7 +1546,7 @@ final class TokenIssuanceTests: ContractTestCase {
     
     func testMetaBurnTokens() throws {
         try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenIssuanceController.self, for: "contract")!
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
         
         try controller.registerMetaEsdt(
             tokenDisplayName: "TestToken",
@@ -1717,6 +1578,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            attributes: Buffer(),
             to: "user"
         )
         

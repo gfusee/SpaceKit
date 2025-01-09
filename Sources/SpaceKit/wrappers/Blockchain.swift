@@ -437,4 +437,21 @@ public struct Blockchain {
         
         return AsyncContractCall(contractCall: contractCall)
     }
+    
+    public static func updateNftAttributes(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        attributes: Buffer
+    ) {
+        var argBuffer = ArgBuffer()
+        argBuffer.pushArg(arg: tokenIdentifier)
+        argBuffer.pushArg(arg: nonce)
+        argBuffer.pushArg(arg: attributes)
+        
+        let _: IgnoreValue = ContractCall(
+            receiver: Blockchain.getSCAddress(),
+            endpointName: Buffer(stringLiteral: ESDT_NFT_UPDATE_ATTRIBUTES_FUNC_NAME),
+            argBuffer: argBuffer
+        ).call()
+    }
 }

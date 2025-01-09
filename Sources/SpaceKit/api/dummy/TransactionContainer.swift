@@ -498,6 +498,17 @@ package final class TransactionContainer: @unchecked Sendable {
         }
     }
     
+    package func doesNonFungibleNonceExist(
+        tokenIdentifier: Data,
+        nonce: UInt64
+    ) -> Bool {
+        self.state
+            .doesNonFungibleNonceExist(
+                tokenIdentifier: tokenIdentifier,
+                nonce: nonce
+            )
+    }
+    
     package func createNewNonFungibleNonce(
         caller: Data,
         tokenIdentifier: Data,
@@ -536,6 +547,28 @@ package final class TransactionContainer: @unchecked Sendable {
         )
     }
     
+    package func setTokenAttributes(
+        tokenIdentifier: Data,
+        nonce: UInt64,
+        attributes: Data
+    ) {
+        self.state.setTokenAttributes(
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce,
+            attributes: attributes
+        )
+    }
+
+    package func getTokenAttributes(
+        tokenIdentifier: Data,
+        nonce: UInt64
+    ) -> Data? {
+        self.state.getTokenAttributes(
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        )
+    }
+
     package func getAddressTokenRoles(
         tokenIdentifier: Data,
         address: Data

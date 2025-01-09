@@ -261,6 +261,7 @@
         initialQuantity: BigUint,
         nftName: Buffer,
         royalties: BigUint,
+        hash: Buffer,
         attributes: Buffer,
         uris: MultiValueEncoded<Buffer>
     ) -> UInt64 {
@@ -292,6 +293,12 @@
             initialQuantityHandle: initialQuantity.handle
         )
         
+        API.setTokenAttributes(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            nonce: newNonce,
+            attributesHandle: attributes.handle
+        )
+        
         if initialQuantity > 0 {
             caller.send(
                 tokenIdentifier: tokenIdentifier,
@@ -312,6 +319,13 @@
         
         guard tokenType != .fungible && tokenType != .nonFungible else {
             smartContractError(message: "Can add quantity only on SFT and Meta ESDT tokens.") // TODO: use the same error as the WASM VM
+        }
+        
+        guard self.doesNonFungibleNonceExist(
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        ) else {
+            smartContractError(message: "Token and nonce not found.") // TODO: use the same error as the WASM VM
         }
         
         let caller = Message.caller
@@ -399,7 +413,44 @@
             addressHandle: address.buffer.handle,
             roles: parsedRoles.flags
         )
+    }
+    
+    public func ESDTNFTUpdateAttributes(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        attributes: Buffer
+    ) {
+        let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
         
+        guard tokenType != .fungible else {
+            smartContractError(message: "Token is not a non fungible token.") // TODO: use the same error as the WASM VM
+        }
+        
+        guard self.doesNonFungibleNonceExist(
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        ) else {
+            smartContractError(message: "Token and nonce not found.") // TODO: use the same error as the WASM VM
+        }
+        
+        let caller = Message.caller
+        
+        let callerRoles = self.getAddressRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: caller
+        )
+        
+        guard callerRoles.contains(flag: .nftUpdateAttributes) else {
+            smartContractError(message: "Caller doesn't have the role to update attributes.") // TODO: use the same error as the WASM VM
+        }
+        
+        // TODO: is it required for the caller to own the nonce?
+        
+        API.setTokenAttributes(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            nonce: nonce,
+            attributesHandle: attributes.handle
+        )
     }
 
     private func computeTokenProperties(
@@ -500,6 +551,18 @@
         )
         
         return EsdtLocalRoles(flags: Int32(flags))
+    }
+    
+    private func doesNonFungibleNonceExist(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> Bool {
+        let result = API.doesNonFungibleNonceExist(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            nonce: nonce
+        )
+        
+        return result == 1
     }
     
     private func getIssuanceCost() -> BigUint {

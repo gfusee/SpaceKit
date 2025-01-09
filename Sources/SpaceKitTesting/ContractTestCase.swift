@@ -32,6 +32,21 @@ open class ContractTestCase: XCTestCase {
         return API.getAccount(addressData: addressData)
     }
     
+    final public func getTokenAttributes(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> Buffer {
+        let result = Buffer()
+        
+        API.getTokenAttributes(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            nonce: nonce,
+            resultHandle: result.handle
+        )
+        
+        return result
+    }
+    
     final public func deployContract(
         at address: String,
         arguments: [any TopEncodeMulti & TopDecodeMulti] = [],

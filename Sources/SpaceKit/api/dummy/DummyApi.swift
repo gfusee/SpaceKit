@@ -87,7 +87,7 @@ public class DummyApi {
             error = (error: transactionError, shouldThrow: shouldThrow)
         } else {
             // Commit the container into the state
-            self.worldState = transactionContainer.state
+            self.setWorld(world: transactionContainer.state)
         }
         
         if let output = transactionContainer.transactionOutput {
@@ -140,6 +140,7 @@ public class DummyApi {
     
     package func setWorld(world: WorldState) {
         self.worldState = world
+        self.staticContainer.state = world
     }
 
     public func setCurrentSCOwnerAddress(owner: Data) {
@@ -401,6 +402,22 @@ public class DummyApi {
         )
     }
     
+    package func doesNonFungibleNonceExist(
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64
+    ) -> Int32 {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        return if self.getCurrentContainer().doesNonFungibleNonceExist(
+            tokenIdentifier: tokenIdentifierData,
+            nonce: nonce
+        ) {
+            1
+        } else {
+            0
+        }
+    }
+    
     package func getAddressTokenRoles(
         tokenIdentifierHandle: Int32,
         addressHandle: Int32
@@ -429,6 +446,38 @@ public class DummyApi {
             address: addressData,
             roles: EsdtLocalRoles(flags: roles)
         )
+    }
+    
+    package func setTokenAttributes(
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64,
+        attributesHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let attributesData = self.getCurrentContainer().getBufferData(handle: attributesHandle)
+        
+        self.getCurrentContainer()
+            .setTokenAttributes(
+                tokenIdentifier: tokenIdentifierData,
+                nonce: nonce,
+                attributes: attributesData
+            )
+    }
+    
+    package func getTokenAttributes(
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64,
+        resultHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        let attributes = self.getCurrentContainer()
+            .getTokenAttributes(
+                tokenIdentifier: tokenIdentifierData,
+                nonce: nonce
+            ) ?? Data()
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = attributes
     }
 }
 
@@ -1199,7 +1248,8 @@ extension DummyApi: SendApiProtocol {
             "ESDTLocalMint",
             "ESDTBurn",
             "ESDTNFTBurn",
-            "ESDTNFTAddQuantity"
+            "ESDTNFTAddQuantity",
+            "ESDTNFTUpdateAttributes"
         ].map { $0.data(using: .utf8)! }
         
         let isReceiverEsdtSystemContract = actualReceiver == actualSender && esdtSystemContractEndpoints.contains(actualFunction)

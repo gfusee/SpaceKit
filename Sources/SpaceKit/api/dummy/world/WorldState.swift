@@ -2,6 +2,11 @@
 import Foundation
 import BigInt
 
+private struct TokenIdentifierAndNonce: Hashable {
+    let tokenIdentifier: Data
+    let nonce: UInt64
+}
+
 package let esdtSystemContractAddress = "000000000000000000010000000000000000000000000000000000000002ffff".hexadecimal
 
 package struct WorldState {
@@ -21,6 +26,7 @@ package struct WorldState {
     package private(set) var tokenRolesForAddress: [Data : [Data : EsdtLocalRoles]] = [:]
     package private(set) var nextNonceForNonFungibleToken: [Data : UInt64] = [:]
     package private(set) var managerForToken: [Data : Data] = [:]
+    private var attributesForToken: [TokenIdentifierAndNonce : Data] = [:]
     
     public func getAccount(addressData: Data) -> WorldAccount? {
         return self.accounts.first { $0.addressData == addressData }
@@ -64,6 +70,19 @@ package struct WorldState {
         self.tokenRolesForAddress[tokenIdentifier] = rolesForAddressMap
     }
     
+    package mutating func setTokenAttributes(
+        tokenIdentifier: Data,
+        nonce: UInt64,
+        attributes: Data
+    ) {
+        let key = TokenIdentifierAndNonce(
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        )
+        
+        self.attributesForToken[key] = attributes
+    }
+    
     package mutating func registerToken(
         managerAddress: Data,
         tokenIdentifier: Data,
@@ -85,6 +104,13 @@ package struct WorldState {
         return newNonce
     }
     
+    package mutating func doesNonFungibleNonceExist(
+        tokenIdentifier: Data,
+        nonce: UInt64
+    ) -> Bool {
+        nonce < (self.nextNonceForNonFungibleToken[tokenIdentifier] ?? 0)
+    }
+    
     package func getTokenManagerAddress(
         tokenIdentifier: Data
     ) -> Data? {
@@ -95,6 +121,18 @@ package struct WorldState {
         tokenIdentifier: Data
     ) -> TokenType? {
         self.tokenTypeForToken[tokenIdentifier]
+    }
+    
+    package func getTokenAttributes(
+        tokenIdentifier: Data,
+        nonce: UInt64
+    ) -> Data? {
+        let key = TokenIdentifierAndNonce(
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        )
+        
+        return self.attributesForToken[key]
     }
     
     package func getTokenProperties(
