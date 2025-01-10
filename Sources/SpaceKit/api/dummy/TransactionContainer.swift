@@ -512,9 +512,24 @@ package final class TransactionContainer: @unchecked Sendable {
     package func createNewNonFungibleNonce(
         caller: Data,
         tokenIdentifier: Data,
-        initialQuantity: BigInt
+        initialQuantity: BigInt,
+        hash: Data,
+        name: Data,
+        attributes: Data,
+        creator: Data,
+        royalties: BigInt,
+        uris: Data
     ) -> UInt64 {
-        let newNonce = self.state.createNewNonFungibleNonce(tokenIdentifier: tokenIdentifier)
+        let newNonce = self.state.createNewNonFungibleNonce(
+            tokenIdentifier: tokenIdentifier,
+            amount: initialQuantity,
+            hash: hash,
+            name: name,
+            attributes: attributes,
+            creator: creator,
+            royalties: royalties,
+            uris: uris
+        )
         
         if initialQuantity > 0 {
             self.addEsdtToAddressBalance(
@@ -547,23 +562,23 @@ package final class TransactionContainer: @unchecked Sendable {
         )
     }
     
-    package func setTokenAttributes(
+    package func setTokenData(
         tokenIdentifier: Data,
         nonce: UInt64,
-        attributes: Data
+        data: WorldState.TokenData
     ) {
-        self.state.setTokenAttributes(
+        self.state.setTokenData(
             tokenIdentifier: tokenIdentifier,
             nonce: nonce,
-            attributes: attributes
+            data: data
         )
     }
 
-    package func getTokenAttributes(
+    package func getTokenData(
         tokenIdentifier: Data,
         nonce: UInt64
-    ) -> Data? {
-        self.state.getTokenAttributes(
+    ) -> WorldState.TokenData? {
+        self.state.getTokenData(
             tokenIdentifier: tokenIdentifier,
             nonce: nonce
         )

@@ -387,18 +387,49 @@ public class DummyApi {
         self.getCurrentContainer().managedBuffersData[resultHandle] = propertiesData
     }
     
+    package func getGlobalTokenAttributes(
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64,
+        resultHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        let tokenAttributesData = self.getCurrentContainer().getTokenData(tokenIdentifier: tokenIdentifierData, nonce: nonce)?.attributes ?? Data()
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = tokenAttributesData
+    }
+    
     package func createNonFungibleToken(
         tokenIdentifierHandle: Int32,
-        initialQuantityHandle: Int32
+        initialQuantityHandle: Int32,
+        hashHandle: Int32,
+        nameHandle: Int32,
+        attributesHandle: Int32,
+        creatorHandle: Int32,
+        royaltiesHandle: Int32,
+        urisHandle: Int32
     ) -> UInt64 {
         let callerData = self.getCurrentContainer().getCurrentSCAccount().addressData
         let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
         let initialQuantity = self.getCurrentContainer().getBigIntData(handle: initialQuantityHandle)
+        let hashData = self.getCurrentContainer().getBufferData(handle: hashHandle)
+        let nameData = self.getCurrentContainer().getBufferData(handle: nameHandle)
+        let attributesData = self.getCurrentContainer().getBufferData(handle: attributesHandle)
+        let creatorData = self.getCurrentContainer().getBufferData(handle: creatorHandle)
+        let royalties = self.getCurrentContainer().getBigIntData(handle: royaltiesHandle)
+        let urisData = self.getCurrentContainer().getBufferData(handle: urisHandle)
+        
         
         return self.getCurrentContainer().createNewNonFungibleNonce(
             caller: callerData,
             tokenIdentifier: tokenIdentifierData,
-            initialQuantity: initialQuantity
+            initialQuantity: initialQuantity,
+            hash: hashData,
+            name: nameData,
+            attributes: attributesData,
+            creator: creatorData,
+            royalties: royalties,
+            uris: urisData
         )
     }
     
@@ -456,28 +487,22 @@ public class DummyApi {
         let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
         let attributesData = self.getCurrentContainer().getBufferData(handle: attributesHandle)
         
+        guard var tokenData = self.getCurrentContainer().getTokenData(
+            tokenIdentifier: tokenIdentifierData,
+            nonce: nonce
+        ) else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        
+        tokenData.attributes  = attributesData
+        
         self.getCurrentContainer()
-            .setTokenAttributes(
+            .setTokenData(
                 tokenIdentifier: tokenIdentifierData,
                 nonce: nonce,
-                attributes: attributesData
+                data: tokenData
             )
-    }
-    
-    package func getTokenAttributes(
-        tokenIdentifierHandle: Int32,
-        nonce: UInt64,
-        resultHandle: Int32
-    ) {
-        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
-        
-        let attributes = self.getCurrentContainer()
-            .getTokenAttributes(
-                tokenIdentifier: tokenIdentifierData,
-                nonce: nonce
-            ) ?? Data()
-        
-        self.getCurrentContainer().managedBuffersData[resultHandle] = attributes
     }
 }
 
@@ -860,6 +885,43 @@ extension DummyApi: BlockchainApiProtocol {
     public func getESDTLocalRoles(tokenIdHandle: Int32) -> Int64 {
         // TODO: implement and tests
         fatalError()
+    }
+    
+    public func managedGetESDTTokenData(
+        addressHandle: Int32,
+        tokenIDHandle: Int32,
+        nonce: Int64,
+        valueHandle: Int32,
+        propertiesHandle: Int32,
+        hashHandle: Int32,
+        nameHandle: Int32,
+        attributesHandle: Int32,
+        creatorHandle: Int32,
+        royaltiesHandle: Int32,
+        urisHandle: Int32
+    ) {
+        // TODO: use addressData to perform balance checks
+        let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIDHandle)
+        
+        guard let tokenData = self.getCurrentContainer().getTokenData(tokenIdentifier: tokenIdentifierData, nonce: UInt64(nonce)) else {
+            return
+        }
+        
+        var propertiesData = Data()
+        if tokenData.frozen {
+            propertiesData = propertiesData + Data([1])
+        }
+        propertiesData = propertiesData + Data([0])
+
+        self.getCurrentContainer().managedBigIntData[valueHandle] = tokenData.amount
+        self.getCurrentContainer().managedBuffersData[propertiesHandle] = propertiesData
+        self.getCurrentContainer().managedBuffersData[hashHandle] = tokenData.hash
+        self.getCurrentContainer().managedBuffersData[nameHandle] = tokenData.name
+        self.getCurrentContainer().managedBuffersData[attributesHandle] = tokenData.attributes
+        self.getCurrentContainer().managedBuffersData[creatorHandle] = tokenData.creator
+        self.getCurrentContainer().managedBigIntData[royaltiesHandle] = tokenData.royalties
+        self.getCurrentContainer().managedBuffersData[urisHandle] = tokenData.uris
     }
     
     public func getShardOfAddress(addressPtr: UnsafeRawPointer) -> Int32 {

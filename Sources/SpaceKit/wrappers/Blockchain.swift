@@ -454,4 +454,72 @@ public struct Blockchain {
             argBuffer: argBuffer
         ).call()
     }
+    
+    public static func getTokenData(
+        address: Address,
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> TokenData {
+        let value = BigUint()
+        let properties = Buffer()
+        let hash = Buffer()
+        let name = Buffer()
+        let attributes = Buffer()
+        let creatorRaw = Buffer()
+        let royalties = BigUint()
+        let urisRaw = Buffer()
+        
+        API.managedGetESDTTokenData(
+            addressHandle: address.buffer.handle,
+            tokenIDHandle: tokenIdentifier.handle,
+            nonce: toBigEndianInt64(from: nonce.toBytes8()), // TODO: super tricky, we should ensure it works
+            valueHandle: value.handle,
+            propertiesHandle: properties.handle,
+            hashHandle: hash.handle,
+            nameHandle: name.handle,
+            attributesHandle: attributes.handle,
+            creatorHandle: creatorRaw.handle,
+            royaltiesHandle: royalties.handle,
+            urisHandle: urisRaw.handle
+        )
+        
+        let tokenType = if nonce == 0 {
+            TokenType.fungible
+        } else {
+            TokenType.nonFungible
+        }
+        
+        let creator = if creatorRaw.isEmpty {
+            Address()
+        } else {
+            Address(buffer: creatorRaw)
+        }
+        
+        let propertiesBytes = properties.toBigEndianBytes8() // The array contains 2 elements, therefore so only the 7th and 8th ones matter
+        
+        let isFrozen = propertiesBytes.6 > 0 // This is how it is implemented in the Rust SDK
+        
+        return TokenData(
+            tokenType: tokenType,
+            amount: value,
+            frozen: isFrozen,
+            hash: hash,
+            name: name,
+            attributes: attributes,
+            creator: creator,
+            royaties: royalties,
+            uris: Vector(handle: urisRaw.handle)
+        )
+    }
+    
+    public static func getTokenAttributes(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> Buffer {
+        Blockchain.getTokenData(
+            address: Blockchain.getSCAddress(),
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        ).attributes
+    }
 }

@@ -288,15 +288,17 @@
             smartContractError(message: "Caller doesn't have the role to create nft.") // TODO: use the same error as the WASM VM
         }
         
+        let urisVector = uris.toArray()
+        
         let newNonce = API.createNonFungibleToken(
             tokenIdentifierHandle: tokenIdentifier.handle,
-            initialQuantityHandle: initialQuantity.handle
-        )
-        
-        API.setTokenAttributes(
-            tokenIdentifierHandle: tokenIdentifier.handle,
-            nonce: newNonce,
-            attributesHandle: attributes.handle
+            initialQuantityHandle: initialQuantity.handle,
+            hashHandle: hash.handle,
+            nameHandle: nftName.handle,
+            attributesHandle: attributes.handle,
+            creatorHandle: caller.buffer.handle,
+            royaltiesHandle: royalties.handle,
+            urisHandle: urisVector.buffer.handle
         )
         
         if initialQuantity > 0 {

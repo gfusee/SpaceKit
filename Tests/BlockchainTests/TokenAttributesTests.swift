@@ -62,7 +62,7 @@ final class TokenAttributesTests: ContractTestCase {
             roles: EsdtLocalRoles(canAddNftQuantity: true).flags
         )
         
-        try controller.createAndSendNonFungibleToken(
+        try! controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 1,
             attributes: Buffer(),

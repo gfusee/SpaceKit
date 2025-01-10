@@ -10,6 +10,18 @@ private struct TokenIdentifierAndNonce: Hashable {
 package let esdtSystemContractAddress = "000000000000000000010000000000000000000000000000000000000002ffff".hexadecimal
 
 package struct WorldState {
+    package struct TokenData {
+        let tokenType: TokenType
+        let amount: BigInt
+        let frozen: Bool
+        let hash: Data
+        let name: Data
+        var attributes: Data
+        let creator: Data
+        let royalties: BigInt
+        let uris: Data
+    }
+    
     package var storageForContractAddress: [Data : [Data : Data]] = [:] // TODO: set the setter private
     package private(set) var accounts: [WorldAccount] = [
         WorldAccount(
@@ -26,7 +38,7 @@ package struct WorldState {
     package private(set) var tokenRolesForAddress: [Data : [Data : EsdtLocalRoles]] = [:]
     package private(set) var nextNonceForNonFungibleToken: [Data : UInt64] = [:]
     package private(set) var managerForToken: [Data : Data] = [:]
-    private var attributesForToken: [TokenIdentifierAndNonce : Data] = [:]
+    private var tokenDataForToken: [TokenIdentifierAndNonce : TokenData] = [:]
     
     public func getAccount(addressData: Data) -> WorldAccount? {
         return self.accounts.first { $0.addressData == addressData }
@@ -70,17 +82,17 @@ package struct WorldState {
         self.tokenRolesForAddress[tokenIdentifier] = rolesForAddressMap
     }
     
-    package mutating func setTokenAttributes(
+    package mutating func setTokenData(
         tokenIdentifier: Data,
         nonce: UInt64,
-        attributes: Data
+        data: TokenData
     ) {
         let key = TokenIdentifierAndNonce(
             tokenIdentifier: tokenIdentifier,
             nonce: nonce
         )
         
-        self.attributesForToken[key] = attributes
+        self.tokenDataForToken[key] = data
     }
     
     package mutating func registerToken(
@@ -95,11 +107,40 @@ package struct WorldState {
     }
     
     package mutating func createNewNonFungibleNonce(
-        tokenIdentifier: Data
+        tokenIdentifier: Data,
+        amount: BigInt,
+        hash: Data,
+        name: Data,
+        attributes: Data,
+        creator: Data,
+        royalties: BigInt,
+        uris: Data
     ) -> UInt64 {
         let newNonce = self.nextNonceForNonFungibleToken[tokenIdentifier] ?? 1
         
+        guard let tokenType = self.tokenTypeForToken[tokenIdentifier] else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        let tokenDataKey = TokenIdentifierAndNonce(
+            tokenIdentifier: tokenIdentifier,
+            nonce: newNonce
+        )
+        
+        let tokenData = WorldState.TokenData(
+            tokenType: tokenType,
+            amount: amount,
+            frozen: false,
+            hash: hash,
+            name: name,
+            attributes: attributes,
+            creator: creator,
+            royalties: royalties,
+            uris: uris
+        )
+        
         self.nextNonceForNonFungibleToken[tokenIdentifier] = newNonce + 1
+        self.tokenDataForToken[tokenDataKey] = tokenData
         
         return newNonce
     }
@@ -123,16 +164,16 @@ package struct WorldState {
         self.tokenTypeForToken[tokenIdentifier]
     }
     
-    package func getTokenAttributes(
+    package func getTokenData(
         tokenIdentifier: Data,
         nonce: UInt64
-    ) -> Data? {
+    ) -> TokenData? {
         let key = TokenIdentifierAndNonce(
             tokenIdentifier: tokenIdentifier,
             nonce: nonce
         )
         
-        return self.attributesForToken[key]
+        return self.tokenDataForToken[key]
     }
     
     package func getTokenProperties(

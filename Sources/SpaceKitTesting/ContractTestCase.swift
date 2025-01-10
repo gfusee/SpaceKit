@@ -38,7 +38,7 @@ open class ContractTestCase: XCTestCase {
     ) -> Buffer {
         let result = Buffer()
         
-        API.getTokenAttributes(
+        API.getGlobalTokenAttributes(
             tokenIdentifierHandle: tokenIdentifier.handle,
             nonce: nonce,
             resultHandle: result.handle
