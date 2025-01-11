@@ -242,6 +242,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 1,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -342,6 +343,7 @@ final class TokenIssuanceTests: ContractTestCase {
             try controller.createAndSendNonFungibleToken(
                 tokenIdentifier: issuedTokenIdentifier,
                 amount: 100,
+                royalties: 0,
                 attributes: Buffer(),
                 to: "user"
             )
@@ -385,6 +387,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -485,6 +488,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -616,6 +620,7 @@ final class TokenIssuanceTests: ContractTestCase {
             try controller.createAndSendNonFungibleToken(
                 tokenIdentifier: issuedTokenIdentifier,
                 amount: 1,
+                royalties: 0,
                 attributes: Buffer(),
                 to: "user"
             )
@@ -657,6 +662,7 @@ final class TokenIssuanceTests: ContractTestCase {
             try controller.createAndSendNonFungibleToken(
                 tokenIdentifier: issuedTokenIdentifier,
                 amount: 100,
+                royalties: 0,
                 attributes: Buffer(),
                 to: "user"
             )
@@ -1093,6 +1099,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -1154,6 +1161,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -1207,6 +1215,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -1267,6 +1276,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -1323,6 +1333,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -1376,6 +1387,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 1,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -1446,6 +1458,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 1,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -1507,6 +1520,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )
@@ -1578,6 +1592,7 @@ final class TokenIssuanceTests: ContractTestCase {
         try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 100,
+            royalties: 0,
             attributes: Buffer(),
             to: "user"
         )

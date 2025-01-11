@@ -2,6 +2,11 @@ import SpaceKit
 import BigInt
 import SpaceKitTesting
 
+@Codable public struct TestAttributes: Equatable {
+    let buffer: Buffer
+    let biguint: BigUint
+}
+
 @Controller public struct TokenTestsController {
     @Storage(key: "lastIssuedTokenIdentifier") var lastIssuedTokenIdentifier: Buffer
     @Storage(key: "lastErrorMessage") var lastErrorMessage: Buffer
@@ -107,6 +112,7 @@ import SpaceKitTesting
     public func createAndSendNonFungibleToken(
         tokenIdentifier: Buffer,
         amount: BigUint,
+        royalties: BigUint,
         attributes: Buffer,
         to: Address
     ) {
@@ -114,7 +120,7 @@ import SpaceKitTesting
             tokenIdentifier: tokenIdentifier,
             amount: amount,
             name: "MyNFT",
-            royalties: 0,
+            royalties: royalties,
             hash: "",
             attributes: attributes,
             uris: Vector()
@@ -127,7 +133,7 @@ import SpaceKitTesting
         )
     }
     
-    public func updateAttributes(
+    public func updateAttributesRaw(
         tokenIdentifier: Buffer,
         nonce: UInt64,
         attributes: Buffer
@@ -137,6 +143,52 @@ import SpaceKitTesting
                 tokenIdentifier: tokenIdentifier,
                 nonce: nonce,
                 attributes: attributes
+            )
+    }
+    
+    public func updateAttributes(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        attributes: TestAttributes
+    ) {
+        Blockchain
+            .updateNftAttributes(
+                tokenIdentifier: tokenIdentifier,
+                nonce: nonce,
+                attributes: attributes
+            )
+    }
+
+    public func retrieveAttributesRaw(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> Buffer {
+        Blockchain
+            .getTokenAttributes(
+                tokenIdentifier: tokenIdentifier,
+                nonce: nonce
+            )
+    }
+    
+    public func retrieveAttributes(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> TestAttributes {
+        Blockchain
+            .getTokenAttributes(
+                tokenIdentifier: tokenIdentifier,
+                nonce: nonce
+            )
+    }
+    
+    public func retrieveRoyalties(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> BigUint {
+        Blockchain
+            .getTokenRoyalties(
+                tokenIdentifier: tokenIdentifier,
+                nonce: nonce
             )
     }
     

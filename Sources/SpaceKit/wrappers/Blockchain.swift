@@ -438,15 +438,18 @@ public struct Blockchain {
         return AsyncContractCall(contractCall: contractCall)
     }
     
-    public static func updateNftAttributes(
+    public static func updateNftAttributes<T: TopEncode>(
         tokenIdentifier: Buffer,
         nonce: UInt64,
-        attributes: Buffer
+        attributes: T
     ) {
         var argBuffer = ArgBuffer()
         argBuffer.pushArg(arg: tokenIdentifier)
         argBuffer.pushArg(arg: nonce)
-        argBuffer.pushArg(arg: attributes)
+        
+        var attributesEncoded = Buffer()
+        attributes.topEncode(output: &attributesEncoded)
+        argBuffer.pushArg(arg: attributesEncoded)
         
         let _: IgnoreValue = ContractCall(
             receiver: Blockchain.getSCAddress(),
@@ -512,14 +515,27 @@ public struct Blockchain {
         )
     }
     
-    public static func getTokenAttributes(
+    public static func getTokenAttributes<T: TopDecode>(
         tokenIdentifier: Buffer,
         nonce: UInt64
-    ) -> Buffer {
-        Blockchain.getTokenData(
+    ) -> T {
+        let rawAttributes = Blockchain.getTokenData(
             address: Blockchain.getSCAddress(),
             tokenIdentifier: tokenIdentifier,
             nonce: nonce
         ).attributes
+        
+        return T(topDecode: rawAttributes)
+    }
+    
+    public static func getTokenRoyalties(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> BigUint {
+        Blockchain.getTokenData(
+            address: Blockchain.getSCAddress(),
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        ).royaties
     }
 }
