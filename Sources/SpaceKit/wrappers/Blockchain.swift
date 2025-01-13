@@ -124,7 +124,7 @@ public struct Blockchain {
     public static func getESDTLocalRoles(tokenIdentifier: Buffer) -> EsdtLocalRoles { // TODO: use TokenIdentifier type
         let flags = API.getESDTLocalRoles(tokenIdHandle: tokenIdentifier.handle)
         
-        return EsdtLocalRoles(flags: Int32(flags))
+        return EsdtLocalRoles(flags: UInt64(flags))
     }
     
     public static func deploySCFromSource(
@@ -498,7 +498,7 @@ public struct Blockchain {
             Address(buffer: creatorRaw)
         }
         
-        let propertiesBytes = properties.toBigEndianBytes8() // The array contains 2 elements, therefore so only the 7th and 8th ones matter
+        let propertiesBytes = properties.toBigEndianBytes8() // The array contains 2 elements, therefore only the 7th and 8th ones matter
         
         let isFrozen = propertiesBytes.6 > 0 // This is how it is implemented in the Rust SDK
         
@@ -537,5 +537,23 @@ public struct Blockchain {
             tokenIdentifier: tokenIdentifier,
             nonce: nonce
         ).royaties
+    }
+    
+    public static func modifyTokenRoyalties(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        royalties: UInt64
+    ) {
+        var argBuffer = ArgBuffer()
+        
+        argBuffer.pushArg(arg: tokenIdentifier)
+        argBuffer.pushArg(arg: nonce)
+        argBuffer.pushArg(arg: royalties)
+
+        let _: IgnoreValue = ContractCall(
+            receiver: Blockchain.getSCAddress(),
+            endpointName: Buffer(stringLiteral: ESDT_MODIFY_ROYALTIES_FUNC_NAME),
+            argBuffer: argBuffer
+        ).call()
     }
 }

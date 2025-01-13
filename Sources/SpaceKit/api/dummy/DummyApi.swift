@@ -452,7 +452,7 @@ public class DummyApi {
     package func getAddressTokenRoles(
         tokenIdentifierHandle: Int32,
         addressHandle: Int32
-    ) -> Int32 {
+    ) -> UInt64 {
         let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
         let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
         
@@ -467,7 +467,7 @@ public class DummyApi {
     package func setAddressTokenRoles(
         tokenIdentifierHandle: Int32,
         addressHandle: Int32,
-        roles: Int32
+        roles: UInt64
     ) {
         let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
         let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
@@ -495,7 +495,32 @@ public class DummyApi {
         }
         
         
-        tokenData.attributes  = attributesData
+        tokenData.attributes = attributesData
+        
+        self.getCurrentContainer()
+            .setTokenData(
+                tokenIdentifier: tokenIdentifierData,
+                nonce: nonce,
+                data: tokenData
+            )
+    }
+    
+    package func setTokenRoyalties(
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64,
+        royalties: UInt64
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        guard var tokenData = self.getCurrentContainer().getTokenData(
+            tokenIdentifier: tokenIdentifierData,
+            nonce: nonce
+        ) else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        
+        tokenData.royalties = BigInt(royalties)
         
         self.getCurrentContainer()
             .setTokenData(
@@ -1311,7 +1336,8 @@ extension DummyApi: SendApiProtocol {
             "ESDTBurn",
             "ESDTNFTBurn",
             "ESDTNFTAddQuantity",
-            "ESDTNFTUpdateAttributes"
+            "ESDTNFTUpdateAttributes",
+            "ESDTModifyRoyalties"
         ].map { $0.data(using: .utf8)! }
         
         let isReceiverEsdtSystemContract = actualReceiver == actualSender && esdtSystemContractEndpoints.contains(actualFunction)

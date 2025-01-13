@@ -403,6 +403,10 @@
                 roleToAdd = .nftUpdateAttributes
             case "ESDTTransferRole":
                 roleToAdd = .transfer
+            case "ESDTRoleSetNewURI":
+                roleToAdd = .setNewUri
+            case "ESDTRoleModifyRoyalties":
+                roleToAdd = .modifyRoyalties
             default:
                 smartContractError(message: "Unknown role.") // TODO: use the same error as the WASM VM
             }
@@ -452,6 +456,44 @@
             tokenIdentifierHandle: tokenIdentifier.handle,
             nonce: nonce,
             attributesHandle: attributes.handle
+        )
+    }
+    
+    public func ESDTModifyRoyalties(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        royalties: UInt64
+    ) {
+        let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
+        
+        guard tokenType != .fungible else {
+            smartContractError(message: "Token is not a non fungible token.") // TODO: use the same error as the WASM VM
+        }
+        
+        guard self.doesNonFungibleNonceExist(
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        ) else {
+            smartContractError(message: "Token and nonce not found.") // TODO: use the same error as the WASM VM
+        }
+        
+        let caller = Message.caller
+        
+        let callerRoles = self.getAddressRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: caller
+        )
+        
+        guard callerRoles.contains(flag: .modifyRoyalties) else {
+            smartContractError(message: "Caller doesn't have the role to modify royalties.") // TODO: use the same error as the WASM VM
+        }
+        
+        // TODO: is it required for the caller to own the nonce?
+        
+        API.setTokenRoyalties(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            nonce: nonce,
+            royalties: royalties
         )
     }
 
@@ -552,7 +594,7 @@
             addressHandle: address.buffer.handle
         )
         
-        return EsdtLocalRoles(flags: Int32(flags))
+        return EsdtLocalRoles(flags: flags)
     }
     
     private func doesNonFungibleNonceExist(

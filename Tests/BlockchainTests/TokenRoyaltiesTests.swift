@@ -129,4 +129,113 @@ final class TokenRoyaltiesTests: ContractTestCase {
         
         XCTAssertEqual(royalties, 10)
     }
+    
+    func testModifyRoyalties() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canModifyRoyalties: true).flags
+        )
+        
+        try! controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 1,
+            royalties: 10,
+            attributes: Buffer(),
+            to: "user"
+        )
+        
+        try! controller.modifyRoyalties(
+            tokenIdentifier: issuedTokenIdentifier,
+            nonce: 1,
+            royalties: 100
+        )
+        
+        let royalties = try controller.retrieveRoyalties(
+            tokenIdentifier: issuedTokenIdentifier,
+            nonce: 1
+        )
+        
+        XCTAssertEqual(royalties, 100)
+    }
+    
+    func testModifyRoyaltiesButDoesntHaveRoleShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try! controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 1,
+            royalties: 10,
+            attributes: Buffer(),
+            to: "user"
+        )
+        
+        do {
+            try controller.modifyRoyalties(
+                tokenIdentifier: issuedTokenIdentifier,
+                nonce: 1,
+                royalties: 100
+            )
+
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "Caller doesn't have the role to modify royalties."))
+        }
+    }
 }

@@ -1,4 +1,4 @@
-public enum EsdtLocalRolesFlag: Int32 {
+public enum EsdtLocalRolesFlag: UInt64 {
     case none = 0b00000000
     case mint = 0b00000001
     case burn = 0b00000010
@@ -8,6 +8,8 @@ public enum EsdtLocalRolesFlag: Int32 {
     case nftAddUri = 0b00100000
     case nftUpdateAttributes = 0b01000000
     case transfer = 0b10000000
+    case setNewUri = 0b00000001_00000000
+    case modifyRoyalties = 0b00000010_00000000
     
     public func getRoleName() -> Buffer {
         return switch self {
@@ -29,14 +31,18 @@ public enum EsdtLocalRolesFlag: Int32 {
             "ESDTRoleNFTUpdateAttributes"
         case .transfer:
             "ESDTTransferRole"
+        case .setNewUri:
+            "ESDTRoleSetNewURI"
+        case .modifyRoyalties:
+            "ESDTRoleModifyRoyalties"
         }
     }
 }
 
 public struct EsdtLocalRoles {
-    public private(set) var flags: Int32
+    public private(set) var flags: UInt64
     
-    public init(flags: Int32) {
+    public init(flags: UInt64) {
         self.flags = flags
     }
     
@@ -48,9 +54,11 @@ public struct EsdtLocalRoles {
         canBurnNft: Bool = false,
         canAddNftUri: Bool = false,
         canUpdateNftAttributes: Bool = false,
-        canTransfer: Bool = false
+        canTransfer: Bool = false,
+        canSetNewUri: Bool = false,
+        canModifyRoyalties: Bool = false
     ) {
-        var flags: Int32 = EsdtLocalRolesFlag.none.rawValue
+        var flags: UInt64 = EsdtLocalRolesFlag.none.rawValue
         
         if canMint {
             flags |= EsdtLocalRolesFlag.mint.rawValue
@@ -82,6 +90,14 @@ public struct EsdtLocalRoles {
         
         if canTransfer {
             flags |= EsdtLocalRolesFlag.transfer.rawValue
+        }
+        
+        if canSetNewUri {
+            flags |= EsdtLocalRolesFlag.setNewUri.rawValue
+        }
+        
+        if canModifyRoyalties {
+            flags |= EsdtLocalRolesFlag.modifyRoyalties.rawValue
         }
         
         self.flags = flags
@@ -123,6 +139,14 @@ public struct EsdtLocalRoles {
         
         if self.contains(flag: .transfer) {
             try operations(.transfer)
+        }
+        
+        if self.contains(flag: .setNewUri) {
+            try operations(.setNewUri)
+        }
+        
+        if self.contains(flag: .modifyRoyalties) {
+            try operations(.modifyRoyalties)
         }
     }
     

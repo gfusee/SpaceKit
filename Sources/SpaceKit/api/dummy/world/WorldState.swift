@@ -18,7 +18,7 @@ package struct WorldState {
         let name: Data
         var attributes: Data
         let creator: Data
-        let royalties: BigInt
+        var royalties: BigInt
         let uris: Data
     }
     

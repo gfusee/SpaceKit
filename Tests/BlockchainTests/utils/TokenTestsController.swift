@@ -224,7 +224,7 @@ import SpaceKitTesting
     public func setTokenRoles(
         tokenIdentifier: Buffer,
         address: Address,
-        roles: Int32
+        roles: UInt64
     ) {
         Blockchain.setTokenRoles(
             for: address,
@@ -234,6 +234,18 @@ import SpaceKitTesting
         .registerPromise(
             gas: 100_000_000,
             callback: self.$setSpecialRolesCallback(gasForCallback: 100_000_000)
+        )
+    }
+    
+    public func modifyRoyalties(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        royalties: UInt64
+    ) {
+        Blockchain.modifyTokenRoyalties(
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce,
+            royalties: royalties
         )
     }
     
