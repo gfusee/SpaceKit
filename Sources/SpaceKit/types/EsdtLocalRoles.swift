@@ -39,7 +39,7 @@ public enum EsdtLocalRolesFlag: UInt64 {
     }
 }
 
-public struct EsdtLocalRoles {
+public struct EsdtLocalRoles: Equatable {
     public private(set) var flags: UInt64
     
     public init(flags: UInt64) {
