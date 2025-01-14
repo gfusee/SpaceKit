@@ -124,7 +124,7 @@ public struct Blockchain {
     public static func getESDTLocalRoles(tokenIdentifier: Buffer) -> EsdtLocalRoles { // TODO: use TokenIdentifier type
         let flags = API.getESDTLocalRoles(tokenIdHandle: tokenIdentifier.handle)
         
-        return EsdtLocalRoles(flags: UInt64(flags))
+        return EsdtLocalRoles(flags: toBigEndianUInt64(from: flags.bigEndian.toBytes8()))
     }
     
     public static func deploySCFromSource(
@@ -413,6 +413,54 @@ public struct Blockchain {
                 canAddSpecialRoles: properties.canAddSpecialRoles
             )
         )
+    }
+    
+    public static func registerAndSetAllRoles(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        tokenType: TokenType,
+        numDecimals: UInt32
+    ) -> AsyncContractCall {
+        let tokenTypeNameStaticString: StaticString = switch tokenType {
+        case .fungible:
+            "FNG"
+        case .nonFungible:
+            "NFT"
+        case .semiFungible:
+            "SFT"
+        case .meta:
+            "META"
+        case .invalid:
+            ""
+        }
+        
+        let endpointNameStaticString: StaticString = switch tokenType {
+        case .fungible:
+            ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME
+        case .nonFungible:
+            ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME
+        case .semiFungible:
+            ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME
+        case .meta:
+            ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME
+        case .invalid:
+            smartContractError(message: "Invalid token type.")
+        }
+        
+        var argBuffer = ArgBuffer()
+        
+        argBuffer.pushArg(arg: tokenDisplayName)
+        argBuffer.pushArg(arg: tokenTicker)
+        argBuffer.pushArg(arg: Buffer(stringLiteral: tokenTypeNameStaticString))
+        argBuffer.pushArg(arg: numDecimals)
+        
+        let contractCall = ContractCall(
+            receiver: Address(bytes: ESDT_SYSTEM_SC_ADDRESS_BYTES),
+            endpointName: Buffer(stringLiteral: endpointNameStaticString),
+            argBuffer: argBuffer
+        )
+        
+        return AsyncContractCall(contractCall: contractCall)
     }
 
     public static func setTokenRoles(

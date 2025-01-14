@@ -908,8 +908,16 @@ extension DummyApi: BlockchainApiProtocol {
     }
     
     public func getESDTLocalRoles(tokenIdHandle: Int32) -> Int64 {
-        // TODO: implement and tests
-        fatalError()
+        // TODO: tests
+        let currentSCData = self.getCurrentContainer().getCurrentSCAccount().addressData
+        let addressHandle = Buffer(data: Array(currentSCData)).handle
+        
+        let flagsUnsigned = self.getAddressTokenRoles(
+            tokenIdentifierHandle: tokenIdHandle,
+            addressHandle: addressHandle
+        )
+        
+        return toBigEndianInt64(from: flagsUnsigned.bigEndian.toBytes8())
     }
     
     public func managedGetESDTTokenData(

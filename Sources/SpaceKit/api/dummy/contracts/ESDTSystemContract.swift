@@ -147,6 +147,87 @@
         
         return newTokenIdentifier
     }
+    
+    public func registerAndSetAllRoles(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        tokenTypeName: Buffer,
+        numDecimals: UInt32
+    ) -> Buffer {
+        let tokenPropertiesArgs = TokenPropertiesArgument(
+            canFreeze: true,
+            canWipe: true,
+            canPause: true,
+            canTransferCreateRole: true,
+            canMint: true,
+            canBurn: true,
+            canChangeOwner: true,
+            canUpgrade: true,
+            canAddSpecialRoles: true
+        )
+        var tokenPropertiesEncodedArray = Vector<Buffer>()
+        tokenPropertiesArgs.multiEncode(output: &tokenPropertiesEncodedArray)
+        let tokenPropertiesEncoded = MultiValueEncoded(items: tokenPropertiesEncodedArray)
+        
+        let issuedTokenIdentifier = switch tokenTypeName {
+        case "FNG":
+            self.issue(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                initialSupply: 0,
+                numDecimals: numDecimals,
+                tokenProperties: tokenPropertiesEncoded
+            )
+        case "NFT":
+            self.issueNonFungible(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                tokenProperties: tokenPropertiesEncoded
+            )
+        case "SFT":
+            self.issueSemiFungible(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                tokenProperties: tokenPropertiesEncoded
+            )
+        case "META":
+            self.registerMetaESDT(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                numDecimals: numDecimals,
+                tokenProperties: tokenPropertiesEncoded
+            )
+        default:
+            smartContractError(message: "Unknown token type.") // TODO: use the same error as the WASM VM
+        }
+        
+        let allRoles = EsdtLocalRoles(
+            canMint: true,
+            canBurn: true,
+            canCreateNft: true,
+            canAddNftQuantity: true,
+            canBurnNft: true,
+            canAddNftUri: true,
+            canUpdateNftAttributes: true,
+            canTransfer: false, // TODO: should this one be set to true?
+            canSetNewUri: true,
+            canModifyRoyalties: true
+        )
+        
+        var roleNamesEncoded = MultiValueEncoded<Buffer>()
+        
+        allRoles.forEachFlag { flag in
+            roleNamesEncoded = roleNamesEncoded.appended(value: flag.getRoleName())
+        }
+        
+        self.setSpecialRole(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: Message.caller,
+            roles: roleNamesEncoded
+        )
+        
+        return issuedTokenIdentifier
+    }
 
     public func ESDTLocalMint(
         tokenIdentifier: Buffer,
@@ -514,7 +595,7 @@
         let tokenPropertiesCount = tokenProperties.count
         var tokenPropertyEncodedIndex: Int32 = 0
         
-        while tokenPropertyEncodedIndex < tokenPropertiesCount {
+        while tokenPropertyEncodedIndex + 1 < tokenPropertiesCount {
             let tokenPropertyName = tokenProperties.get(tokenPropertyEncodedIndex)
             let tokenPropertyRawValue = tokenProperties.get(tokenPropertyEncodedIndex + 1)
             let tokenPropertyValue = Bool(topDecode: tokenPropertyRawValue)

@@ -556,6 +556,154 @@ final class TokenIssuanceTests: ContractTestCase {
         
         XCTAssertEqual(lastErrorMessage, "Not enough payment.")
     }
+    
+    func testRegisterAndSetAllRolesForFungibleToken() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerAndSetAllRoles(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            tokenType: .fungible,
+            numDecimals: 18,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        let roleFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
+        let roles = EsdtLocalRoles(flags: roleFlags)
+        
+        XCTAssertTrue(roles.contains(flag: .mint))
+        XCTAssertTrue(roles.contains(flag: .burn))
+        XCTAssertTrue(roles.contains(flag: .nftCreate))
+        XCTAssertTrue(roles.contains(flag: .nftAddQuantity))
+        XCTAssertTrue(roles.contains(flag: .nftBurn))
+        XCTAssertTrue(roles.contains(flag: .nftAddUri))
+        XCTAssertTrue(roles.contains(flag: .nftUpdateAttributes))
+        XCTAssertTrue(roles.contains(flag: .setNewUri))
+        XCTAssertTrue(roles.contains(flag: .modifyRoyalties))
+        XCTAssertFalse(roles.contains(flag: .transfer)) // CanTransfer should never be set
+    }
+
+    func testRegisterAndSetAllRolesForNonFungibleToken() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerAndSetAllRoles(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            tokenType: .nonFungible,
+            numDecimals: 0,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        let roleFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
+        let roles = EsdtLocalRoles(flags: roleFlags)
+        
+        XCTAssertTrue(roles.contains(flag: .mint))
+        XCTAssertTrue(roles.contains(flag: .burn))
+        XCTAssertTrue(roles.contains(flag: .nftCreate))
+        XCTAssertTrue(roles.contains(flag: .nftAddQuantity))
+        XCTAssertTrue(roles.contains(flag: .nftBurn))
+        XCTAssertTrue(roles.contains(flag: .nftAddUri))
+        XCTAssertTrue(roles.contains(flag: .nftUpdateAttributes))
+        XCTAssertTrue(roles.contains(flag: .setNewUri))
+        XCTAssertTrue(roles.contains(flag: .modifyRoyalties))
+        XCTAssertFalse(roles.contains(flag: .transfer)) // CanTransfer should never be set
+    }
+
+    func testRegisterAndSetAllRolesForSemiFungibleToken() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerAndSetAllRoles(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            tokenType: .semiFungible,
+            numDecimals: 18,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        let roleFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
+        let roles = EsdtLocalRoles(flags: roleFlags)
+        
+        XCTAssertTrue(roles.contains(flag: .mint))
+        XCTAssertTrue(roles.contains(flag: .burn))
+        XCTAssertTrue(roles.contains(flag: .nftCreate))
+        XCTAssertTrue(roles.contains(flag: .nftAddQuantity))
+        XCTAssertTrue(roles.contains(flag: .nftBurn))
+        XCTAssertTrue(roles.contains(flag: .nftAddUri))
+        XCTAssertTrue(roles.contains(flag: .nftUpdateAttributes))
+        XCTAssertTrue(roles.contains(flag: .setNewUri))
+        XCTAssertTrue(roles.contains(flag: .modifyRoyalties))
+        XCTAssertFalse(roles.contains(flag: .transfer)) // CanTransfer should never be set
+    }
+
+    func testRegisterAndSetAllRolesForMetaToken() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerAndSetAllRoles(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            tokenType: .meta,
+            numDecimals: 18,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        let roleFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
+        let roles = EsdtLocalRoles(flags: roleFlags)
+        
+        XCTAssertTrue(roles.contains(flag: .mint))
+        XCTAssertTrue(roles.contains(flag: .burn))
+        XCTAssertTrue(roles.contains(flag: .nftCreate))
+        XCTAssertTrue(roles.contains(flag: .nftAddQuantity))
+        XCTAssertTrue(roles.contains(flag: .nftBurn))
+        XCTAssertTrue(roles.contains(flag: .nftAddUri))
+        XCTAssertTrue(roles.contains(flag: .nftUpdateAttributes))
+        XCTAssertTrue(roles.contains(flag: .setNewUri))
+        XCTAssertTrue(roles.contains(flag: .modifyRoyalties))
+        XCTAssertFalse(roles.contains(flag: .transfer)) // CanTransfer should never be set
+    }
+
+    func testRegisterAndSetAllRolesForInvalidTokenShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        
+        do {
+            try controller.registerAndSetAllRoles(
+                tokenDisplayName: "TestToken",
+                tokenTicker: "TEST",
+                tokenType: .invalid,
+                numDecimals: 0,
+                transactionInput: ContractCallTransactionInput(
+                    callerAddress: "user",
+                    egldValue: BigUint(bigInt: self.issuanceCost)
+                )
+            )
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "Invalid token type."))
+        }
+    }
+
 
     func testSetSpecialRolesButCannotAddSpecialRoleShouldFail() throws {
         try self.deployContract(at: "contract")

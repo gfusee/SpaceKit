@@ -108,6 +108,32 @@ import SpaceKitTesting
                 )
             )
     }
+    
+    public func registerAndSetAllRoles(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        tokenType: TokenType,
+        numDecimals: UInt32
+    ) {
+        let caller = Message.caller
+        
+        Blockchain
+            .registerAndSetAllRoles(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                tokenType: tokenType,
+                numDecimals: numDecimals
+            )
+            .registerPromise(
+                gas: 100_000_000,
+                value: Message.egldValue,
+                callback: self.$issueCallback(
+                    caller: caller,
+                    mintedAmount: 0,
+                    gasForCallback: 100_000_000
+                )
+            )
+    }
 
     public func createAndSendNonFungibleToken(
         tokenIdentifier: Buffer,
@@ -190,6 +216,12 @@ import SpaceKitTesting
                 tokenIdentifier: tokenIdentifier,
                 nonce: nonce
             )
+    }
+    
+    public func getSelfTokenRoles(
+        tokenIdentifier: Buffer
+    ) -> UInt64 {
+        Blockchain.getESDTLocalRoles(tokenIdentifier: tokenIdentifier).flags
     }
     
     public func mintAndSendTokens(
