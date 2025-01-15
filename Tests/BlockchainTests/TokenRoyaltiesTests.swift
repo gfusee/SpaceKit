@@ -62,12 +62,12 @@ final class TokenRoyaltiesTests: ContractTestCase {
             roles: EsdtLocalRoles(canAddNftQuantity: true).flags
         )
         
-        try! controller.createAndSendNonFungibleToken(
+        try controller.createAndSendNonFungibleToken(
             tokenIdentifier: issuedTokenIdentifier,
             amount: 1,
             royalties: 0,
             attributes: Buffer(),
-            to: "user"
+            to: "contract"
         )
         
         let royalties = try controller.retrieveRoyalties(
@@ -77,7 +77,7 @@ final class TokenRoyaltiesTests: ContractTestCase {
         
         XCTAssertEqual(royalties, 0)
     }
-    
+
     func testCreateWithNonZeroRoyalties() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
@@ -119,7 +119,7 @@ final class TokenRoyaltiesTests: ContractTestCase {
             amount: 1,
             royalties: 10,
             attributes: Buffer(),
-            to: "user"
+            to: "contract"
         )
         
         let royalties = try controller.retrieveRoyalties(
@@ -130,6 +130,62 @@ final class TokenRoyaltiesTests: ContractTestCase {
         XCTAssertEqual(royalties, 10)
     }
     
+    func testRetrieveButDoesntHaveTokenShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canAddNftQuantity: true).flags
+        )
+        
+        try controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 1,
+            royalties: 0,
+            attributes: Buffer(),
+            to: "user"
+        )
+        
+        do {
+            _ = try controller.retrieveRoyalties(
+                tokenIdentifier: issuedTokenIdentifier,
+                nonce: 1
+            )
+
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "Token not found for account."))
+        }
+    }
+
     func testModifyRoyalties() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
@@ -171,7 +227,7 @@ final class TokenRoyaltiesTests: ContractTestCase {
             amount: 1,
             royalties: 10,
             attributes: Buffer(),
-            to: "user"
+            to: "contract"
         )
         
         try! controller.modifyRoyalties(

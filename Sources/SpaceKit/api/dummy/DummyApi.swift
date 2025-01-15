@@ -529,6 +529,18 @@ public class DummyApi {
                 data: tokenData
             )
     }
+    
+    package func getAddressESDTBalance(
+        address: Data,
+        tokenId: Data,
+        nonce: UInt64
+    ) -> EsdtBalance {
+        let balance = self.getAccount(addressData: address)?
+            .esdtBalances[tokenId]?
+            .first(where: { $0.nonce == nonce })
+        
+        return balance ?? EsdtBalance(nonce: nonce, balance: 0)
+    }
 }
 
 extension DummyApi: BufferApiProtocol {
@@ -876,14 +888,11 @@ extension DummyApi: BlockchainApiProtocol {
         let addressData = Data(bytes: addressPtr, count: 32)
         let tokenIdData = Data(bytes: tokenIDOffset, count: Int(tokenIDLen))
         
-        guard let account = self.getAccount(addressData: addressData),
-              let tokenBalances = account.esdtBalances[tokenIdData],
-              let balance = tokenBalances.first(where: { $0.nonce == nonce })
-        else {
-            self.getCurrentContainer().managedBigIntData[dest] = 0
-            
-            return
-        }
+        let balance = self.getAddressESDTBalance(
+            address: addressData,
+            tokenId: tokenIdData,
+            nonce: UInt64(nonce)
+        )
         
         self.getCurrentContainer().managedBigIntData[dest] = balance.balance
     }
@@ -933,12 +942,21 @@ extension DummyApi: BlockchainApiProtocol {
         royaltiesHandle: Int32,
         urisHandle: Int32
     ) {
-        // TODO: use addressData to perform balance checks
         let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
         let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIDHandle)
         
         guard let tokenData = self.getCurrentContainer().getTokenData(tokenIdentifier: tokenIdentifierData, nonce: UInt64(nonce)) else {
             return
+        }
+        
+        let addressBalance = self.getAddressESDTBalance(
+            address: addressData,
+            tokenId: tokenIdentifierData,
+            nonce: UInt64(nonce)
+        )
+        
+        guard addressBalance.balance > 0 else {
+            self.throwExecutionFailed(reason: "Token not found for account.") // TODO: use the same error as the WASM VM.
         }
         
         var propertiesData = Data()

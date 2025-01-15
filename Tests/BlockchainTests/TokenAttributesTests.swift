@@ -468,7 +468,7 @@ final class TokenAttributesTests: ContractTestCase {
             amount: 1,
             royalties: 0,
             attributes: "Hello World!",
-            to: "user"
+            to: "contract"
         )
         
         try controller.updateAttributesRaw(
@@ -520,7 +520,7 @@ final class TokenAttributesTests: ContractTestCase {
             amount: 1,
             royalties: 0,
             attributes: "Hello!",
-            to: "user"
+            to: "contract"
         )
         
         let storedAttributes = try controller.retrieveAttributesRaw(
@@ -566,7 +566,7 @@ final class TokenAttributesTests: ContractTestCase {
             amount: 1,
             royalties: 0,
             attributes: "Hello World!",
-            to: "user"
+            to: "contract"
         )
         
         try controller.updateAttributesRaw(
@@ -618,7 +618,7 @@ final class TokenAttributesTests: ContractTestCase {
             amount: 1,
             royalties: 0,
             attributes: "Hello World!",
-            to: "user"
+            to: "contract"
         )
         
         let attributes = TestAttributes(
@@ -638,5 +638,55 @@ final class TokenAttributesTests: ContractTestCase {
         )
         
         XCTAssertEqual(storedAttributes, attributes)
+    }
+    
+    func testRetrieveAttributesButDoesntHaveRoleShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true, canUpdateNftAttributes: true).flags
+        )
+        
+        try controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 1,
+            royalties: 0,
+            attributes: "Hello World!",
+            to: "user"
+        )
+        
+        do {
+            _ = try controller.retrieveAttributes(
+                tokenIdentifier: issuedTokenIdentifier,
+                nonce: 1
+            )
+
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "Token not found for account."))
+        }
     }
 }

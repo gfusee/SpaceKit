@@ -1,6 +1,7 @@
 #if !WASM
+import Foundation
 
-public enum TransactionError: Error, Equatable {
+public enum TransactionError: LocalizedError, Equatable {
     case userError(message: String)
     case executionFailed(reason: String)
     case worldError(message: String)
@@ -9,11 +10,15 @@ public enum TransactionError: Error, Equatable {
         switch self {
         case .userError(let message):
             return message
-        case .executionFailed(_):
-            return "execution failed"
+        case .executionFailed(let reason):
+            return reason
         case .worldError(let message):
             return message
         }
+    }
+    
+    public var errorDescription: String? {
+        self.debugDescription
     }
     
     var code: UInt32 {
@@ -36,6 +41,18 @@ public enum TransactionError: Error, Equatable {
         case .worldError(_):
             false
         }
+    }
+}
+
+extension TransactionError: CustomStringConvertible {
+    public var description: String {
+        "Code: \(self.code), Description: \(self.message)"
+    }
+}
+
+extension TransactionError: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        "Code: \(self.code), Description: \(self.message)"
     }
 }
 

@@ -163,7 +163,6 @@ fileprivate func generateTopDecodeExtension(enumName: TokenSyntax, discriminants
         
                 if nestedDecodeInput.bufferCount == 0 {
                     \(raw: getTopDecodeWhenEmptyIfPossible(enumName: enumName, firstCase: discriminantsAndCases[0].1))
-                    return
                 }
         
                 defer {
@@ -396,6 +395,7 @@ fileprivate func getTopDecodeWhenEmptyIfPossible(enumName: TokenSyntax, firstCas
     
     return """
     self = .\(firstCase.name.trimmed)
+    return
     """
 }
 
