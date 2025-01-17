@@ -36,6 +36,8 @@ package struct WorldState {
     
     // First key = token identifier, nested key = address
     package private(set) var tokenRolesForAddress: [Data : [Data : EsdtLocalRoles]] = [:]
+    package private(set) var numberOfAccountWithUpdateAttributesRoleForToken: [Data : UInt64] = [:]
+    package private(set) var numberOfAccountWithModifyRoyaltiesRoleForToken: [Data : UInt64] = [:]
     package private(set) var nextNonceForNonFungibleToken: [Data : UInt64] = [:]
     package private(set) var managerForToken: [Data : Data] = [:]
     private var tokenDataForToken: [TokenIdentifierAndNonce : TokenData] = [:]
@@ -75,6 +77,20 @@ package struct WorldState {
         address: Data,
         roles: EsdtLocalRoles
     ) {
+        let oldRoles = self.getAddressTokenRoles(tokenIdentifier: tokenIdentifier, address: address)
+        
+        if !oldRoles.contains(flag: .nftUpdateAttributes) && roles.contains(flag: .nftUpdateAttributes) {
+            self.numberOfAccountWithUpdateAttributesRoleForToken[tokenIdentifier] = (self.numberOfAccountWithUpdateAttributesRoleForToken[tokenIdentifier] ?? 0) + 1
+        } else if oldRoles.contains(flag: .nftUpdateAttributes) && !roles.contains(flag: .nftUpdateAttributes) {
+            self.numberOfAccountWithUpdateAttributesRoleForToken[tokenIdentifier] = (self.numberOfAccountWithUpdateAttributesRoleForToken[tokenIdentifier] ?? 0) - 1
+        }
+        
+        if !oldRoles.contains(flag: .modifyRoyalties) && roles.contains(flag: .modifyRoyalties) {
+            self.numberOfAccountWithModifyRoyaltiesRoleForToken[tokenIdentifier] = (self.numberOfAccountWithModifyRoyaltiesRoleForToken[tokenIdentifier] ?? 0) + 1
+        } else if oldRoles.contains(flag: .modifyRoyalties) && !roles.contains(flag: .modifyRoyalties) {
+            self.numberOfAccountWithModifyRoyaltiesRoleForToken[tokenIdentifier] = (self.numberOfAccountWithModifyRoyaltiesRoleForToken[tokenIdentifier] ?? 0) - 1
+        }
+        
         var rolesForAddressMap = self.tokenRolesForAddress[tokenIdentifier] ?? [:]
         
         rolesForAddressMap[address] = roles
@@ -93,6 +109,28 @@ package struct WorldState {
         )
         
         self.tokenDataForToken[key] = data
+    }
+    
+    package mutating func getNumberOfAddressesWithRolesForToken(
+        tokenIdentifier: Data,
+        roles: EsdtLocalRoles
+    ) -> UInt64 {
+        var result: UInt64 = 0
+        
+        roles.forEachFlag { flag in
+            let numberToAdd = switch flag {
+            case .nftUpdateAttributes:
+                self.numberOfAccountWithUpdateAttributesRoleForToken[tokenIdentifier] ?? 0
+            case .modifyRoyalties:
+                self.numberOfAccountWithModifyRoyaltiesRoleForToken[tokenIdentifier] ?? 0
+            default:
+                fatalError("Not implemented.")
+            }
+            
+            result += numberToAdd
+        }
+        
+        return result
     }
     
     package mutating func registerToken(

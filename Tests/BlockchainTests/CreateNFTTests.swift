@@ -148,7 +148,7 @@ final class CreateNFTTests: ContractTestCase {
             
             XCTFail()
         } catch {
-            XCTAssertEqual(error, .executionFailed(reason: "Token is not a non fungible token."))
+            XCTAssertEqual(error, .executionFailed(reason: "Token is not a non/semi fungible or meta token."))
         }
     }
 }

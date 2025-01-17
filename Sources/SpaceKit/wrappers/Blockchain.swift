@@ -1,4 +1,4 @@
-fileprivate let ESDT_SYSTEM_SC_ADDRESS_BYTES: Bytes32 = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 255, 255)
+package let ESDT_SYSTEM_SC_ADDRESS_BYTES: Bytes32 = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 255, 255)
 
 // TODO: add caching when needed (and turn related function into computed variables)
 
@@ -124,7 +124,7 @@ public struct Blockchain {
     public static func getESDTLocalRoles(tokenIdentifier: Buffer) -> EsdtLocalRoles { // TODO: use TokenIdentifier type
         let flags = API.getESDTLocalRoles(tokenIdHandle: tokenIdentifier.handle)
         
-        return EsdtLocalRoles(flags: toBigEndianUInt64(from: flags.bigEndian.toBytes8()))
+        return EsdtLocalRoles(flags: toBigEndianUInt64(from: flags.toBytes8()))
     }
     
     public static func deploySCFromSource(

@@ -1,4 +1,4 @@
-let ESDT_LOCAL_BURN_FUNC_NAME: StaticString = "ESDTBurn"
+let ESDT_LOCAL_BURN_FUNC_NAME: StaticString = "ESDTLocalBurn"
 let ESDT_NFT_BURN_FUNC_NAME: StaticString = "ESDTNFTBurn"
 
 // TODO: Use TokenIdentifier instead of Buffer for tokenIdentifier
@@ -31,7 +31,6 @@ extension TokenPayment {
             
             endpoint = ESDT_NFT_BURN_FUNC_NAME
         }
-        
         
         let _: IgnoreValue = ContractCall(
             receiver: Blockchain.getSCAddress(),

@@ -279,6 +279,18 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .target(
+            name: "TokenOperations",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/FeatureTests/TokenOperations",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
             name: "CheckPause",
             dependencies: [
                 "SpaceKit"

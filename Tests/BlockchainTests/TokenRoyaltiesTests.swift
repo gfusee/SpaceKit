@@ -244,6 +244,119 @@ final class TokenRoyaltiesTests: ContractTestCase {
         XCTAssertEqual(royalties, 100)
     }
     
+    func testModifyRoyaltiesButTokenIsSemiFungibleShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueSemiFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: SemiFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canModifyRoyalties: true).flags
+        )
+        
+        try! controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 1,
+            royalties: 10,
+            attributes: Buffer(),
+            to: "contract"
+        )
+        
+        do {
+            try controller.modifyRoyalties(
+                tokenIdentifier: issuedTokenIdentifier,
+                nonce: 1,
+                royalties: 100
+            )
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "Token is not a non fungible token."))
+        }
+    }
+    
+    func testModifyRoyaltiesButTokenIsMetaShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canCreateNft: true).flags
+        )
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canModifyRoyalties: true).flags
+        )
+        
+        try! controller.createAndSendNonFungibleToken(
+            tokenIdentifier: issuedTokenIdentifier,
+            amount: 1,
+            royalties: 10,
+            attributes: Buffer(),
+            to: "contract"
+        )
+        
+        do {
+            try controller.modifyRoyalties(
+                tokenIdentifier: issuedTokenIdentifier,
+                nonce: 1,
+                royalties: 100
+            )
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "Token is not a non fungible token."))
+        }
+    }
+
     func testModifyRoyaltiesButDoesntHaveRoleShouldFail() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenTestsController.self, for: "contract")!

@@ -315,7 +315,7 @@
         let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
         
         guard tokenType != .fungible else {
-            smartContractError(message: "Token is not a non fungible token.") // TODO: use the same error as the WASM VM
+            smartContractError(message: "Token is not a non/semi fungible or meta token.") // TODO: use the same error as the WASM VM
         }
         
         let caller = Message.caller
@@ -349,7 +349,7 @@
         let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
         
         guard tokenType != .fungible else {
-            smartContractError(message: "Token is not a non fungible token.") // TODO: use the same error as the WASM VM
+            smartContractError(message: "Token is not a non/semi fungible or meta token.") // TODO: use the same error as the WASM VM
         }
         
         if tokenType == .nonFungible {
@@ -460,6 +460,11 @@
             smartContractError(message: "Only the manager of the token can add special roles.") // TODO: use the same error as the WASM VM
         }
         
+        let oldRoles = self.getAddressRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: address
+        )
+        
         var parsedRoles = EsdtLocalRoles()
         
         roles.forEach { roleName in
@@ -482,12 +487,30 @@
                 roleToAdd = .nftAddUri
             case "ESDTRoleNFTUpdateAttributes":
                 roleToAdd = .nftUpdateAttributes
+                
+                let numberOfAddressesWithRole = self.getNumberOfAddressesWithRoles(
+                    tokenIdentifier: tokenIdentifier,
+                    roles: EsdtLocalRoles(canUpdateNftAttributes: true)
+                )
+                
+                guard numberOfAddressesWithRole == 0 || oldRoles.contains(flag: roleToAdd) else {
+                    smartContractError(message: "Only one account at a time can have the role ESDTRoleNFTUpdateAttributes for a given token.") // TODO: use the same error as the WASM VM
+                }
             case "ESDTTransferRole":
                 roleToAdd = .transfer
             case "ESDTRoleSetNewURI":
                 roleToAdd = .setNewUri
             case "ESDTRoleModifyRoyalties":
                 roleToAdd = .modifyRoyalties
+                
+                let numberOfAddressesWithRole = self.getNumberOfAddressesWithRoles(
+                    tokenIdentifier: tokenIdentifier,
+                    roles: EsdtLocalRoles(canModifyRoyalties: true)
+                )
+                
+                guard numberOfAddressesWithRole == 0 || oldRoles.contains(flag: roleToAdd) else {
+                    smartContractError(message: "Only one account at a time can have the role ESDTRoleModifyRoyalties for a given token.") // TODO: use the same error as the WASM VM
+                }
             default:
                 smartContractError(message: "Unknown role.") // TODO: use the same error as the WASM VM
             }
@@ -509,7 +532,7 @@
     ) {
         let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
         
-        guard tokenType != .fungible else {
+        guard tokenType == .nonFungible else {
             smartContractError(message: "Token is not a non fungible token.") // TODO: use the same error as the WASM VM
         }
         
@@ -547,7 +570,7 @@
     ) {
         let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
         
-        guard tokenType != .fungible else {
+        guard tokenType == .nonFungible else {
             smartContractError(message: "Token is not a non fungible token.") // TODO: use the same error as the WASM VM
         }
         
@@ -664,6 +687,16 @@
         )
         
         return TokenType(topDecode: tokenPropertiesBuffer)
+    }
+    
+    private func getNumberOfAddressesWithRoles(
+        tokenIdentifier: Buffer,
+        roles: EsdtLocalRoles
+    ) -> UInt64 {
+        API.getNumberOfAddressesWithRolesForToken(
+            tokenIdentifierHandle: tokenIdentifier.handle,
+            roles: roles.flags
+        )
     }
     
     private func getAddressRoles(

@@ -436,6 +436,16 @@ package final class TransactionContainer: @unchecked Sendable {
         self.state.getTokenProperties(tokenIdentifier: tokenIdentifier)
     }
     
+    package func getNumberOfAddressesWithRolesForToken(
+        tokenIdentifier: Data,
+        roles: EsdtLocalRoles
+    ) -> UInt64 {
+        self.state.getNumberOfAddressesWithRolesForToken(
+            tokenIdentifier: tokenIdentifier,
+            roles: roles
+        )
+    }
+    
     package func registerToken(
         caller: Data,
         managerAddress: Data,

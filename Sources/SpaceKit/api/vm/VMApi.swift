@@ -546,6 +546,34 @@ extension VMApi: BlockchainApiProtocol {
     mutating func getShardOfAddress(addressPtr: UnsafeRawPointer) -> Int32 {
         return SpaceKit.getShardOfAddress(address_ptr: addressPtr)
     }
+    
+    mutating func managedGetESDTTokenData(
+        addressHandle: Int32,
+        tokenIDHandle: Int32,
+        nonce: Int64,
+        valueHandle: Int32,
+        propertiesHandle: Int32,
+        hashHandle: Int32,
+        nameHandle: Int32,
+        attributesHandle: Int32,
+        creatorHandle: Int32,
+        royaltiesHandle: Int32,
+        urisHandle: Int32
+    ) {
+        return SpaceKit.managedGetESDTTokenData(
+            addressHandle: addressHandle,
+            tokenIDHandle: tokenIDHandle,
+            nonce: nonce,
+            valueHandle: valueHandle,
+            propertiesHandle: propertiesHandle,
+            hashHandle: hashHandle,
+            nameHandle: nameHandle,
+            attributesHandle: attributesHandle,
+            creatorHandle: creatorHandle,
+            royaltiesHandle: royaltiesHandle,
+            urisHandle: urisHandle
+        )
+    }
 }
 
 // MARK: CallValueApiProtocol Implementation

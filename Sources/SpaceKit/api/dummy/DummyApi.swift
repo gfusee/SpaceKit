@@ -387,6 +387,18 @@ public class DummyApi {
         self.getCurrentContainer().managedBuffersData[resultHandle] = propertiesData
     }
     
+    package func getNumberOfAddressesWithRolesForToken(
+        tokenIdentifierHandle: Int32,
+        roles: UInt64
+    ) -> UInt64 {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        return self.getCurrentContainer().getNumberOfAddressesWithRolesForToken(
+            tokenIdentifier: tokenIdentifierData,
+            roles: EsdtLocalRoles(flags: roles)
+        )
+    }
+    
     package func getGlobalTokenAttributes(
         tokenIdentifierHandle: Int32,
         nonce: UInt64,
