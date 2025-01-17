@@ -31,6 +31,8 @@
                 "arguments": [
                     "str:NFT-abcdef",
                     "100",
+                    "0",
+                    "",
                     "sc:contract"
                 ],
                 "gasLimit": "5,000,000",
