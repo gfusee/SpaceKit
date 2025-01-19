@@ -207,11 +207,12 @@
             canCreateNft: true,
             canAddNftQuantity: true,
             canBurnNft: true,
-            canAddNftUri: true,
             canUpdateNftAttributes: true,
-            canTransfer: false, // TODO: should this one be set to true?
-            canSetNewUri: true,
-            canModifyRoyalties: true
+            canAddNftUri: true,
+            canRecreateNft: true,
+            canModifyCreator: true,
+            canModifyRoyalties: true,
+            canSetNewUri: true
         )
         
         var roleNamesEncoded = MultiValueEncoded<Buffer>()
@@ -272,7 +273,7 @@
         }
     }
     
-    public func ESDTBurn(
+    public func ESDTLocalBurn(
         tokenIdentifier: Buffer,
         amount: BigUint
     ) {
@@ -483,8 +484,6 @@
                 roleToAdd = .nftAddQuantity
             case "ESDTRoleNFTBurn":
                 roleToAdd = .nftBurn
-            case "ESDTRoleNFTAddURI":
-                roleToAdd = .nftAddUri
             case "ESDTRoleNFTUpdateAttributes":
                 roleToAdd = .nftUpdateAttributes
                 
@@ -496,10 +495,12 @@
                 guard numberOfAddressesWithRole == 0 || oldRoles.contains(flag: roleToAdd) else {
                     smartContractError(message: "Only one account at a time can have the role ESDTRoleNFTUpdateAttributes for a given token.") // TODO: use the same error as the WASM VM
                 }
-            case "ESDTTransferRole":
-                roleToAdd = .transfer
-            case "ESDTRoleSetNewURI":
-                roleToAdd = .setNewUri
+            case "ESDTRoleNFTAddURI":
+                roleToAdd = .nftAddUri
+            case "ESDTRoleNFTRecreate":
+                roleToAdd = .nftRecreate
+            case "ESDTRoleModifyCreator":
+                roleToAdd = .modifyCreator
             case "ESDTRoleModifyRoyalties":
                 roleToAdd = .modifyRoyalties
                 
@@ -511,6 +512,8 @@
                 guard numberOfAddressesWithRole == 0 || oldRoles.contains(flag: roleToAdd) else {
                     smartContractError(message: "Only one account at a time can have the role ESDTRoleModifyRoyalties for a given token.") // TODO: use the same error as the WASM VM
                 }
+            case "ESDTRoleSetNewURI":
+                roleToAdd = .setNewUri
             default:
                 smartContractError(message: "Unknown role.") // TODO: use the same error as the WASM VM
             }

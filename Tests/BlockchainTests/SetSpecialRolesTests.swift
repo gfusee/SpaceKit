@@ -174,43 +174,6 @@ final class SetSpecialRolesTests: ContractTestCase {
         XCTAssertEqual(contractRoles, expected)
     }
 
-    func testSetSpecialRolesCanAddNftUri() throws {
-        try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
-
-        try controller.issueNonFungible(
-            tokenDisplayName: "TestToken",
-            tokenTicker: "TEST",
-            properties: NonFungibleTokenProperties(
-                canFreeze: false,
-                canWipe: false,
-                canPause: false,
-                canTransferCreateRole: false,
-                canChangeOwner: false,
-                canUpgrade: false,
-                canAddSpecialRoles: true
-            ),
-            transactionInput: ContractCallTransactionInput(
-                callerAddress: "user",
-                egldValue: BigUint(bigInt: self.issuanceCost)
-            )
-        )
-
-        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
-
-        try controller.setTokenRoles(
-            tokenIdentifier: issuedTokenIdentifier,
-            address: "contract",
-            roles: EsdtLocalRoles(canAddNftUri: true).flags
-        )
-
-        let contractRolesFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
-        let contractRoles = EsdtLocalRoles(flags: contractRolesFlags)
-
-        let expected = EsdtLocalRoles(canAddNftUri: true)
-        XCTAssertEqual(contractRoles, expected)
-    }
-
     func testSetSpecialRolesCanUpdateNftAttributes() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
@@ -331,8 +294,8 @@ final class SetSpecialRolesTests: ContractTestCase {
         
         XCTAssertEqual(lastErrorMessage, "Only one account at a time can have the role ESDTRoleNFTUpdateAttributes for a given token.")
     }
-
-    func testSetSpecialRolesCanTransfer() throws {
+    
+    func testSetSpecialRolesCanAddNftUri() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
 
@@ -359,13 +322,124 @@ final class SetSpecialRolesTests: ContractTestCase {
         try controller.setTokenRoles(
             tokenIdentifier: issuedTokenIdentifier,
             address: "contract",
-            roles: EsdtLocalRoles(canTransfer: true).flags
+            roles: EsdtLocalRoles(canAddNftUri: true).flags
         )
 
         let contractRolesFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
         let contractRoles = EsdtLocalRoles(flags: contractRolesFlags)
 
-        let expected = EsdtLocalRoles(canTransfer: true)
+        let expected = EsdtLocalRoles(canAddNftUri: true)
+        XCTAssertEqual(contractRoles, expected)
+    }
+
+    func testSetSpecialRolesCanRecreate() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canRecreateNft: true).flags
+        )
+
+        let contractRolesFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
+        let contractRoles = EsdtLocalRoles(flags: contractRolesFlags)
+
+        let expected = EsdtLocalRoles(canRecreateNft: true)
+        XCTAssertEqual(contractRoles, expected)
+    }
+    
+    func testSetSpecialRolesCanModifyCreator() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canModifyCreator: true).flags
+        )
+
+        let contractRolesFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
+        let contractRoles = EsdtLocalRoles(flags: contractRolesFlags)
+
+        let expected = EsdtLocalRoles(canModifyCreator: true)
+        XCTAssertEqual(contractRoles, expected)
+    }
+    
+    func testSetSpecialRolesCanModifyRoyalties() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canModifyRoyalties: true).flags
+        )
+
+        let contractRolesFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
+        let contractRoles = EsdtLocalRoles(flags: contractRolesFlags)
+
+        let expected = EsdtLocalRoles(canModifyRoyalties: true)
         XCTAssertEqual(contractRoles, expected)
     }
 
@@ -403,43 +477,6 @@ final class SetSpecialRolesTests: ContractTestCase {
         let contractRoles = EsdtLocalRoles(flags: contractRolesFlags)
 
         let expected = EsdtLocalRoles(canSetNewUri: true)
-        XCTAssertEqual(contractRoles, expected)
-    }
-
-    func testSetSpecialRolesCanModifyRoyalties() throws {
-        try self.deployContract(at: "contract")
-        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
-
-        try controller.issueNonFungible(
-            tokenDisplayName: "TestToken",
-            tokenTicker: "TEST",
-            properties: NonFungibleTokenProperties(
-                canFreeze: false,
-                canWipe: false,
-                canPause: false,
-                canTransferCreateRole: false,
-                canChangeOwner: false,
-                canUpgrade: false,
-                canAddSpecialRoles: true
-            ),
-            transactionInput: ContractCallTransactionInput(
-                callerAddress: "user",
-                egldValue: BigUint(bigInt: self.issuanceCost)
-            )
-        )
-
-        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
-
-        try controller.setTokenRoles(
-            tokenIdentifier: issuedTokenIdentifier,
-            address: "contract",
-            roles: EsdtLocalRoles(canModifyRoyalties: true).flags
-        )
-
-        let contractRolesFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
-        let contractRoles = EsdtLocalRoles(flags: contractRolesFlags)
-
-        let expected = EsdtLocalRoles(canModifyRoyalties: true)
         XCTAssertEqual(contractRoles, expected)
     }
     
@@ -527,7 +564,7 @@ final class SetSpecialRolesTests: ContractTestCase {
         XCTAssertEqual(lastErrorMessage, "Only one account at a time can have the role ESDTRoleModifyRoyalties for a given token.")
     }
 
-    func testSetSpecialRolesCanMintCanBurnCanTransfer() throws {
+    func testSetSpecialRolesCanMintCanBurnCanRecreateNft() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
 
@@ -557,7 +594,7 @@ final class SetSpecialRolesTests: ContractTestCase {
             roles: EsdtLocalRoles(
                 canMint: true,
                 canBurn: true,
-                canTransfer: true
+                canRecreateNft: true
             ).flags
         )
 
@@ -567,7 +604,7 @@ final class SetSpecialRolesTests: ContractTestCase {
         let expected = EsdtLocalRoles(
             canMint: true,
             canBurn: true,
-            canTransfer: true
+            canRecreateNft: true
         )
         XCTAssertEqual(contractRoles, expected)
     }

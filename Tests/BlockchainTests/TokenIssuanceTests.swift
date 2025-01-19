@@ -531,16 +531,21 @@ final class TokenIssuanceTests: ContractTestCase {
         let roleFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
         let roles = EsdtLocalRoles(flags: roleFlags)
         
-        XCTAssertTrue(roles.contains(flag: .mint))
-        XCTAssertTrue(roles.contains(flag: .burn))
-        XCTAssertTrue(roles.contains(flag: .nftCreate))
-        XCTAssertTrue(roles.contains(flag: .nftAddQuantity))
-        XCTAssertTrue(roles.contains(flag: .nftBurn))
-        XCTAssertTrue(roles.contains(flag: .nftAddUri))
-        XCTAssertTrue(roles.contains(flag: .nftUpdateAttributes))
-        XCTAssertTrue(roles.contains(flag: .setNewUri))
-        XCTAssertTrue(roles.contains(flag: .modifyRoyalties))
-        XCTAssertFalse(roles.contains(flag: .transfer)) // CanTransfer should never be set
+        let expected = EsdtLocalRoles(
+            canMint: true,
+            canBurn: true,
+            canCreateNft: true,
+            canAddNftQuantity: true,
+            canBurnNft: true,
+            canUpdateNftAttributes: true,
+            canAddNftUri: true,
+            canRecreateNft: true,
+            canModifyCreator: true,
+            canModifyRoyalties: true,
+            canSetNewUri: true
+        )
+        
+        XCTAssertEqual(roles, expected)
     }
 
     func testRegisterAndSetAllRolesForNonFungibleToken() throws {
@@ -562,16 +567,21 @@ final class TokenIssuanceTests: ContractTestCase {
         let roleFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
         let roles = EsdtLocalRoles(flags: roleFlags)
         
-        XCTAssertTrue(roles.contains(flag: .mint))
-        XCTAssertTrue(roles.contains(flag: .burn))
-        XCTAssertTrue(roles.contains(flag: .nftCreate))
-        XCTAssertTrue(roles.contains(flag: .nftAddQuantity))
-        XCTAssertTrue(roles.contains(flag: .nftBurn))
-        XCTAssertTrue(roles.contains(flag: .nftAddUri))
-        XCTAssertTrue(roles.contains(flag: .nftUpdateAttributes))
-        XCTAssertTrue(roles.contains(flag: .setNewUri))
-        XCTAssertTrue(roles.contains(flag: .modifyRoyalties))
-        XCTAssertFalse(roles.contains(flag: .transfer)) // CanTransfer should never be set
+        let expected = EsdtLocalRoles(
+            canMint: true,
+            canBurn: true,
+            canCreateNft: true,
+            canAddNftQuantity: true,
+            canBurnNft: true,
+            canUpdateNftAttributes: true,
+            canAddNftUri: true,
+            canRecreateNft: true,
+            canModifyCreator: true,
+            canModifyRoyalties: true,
+            canSetNewUri: true
+        )
+        
+        XCTAssertEqual(roles, expected)
     }
 
     func testRegisterAndSetAllRolesForSemiFungibleToken() throws {
@@ -593,16 +603,21 @@ final class TokenIssuanceTests: ContractTestCase {
         let roleFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
         let roles = EsdtLocalRoles(flags: roleFlags)
         
-        XCTAssertTrue(roles.contains(flag: .mint))
-        XCTAssertTrue(roles.contains(flag: .burn))
-        XCTAssertTrue(roles.contains(flag: .nftCreate))
-        XCTAssertTrue(roles.contains(flag: .nftAddQuantity))
-        XCTAssertTrue(roles.contains(flag: .nftBurn))
-        XCTAssertTrue(roles.contains(flag: .nftAddUri))
-        XCTAssertTrue(roles.contains(flag: .nftUpdateAttributes))
-        XCTAssertTrue(roles.contains(flag: .setNewUri))
-        XCTAssertTrue(roles.contains(flag: .modifyRoyalties))
-        XCTAssertFalse(roles.contains(flag: .transfer)) // CanTransfer should never be set
+        let expected = EsdtLocalRoles(
+            canMint: true,
+            canBurn: true,
+            canCreateNft: true,
+            canAddNftQuantity: true,
+            canBurnNft: true,
+            canUpdateNftAttributes: true,
+            canAddNftUri: true,
+            canRecreateNft: true,
+            canModifyCreator: true,
+            canModifyRoyalties: true,
+            canSetNewUri: true
+        )
+        
+        XCTAssertEqual(roles, expected)
     }
 
     func testRegisterAndSetAllRolesForMetaToken() throws {
@@ -624,16 +639,21 @@ final class TokenIssuanceTests: ContractTestCase {
         let roleFlags = try controller.getSelfTokenRoles(tokenIdentifier: issuedTokenIdentifier)
         let roles = EsdtLocalRoles(flags: roleFlags)
         
-        XCTAssertTrue(roles.contains(flag: .mint))
-        XCTAssertTrue(roles.contains(flag: .burn))
-        XCTAssertTrue(roles.contains(flag: .nftCreate))
-        XCTAssertTrue(roles.contains(flag: .nftAddQuantity))
-        XCTAssertTrue(roles.contains(flag: .nftBurn))
-        XCTAssertTrue(roles.contains(flag: .nftAddUri))
-        XCTAssertTrue(roles.contains(flag: .nftUpdateAttributes))
-        XCTAssertTrue(roles.contains(flag: .setNewUri))
-        XCTAssertTrue(roles.contains(flag: .modifyRoyalties))
-        XCTAssertFalse(roles.contains(flag: .transfer)) // CanTransfer should never be set
+        let expected = EsdtLocalRoles(
+            canMint: true,
+            canBurn: true,
+            canCreateNft: true,
+            canAddNftQuantity: true,
+            canBurnNft: true,
+            canUpdateNftAttributes: true,
+            canAddNftUri: true,
+            canRecreateNft: true,
+            canModifyCreator: true,
+            canModifyRoyalties: true,
+            canSetNewUri: true
+        )
+        
+        XCTAssertEqual(roles, expected)
     }
 
     func testRegisterAndSetAllRolesForInvalidTokenShouldFail() throws {

@@ -5,7 +5,7 @@ final class EsdtLocalRolesTests: XCTestCase {
     func testAddRoles() throws {
         let roles1 = EsdtLocalRoles(canMint: true)
         let roles2 = EsdtLocalRoles()
-        let roles3 = EsdtLocalRoles(canAddNftQuantity: true, canTransfer: true)
+        let roles3 = EsdtLocalRoles(canAddNftQuantity: true, canModifyRoyalties: true)
         
         var allRoles = EsdtLocalRoles()
         
@@ -13,10 +13,12 @@ final class EsdtLocalRolesTests: XCTestCase {
         allRoles.addRoles(roles: roles2)
         allRoles.addRoles(roles: roles3)
         
-        XCTAssert(allRoles.contains(flag: .mint))
-        XCTAssert(allRoles.contains(flag: .nftAddQuantity))
-        XCTAssert(allRoles.contains(flag: .transfer))
+        let expected = EsdtLocalRoles(
+            canMint: true,
+            canAddNftQuantity: true,
+            canModifyRoyalties: true
+        )
         
-        XCTAssert(!allRoles.contains(flag: .burn))
+        XCTAssertEqual(allRoles, expected)
     }
 }

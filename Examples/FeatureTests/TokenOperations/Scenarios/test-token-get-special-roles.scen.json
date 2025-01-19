@@ -1,0 +1,355 @@
+{
+    "name": "TokenOperations",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleLocalMint"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "check if can mint",
+            "tx": {
+                "to": "sc:contract",
+                "function": "doesAddressHaveSpecialRole",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "sc:contract",
+                    "1"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "true"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "setState",
+            "accounts": {
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleLocalBurn"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "check if can burn",
+            "tx": {
+                "to": "sc:contract",
+                "function": "doesAddressHaveSpecialRole",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "sc:contract",
+                    "2"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "true"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "setState",
+            "accounts": {
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleNFTCreate"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "check if can create nft",
+            "tx": {
+                "to": "sc:contract",
+                "function": "doesAddressHaveSpecialRole",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "sc:contract",
+                    "4"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "true"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "setState",
+            "accounts": {
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleNFTAddQuantity"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "check if can add nft quantity",
+            "tx": {
+                "to": "sc:contract",
+                "function": "doesAddressHaveSpecialRole",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "sc:contract",
+                    "8"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "true"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "setState",
+            "accounts": {
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleNFTBurn"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "check if can burn nft",
+            "tx": {
+                "to": "sc:contract",
+                "function": "doesAddressHaveSpecialRole",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "sc:contract",
+                    "16"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "true"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "setState",
+            "accounts": {
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleNFTUpdateAttributes"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "check if can update attributes",
+            "tx": {
+                "to": "sc:contract",
+                "function": "doesAddressHaveSpecialRole",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "sc:contract",
+                    "32"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "true"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "setState",
+            "accounts": {
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleNFTAddURI"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "check if can add nft uri",
+            "tx": {
+                "to": "sc:contract",
+                "function": "doesAddressHaveSpecialRole",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "sc:contract",
+                    "64"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "true"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "setState",
+            "accounts": {
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleModifyCreator"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "check if can modify creator",
+            "tx": {
+                "to": "sc:contract",
+                "function": "doesAddressHaveSpecialRole",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "sc:contract",
+                    "256"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "true"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "setState",
+            "accounts": {
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleModifyRoyalties"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "check if can modify royalties",
+            "tx": {
+                "to": "sc:contract",
+                "function": "doesAddressHaveSpecialRole",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "sc:contract",
+                    "512"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "true"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "setState",
+            "accounts": {
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleSetNewURI"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "check if can set new uris",
+            "tx": {
+                "to": "sc:contract",
+                "function": "doesAddressHaveSpecialRole",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "sc:contract",
+                    "1024"
+                ]
+            },
+            "expect": {
+                "out": [
+                    "true"
+                ],
+                "status": "",
+                "logs": []
+            }
+        }
+    ]
+}

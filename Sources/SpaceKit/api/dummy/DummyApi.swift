@@ -864,7 +864,7 @@ extension DummyApi: BlockchainApiProtocol {
     }
     
     public func getBlockTimestamp() -> Int64 {
-        return self.blockInfos.timestamp
+        return self.blockInfos.timestamp // TODO: turn timestamp into a UInt64 and use Int64(bitPattern:)
     }
     
     public func getBlockRound() -> Int64 {
@@ -938,7 +938,7 @@ extension DummyApi: BlockchainApiProtocol {
             addressHandle: addressHandle
         )
         
-        return toBigEndianInt64(from: flagsUnsigned.bigEndian.toBytes8())
+        return Int64(bitPattern: flagsUnsigned)
     }
     
     public func managedGetESDTTokenData(
@@ -1371,7 +1371,7 @@ extension DummyApi: SendApiProtocol {
         let esdtSystemContractEndpoints = [
             "ESDTNFTCreate",
             "ESDTLocalMint",
-            "ESDTBurn",
+            "ESDTLocalBurn",
             "ESDTNFTBurn",
             "ESDTNFTAddQuantity",
             "ESDTNFTUpdateAttributes",

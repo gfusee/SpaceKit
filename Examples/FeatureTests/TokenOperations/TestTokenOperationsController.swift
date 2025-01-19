@@ -105,4 +105,14 @@ import SpaceKit
             nonce: nonce
         )
     }
+    
+    public func doesAddressHaveSpecialRole(
+        tokenIdentifier: Buffer,
+        address: Address,
+        expectedFlags: UInt64
+    ) -> Bool {
+        let roles = Blockchain.getESDTLocalRoles(tokenIdentifier: tokenIdentifier)
+        
+        return roles.flags == expectedFlags
+    }
 }
