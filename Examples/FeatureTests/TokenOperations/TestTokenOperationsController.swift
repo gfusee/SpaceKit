@@ -1,6 +1,51 @@
 import SpaceKit
 
 @Controller public struct TestTokenOperationsController {
+    @Storage(key: "lastIssuedTokenIdentifier") var lastIssuedTokenIdentifier: Buffer
+    @Storage(key: "lastErrorMessage") var lastErrorMessage: Buffer
+    
+    public func issueToken(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        numDecimals: UInt32,
+        canFreeze: Bool,
+        canWipe: Bool,
+        canPause: Bool,
+        canMint: Bool,
+        canBurn: Bool,
+        canChangeOwner: Bool,
+        canUpgrade: Bool,
+        canAddSpecialRoles: Bool
+    ) {
+        let caller = Message.caller
+        
+        Blockchain
+            .issueFungibleToken(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                initialSupply: 0,
+                properties: FungibleTokenProperties(
+                    numDecimals: numDecimals,
+                    canFreeze: canFreeze,
+                    canWipe: canWipe,
+                    canPause: canPause,
+                    canMint: canMint,
+                    canBurn: canBurn,
+                    canChangeOwner: canChangeOwner,
+                    canUpgrade: canUpgrade,
+                    canAddSpecialRoles: canAddSpecialRoles
+                )
+            )
+            .registerPromise(
+                gas: 100_000_000,
+                value: Message.egldValue,
+                callback: self.$issueCallback(
+                    caller: caller,
+                    gasForCallback: 100_000_000
+                )
+            )
+    }
+    
     public func mintTokens(
         tokenIdentifier: Buffer,
         nonce: UInt64,
@@ -114,5 +159,42 @@ import SpaceKit
         let roles = Blockchain.getESDTLocalRoles(tokenIdentifier: tokenIdentifier)
         
         return roles.flags == expectedFlags
+    }
+    
+    public func getLastIssuedTokenIdentifier() -> Buffer {
+        self.lastIssuedTokenIdentifier
+    }
+    
+    public func assertLastIssuedTokenIdentifierIsValid(
+        expectedTicker: Buffer
+    ) {
+        let lastIssuedTokenIdentifier = self.lastIssuedTokenIdentifier
+        
+        guard !lastIssuedTokenIdentifier.isEmpty else {
+            smartContractError(message: "Empty last issued token identifier")
+        }
+        
+        let expectedTickerCount = expectedTicker.count
+        
+        guard lastIssuedTokenIdentifier.getSubBuffer(startIndex: 0, length: expectedTickerCount + 1) == "\(expectedTicker)-" else {
+            smartContractError(message: "Last issued token identifier (\(lastIssuedTokenIdentifier)) doesn't start with \(expectedTicker)-")
+        }
+        
+        guard lastIssuedTokenIdentifier.count >= expectedTickerCount + 7 else {
+            smartContractError(message: "Last issued token identifier too short")
+        }
+    }
+    
+    @Callback public mutating func issueCallback(
+        caller: Address
+    ) {
+        let asyncResult: AsyncCallResult<Buffer> = Message.asyncCallResult()
+        
+        switch asyncResult {
+        case .success(let tokenIdentifier):
+            self.lastIssuedTokenIdentifier = tokenIdentifier
+        case .error(let asyncCallError):
+            self.lastErrorMessage = asyncCallError.errorMessage
+        }
     }
 }
