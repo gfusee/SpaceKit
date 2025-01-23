@@ -1,12 +1,14 @@
 #if !WASM
 @Controller public struct ESDTSystemContract {
-    public func issue(
+    @Storage(key: "lastIssuedTokenIdentifier") public var lastIssuedTokenIdentifier: Buffer
+    
+    public mutating func issue(
         tokenDisplayName: Buffer,
         tokenTicker: Buffer,
         initialSupply: BigUint,
         numDecimals: UInt32,
         tokenProperties: MultiValueEncoded<Buffer>
-    ) -> Buffer {
+    ) -> OptionalArgument<Buffer> {
         guard Message.egldValue == self.getIssuanceCost() else {
             smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
         }
@@ -33,6 +35,8 @@
             resultHandle: newTokenIdentifier.handle
         )
         
+        self.lastIssuedTokenIdentifier = newTokenIdentifier
+        
         if initialSupply > 0 {
             Message.caller
                 .send(
@@ -40,12 +44,14 @@
                     nonce: 0,
                     amount: initialSupply
                 )
+            
+            return OptionalArgument.none
+        } else {
+            return OptionalArgument.some(newTokenIdentifier)
         }
-        
-        return newTokenIdentifier
     }
     
-    public func issueNonFungible(
+    public mutating func issueNonFungible(
         tokenDisplayName: Buffer,
         tokenTicker: Buffer,
         tokenProperties: MultiValueEncoded<Buffer>
@@ -66,6 +72,8 @@
         TokenType.nonFungible.topEncode(output: &tokenTypeBuffer)
 
         let newTokenIdentifier = Buffer()
+        
+        self.lastIssuedTokenIdentifier = newTokenIdentifier
 
         API.registerToken(
             tickerHandle: tokenTicker.handle,
@@ -79,7 +87,7 @@
         return newTokenIdentifier
     }
     
-    public func issueSemiFungible(
+    public mutating func issueSemiFungible(
         tokenDisplayName: Buffer,
         tokenTicker: Buffer,
         tokenProperties: MultiValueEncoded<Buffer>
@@ -100,6 +108,8 @@
         TokenType.semiFungible.topEncode(output: &tokenTypeBuffer)
 
         let newTokenIdentifier = Buffer()
+        
+        self.lastIssuedTokenIdentifier = newTokenIdentifier
 
         API.registerToken(
             tickerHandle: tokenTicker.handle,
@@ -113,7 +123,7 @@
         return newTokenIdentifier
     }
     
-    public func registerMetaESDT(
+    public mutating func registerMetaESDT(
         tokenDisplayName: Buffer,
         tokenTicker: Buffer,
         numDecimals: UInt32,
@@ -135,6 +145,8 @@
         TokenType.meta.topEncode(output: &tokenTypeBuffer)
 
         let newTokenIdentifier = Buffer()
+        
+        self.lastIssuedTokenIdentifier = newTokenIdentifier
 
         API.registerToken(
             tickerHandle: tokenTicker.handle,
@@ -148,7 +160,7 @@
         return newTokenIdentifier
     }
     
-    public func registerAndSetAllRoles(
+    public mutating func registerAndSetAllRoles(
         tokenDisplayName: Buffer,
         tokenTicker: Buffer,
         tokenTypeName: Buffer,
@@ -177,7 +189,7 @@
                 initialSupply: 0,
                 numDecimals: numDecimals,
                 tokenProperties: tokenPropertiesEncoded
-            )
+            ).intoOptional() ?? self.lastIssuedTokenIdentifier
         case "NFT":
             self.issueNonFungible(
                 tokenDisplayName: tokenDisplayName,
@@ -624,7 +636,14 @@
         while tokenPropertyEncodedIndex + 1 < tokenPropertiesCount {
             let tokenPropertyName = tokenProperties.get(tokenPropertyEncodedIndex)
             let tokenPropertyRawValue = tokenProperties.get(tokenPropertyEncodedIndex + 1)
-            let tokenPropertyValue = Bool(topDecode: tokenPropertyRawValue)
+            let tokenPropertyValue = switch tokenPropertyRawValue {
+            case "true":
+                true
+            case "false":
+                false
+            default:
+                smartContractError(message: "Invalid argument.") // TODO: use the same error as the WASM VM
+            }
             
             switch tokenPropertyName {
             case "canFreeze":

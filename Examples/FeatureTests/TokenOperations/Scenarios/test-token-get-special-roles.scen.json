@@ -21,17 +21,14 @@
             "id": "check if can mint",
             "tx": {
                 "to": "sc:contract",
-                "function": "doesAddressHaveSpecialRole",
+                "function": "assertSelfHaveSpecialRole",
                 "arguments": [
                     "str:TEST-abcdef",
-                    "sc:contract",
                     "1"
                 ]
             },
             "expect": {
-                "out": [
-                    "true"
-                ],
+                "out": [],
                 "status": "",
                 "logs": []
             }
@@ -56,17 +53,14 @@
             "id": "check if can burn",
             "tx": {
                 "to": "sc:contract",
-                "function": "doesAddressHaveSpecialRole",
+                "function": "assertSelfHaveSpecialRole",
                 "arguments": [
                     "str:TEST-abcdef",
-                    "sc:contract",
                     "2"
                 ]
             },
             "expect": {
-                "out": [
-                    "true"
-                ],
+                "out": [],
                 "status": "",
                 "logs": []
             }
@@ -91,17 +85,14 @@
             "id": "check if can create nft",
             "tx": {
                 "to": "sc:contract",
-                "function": "doesAddressHaveSpecialRole",
+                "function": "assertSelfHaveSpecialRole",
                 "arguments": [
                     "str:TEST-abcdef",
-                    "sc:contract",
                     "4"
                 ]
             },
             "expect": {
-                "out": [
-                    "true"
-                ],
+                "out": [],
                 "status": "",
                 "logs": []
             }
@@ -126,17 +117,14 @@
             "id": "check if can add nft quantity",
             "tx": {
                 "to": "sc:contract",
-                "function": "doesAddressHaveSpecialRole",
+                "function": "assertSelfHaveSpecialRole",
                 "arguments": [
                     "str:TEST-abcdef",
-                    "sc:contract",
                     "8"
                 ]
             },
             "expect": {
-                "out": [
-                    "true"
-                ],
+                "out": [],
                 "status": "",
                 "logs": []
             }
@@ -161,17 +149,14 @@
             "id": "check if can burn nft",
             "tx": {
                 "to": "sc:contract",
-                "function": "doesAddressHaveSpecialRole",
+                "function": "assertSelfHaveSpecialRole",
                 "arguments": [
                     "str:TEST-abcdef",
-                    "sc:contract",
                     "16"
                 ]
             },
             "expect": {
-                "out": [
-                    "true"
-                ],
+                "out": [],
                 "status": "",
                 "logs": []
             }
@@ -196,17 +181,14 @@
             "id": "check if can update attributes",
             "tx": {
                 "to": "sc:contract",
-                "function": "doesAddressHaveSpecialRole",
+                "function": "assertSelfHaveSpecialRole",
                 "arguments": [
                     "str:TEST-abcdef",
-                    "sc:contract",
                     "32"
                 ]
             },
             "expect": {
-                "out": [
-                    "true"
-                ],
+                "out": [],
                 "status": "",
                 "logs": []
             }
@@ -231,17 +213,14 @@
             "id": "check if can add nft uri",
             "tx": {
                 "to": "sc:contract",
-                "function": "doesAddressHaveSpecialRole",
+                "function": "assertSelfHaveSpecialRole",
                 "arguments": [
                     "str:TEST-abcdef",
-                    "sc:contract",
                     "64"
                 ]
             },
             "expect": {
-                "out": [
-                    "true"
-                ],
+                "out": [],
                 "status": "",
                 "logs": []
             }
@@ -266,17 +245,14 @@
             "id": "check if can modify creator",
             "tx": {
                 "to": "sc:contract",
-                "function": "doesAddressHaveSpecialRole",
+                "function": "assertSelfHaveSpecialRole",
                 "arguments": [
                     "str:TEST-abcdef",
-                    "sc:contract",
                     "256"
                 ]
             },
             "expect": {
-                "out": [
-                    "true"
-                ],
+                "out": [],
                 "status": "",
                 "logs": []
             }
@@ -301,17 +277,14 @@
             "id": "check if can modify royalties",
             "tx": {
                 "to": "sc:contract",
-                "function": "doesAddressHaveSpecialRole",
+                "function": "assertSelfHaveSpecialRole",
                 "arguments": [
                     "str:TEST-abcdef",
-                    "sc:contract",
                     "512"
                 ]
             },
             "expect": {
-                "out": [
-                    "true"
-                ],
+                "out": [],
                 "status": "",
                 "logs": []
             }
@@ -336,17 +309,14 @@
             "id": "check if can set new uris",
             "tx": {
                 "to": "sc:contract",
-                "function": "doesAddressHaveSpecialRole",
+                "function": "assertSelfHaveSpecialRole",
                 "arguments": [
                     "str:TEST-abcdef",
-                    "sc:contract",
                     "1024"
                 ]
             },
             "expect": {
-                "out": [
-                    "true"
-                ],
+                "out": [],
                 "status": "",
                 "logs": []
             }

@@ -6,7 +6,7 @@ accounts:
     pem_path: ./test.pem
     
 allowed_scenario:
-    - spacekit_test_issue_fungible_token
+  - spacekit_test_register_meta_token
 
 steps:
   - type: ContractDeploy
@@ -22,12 +22,11 @@ steps:
   - type: ContractCall
     sender: owner
     contract: "token-operations"
-    endpoint: issueToken
+    endpoint: registerMetaToken
     arguments:
        - "SpaceKitTest"
        - "SPACEKIT"
        - 18
-       - 1
        - 1
        - 1
        - 1

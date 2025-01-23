@@ -293,10 +293,30 @@ import SpaceKitTesting
         caller: Address,
         mintedAmount: BigUint
     ) {
-        let asyncResult: AsyncCallResult<Buffer> = Message.asyncCallResult()
+        var tokenIdentifier: Buffer?
+        var asyncCallError: AsyncCallError?
         
-        switch asyncResult {
-        case .success(let tokenIdentifier):
+        if mintedAmount == 0 {
+            let asyncResult: AsyncCallResult<Buffer> = Message.asyncCallResult()
+            
+            switch asyncResult {
+            case .success(let issuedTokenIdentifier):
+                tokenIdentifier = issuedTokenIdentifier
+            case .error(let error):
+                asyncCallError = error
+            }
+        } else {
+            let asyncResult: AsyncCallResult<IgnoreValue> = Message.asyncCallResult()
+            
+            switch asyncResult {
+            case .success(_):
+                tokenIdentifier = Message.singleEsdt.tokenIdentifier
+            case .error(let error):
+                asyncCallError = error
+            }
+        }
+        
+        if let tokenIdentifier = tokenIdentifier {
             self.lastIssuedTokenIdentifier = tokenIdentifier
             
             if mintedAmount > 0 {
@@ -306,8 +326,10 @@ import SpaceKitTesting
                     amount: mintedAmount
                 )
             }
-        case .error(let asyncCallError):
+        } else if let asyncCallError = asyncCallError {
             self.lastErrorMessage = asyncCallError.errorMessage
+        } else {
+            smartContractError(message: "Unreachable.")
         }
     }
     

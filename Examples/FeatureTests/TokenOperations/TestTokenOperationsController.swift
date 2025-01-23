@@ -46,6 +46,133 @@ import SpaceKit
             )
     }
     
+    public func issueNonFungibleToken(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        canFreeze: Bool,
+        canWipe: Bool,
+        canPause: Bool,
+        canTransferCreateRole: Bool,
+        canChangeOwner: Bool,
+        canUpgrade: Bool,
+        canAddSpecialRoles: Bool
+    ) {
+        let caller = Message.caller
+        
+        Blockchain
+            .issueNonFungibleToken(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                properties: NonFungibleTokenProperties(
+                    canFreeze: canFreeze,
+                    canWipe: canWipe,
+                    canPause: canPause,
+                    canTransferCreateRole: canTransferCreateRole,
+                    canChangeOwner: canChangeOwner,
+                    canUpgrade: canUpgrade,
+                    canAddSpecialRoles: canAddSpecialRoles
+                )
+            )
+            .registerPromise(
+                gas: 100_000_000,
+                value: Message.egldValue,
+                callback: self.$issueCallback(
+                    caller: caller,
+                    gasForCallback: 100_000_000
+                )
+            )
+    }
+    
+    public func issueSemiFungibleToken(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        canFreeze: Bool,
+        canWipe: Bool,
+        canPause: Bool,
+        canTransferCreateRole: Bool,
+        canChangeOwner: Bool,
+        canUpgrade: Bool,
+        canAddSpecialRoles: Bool
+    ) {
+        let caller = Message.caller
+        
+        Blockchain
+            .issueSemiFungibleToken(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                properties: SemiFungibleTokenProperties(
+                    canFreeze: canFreeze,
+                    canWipe: canWipe,
+                    canPause: canPause,
+                    canTransferCreateRole: canTransferCreateRole,
+                    canChangeOwner: canChangeOwner,
+                    canUpgrade: canUpgrade,
+                    canAddSpecialRoles: canAddSpecialRoles
+                )
+            )
+            .registerPromise(
+                gas: 100_000_000,
+                value: Message.egldValue,
+                callback: self.$issueCallback(
+                    caller: caller,
+                    gasForCallback: 100_000_000
+                )
+            )
+    }
+    
+    public func registerMetaToken(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        numDecimals: UInt32,
+        canFreeze: Bool,
+        canWipe: Bool,
+        canPause: Bool,
+        canTransferCreateRole: Bool,
+        canChangeOwner: Bool,
+        canUpgrade: Bool,
+        canAddSpecialRoles: Bool
+    ) {
+        let caller = Message.caller
+        
+        Blockchain
+            .registerMetaEsdt(
+                tokenDisplayName: tokenDisplayName,
+                tokenTicker: tokenTicker,
+                properties: MetaTokenProperties(
+                    numDecimals: numDecimals,
+                    canFreeze: canFreeze,
+                    canWipe: canWipe,
+                    canPause: canPause,
+                    canTransferCreateRole: canTransferCreateRole,
+                    canChangeOwner: canChangeOwner,
+                    canUpgrade: canUpgrade,
+                    canAddSpecialRoles: canAddSpecialRoles
+                )
+            )
+            .registerPromise(
+                gas: 100_000_000,
+                value: Message.egldValue,
+                callback: self.$issueCallback(
+                    caller: caller,
+                    gasForCallback: 100_000_000
+                )
+            )
+    }
+    
+    public func setSpecialRoles(
+        tokenIdentifier: Buffer,
+        roleFlags: UInt64
+    ) {
+        Blockchain.setTokenRoles(
+            for: Blockchain.getSCAddress(),
+            tokenIdentifier: tokenIdentifier,
+            roles: EsdtLocalRoles(flags: roleFlags)
+        )
+        .registerPromise(
+            gas: 100_000_000
+        )
+    }
+    
     public func mintTokens(
         tokenIdentifier: Buffer,
         nonce: UInt64,
@@ -151,14 +278,15 @@ import SpaceKit
         )
     }
     
-    public func doesAddressHaveSpecialRole(
+    public func assertSelfHaveSpecialRole(
         tokenIdentifier: Buffer,
-        address: Address,
         expectedFlags: UInt64
-    ) -> Bool {
+    ) {
         let roles = Blockchain.getESDTLocalRoles(tokenIdentifier: tokenIdentifier)
         
-        return roles.flags == expectedFlags
+        guard roles.flags == expectedFlags else {
+            smartContractError(message: "Contract doesn't the expected role(s) for \(tokenIdentifier).")
+        }
     }
     
     public func getLastIssuedTokenIdentifier() -> Buffer {

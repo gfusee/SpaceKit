@@ -275,6 +275,16 @@ package final class TransactionContainer: @unchecked Sendable {
     }
 
     public func performEsdtTransfer(from: Data, to: Data, token: Data, nonce: UInt64, value: BigInt) {
+        self.transactionOutput?.registerEsdtTransfer(
+            from: from,
+            to: to,
+            transfer: TransactionInput.EsdtPayment(
+                tokenIdentifier: token,
+                nonce: nonce,
+                amount: value
+            )
+        )
+        
         self.addEsdtToAddressBalance(address: from, token: token, nonce: nonce, value: -value)
         self.addEsdtToAddressBalance(address: to, token: token, nonce: nonce, value: value)
     }

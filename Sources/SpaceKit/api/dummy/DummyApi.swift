@@ -232,13 +232,19 @@ public class DummyApi {
         if let successCallback = execution.successCallback,
            !isError
         {
+            let esdtTransfers = outputs.esdtTransfersPerformed
+                .filter { transfer in
+                    transfer.0 == execution.input.contractAddress && transfer.1 == execution.input.callerAddress
+                }
+                .map { $0.2 }
+            
             return AsyncCallInput(
                 function: successCallback.function,
                 input: TransactionInput(
                     contractAddress: execution.input.callerAddress,
                     callerAddress: execution.input.contractAddress,
                     egldValue: 0,
-                    esdtValue: [],
+                    esdtValue: esdtTransfers,
                     arguments: asyncCallResults
                 ),
                 callbackClosure: successCallback.args,

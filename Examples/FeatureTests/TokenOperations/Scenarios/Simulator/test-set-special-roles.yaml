@@ -6,7 +6,7 @@ accounts:
     pem_path: ./test.pem
     
 allowed_scenario:
-    - spacekit_test_issue_fungible_token
+    - spacekit_test_special_roles
 
 steps:
   - type: ContractDeploy
@@ -43,3 +43,37 @@ steps:
     endpoint: assertLastIssuedTokenIdentifierIsValid
     arguments: ["SPACEKIT"]
     print_results: true
+    
+  - type: ContractQuery
+    contract: token-operations
+    endpoint: getLastIssuedTokenIdentifier
+    arguments: []
+    results_save_keys:
+      - lastIssuedTokenIdentifier
+    results_types:
+      - type: TokenIdentifier
+    print_results: true
+    
+  - type: ContractCall
+    sender: owner
+    contract: "token-operations"
+    endpoint: setSpecialRoles
+    arguments:
+        - "%token-operations.lastIssuedTokenIdentifier"
+        - 3
+    gas_limit: 300000000
+    value: 0
+    checks:
+      - type: Success
+
+  - type: ContractCall
+    sender: owner
+    contract: "token-operations"
+    endpoint: assertSelfHaveSpecialRole
+    arguments:
+        - "%token-operations.lastIssuedTokenIdentifier"
+        - 3
+    gas_limit: 300000000
+    value: 0
+    checks:
+      - type: Success

@@ -77,6 +77,57 @@ final class MintFungibleTests: ContractTestCase {
         XCTAssertEqual(userTestBalance, 250)
     }
     
+    func testFungibleMintTokensZeroSupply() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            initialSupply: 0,
+            properties: FungibleTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: true,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let issuedTokenIdentifier = try controller.getLastIssuedTokenIdentifier()
+        
+        try controller.setTokenRoles(
+            tokenIdentifier: issuedTokenIdentifier,
+            address: "contract",
+            roles: EsdtLocalRoles(canMint: true).flags
+        )
+        
+        try controller.mintAndSendTokens(
+            tokenIdentifier: issuedTokenIdentifier,
+            nonce: 0,
+            amount: 150,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user"
+            )
+        )
+        
+        let userTestBalance = self.getAccount(address: "user")!
+            .getEsdtBalance(
+                tokenIdentifier: "TEST-000000",
+                nonce: 0
+            )
+        
+        XCTAssertEqual(userTestBalance, 150)
+    }
+    
     func testMintFungibleTokensButNotMintableShouldFail() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
