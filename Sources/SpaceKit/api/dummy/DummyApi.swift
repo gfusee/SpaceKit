@@ -188,6 +188,36 @@ public class DummyApi {
         let outputs = TransactionOutput()
         var executionResults: [Data]?
         do {
+            // In case of .async, we have to add the balance to the caller.
+            // Because it has been substracted while registering promise
+            if executionType == .async {
+                _ = try self.runTransactions(
+                    transactionInput: TransactionInput(
+                        contractAddress: Data(),
+                        callerAddress: Data(),
+                        egldValue: 0,
+                        esdtValue: [],
+                        arguments: []
+                    ),
+                    operations: UncheckedClosure({
+                        self.getCurrentContainer().addEgldToAddressBalance(
+                            address: execution.input.callerAddress,
+                            value: execution.input.egldValue
+                        )
+                        
+                        for payment in execution.input.esdtValue {
+                            self.getCurrentContainer().addEsdtToAddressBalance(
+                                address: execution.input.callerAddress,
+                                token: payment.tokenIdentifier,
+                                nonce: payment.nonce,
+                                value: payment.amount
+                            )
+
+                        }
+                    })
+                )
+            }
+            
             asyncError = try self.runTransactions(
                 transactionInput: execution.input,
                 transactionOutput: outputs,

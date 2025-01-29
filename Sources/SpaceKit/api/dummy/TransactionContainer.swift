@@ -7,7 +7,7 @@ package enum TransactionContainerErrorBehavior {
     case fatalError
 }
 
-public enum TransactionContainerExecutionType {
+public enum TransactionContainerExecutionType: Equatable {
     case sync // default
     case async // the async execution on the called contract
     case callback(arguments: [Data], callbackClosure: Data)
@@ -261,7 +261,7 @@ package final class TransactionContainer: @unchecked Sendable {
         }
     }
     
-    private func addEgldToAddressBalance(address: Data, value: BigInt) {
+    package func addEgldToAddressBalance(address: Data, value: BigInt) {
         var account = self.getAccount(address: address)
         let newBalance = account.balance + value
         
@@ -295,6 +295,17 @@ package final class TransactionContainer: @unchecked Sendable {
         successCallback: AsyncCallCallbackInput?,
         errorCallback: AsyncCallCallbackInput?
     ) {
+        self.addEgldToAddressBalance(address: input.callerAddress, value: -input.egldValue)
+        
+        for payment in input.esdtValue {
+            self.addEsdtToAddressBalance(
+                address: input.callerAddress,
+                token: payment.tokenIdentifier,
+                nonce: payment.nonce,
+                value: -payment.amount
+            )
+        }
+        
         self.pendingAsyncExecutions.append(
             AsyncCallInput(
                 function: function,
@@ -372,7 +383,7 @@ package final class TransactionContainer: @unchecked Sendable {
         tokenBalance.balance += value
         
         guard tokenBalance.balance >= 0 else {
-            fatalError()
+            self.throwError(error: .executionFailed(reason: "insufficient esdt balance")) // TODO: use the same error as the WASM VM
         }
         
         allBalances.append(tokenBalance)
