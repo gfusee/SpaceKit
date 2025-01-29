@@ -1,0 +1,124 @@
+{
+    "name": "TokenOperations",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "1",
+                    "balance": "0"
+                },
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleLocalMint",
+                                "ESDTRoleLocalBurn"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "mint tokens",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "mintTokens",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "0",
+                    "100",
+                    "sc:contract"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": "",
+                "status": "0",
+                "logs": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "esdt": {
+                        "str:TEST-abcdef": "0"
+                    },
+                    "storage": {}
+                },
+                "sc:contract": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "balance": "100",
+                            "roles": [
+                                "ESDTRoleLocalMint",
+                                "ESDTRoleLocalBurn"
+                            ]
+                        }
+                    },
+                    "storage": {},
+                    "code": "*"
+                }
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "burn tokens",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "burnTokens",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "0",
+                    "50"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": "",
+                "status": "0",
+                "logs": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "esdt": {
+                        "str:TEST-abcdef": "0"
+                    },
+                    "storage": {}
+                },
+                "sc:contract": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "balance": "50",
+                            "roles": [
+                                "ESDTRoleLocalMint",
+                                "ESDTRoleLocalBurn"
+                            ]
+                        }
+                    },
+                    "storage": {},
+                    "code": "*"
+                }
+            }
+        }
+    ]
+}

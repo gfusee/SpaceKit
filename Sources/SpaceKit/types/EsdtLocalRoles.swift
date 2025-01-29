@@ -1,13 +1,16 @@
-public enum EsdtLocalRolesFlag: Int64 {
+public enum EsdtLocalRolesFlag: UInt64 {
     case none = 0b00000000
     case mint = 0b00000001
     case burn = 0b00000010
     case nftCreate = 0b00000100
     case nftAddQuantity = 0b00001000
     case nftBurn = 0b00010000
-    case nftAddUri = 0b00100000
-    case nftUpdateAttributes = 0b01000000
-    case transfer = 0b10000000
+    case nftUpdateAttributes = 0b00100000
+    case nftAddUri = 0b01000000
+    case nftRecreate = 0b10000000
+    case modifyCreator = 0b00000001_00000000
+    case modifyRoyalties = 0b00000010_00000000
+    case setNewUri = 0b00000100_00000000
     
     public func getRoleName() -> Buffer {
         return switch self {
@@ -23,20 +26,26 @@ public enum EsdtLocalRolesFlag: Int64 {
             "ESDTRoleNFTAddQuantity"
         case .nftBurn:
             "ESDTRoleNFTBurn"
-        case .nftAddUri:
-            "ESDTRoleNFTAddURI"
         case .nftUpdateAttributes:
             "ESDTRoleNFTUpdateAttributes"
-        case .transfer:
-            "ESDTTransferRole"
+        case .nftAddUri:
+            "ESDTRoleNFTAddURI"
+        case .nftRecreate:
+            "ESDTRoleNFTRecreate"
+        case .modifyCreator:
+            "ESDTRoleModifyCreator"
+        case .modifyRoyalties:
+            "ESDTRoleModifyRoyalties"
+        case .setNewUri:
+            "ESDTRoleSetNewURI"
         }
     }
 }
 
-public struct EsdtLocalRoles {
-    let flags: Int64
+public struct EsdtLocalRoles: Equatable {
+    public private(set) var flags: UInt64
     
-    public init(flags: Int64) {
+    public init(flags: UInt64) {
         self.flags = flags
     }
     
@@ -46,11 +55,14 @@ public struct EsdtLocalRoles {
         canCreateNft: Bool = false,
         canAddNftQuantity: Bool = false,
         canBurnNft: Bool = false,
-        canAddNftUri: Bool = false,
         canUpdateNftAttributes: Bool = false,
-        canTransfer: Bool = false
+        canAddNftUri: Bool = false,
+        canRecreateNft: Bool = false,
+        canModifyCreator: Bool = false,
+        canModifyRoyalties: Bool = false,
+        canSetNewUri: Bool = false
     ) {
-        var flags: Int64 = EsdtLocalRolesFlag.none.rawValue
+        var flags: UInt64 = EsdtLocalRolesFlag.none.rawValue
         
         if canMint {
             flags |= EsdtLocalRolesFlag.mint.rawValue
@@ -72,16 +84,32 @@ public struct EsdtLocalRoles {
             flags |= EsdtLocalRolesFlag.nftBurn.rawValue
         }
         
+        if canUpdateNftAttributes {
+            flags |= EsdtLocalRolesFlag.nftUpdateAttributes.rawValue
+        }
+
         if canAddNftUri {
             flags |= EsdtLocalRolesFlag.nftAddUri.rawValue
         }
         
-        if canUpdateNftAttributes {
-            flags |= EsdtLocalRolesFlag.nftUpdateAttributes.rawValue
+        if canSetNewUri {
+            flags |= EsdtLocalRolesFlag.setNewUri.rawValue
         }
         
-        if canTransfer {
-            flags |= EsdtLocalRolesFlag.transfer.rawValue
+        if canModifyCreator {
+            flags |= EsdtLocalRolesFlag.modifyCreator.rawValue
+        }
+        
+        if canModifyRoyalties {
+            flags |= EsdtLocalRolesFlag.modifyRoyalties.rawValue
+        }
+        
+        if canRecreateNft {
+            flags |= EsdtLocalRolesFlag.nftRecreate.rawValue
+        }
+        
+        if canSetNewUri {
+            flags |= EsdtLocalRolesFlag.setNewUri.rawValue
         }
         
         self.flags = flags
@@ -113,16 +141,32 @@ public struct EsdtLocalRoles {
             try operations(.nftBurn)
         }
         
+        if self.contains(flag: .nftUpdateAttributes) {
+            try operations(.nftUpdateAttributes)
+        }
+
         if self.contains(flag: .nftAddUri) {
             try operations(.nftAddUri)
         }
         
-        if self.contains(flag: .nftUpdateAttributes) {
-            try operations(.nftUpdateAttributes)
+        if self.contains(flag: .nftRecreate) {
+            try operations(.nftRecreate)
         }
         
-        if self.contains(flag: .transfer) {
-            try operations(.transfer)
+        if self.contains(flag: .modifyCreator) {
+            try operations(.modifyCreator)
         }
+
+        if self.contains(flag: .modifyRoyalties) {
+            try operations(.modifyRoyalties)
+        }
+        
+        if self.contains(flag: .setNewUri) {
+            try operations(.setNewUri)
+        }
+    }
+    
+    public mutating func addRoles(roles: EsdtLocalRoles) {
+        self.flags |= roles.flags
     }
 }

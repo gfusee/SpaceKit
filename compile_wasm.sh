@@ -26,11 +26,12 @@ TARGETS=(
     ["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
     ["ProxyPause"]="$(pwd)/Examples/ProxyPause"
     ["SendTestsExample"]="$(pwd)/Examples/SendTests"
+    ["TokenOperations"]="$(pwd)/Examples/FeatureTests/TokenOperations"
     ["TokenRelease"]="$(pwd)/Examples/TokenRelease"
     # Add more targets as needed
 )
 
-SCENARIO_JSON_EXECUTABLE="/Users/quentin/multiversx-sdk/vmtools/v1.5.24/mx-chain-vm-go-1.5.24/cmd/test/test"
+SCENARIO_JSON_EXECUTABLE="$(pwd)/Utils/Scenarios/scenariostest"
 
 MEMCPY_C_FILE_PATH="$(pwd)/Utils/Memory/memcpy.c"
 MEMCPY_OBJECT_FILE_PATH="$(pwd)/Utils/Memory/memcpy.o"
@@ -71,5 +72,5 @@ for TARGET in "${(k)TARGETS[@]}"; do
     
     SCENARIOS_JSON_DIR="$TARGET_PACKAGE_PATH/Scenarios"
 
-    $SCENARIO_JSON_EXECUTABLE $SCENARIOS_JSON_DIR
+    $SCENARIO_JSON_EXECUTABLE run $SCENARIOS_JSON_DIR
 done

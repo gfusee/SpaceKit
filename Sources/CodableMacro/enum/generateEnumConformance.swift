@@ -395,6 +395,7 @@ fileprivate func getTopDecodeWhenEmptyIfPossible(enumName: TokenSyntax, firstCas
     
     return """
     self = .\(firstCase.name.trimmed)
+    return
     """
 }
 

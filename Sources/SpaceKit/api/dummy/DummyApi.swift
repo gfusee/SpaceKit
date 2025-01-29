@@ -87,7 +87,7 @@ public class DummyApi {
             error = (error: transactionError, shouldThrow: shouldThrow)
         } else {
             // Commit the container into the state
-            self.worldState = transactionContainer.state
+            self.setWorld(world: transactionContainer.state)
         }
         
         if let output = transactionContainer.transactionOutput {
@@ -140,6 +140,7 @@ public class DummyApi {
     
     package func setWorld(world: WorldState) {
         self.worldState = world
+        self.staticContainer.state = world
     }
 
     public func setCurrentSCOwnerAddress(owner: Data) {
@@ -231,13 +232,19 @@ public class DummyApi {
         if let successCallback = execution.successCallback,
            !isError
         {
+            let esdtTransfers = outputs.esdtTransfersPerformed
+                .filter { transfer in
+                    transfer.0 == execution.input.contractAddress && transfer.1 == execution.input.callerAddress
+                }
+                .map { $0.2 }
+            
             return AsyncCallInput(
                 function: successCallback.function,
                 input: TransactionInput(
                     contractAddress: execution.input.callerAddress,
                     callerAddress: execution.input.contractAddress,
                     egldValue: 0,
-                    esdtValue: [],
+                    esdtValue: esdtTransfers,
                     arguments: asyncCallResults
                 ),
                 callbackClosure: successCallback.args,
@@ -269,6 +276,288 @@ public class DummyApi {
     
     public func getNextHandle() -> Int32 {
         self.getCurrentContainer().getNextHandle()
+    }
+    
+    /// Used by the SwiftVM's ESDT system contract to send a newly issued token
+    package func registerToken(
+        tickerHandle: Int32,
+        managerAddressHandle: Int32,
+        initialSupplyHandle: Int32,
+        tokenTypeHandle: Int32,
+        propertiesHandle: Int32,
+        resultHandle: Int32
+    ) {
+        let callerData = self.getCurrentContainer().getCurrentSCAccount().addressData
+        let tickerData = self.getCurrentContainer().getBufferData(handle: tickerHandle)
+        let managerAddressData = self.getCurrentContainer().getBufferData(handle: managerAddressHandle)
+        let initialSupply = self.getCurrentContainer().getBigIntData(handle: initialSupplyHandle)
+        let tokenTypeBuffer = Buffer(handle: tokenTypeHandle)
+        let tokenType = TokenType(topDecode: tokenTypeBuffer)
+        let propertiesBuffer = Buffer(data: Array(self.getCurrentContainer().getBufferData(handle: propertiesHandle)))
+        let properties = TokenProperties(topDecode: propertiesBuffer)
+        
+        let newTokenIdentifier = self.getCurrentContainer()
+            .registerToken(
+                caller: callerData,
+                managerAddress: managerAddressData,
+                ticker: tickerData,
+                initialSupply: initialSupply,
+                tokenType: tokenType,
+                properties: properties
+            )
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = newTokenIdentifier
+    }
+    
+    /// Used by the SwiftVM's ESDT system contract to mint a token
+    package func mintTokens(
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64,
+        amountHandle: Int32
+    ) {
+        let callerData = self.getCurrentContainer().getCurrentSCAccount().addressData
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let amount = self.getCurrentContainer().getBigIntData(handle: amountHandle)
+        
+        self.getCurrentContainer().mintTokens(
+            caller: callerData,
+            tokenIdentifier: tokenIdentifierData,
+            nonce: nonce,
+            amount: amount
+        )
+    }
+    
+    /// Used by the SwiftVM's ESDT system contract to burn a token
+    package func burnTokens(
+        addressHandle: Int32,
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64,
+        amountHandle: Int32
+    ) {
+        let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let amount = self.getCurrentContainer().getBigIntData(handle: amountHandle)
+        
+        self.getCurrentContainer().burnTokens(
+            address: addressData,
+            tokenIdentifier: tokenIdentifierData,
+            nonce: nonce,
+            amount: amount
+        )
+    }
+    
+    package func getTokenManagerAddress(
+        tokenIdentifierHandle: Int32,
+        resultHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        guard let managerAddressData = self.getCurrentContainer().getTokenManagerAddress(tokenIdentifier: tokenIdentifierData) else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = managerAddressData
+    }
+    
+    package func getTokenType(
+        tokenIdentifierHandle: Int32,
+        resultHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        guard let tokenType = self.getCurrentContainer().getTokenType(tokenIdentifier: tokenIdentifierData) else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        var tokenTypeBuffer = Buffer()
+        tokenType.topEncode(output: &tokenTypeBuffer)
+        let tokenTypeData = Data(tokenTypeBuffer.toBytes())
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = tokenTypeData
+    }
+
+    package func getTokenProperties(
+        tokenIdentifierHandle: Int32,
+        resultHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        guard let properties = self.getCurrentContainer().getTokenProperties(tokenIdentifier: tokenIdentifierData) else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        var encodedProperties = Buffer()
+        properties.topEncode(output: &encodedProperties)
+        let propertiesData = Data(encodedProperties.toBytes())
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = propertiesData
+    }
+    
+    package func getNumberOfAddressesWithRolesForToken(
+        tokenIdentifierHandle: Int32,
+        roles: UInt64
+    ) -> UInt64 {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        return self.getCurrentContainer().getNumberOfAddressesWithRolesForToken(
+            tokenIdentifier: tokenIdentifierData,
+            roles: EsdtLocalRoles(flags: roles)
+        )
+    }
+    
+    package func getGlobalTokenAttributes(
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64,
+        resultHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        let tokenAttributesData = self.getCurrentContainer().getTokenData(tokenIdentifier: tokenIdentifierData, nonce: nonce)?.attributes ?? Data()
+        
+        self.getCurrentContainer().managedBuffersData[resultHandle] = tokenAttributesData
+    }
+    
+    package func createNonFungibleToken(
+        tokenIdentifierHandle: Int32,
+        initialQuantityHandle: Int32,
+        hashHandle: Int32,
+        nameHandle: Int32,
+        attributesHandle: Int32,
+        creatorHandle: Int32,
+        royaltiesHandle: Int32,
+        urisHandle: Int32
+    ) -> UInt64 {
+        let callerData = self.getCurrentContainer().getCurrentSCAccount().addressData
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let initialQuantity = self.getCurrentContainer().getBigIntData(handle: initialQuantityHandle)
+        let hashData = self.getCurrentContainer().getBufferData(handle: hashHandle)
+        let nameData = self.getCurrentContainer().getBufferData(handle: nameHandle)
+        let attributesData = self.getCurrentContainer().getBufferData(handle: attributesHandle)
+        let creatorData = self.getCurrentContainer().getBufferData(handle: creatorHandle)
+        let royalties = self.getCurrentContainer().getBigIntData(handle: royaltiesHandle)
+        let urisData = self.getCurrentContainer().getBufferData(handle: urisHandle)
+        
+        
+        return self.getCurrentContainer().createNewNonFungibleNonce(
+            caller: callerData,
+            tokenIdentifier: tokenIdentifierData,
+            initialQuantity: initialQuantity,
+            hash: hashData,
+            name: nameData,
+            attributes: attributesData,
+            creator: creatorData,
+            royalties: royalties,
+            uris: urisData
+        )
+    }
+    
+    package func doesNonFungibleNonceExist(
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64
+    ) -> Int32 {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        return if self.getCurrentContainer().doesNonFungibleNonceExist(
+            tokenIdentifier: tokenIdentifierData,
+            nonce: nonce
+        ) {
+            1
+        } else {
+            0
+        }
+    }
+    
+    package func getAddressTokenRoles(
+        tokenIdentifierHandle: Int32,
+        addressHandle: Int32
+    ) -> UInt64 {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
+        
+        let roles = self.getCurrentContainer().getAddressTokenRoles(
+            tokenIdentifier: tokenIdentifierData,
+            address: addressData
+        )
+        
+        return roles.flags
+    }
+    
+    package func setAddressTokenRoles(
+        tokenIdentifierHandle: Int32,
+        addressHandle: Int32,
+        roles: UInt64
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
+        
+        self.getCurrentContainer().setAddressTokenRoles(
+            tokenIdentifier: tokenIdentifierData,
+            address: addressData,
+            roles: EsdtLocalRoles(flags: roles)
+        )
+    }
+    
+    package func setTokenAttributes(
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64,
+        attributesHandle: Int32
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        let attributesData = self.getCurrentContainer().getBufferData(handle: attributesHandle)
+        
+        guard var tokenData = self.getCurrentContainer().getTokenData(
+            tokenIdentifier: tokenIdentifierData,
+            nonce: nonce
+        ) else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        
+        tokenData.attributes = attributesData
+        
+        self.getCurrentContainer()
+            .setTokenData(
+                tokenIdentifier: tokenIdentifierData,
+                nonce: nonce,
+                data: tokenData
+            )
+    }
+    
+    package func setTokenRoyalties(
+        tokenIdentifierHandle: Int32,
+        nonce: UInt64,
+        royalties: UInt64
+    ) {
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIdentifierHandle)
+        
+        guard var tokenData = self.getCurrentContainer().getTokenData(
+            tokenIdentifier: tokenIdentifierData,
+            nonce: nonce
+        ) else {
+            smartContractError(message: "Token not found.") // TODO: use the same token identifier as the WASM VM
+        }
+        
+        
+        tokenData.royalties = BigInt(royalties)
+        
+        self.getCurrentContainer()
+            .setTokenData(
+                tokenIdentifier: tokenIdentifierData,
+                nonce: nonce,
+                data: tokenData
+            )
+    }
+    
+    package func getAddressESDTBalance(
+        address: Data,
+        tokenId: Data,
+        nonce: UInt64
+    ) -> EsdtBalance {
+        let balance = self.getAccount(addressData: address)?
+            .esdtBalances[tokenId]?
+            .first(where: { $0.nonce == nonce })
+        
+        return balance ?? EsdtBalance(nonce: nonce, balance: 0)
     }
 }
 
@@ -581,7 +870,7 @@ extension DummyApi: BlockchainApiProtocol {
     }
     
     public func getBlockTimestamp() -> Int64 {
-        return self.blockInfos.timestamp
+        return self.blockInfos.timestamp // TODO: turn timestamp into a UInt64 and use Int64(bitPattern:)
     }
     
     public func getBlockRound() -> Int64 {
@@ -617,14 +906,11 @@ extension DummyApi: BlockchainApiProtocol {
         let addressData = Data(bytes: addressPtr, count: 32)
         let tokenIdData = Data(bytes: tokenIDOffset, count: Int(tokenIDLen))
         
-        guard let account = self.getAccount(addressData: addressData),
-              let tokenBalances = account.esdtBalances[tokenIdData],
-              let balance = tokenBalances.first(where: { $0.nonce == nonce })
-        else {
-            self.getCurrentContainer().managedBigIntData[dest] = 0
-            
-            return
-        }
+        let balance = self.getAddressESDTBalance(
+            address: addressData,
+            tokenId: tokenIdData,
+            nonce: UInt64(nonce)
+        )
         
         self.getCurrentContainer().managedBigIntData[dest] = balance.balance
     }
@@ -649,8 +935,62 @@ extension DummyApi: BlockchainApiProtocol {
     }
     
     public func getESDTLocalRoles(tokenIdHandle: Int32) -> Int64 {
-        // TODO: implement and tests
-        fatalError()
+        // TODO: tests
+        let currentSCData = self.getCurrentContainer().getCurrentSCAccount().addressData
+        let addressHandle = Buffer(data: Array(currentSCData)).handle
+        
+        let flagsUnsigned = self.getAddressTokenRoles(
+            tokenIdentifierHandle: tokenIdHandle,
+            addressHandle: addressHandle
+        )
+        
+        return Int64(bitPattern: flagsUnsigned)
+    }
+    
+    public func managedGetESDTTokenData(
+        addressHandle: Int32,
+        tokenIDHandle: Int32,
+        nonce: Int64,
+        valueHandle: Int32,
+        propertiesHandle: Int32,
+        hashHandle: Int32,
+        nameHandle: Int32,
+        attributesHandle: Int32,
+        creatorHandle: Int32,
+        royaltiesHandle: Int32,
+        urisHandle: Int32
+    ) {
+        let addressData = self.getCurrentContainer().getBufferData(handle: addressHandle)
+        let tokenIdentifierData = self.getCurrentContainer().getBufferData(handle: tokenIDHandle)
+        
+        guard let tokenData = self.getCurrentContainer().getTokenData(tokenIdentifier: tokenIdentifierData, nonce: UInt64(nonce)) else {
+            return
+        }
+        
+        let addressBalance = self.getAddressESDTBalance(
+            address: addressData,
+            tokenId: tokenIdentifierData,
+            nonce: UInt64(nonce)
+        )
+        
+        guard addressBalance.balance > 0 else {
+            self.throwExecutionFailed(reason: "Token not found for account.") // TODO: use the same error as the WASM VM.
+        }
+        
+        var propertiesData = Data()
+        if tokenData.frozen {
+            propertiesData = propertiesData + Data([1])
+        }
+        propertiesData = propertiesData + Data([0])
+
+        self.getCurrentContainer().managedBigIntData[valueHandle] = tokenData.amount
+        self.getCurrentContainer().managedBuffersData[propertiesHandle] = propertiesData
+        self.getCurrentContainer().managedBuffersData[hashHandle] = tokenData.hash
+        self.getCurrentContainer().managedBuffersData[nameHandle] = tokenData.name
+        self.getCurrentContainer().managedBuffersData[attributesHandle] = tokenData.attributes
+        self.getCurrentContainer().managedBuffersData[creatorHandle] = tokenData.creator
+        self.getCurrentContainer().managedBigIntData[royaltiesHandle] = tokenData.royalties
+        self.getCurrentContainer().managedBuffersData[urisHandle] = tokenData.uris
     }
     
     public func getShardOfAddress(addressPtr: UnsafeRawPointer) -> Int32 {
@@ -1034,10 +1374,22 @@ extension DummyApi: SendApiProtocol {
             actualTokenTransfers = []
         }
         
+        let esdtSystemContractEndpoints = [
+            "ESDTNFTCreate",
+            "ESDTLocalMint",
+            "ESDTLocalBurn",
+            "ESDTNFTBurn",
+            "ESDTNFTAddQuantity",
+            "ESDTNFTUpdateAttributes",
+            "ESDTModifyRoyalties"
+        ].map { $0.data(using: .utf8)! }
+        
+        let isReceiverEsdtSystemContract = actualReceiver == actualSender && esdtSystemContractEndpoints.contains(actualFunction)
+        
         return (
             function: actualFunction,
             sender: actualSender,
-            receiver: actualReceiver,
+            receiver: isReceiverEsdtSystemContract ? esdtSystemContractAddress : actualReceiver,
             value: actualValue,
             tokenTransfers: actualTokenTransfers,
             arguments: actualArguments

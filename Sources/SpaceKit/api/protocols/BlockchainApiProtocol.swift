@@ -29,5 +29,19 @@ public protocol BlockchainApiProtocol {
     
     mutating func getESDTLocalRoles(tokenIdHandle: Int32) -> Int64
     
+    mutating func managedGetESDTTokenData(
+        addressHandle: Int32,
+        tokenIDHandle: Int32,
+        nonce: Int64,
+        valueHandle: Int32,
+        propertiesHandle: Int32,
+        hashHandle: Int32,
+        nameHandle: Int32,
+        attributesHandle: Int32,
+        creatorHandle: Int32,
+        royaltiesHandle: Int32,
+        urisHandle: Int32
+    )
+    
     mutating func getShardOfAddress(addressPtr: UnsafeRawPointer) -> Int32
 }

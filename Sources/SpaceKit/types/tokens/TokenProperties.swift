@@ -60,6 +60,28 @@ extension FungibleTokenProperties {
     var canAddSpecialRoles: Bool
 }
 
+@Codable public struct SemiFungibleTokenProperties {
+    var canFreeze: Bool
+    var canWipe: Bool
+    var canPause: Bool
+    var canTransferCreateRole: Bool
+    var canChangeOwner: Bool
+    var canUpgrade: Bool
+    var canAddSpecialRoles: Bool
+}
+
+@Codable public struct MetaTokenProperties {
+    var numDecimals: UInt32
+    var canFreeze: Bool
+    var canWipe: Bool
+    var canPause: Bool
+    var canTransferCreateRole: Bool
+    var canChangeOwner: Bool
+    var canUpgrade: Bool
+    var canAddSpecialRoles: Bool
+}
+
+
 extension NonFungibleTokenProperties {
     @available(*, deprecated, message: "This will be removed in a future version. Please use the public init.")
     public static func new(
@@ -99,47 +121,51 @@ extension TokenPropertiesArgument: TopEncodeMulti {
     public func multiEncode<O>(output: inout O) where O : TopEncodeMultiOutput {
         if let canFreeze = self.canFreeze {
             output.pushSingleValue(arg: Buffer(stringLiteral: "canFreeze"))
-            output.pushSingleValue(arg: canFreeze)
+            output.pushSingleValue(arg: boolToBuffer(value: canFreeze))
         }
         
         if let canWipe = self.canWipe {
             output.pushSingleValue(arg: Buffer(stringLiteral: "canWipe"))
-            output.pushSingleValue(arg: canWipe)
+            output.pushSingleValue(arg: boolToBuffer(value: canWipe))
         }
         
         if let canPause = self.canPause {
             output.pushSingleValue(arg: Buffer(stringLiteral: "canPause"))
-            output.pushSingleValue(arg: canPause)
+            output.pushSingleValue(arg: boolToBuffer(value: canPause))
         }
         
         if let canTransferCreateRole = self.canTransferCreateRole {
             output.pushSingleValue(arg: Buffer(stringLiteral: "canTransferNFTCreateRole"))
-            output.pushSingleValue(arg: canTransferCreateRole)
+            output.pushSingleValue(arg: boolToBuffer(value: canTransferCreateRole))
         }
         
         if let canMint = self.canMint {
             output.pushSingleValue(arg: Buffer(stringLiteral: "canMint"))
-            output.pushSingleValue(arg: canMint)
+            output.pushSingleValue(arg: boolToBuffer(value: canMint))
         }
         
         if let canBurn = self.canBurn {
             output.pushSingleValue(arg: Buffer(stringLiteral: "canBurn"))
-            output.pushSingleValue(arg: canBurn)
+            output.pushSingleValue(arg: boolToBuffer(value: canBurn))
         }
         
         if let canChangeOwner = self.canChangeOwner {
             output.pushSingleValue(arg: Buffer(stringLiteral: "canChangeOwner"))
-            output.pushSingleValue(arg: canChangeOwner)
+            output.pushSingleValue(arg: boolToBuffer(value: canChangeOwner))
         }
         
         if let canUpgrade = self.canUpgrade {
             output.pushSingleValue(arg: Buffer(stringLiteral: "canUpgrade"))
-            output.pushSingleValue(arg: canUpgrade)
+            output.pushSingleValue(arg: boolToBuffer(value: canUpgrade))
         }
         
         if let canAddSpecialRoles = self.canAddSpecialRoles {
             output.pushSingleValue(arg: Buffer(stringLiteral: "canAddSpecialRoles"))
-            output.pushSingleValue(arg: canAddSpecialRoles)
+            output.pushSingleValue(arg: boolToBuffer(value: canAddSpecialRoles))
         }
     }
+}
+
+fileprivate func boolToBuffer(value: Bool) -> Buffer {
+    value ? "true" : "false"
 }

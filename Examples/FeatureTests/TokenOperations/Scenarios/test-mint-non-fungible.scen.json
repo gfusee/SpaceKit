@@ -1,0 +1,152 @@
+{
+    "name": "TokenOperations",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "1",
+                    "balance": "0"
+                },
+                "sc:contract": {
+                    "esdt": {
+                        "str:NFT-abcdef": {
+                            "roles": [
+                                "ESDTRoleNFTCreate",
+                                "ESDTRoleNFTAddQuantity"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "create NFT 1",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "createNFT",
+                "arguments": [
+                    "str:NFT-abcdef",
+                    "100",
+                    "0",
+                    "",
+                    "sc:contract"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": ["1"],
+                "status": "0",
+                "logs": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "esdt": {
+                        "str:NFT-abcdef": {
+                            "instances": [
+                                {
+                                    "nonce": "1",
+                                    "balance": "0"
+                                }
+                            ]
+                        }
+                    },
+                    "storage": {}
+                },
+                "sc:contract": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "esdt": {
+                        "str:NFT-abcdef": {
+                            "lastNonce": "1",
+                            "instances": [
+                                {
+                                    "nonce": "1",
+                                    "balance": "100"
+                                }
+                            ],
+                            "roles": [
+                                "ESDTRoleNFTCreate",
+                                "ESDTRoleNFTAddQuantity"
+                            ]
+                        }
+                    },
+                    "storage": {},
+                    "code": "*"
+                }
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "mint NFT 1",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "mintTokens",
+                "arguments": [
+                    "str:NFT-abcdef",
+                    "1",
+                    "150",
+                    "address:owner"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "0",
+                "logs": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "esdt": {
+                        "str:NFT-abcdef": {
+                            "instances": [
+                                {
+                                    "nonce": "1",
+                                    "balance": "150"
+                                }
+                            ]
+                        }
+                    },
+                    "storage": {}
+                },
+                "sc:contract": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "esdt": {
+                        "str:NFT-abcdef": {
+                            "lastNonce": "1",
+                            "instances": [
+                                {
+                                    "nonce": "1",
+                                    "balance": "100"
+                                }
+                            ],
+                            "roles": [
+                                "ESDTRoleNFTCreate",
+                                "ESDTRoleNFTAddQuantity"
+                            ]
+                        }
+                    },
+                    "storage": {},
+                    "code": "*"
+                }
+            }
+        }
+    ]
+}

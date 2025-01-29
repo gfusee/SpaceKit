@@ -29,9 +29,8 @@ extension TokenPayment {
             arguments.pushArg(arg: self.nonce)
             arguments.pushArg(arg: self.amount)
             
-            endpoint = ESDT_LOCAL_BURN_FUNC_NAME
+            endpoint = ESDT_NFT_BURN_FUNC_NAME
         }
-        
         
         let _: IgnoreValue = ContractCall(
             receiver: Blockchain.getSCAddress(),

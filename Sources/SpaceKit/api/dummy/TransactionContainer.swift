@@ -71,6 +71,10 @@ package final class TransactionContainer: @unchecked Sendable {
             self.error = error
             
             if let parentContainer = self.parentContainer {
+                if error.isUserError && self.getCurrentSCAccount().addressData == esdtSystemContractAddress {
+                    parentContainer.throwError(error: .executionFailed(reason: error.message)) // TODO: Is it execution failed?
+                }
+                
                 parentContainer.throwExecutionFailed()
             } else {
                 // Wait for the error to be handled from an external process, as we don't want any further instruction to be executed
@@ -271,6 +275,16 @@ package final class TransactionContainer: @unchecked Sendable {
     }
 
     public func performEsdtTransfer(from: Data, to: Data, token: Data, nonce: UInt64, value: BigInt) {
+        self.transactionOutput?.registerEsdtTransfer(
+            from: from,
+            to: to,
+            transfer: TransactionInput.EsdtPayment(
+                tokenIdentifier: token,
+                nonce: nonce,
+                amount: value
+            )
+        )
+        
         self.addEsdtToAddressBalance(address: from, token: token, nonce: nonce, value: -value)
         self.addEsdtToAddressBalance(address: to, token: token, nonce: nonce, value: value)
     }
@@ -341,7 +355,7 @@ package final class TransactionContainer: @unchecked Sendable {
         }
     }
     
-    private func addEsdtToAddressBalance(address: Data, token: Data, nonce: UInt64, value: BigInt) {
+    package func addEsdtToAddressBalance(address: Data, token: Data, nonce: UInt64, value: BigInt) {
         var account = self.getAccount(address: address)
         var allBalances = account.esdtBalances[token] ?? []
         var tokenBalance = EsdtBalance(nonce: nonce, balance: 0)
@@ -367,6 +381,37 @@ package final class TransactionContainer: @unchecked Sendable {
         self.state.setAccount(account: account)
     }
     
+    package func removeEsdtFromAddressBalance(
+        address: Data,
+        token: Data,
+        nonce: UInt64,
+        value: BigInt
+    ) {
+        var account = self.getAccount(address: address)
+        var allBalances = account.esdtBalances[token] ?? []
+        var tokenBalance = EsdtBalance(nonce: nonce, balance: 0)
+        
+        for (balanceIndex, balance) in allBalances.enumerated() {
+            if balance.nonce == nonce {
+                tokenBalance = balance
+                allBalances.remove(at: balanceIndex)
+                
+                break
+            }
+        }
+        
+        tokenBalance.balance -= value
+        
+        guard tokenBalance.balance >= 0 else {
+            fatalError()
+        }
+        
+        allBalances.append(tokenBalance)
+        account.esdtBalances[token] = allBalances
+        
+        self.state.setAccount(account: account)
+    }
+
     package func writeLog(topicsHandle: Int32, dataHandle: Int32) {
         let topicsArray: Vector<Buffer> = Vector(buffer: Buffer(data: Array(self.getBufferData(handle: topicsHandle))))
         let data = self.getBufferData(handle: dataHandle)
@@ -379,9 +424,194 @@ package final class TransactionContainer: @unchecked Sendable {
     }
     
     // Avoid a wrong warning about infinite recursion
-    private func throwExecutionFailed() -> Never {
-        self.throwError(error: .executionFailed(reason: "execution failed"))
+    private func throwExecutionFailed(message: String = "execution failed") -> Never {
+        self.throwError(error: .executionFailed(reason: message))
+    }
+    
+    package func getTokenManagerAddress(
+        tokenIdentifier: Data
+    ) -> Data? {
+        self.state.getTokenManagerAddress(tokenIdentifier: tokenIdentifier)
+    }
+    
+    package func getTokenType(
+        tokenIdentifier: Data
+    ) -> TokenType? {
+        self.state.getTokenType(tokenIdentifier: tokenIdentifier)
+    }
+
+    package func getTokenProperties(
+        tokenIdentifier: Data
+    ) -> TokenProperties? {
+        self.state.getTokenProperties(tokenIdentifier: tokenIdentifier)
+    }
+    
+    package func getNumberOfAddressesWithRolesForToken(
+        tokenIdentifier: Data,
+        roles: EsdtLocalRoles
+    ) -> UInt64 {
+        self.state.getNumberOfAddressesWithRolesForToken(
+            tokenIdentifier: tokenIdentifier,
+            roles: roles
+        )
+    }
+    
+    package func registerToken(
+        caller: Data,
+        managerAddress: Data,
+        ticker: Data,
+        initialSupply: BigInt,
+        tokenType: TokenType,
+        properties: TokenProperties
+    ) -> Data {
+        let newTokenIdentifier = self.state.getNextRandomTokenIdentifier(for: ticker)
+        
+        self.state
+            .registerToken(
+                managerAddress: managerAddress,
+                tokenIdentifier: newTokenIdentifier,
+                tokenType: tokenType,
+                properties: properties
+            )
+        
+        if initialSupply > 0 {
+            self.addEsdtToAddressBalance(
+                address: caller,
+                token:  newTokenIdentifier,
+                nonce: 0,
+                value: initialSupply
+            )
+        }
+        
+        return newTokenIdentifier
+    }
+    
+    package func mintTokens(
+        caller: Data,
+        tokenIdentifier: Data,
+        nonce: UInt64,
+        amount: BigInt
+    ) {
+        if amount > 0 {
+            self.addEsdtToAddressBalance(
+                address: caller,
+                token: tokenIdentifier,
+                nonce: nonce,
+                value: amount
+            )
+        }
+    }
+    
+    package func burnTokens(
+        address: Data,
+        tokenIdentifier: Data,
+        nonce: UInt64,
+        amount: BigInt
+    ) {
+        if amount > 0 {
+            self.removeEsdtFromAddressBalance(
+                address: address,
+                token: tokenIdentifier,
+                nonce: nonce,
+                value: amount
+            )
+        }
+    }
+    
+    package func doesNonFungibleNonceExist(
+        tokenIdentifier: Data,
+        nonce: UInt64
+    ) -> Bool {
+        self.state
+            .doesNonFungibleNonceExist(
+                tokenIdentifier: tokenIdentifier,
+                nonce: nonce
+            )
+    }
+    
+    package func createNewNonFungibleNonce(
+        caller: Data,
+        tokenIdentifier: Data,
+        initialQuantity: BigInt,
+        hash: Data,
+        name: Data,
+        attributes: Data,
+        creator: Data,
+        royalties: BigInt,
+        uris: Data
+    ) -> UInt64 {
+        let newNonce = self.state.createNewNonFungibleNonce(
+            tokenIdentifier: tokenIdentifier,
+            amount: initialQuantity,
+            hash: hash,
+            name: name,
+            attributes: attributes,
+            creator: creator,
+            royalties: royalties,
+            uris: uris
+        )
+        
+        if initialQuantity > 0 {
+            self.addEsdtToAddressBalance(
+                address: caller,
+                token: tokenIdentifier,
+                nonce: newNonce,
+                value: initialQuantity
+            )
+        }
+        
+        return newNonce
+    }
+    
+    package func setAddressTokenRoles(
+        tokenIdentifier: Data,
+        address: Data,
+        roles: EsdtLocalRoles
+    ) {
+        var addressRoles = self.state.getAddressTokenRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: address
+        )
+        
+        addressRoles.addRoles(roles: roles)
+        
+        self.state.setTokenRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: address,
+            roles: addressRoles
+        )
+    }
+    
+    package func setTokenData(
+        tokenIdentifier: Data,
+        nonce: UInt64,
+        data: WorldState.TokenData
+    ) {
+        self.state.setTokenData(
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce,
+            data: data
+        )
+    }
+
+    package func getTokenData(
+        tokenIdentifier: Data,
+        nonce: UInt64
+    ) -> WorldState.TokenData? {
+        self.state.getTokenData(
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        )
+    }
+
+    package func getAddressTokenRoles(
+        tokenIdentifier: Data,
+        address: Data
+    ) -> EsdtLocalRoles {
+        self.state.getAddressTokenRoles(
+            tokenIdentifier: tokenIdentifier,
+            address: address
+        )
     }
 }
-
 #endif

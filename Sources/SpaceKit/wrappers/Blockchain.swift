@@ -1,4 +1,4 @@
-fileprivate let ESDT_SYSTEM_SC_ADDRESS_BYTES: Bytes32 = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 255, 255)
+package let ESDT_SYSTEM_SC_ADDRESS_BYTES: Bytes32 = (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 255, 255)
 
 // TODO: add caching when needed (and turn related function into computed variables)
 
@@ -124,7 +124,7 @@ public struct Blockchain {
     public static func getESDTLocalRoles(tokenIdentifier: Buffer) -> EsdtLocalRoles { // TODO: use TokenIdentifier type
         let flags = API.getESDTLocalRoles(tokenIdHandle: tokenIdentifier.handle)
         
-        return EsdtLocalRoles(flags: flags)
+        return EsdtLocalRoles(flags: toBigEndianUInt64(from: flags.toBytes8()))
     }
     
     public static func deploySCFromSource(
@@ -363,6 +363,106 @@ public struct Blockchain {
         )
     }
     
+    public static func issueSemiFungibleToken(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        properties: SemiFungibleTokenProperties
+    ) -> AsyncContractCall {
+        // TODO: add tests
+        return Blockchain.issueToken(
+            tokenType: .semiFungible,
+            tokenDisplayName: tokenDisplayName,
+            tokenTicker: tokenTicker,
+            initialSupply: 0,
+            properties: TokenProperties(
+                numDecimals: 0,
+                canFreeze: properties.canFreeze,
+                canWipe: properties.canWipe,
+                canPause: properties.canPause,
+                canTransferCreateRole: properties.canTransferCreateRole,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: properties.canChangeOwner,
+                canUpgrade: properties.canUpgrade,
+                canAddSpecialRoles: properties.canAddSpecialRoles
+            )
+        )
+    }
+    
+    public static func registerMetaEsdt(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        properties: MetaTokenProperties
+    ) -> AsyncContractCall {
+        // TODO: add tests
+        return Blockchain.issueToken(
+            tokenType: .meta,
+            tokenDisplayName: tokenDisplayName,
+            tokenTicker: tokenTicker,
+            initialSupply: 0,
+            properties: TokenProperties(
+                numDecimals: properties.numDecimals,
+                canFreeze: properties.canFreeze,
+                canWipe: properties.canWipe,
+                canPause: properties.canPause,
+                canTransferCreateRole: properties.canTransferCreateRole,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: properties.canChangeOwner,
+                canUpgrade: properties.canUpgrade,
+                canAddSpecialRoles: properties.canAddSpecialRoles
+            )
+        )
+    }
+    
+    public static func registerAndSetAllRoles(
+        tokenDisplayName: Buffer,
+        tokenTicker: Buffer,
+        tokenType: TokenType,
+        numDecimals: UInt32
+    ) -> AsyncContractCall {
+        let tokenTypeNameStaticString: StaticString = switch tokenType {
+        case .fungible:
+            "FNG"
+        case .nonFungible:
+            "NFT"
+        case .semiFungible:
+            "SFT"
+        case .meta:
+            "META"
+        case .invalid:
+            ""
+        }
+        
+        let endpointNameStaticString: StaticString = switch tokenType {
+        case .fungible:
+            ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME
+        case .nonFungible:
+            ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME
+        case .semiFungible:
+            ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME
+        case .meta:
+            ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME
+        case .invalid:
+            smartContractError(message: "Invalid token type.")
+        }
+        
+        var argBuffer = ArgBuffer()
+        
+        argBuffer.pushArg(arg: tokenDisplayName)
+        argBuffer.pushArg(arg: tokenTicker)
+        argBuffer.pushArg(arg: Buffer(stringLiteral: tokenTypeNameStaticString))
+        argBuffer.pushArg(arg: numDecimals)
+        
+        let contractCall = ContractCall(
+            receiver: Address(bytes: ESDT_SYSTEM_SC_ADDRESS_BYTES),
+            endpointName: Buffer(stringLiteral: endpointNameStaticString),
+            argBuffer: argBuffer
+        )
+        
+        return AsyncContractCall(contractCall: contractCall)
+    }
+
     public static func setTokenRoles(
         for address: Address,
         tokenIdentifier: Buffer,
@@ -379,10 +479,129 @@ public struct Blockchain {
         
         let contractCall = ContractCall(
             receiver: Address(bytes: ESDT_SYSTEM_SC_ADDRESS_BYTES),
-            endpointName: "setSpecialRoles",
+            endpointName: "setSpecialRole",
             argBuffer: argBuffer
         )
         
         return AsyncContractCall(contractCall: contractCall)
+    }
+    
+    public static func updateNftAttributes<T: TopEncode>(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        attributes: T
+    ) {
+        var argBuffer = ArgBuffer()
+        argBuffer.pushArg(arg: tokenIdentifier)
+        argBuffer.pushArg(arg: nonce)
+        
+        var attributesEncoded = Buffer()
+        attributes.topEncode(output: &attributesEncoded)
+        argBuffer.pushArg(arg: attributesEncoded)
+        
+        let _: IgnoreValue = ContractCall(
+            receiver: Blockchain.getSCAddress(),
+            endpointName: Buffer(stringLiteral: ESDT_NFT_UPDATE_ATTRIBUTES_FUNC_NAME),
+            argBuffer: argBuffer
+        ).call()
+    }
+    
+    public static func getTokenData(
+        address: Address,
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> TokenData {
+        let value = BigUint()
+        let properties = Buffer()
+        let hash = Buffer()
+        let name = Buffer()
+        let attributes = Buffer()
+        let creatorRaw = Buffer()
+        let royalties = BigUint()
+        let urisRaw = Buffer()
+        
+        API.managedGetESDTTokenData(
+            addressHandle: address.buffer.handle,
+            tokenIDHandle: tokenIdentifier.handle,
+            nonce: toBigEndianInt64(from: nonce.toBytes8()), // TODO: super tricky, we should ensure it works
+            valueHandle: value.handle,
+            propertiesHandle: properties.handle,
+            hashHandle: hash.handle,
+            nameHandle: name.handle,
+            attributesHandle: attributes.handle,
+            creatorHandle: creatorRaw.handle,
+            royaltiesHandle: royalties.handle,
+            urisHandle: urisRaw.handle
+        )
+        
+        let tokenType = if nonce == 0 {
+            TokenType.fungible
+        } else {
+            TokenType.nonFungible
+        }
+        
+        let creator = if creatorRaw.isEmpty {
+            Address()
+        } else {
+            Address(buffer: creatorRaw)
+        }
+        
+        let propertiesBytes = properties.toBigEndianBytes8() // The array contains 2 elements, therefore only the 7th and 8th ones matter
+        
+        let isFrozen = propertiesBytes.6 > 0 // This is how it is implemented in the Rust SDK
+        
+        return TokenData(
+            tokenType: tokenType,
+            amount: value,
+            frozen: isFrozen,
+            hash: hash,
+            name: name,
+            attributes: attributes,
+            creator: creator,
+            royaties: royalties,
+            uris: Vector(handle: urisRaw.handle)
+        )
+    }
+    
+    public static func getTokenAttributes<T: TopDecode>(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> T {
+        let rawAttributes = Blockchain.getTokenData(
+            address: Blockchain.getSCAddress(),
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        ).attributes
+        
+        return T(topDecode: rawAttributes)
+    }
+    
+    public static func getTokenRoyalties(
+        tokenIdentifier: Buffer,
+        nonce: UInt64
+    ) -> BigUint {
+        Blockchain.getTokenData(
+            address: Blockchain.getSCAddress(),
+            tokenIdentifier: tokenIdentifier,
+            nonce: nonce
+        ).royaties
+    }
+    
+    public static func modifyTokenRoyalties(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        royalties: UInt64
+    ) {
+        var argBuffer = ArgBuffer()
+        
+        argBuffer.pushArg(arg: tokenIdentifier)
+        argBuffer.pushArg(arg: nonce)
+        argBuffer.pushArg(arg: royalties)
+
+        let _: IgnoreValue = ContractCall(
+            receiver: Blockchain.getSCAddress(),
+            endpointName: Buffer(stringLiteral: ESDT_MODIFY_ROYALTIES_FUNC_NAME),
+            argBuffer: argBuffer
+        ).call()
     }
 }

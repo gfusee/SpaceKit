@@ -220,6 +220,14 @@ if !isWasm {
                 "SpaceKitTesting",
                 "BigInt"
             ]
+        ),
+        .testTarget(
+            name: "EsdtLocalRolesTests",
+            dependencies: [
+                "SpaceKit",
+                "SpaceKitTesting",
+                "BigInt"
+            ]
         )
     ])
 }
@@ -264,6 +272,18 @@ let package = Package(
                 "SpaceKit"
             ],
             path: "Examples/FeatureTests/CallbackNotExposed",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "TokenOperations",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/FeatureTests/TokenOperations",
             exclude: [
                 "Scenarios",
                 "Output"

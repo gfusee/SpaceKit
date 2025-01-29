@@ -11,3 +11,6 @@ package let ISSUE_NON_FUNGIBLE_ENDPOINT_NAME: StaticString = "issueNonFungible"
 package let ISSUE_SEMI_FUNGIBLE_ENDPOINT_NAME: StaticString = "issueSemiFungible"
 package let REGISTER_META_ESDT_ENDPOINT_NAME: StaticString = "registerMetaESDT"
 package let ISSUE_AND_SET_ALL_ROLES_ENDPOINT_NAME: StaticString = "registerAndSetAllRoles"
+
+package let ESDT_NFT_UPDATE_ATTRIBUTES_FUNC_NAME: StaticString = "ESDTNFTUpdateAttributes"
+package let ESDT_MODIFY_ROYALTIES_FUNC_NAME: StaticString = "ESDTModifyRoyalties"
