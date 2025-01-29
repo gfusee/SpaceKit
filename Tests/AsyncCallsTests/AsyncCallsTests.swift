@@ -303,6 +303,22 @@ import SpaceKitTesting
             )
     }
     
+    public func asyncCallMultipleReturnEgldValueNoCallback(
+        receiver: Address,
+        promisesCount: UInt8,
+        paymentValue: BigUint
+    ) {
+        for _ in 0..<promisesCount {
+            CalleeProxy
+                .returnEgldValue
+                .registerPromise(
+                    receiver: receiver,
+                    gas: 10_000_000,
+                    egldValue: paymentValue
+                )
+        }
+    }
+    
     public func asyncCallIncreaseCounterAndFailWithEgld(
         receiver: Address,
         paymentValue: BigUint
@@ -362,6 +378,22 @@ import SpaceKitTesting
                 gas: 10_000_000,
                 esdtTransfers: Message.allEsdtTransfers
             )
+    }
+    
+    public func asyncCallMultipleSendTokensNoCallback(
+        receiver: Address,
+        promisesCount: UInt8,
+        tokens: Vector<TokenPayment>
+    ) {
+        for _ in 0..<promisesCount {
+            CalleeProxy
+                .receiveTokens
+                .registerPromise(
+                    receiver: receiver,
+                    gas: 10_000_000,
+                    esdtTransfers: tokens
+                )
+        }
     }
     
     public func asyncCallSendTokensFailNoCallback(
@@ -482,6 +514,11 @@ final class AsyncCallsTests: ContractTestCase {
             WorldAccount(
                 address: "caller",
                 balance: 1000,
+                esdtBalances: [
+                    "FUNG-abcdef": [
+                        EsdtBalance(nonce: 0, balance: 1000)
+                    ]
+                ],
                 controllers: [
                     AsyncCallsTestsController.self
                 ]
@@ -741,6 +778,45 @@ final class AsyncCallsTests: ContractTestCase {
         XCTAssertEqual(callerBalance, 850)
     }
     
+    func testReturnEgldInsufficientBalanceShouldFail() throws {
+        try self.deployContract(at: "callee")
+        
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        do {
+            try callerController.asyncCallReturnEgldValueNoCallback(receiver: "callee", paymentValue: 10000)
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "insufficient balance"))
+        }
+    }
+    
+    func testMultipleReturnEgldInsufficientBalanceShouldFail() throws {
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
+        
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        do {
+            try callerController.asyncCallMultipleReturnEgldValueNoCallback(receiver: "callee", promisesCount: 11, paymentValue: 100)
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "insufficient balance"))
+        }
+        
+        let calleeCounter = try calleeController.getCounter()
+        let calleeBalance = self.getAccount(address: "callee")?.balance
+        let callerBalance = self.getAccount(address: "caller")?.balance
+        
+        XCTAssertEqual(calleeCounter, 0)
+        XCTAssertEqual(calleeBalance, 0)
+        XCTAssertEqual(callerBalance, 1000)
+    }
+    
     func testIncreaseCounterAndFailWithEgldWithCallback() throws {
         try self.deployContract(at: "callee")
         let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
@@ -864,6 +940,110 @@ final class AsyncCallsTests: ContractTestCase {
         XCTAssertEqual(userWEGLDBalance, expectedUserWEGLDBalance)
         XCTAssertEqual(callerWEGLDBalance, expectedCallerWEGLDBalance)
         XCTAssertEqual(calleeWEGLDBalance, expectedCalleeWEGLDBalance)
+    }
+    
+    func testSendOneFungibleTokenNotEnoughBalanceShouldFail() throws {
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
+        
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        var esdtValue: Vector<TokenPayment> = Vector()
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "FUNG-abcdef",
+                nonce: 0,
+                amount: 10000
+            )
+        )
+        
+        do {
+            try callerController.asyncCallMultipleSendTokensNoCallback(
+                receiver: "callee",
+                promisesCount: 1,
+                tokens: esdtValue
+            )
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "insufficient esdt balance"))
+        }
+        
+        
+        let calleeLastReceivedTokens = try calleeController.getLastReceivedTokens()
+        
+        let callerFUNGBalance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "FUNG-abcdef",
+                nonce: 0
+            )
+        let calleeFUNGBalance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "FUNG-abcdef",
+                nonce: 0
+            )
+        
+        let expectedCalleeLastReceivedTokens: Vector<TokenPayment> = Vector()
+        let expectedCallerFUNGBalance: BigUint = 1000
+        let expectedCalleeFUNGBalance: BigUint = 0
+        
+        XCTAssertEqual(calleeLastReceivedTokens, expectedCalleeLastReceivedTokens)
+        XCTAssertEqual(callerFUNGBalance, expectedCallerFUNGBalance)
+        XCTAssertEqual(calleeFUNGBalance, expectedCalleeFUNGBalance)
+    }
+    
+    func testMultipleSendOneFungibleTokenNotEnoughBalanceShouldFail() throws {
+        try self.deployContract(at: "callee")
+        let calleeController = self.instantiateController(CalleeController.self, for: "callee")!
+        
+        try self.deployContract(at: "caller")
+        let callerController = self.instantiateController(AsyncCallsTestsController.self, for: "caller")!
+        
+        var esdtValue: Vector<TokenPayment> = Vector()
+        
+        esdtValue = esdtValue.appended(
+            TokenPayment(
+                tokenIdentifier: "FUNG-abcdef",
+                nonce: 0,
+                amount: 100
+            )
+        )
+        
+        do {
+            try callerController.asyncCallMultipleSendTokensNoCallback(
+                receiver: "callee",
+                promisesCount: 11,
+                tokens: esdtValue
+            )
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .executionFailed(reason: "insufficient esdt balance"))
+        }
+        
+        
+        let calleeLastReceivedTokens = try calleeController.getLastReceivedTokens()
+        
+        let callerFUNGBalance = self.getAccount(address: "caller")!
+            .getEsdtBalance(
+                tokenIdentifier: "FUNG-abcdef",
+                nonce: 0
+            )
+        let calleeFUNGBalance = self.getAccount(address: "callee")!
+            .getEsdtBalance(
+                tokenIdentifier: "FUNG-abcdef",
+                nonce: 0
+            )
+        
+        let expectedCalleeLastReceivedTokens: Vector<TokenPayment> = Vector()
+        let expectedCallerFUNGBalance: BigUint = 1000
+        let expectedCalleeFUNGBalance: BigUint = 0
+        
+        XCTAssertEqual(calleeLastReceivedTokens, expectedCalleeLastReceivedTokens)
+        XCTAssertEqual(callerFUNGBalance, expectedCallerFUNGBalance)
+        XCTAssertEqual(calleeFUNGBalance, expectedCalleeFUNGBalance)
     }
     
     func testSendOneFungibleTokenFailNoCallback() throws {
