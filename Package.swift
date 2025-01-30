@@ -71,49 +71,42 @@ if !isWasm {
         .testTarget(
             name: "ABITests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "AsyncCallsTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BufferTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BigUintTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "IntTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ContractStorageTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "TestEngineTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
@@ -138,95 +131,79 @@ if !isWasm {
         .testTarget(
             name: "CodableMacroImplTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "CallbackMacroImplTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "AdderTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ArrayTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "EventTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "FactorialTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BlockchainTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "MessageTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "MultiArgsTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ProxyTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "SendTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting",
-                "BigInt"
             ]
         ),
         .testTarget(
             name: "ErrorTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting",
-                "BigInt"
             ]
         ),
         .testTarget(
             name: "EsdtLocalRolesTests",
             dependencies: [
-                "SpaceKit",
                 "SpaceKitTesting",
-                "BigInt"
             ]
         )
     ])

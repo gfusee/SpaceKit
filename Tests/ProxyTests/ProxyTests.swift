@@ -1,4 +1,3 @@
-import SpaceKit
 import SpaceKitTesting
 
 @Proxy enum CalleeProxy {

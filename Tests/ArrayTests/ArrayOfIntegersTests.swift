@@ -1,5 +1,4 @@
-@testable import SpaceKit
-import SpaceKitTesting
+@testable import SpaceKitTesting
 
 @Controller public struct ArrayOfIntegersTestsController {
     

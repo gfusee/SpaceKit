@@ -1,5 +1,3 @@
-import SpaceKit
-import BigInt
 import SpaceKitTesting
 
 final class SetSpecialRolesTests: ContractTestCase {
