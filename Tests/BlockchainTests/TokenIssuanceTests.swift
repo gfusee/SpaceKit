@@ -209,6 +209,186 @@ final class TokenIssuanceTests: ContractTestCase {
         XCTAssertEqual(lastErrorMessage, "Not enough payment.")
     }
     
+    func testIssueFungibleTokenButDisplayNameTooShortShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "Te",
+            tokenTicker: "TEST",
+            initialSupply: 100,
+            properties: FungibleTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: false
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token display name.")
+    }
+    
+    func testIssueFungibleTokenButDisplayNameTooLongShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            tokenTicker: "TEST",
+            initialSupply: 100,
+            properties: FungibleTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: false
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token display name.")
+    }
+    
+    func testIssueFungibleTokenButTickerTooShortShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TE",
+            initialSupply: 100,
+            properties: FungibleTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: false
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
+    }
+    
+    func testIssueFungibleTokenButTickerTooLongFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "AAAAAAAAAAA",
+            initialSupply: 100,
+            properties: FungibleTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: false
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
+    }
+    
+    func testIssueFungibleTokenButTickerContainsLowercaseShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TeST",
+            initialSupply: 100,
+            properties: FungibleTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: false
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
+    }
+    
+    func testIssueFungibleTokenButNumberOfDecimalsTooHighFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueToken(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            initialSupply: 100,
+            properties: FungibleTokenProperties(
+                numDecimals: 19,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canMint: false,
+                canBurn: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: false
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "num decimals too high.")
+    }
+    
     func testIssueNonFungibleToken() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
@@ -307,6 +487,141 @@ final class TokenIssuanceTests: ContractTestCase {
         let lastErrorMessage = try controller.getLastErrorMessage()
         
         XCTAssertEqual(lastErrorMessage, "Not enough payment.")
+    }
+    
+    func testIssueNonFungibleTokenButDisplayNameTooShortShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "Te",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token display name.")
+    }
+    
+    func testIssueNonFungibleTokenButDisplayNameTooLongShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            tokenTicker: "TEST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token display name.")
+    }
+    
+    func testIssueNonFungibleTokenButTickerTooShortShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TE",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
+    }
+    
+    func testIssueNonFungibleTokenButTickerTooLongFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "AAAAAAAAAAA",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
+    }
+    
+    func testIssueNonFungibleTokenButTickerContainsLowercaseShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueNonFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TeST",
+            properties: NonFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
     }
 
     func testIssueSemiFungibleToken() throws {
@@ -407,6 +722,141 @@ final class TokenIssuanceTests: ContractTestCase {
         let lastErrorMessage = try controller.getLastErrorMessage()
         
         XCTAssertEqual(lastErrorMessage, "Not enough payment.")
+    }
+    
+    func testIssueSemiFungibleTokenButDisplayNameTooShortShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueSemiFungible(
+            tokenDisplayName: "Te",
+            tokenTicker: "TEST",
+            properties: SemiFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token display name.")
+    }
+    
+    func testIssueSemiFungibleTokenButDisplayNameTooLongShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueSemiFungible(
+            tokenDisplayName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            tokenTicker: "TEST",
+            properties: SemiFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token display name.")
+    }
+    
+    func testIssueSemiFungibleTokenButTickerTooShortShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueSemiFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TE",
+            properties: SemiFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
+    }
+    
+    func testIssueSemiFungibleTokenButTickerTooLongFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueSemiFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "AAAAAAAAAAA",
+            properties: SemiFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
+    }
+    
+    func testIssueSemiFungibleTokenButTickerContainsLowercaseShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.issueSemiFungible(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TeST",
+            properties: SemiFungibleTokenProperties(
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
     }
     
     func testRegisterMetaEsdt() throws {
@@ -510,6 +960,174 @@ final class TokenIssuanceTests: ContractTestCase {
         let lastErrorMessage = try controller.getLastErrorMessage()
         
         XCTAssertEqual(lastErrorMessage, "Not enough payment.")
+    }
+    
+    func testRegisterMetaEsdtButDisplayNameTooShortShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "Te",
+            tokenTicker: "TEST",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token display name.")
+    }
+    
+    func testRegisterMetaEsdtButDisplayNameTooLongShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            tokenTicker: "TEST",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token display name.")
+    }
+    
+    func testRegisterMetaEsdtButTickerTooShortShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TE",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
+    }
+    
+    func testRegisterMetaEsdtButTickerTooLongFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "AAAAAAAAAAA",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
+    }
+    
+    func testRegisterMetaEsdtButTickerContainsLowercaseShouldFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TeST",
+            properties: MetaTokenProperties(
+                numDecimals: 18,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "invalid token ticker.")
+    }
+    
+    func testRegisterMetaEsdtButNumberOfDecimalsTooHighFail() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(TokenTestsController.self, for: "contract")!
+        
+        try controller.registerMetaEsdt(
+            tokenDisplayName: "TestToken",
+            tokenTicker: "TEST",
+            properties: MetaTokenProperties(
+                numDecimals: 19,
+                canFreeze: false,
+                canWipe: false,
+                canPause: false,
+                canTransferCreateRole: false,
+                canChangeOwner: false,
+                canUpgrade: false,
+                canAddSpecialRoles: true
+            ),
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: "user",
+                egldValue: BigUint(bigInt: self.issuanceCost)
+            )
+        )
+        
+        let lastErrorMessage = try controller.getLastErrorMessage()
+        
+        XCTAssertEqual(lastErrorMessage, "num decimals too high.")
     }
     
     func testRegisterAndSetAllRolesForFungibleToken() throws {

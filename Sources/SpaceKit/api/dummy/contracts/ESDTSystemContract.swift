@@ -13,6 +13,11 @@
             smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
         }
         
+        self.validateToken(
+            tokenDisplayName: tokenDisplayName,
+            tokenTicker: tokenTicker
+        )
+        
         let tokenProperties = self.computeTokenProperties(
             numDecimals: numDecimals,
             tokenProperties: tokenProperties
@@ -60,6 +65,11 @@
             smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
         }
         
+        self.validateToken(
+            tokenDisplayName: tokenDisplayName,
+            tokenTicker: tokenTicker
+        )
+        
         let tokenProperties = self.computeTokenProperties(
             numDecimals: 0,
             tokenProperties: tokenProperties
@@ -95,6 +105,11 @@
         guard Message.egldValue == self.getIssuanceCost() else {
             smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
         }
+        
+        self.validateToken(
+            tokenDisplayName: tokenDisplayName,
+            tokenTicker: tokenTicker
+        )
         
         let tokenProperties = self.computeTokenProperties(
             numDecimals: 0,
@@ -132,6 +147,11 @@
         guard Message.egldValue == self.getIssuanceCost() else {
             smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
         }
+        
+        self.validateToken(
+            tokenDisplayName: tokenDisplayName,
+            tokenTicker: tokenTicker
+        )
         
         let tokenProperties = self.computeTokenProperties(
             numDecimals: numDecimals,
@@ -620,6 +640,10 @@
         numDecimals: UInt32,
         tokenProperties: MultiValueEncoded<Buffer>
     ) -> TokenProperties {
+        guard numDecimals <= 18 else {
+            smartContractError(message: "num decimals too high.") // TODO: use the same error as the WASM VM
+        }
+        
         var canFreeze = false
         var canWipe = false
         var canPause = false
@@ -751,6 +775,30 @@
         
         // 5 * 10^16 = 0.05 EGLD
         return BigUint(5) * ten * ten * ten * ten * ten * ten * ten * ten * ten * ten * ten * ten * ten * ten * ten * ten
+    }
+    
+    private func validateToken(tokenDisplayName: Buffer, tokenTicker: Buffer) {
+        // Note: This functions use types that are forbidden by SpaceKit.
+        // This is not an issue because this code is not compiled when targetting the WASM VM.
+        
+        guard let name = String(data: Data(tokenDisplayName.toBytes()), encoding: .utf8) else {
+            smartContractError(message: "token's display name is not a valid UTF-8 string.") // TODO: use the same error as the WASM VM
+        }
+        
+        guard let ticker = String(data: Data(tokenTicker.toBytes()), encoding: .utf8) else {
+            smartContractError(message: "token's ticker is not a valid UTF-8 string.") // TODO: use the same error as the WASM VM
+        }
+        
+        let nameRegex = /^[a-zA-Z0-9]{3,50}$/
+        let tickerRegex = /^[A-Z0-9]{3,10}$/
+        
+        guard name.firstMatch(of: nameRegex) != nil else {
+            smartContractError(message: "invalid token display name.") // TODO: use the same error as the WASM VM
+        }
+        
+        guard ticker.firstMatch(of: tickerRegex) != nil else {
+            smartContractError(message: "invalid token ticker.") // TODO: use the same error as the WASM VM
+        }
     }
 }
 #endif
