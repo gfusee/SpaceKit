@@ -1,5 +1,4 @@
-@testable import SpaceKit
-import SpaceKitTesting
+@testable import SpaceKitTesting
 
 @Codable public struct CustomCodableStruct: Equatable {
     let firstElement: Buffer

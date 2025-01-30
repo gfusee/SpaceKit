@@ -1,4 +1,3 @@
-import SpaceKit
 import SpaceKitTesting
 
 // There was an issue with @Codable macro on structs or enums that has comments on its fields

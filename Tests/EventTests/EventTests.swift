@@ -1,4 +1,3 @@
-import SpaceKit
 import SpaceKitTesting
 
 @Event(dataType: Buffer) public struct TestSingleIndexedFieldBufferDataEvent {
