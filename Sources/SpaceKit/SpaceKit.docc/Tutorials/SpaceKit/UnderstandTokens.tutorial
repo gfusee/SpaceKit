@@ -66,7 +66,7 @@
             @Step {
                 Register a promise to handle the asynchronous call.
 
-                - Retain the caller’s payment to refund in case of failure.
+                Retain the caller’s payment to refund in case of failure.
 
                 @Code(name: "lib.swift", file: "UnderstandTokensSection1Step7.swift")
             }
@@ -74,7 +74,7 @@
             @Step {
                 Create a callback to process the result of the asynchronous call.
 
-                - On success, generate a token identifier like `SPACE-abcdef`.
+                You can retrieve the new identifier in the payments if initialSupply > 0, if initialSupply == 0 you can declare result as a AsyncCallResult\<Buffer> to retrieve it.
 
                 @Code(name: "lib.swift", file: "UnderstandTokensSection1Step8.swift")
             }
