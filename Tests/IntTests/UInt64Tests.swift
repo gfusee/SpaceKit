@@ -1,7 +1,6 @@
-import XCTest
-import Space
+import SpaceKitTesting
 
-@Contract struct UInt64TestsContract {
+@Controller public struct UInt64TestsController {
     public func testTopDecodeUInt64TooLargeBufferShouldFail() {
         let input = Buffer(data: Array("000000000000000000".hexadecimal))
         let _ = UInt64(topDecode: input)
@@ -28,7 +27,12 @@ final class UInt64Tests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    UInt64TestsController.self
+                ]
+            )
         ]
     }
     
@@ -189,7 +193,10 @@ final class UInt64Tests: ContractTestCase {
     
     func testTopDecodeUInt64TooLargeBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("contract").testTopDecodeUInt64TooLargeBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(UInt64TestsController.self, for: "contract")!
+            
+            try controller.testTopDecodeUInt64TooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -235,7 +242,10 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64EmptyBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("contract").testNestedDecodeUInt64EmptyBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(UInt64TestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeUInt64EmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -245,7 +255,10 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeUInt64TooSmallBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("contract").testNestedDecodeUInt64TooSmallBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(UInt64TestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeUInt64TooSmallBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -276,7 +289,10 @@ final class UInt64Tests: ContractTestCase {
     
     func testNestedDecodeTwoUInt64sTooSmallBufferShouldFail() throws {
         do {
-            try UInt64TestsContract.testable("contract").testNestedDecodeTwoUInt64sTooSmallBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(UInt64TestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeTwoUInt64sTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -285,7 +301,7 @@ final class UInt64Tests: ContractTestCase {
     }
     
     func testFixedArrayToUInt64WithZero() throws {
-        var array = getZeroedBytes8()
+        let array = getZeroedBytes8()
         let result = toBigEndianUInt64(from: array)
         
         let expected: UInt64 = 0

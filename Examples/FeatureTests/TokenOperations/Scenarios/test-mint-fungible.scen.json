@@ -1,0 +1,73 @@
+{
+    "name": "TokenOperations",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "1",
+                    "balance": "0"
+                },
+                "sc:contract": {
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "roles": [
+                                "ESDTRoleLocalMint"
+                            ]
+                        }
+                    },
+                    "code": "file:../output/TokenOperations.wasm"
+                }
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "mint tokens",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "mintTokens",
+                "arguments": [
+                    "str:TEST-abcdef",
+                    "0",
+                    "100",
+                    "address:owner"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": "",
+                "status": "0",
+                "logs": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "esdt": {
+                        "str:TEST-abcdef": "100"
+                    },
+                    "storage": {}
+                },
+                "sc:contract": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "esdt": {
+                        "str:TEST-abcdef": {
+                            "balance": "0",
+                            "roles": [
+                                "ESDTRoleLocalMint"
+                            ]
+                        }
+                    },
+                    "storage": {},
+                    "code": "*"
+                }
+            }
+        }
+    ]
+}

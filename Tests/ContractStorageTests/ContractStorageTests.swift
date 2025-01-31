@@ -1,8 +1,6 @@
-import Space
-import XCTest
+import SpaceKitTesting
 
-@Contract
-struct CounterContract {
+@Controller public struct CounterController {
     @Storage(key: "globalCounter") var globalCounter: BigUint
     
     public mutating func increaseByOne() {
@@ -24,62 +22,84 @@ final class ContractStorageTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "counter"),
-            WorldAccount(address: "counter1"),
-            WorldAccount(address: "counter2")
+            WorldAccount(
+                address: "counter",
+                controllers: [
+                    CounterController.self
+                ]
+            ),
+            WorldAccount(
+                address: "counter1",
+                controllers: [
+                    CounterController.self
+                ]
+            ),
+            WorldAccount(
+                address: "counter2",
+                controllers: [
+                    CounterController.self
+                ]
+            )
         ]
     }
     
     func testGetCounterBeforeAnyIncrease() throws {
-        let contract = try CounterContract.testable("counter")
+        try self.deployContract(at: "counter")
+        let controller = self.instantiateController(CounterController.self, for: "counter")!
         
-        let globalCounterValue = try contract.getGlobalCounterValue()
+        let globalCounterValue = try controller.getGlobalCounterValue()
         
         XCTAssertEqual(globalCounterValue, "The global counter is: 0")
     }
     
     func testIncreaseCounterOnce() throws {
-        var contract = try CounterContract.testable("counter")
+        try self.deployContract(at: "counter")
+        var controller = self.instantiateController(CounterController.self, for: "counter")!
         
-        try contract.increaseByOne()
+        try controller.increaseByOne()
         
-        let globalCounterValue = try contract.getGlobalCounterValue()
+        let globalCounterValue = try controller.getGlobalCounterValue()
         
         XCTAssertEqual(globalCounterValue, "The global counter is: 1")
     }
     
     func testIncreaseCounterTwice() throws {
-        var contract = try CounterContract.testable("counter")
+        try self.deployContract(at: "counter")
+        var controller = self.instantiateController(CounterController.self, for: "counter")!
         
-        try contract.increaseByOne()
-        try contract.increaseByOne()
+        try controller.increaseByOne()
+        try controller.increaseByOne()
         
-        let globalCounterValue = try contract.getGlobalCounterValue()
+        let globalCounterValue = try controller.getGlobalCounterValue()
         
         XCTAssertEqual(globalCounterValue, "The global counter is: 2")
     }
     
     func testIncreaseCounterTwoContracts() throws {
-        var contract1 = try CounterContract.testable("counter1")
-        try contract1.increaseByOne()
+        try self.deployContract(at: "counter1")
+        var controller1 = self.instantiateController(CounterController.self, for: "counter1")!
         
-        var contract2 = try CounterContract.testable("counter2")
-        try contract2.increaseByOne()
-        try contract2.increaseByOne()
+        try controller1.increaseByOne()
         
-        let contract1GlobalCounterValue = try contract1.getGlobalCounterValue()
-        let contract2GlobalCounterValue = try contract2.getGlobalCounterValue()
+        try self.deployContract(at: "counter2")
+        var controller2 = self.instantiateController(CounterController.self, for: "counter2")!
+        try controller2.increaseByOne()
+        try controller2.increaseByOne()
         
-        XCTAssertEqual(contract1GlobalCounterValue, "The global counter is: 1")
-        XCTAssertEqual(contract2GlobalCounterValue, "The global counter is: 2")
+        let controller1GlobalCounterValue = try controller1.getGlobalCounterValue()
+        let controller2GlobalCounterValue = try controller2.getGlobalCounterValue()
+        
+        XCTAssertEqual(controller1GlobalCounterValue, "The global counter is: 1")
+        XCTAssertEqual(controller2GlobalCounterValue, "The global counter is: 2")
     }
     
     func testIncreaseCounterErrorInTransactionShouldRevert() throws {
-        var contract = try CounterContract.testable("counter")
+        try self.deployContract(at: "counter")
+        var controller = self.instantiateController(CounterController.self, for: "counter")!
         
-        try? contract.increaseByOneThrowError()
+        try? controller.increaseByOneThrowError()
         
-        let globalCounterValue = try contract.getGlobalCounterValue()
+        let globalCounterValue = try controller.getGlobalCounterValue()
         
         XCTAssertEqual(globalCounterValue, "The global counter is: 0")
     }

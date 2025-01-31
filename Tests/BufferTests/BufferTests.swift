@@ -1,7 +1,6 @@
-import XCTest
-import Space
+import SpaceKitTesting
 
-@Contract struct BufferTestsContract {
+@Controller public struct BufferTestsController {
     public func testNonEmptyBufferGetTooLongSubBufferShouldFail() {
         let buffer: Buffer = "Hello World!"
         let _ = buffer.getSubBuffer(startIndex: 2, length: 100)
@@ -19,24 +18,29 @@ import Space
     
     public func testNestedDecodeBufferEmptyInputShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("".hexadecimal)))
-        let result = Buffer(depDecode: &input)
+        _ = Buffer(depDecode: &input)
     }
     
     public func testNestedDecodeBufferBadLengthInputShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000".hexadecimal)))
-        let result = Buffer(depDecode: &input)
+        _ = Buffer(depDecode: &input)
     }
     
     public func testNestedDecodeBufferTooLargeLengthInputShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("0000004248656c6c6f20576f726c642120486f77277320697420676f696e673f204920686f706520796f7527726520656e6a6f79696e672074686520537769667453444b21".hexadecimal)))
-        let result = Buffer(depDecode: &input)
+        _ = Buffer(depDecode: &input)
     }
 }
 
 final class BufferTests: ContractTestCase {
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    BufferTestsController.self
+                ]
+            )
         ]
     }
     
@@ -135,7 +139,10 @@ final class BufferTests: ContractTestCase {
     
     func testNonEmptyBufferGetTooLongSubBufferShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNonEmptyBufferGetTooLongSubBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(BufferTestsController.self, for: "contract")!
+            
+            try controller.testNonEmptyBufferGetTooLongSubBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -145,7 +152,10 @@ final class BufferTests: ContractTestCase {
     
     func testNonEmptyBufferSubBufferNegativeStartIndexShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNonEmptyBufferSubBufferNegativeStartIndexShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(BufferTestsController.self, for: "contract")!
+                
+            try controller.testNonEmptyBufferSubBufferNegativeStartIndexShouldFail()
             
             XCTFail()
         } catch {
@@ -155,7 +165,10 @@ final class BufferTests: ContractTestCase {
     
     func testNonEmptyBufferSubBufferNegativeSliceLengthShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNonEmptyBufferSubBufferNegativeSliceLengthShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(BufferTestsController.self, for: "contract")!
+                
+            try controller.testNonEmptyBufferSubBufferNegativeSliceLengthShouldFail()
             
             XCTFail()
         } catch {
@@ -322,7 +335,10 @@ final class BufferTests: ContractTestCase {
     
     func testNestedDecodeBufferEmptyInputShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNestedDecodeBufferEmptyInputShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(BufferTestsController.self, for: "contract")!
+                
+            try controller.testNestedDecodeBufferEmptyInputShouldFail()
             
             XCTFail()
         } catch {
@@ -332,7 +348,10 @@ final class BufferTests: ContractTestCase {
     
     func testNestedDecodeBufferBadLengthInputShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNestedDecodeBufferBadLengthInputShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(BufferTestsController.self, for: "contract")!
+                
+            try controller.testNestedDecodeBufferBadLengthInputShouldFail()
             
             XCTFail()
         } catch {
@@ -342,7 +361,10 @@ final class BufferTests: ContractTestCase {
     
     func testNestedDecodeBufferTooLargeLengthInputShouldFail() throws {
         do {
-            try BufferTestsContract.testable("contract").testNestedDecodeBufferTooLargeLengthInputShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(BufferTestsController.self, for: "contract")!
+                
+            try controller.testNestedDecodeBufferTooLargeLengthInputShouldFail()
             
             XCTFail()
         } catch {

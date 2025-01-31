@@ -1,7 +1,6 @@
-import XCTest
-import Space
+import SpaceKitTesting
 
-@Contract struct IntTestsContract {
+@Controller public struct IntTestsController {
     public func testTopDecodeIntTooLargeBufferShouldFail() {
         let input = Buffer(data: Array("0001020304".hexadecimal))
         _ = Int(topDecode: input)
@@ -9,18 +8,18 @@ import Space
     
     public func testNestedDecodeIntEmptyBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("".hexadecimal)))
-        let result = Int(depDecode: &input)
+        _ = Int(depDecode: &input)
     }
     
     public func testNestedDecodeIntTooSmallBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000000".hexadecimal)))
-        let result = Int(depDecode: &input)
+        _ = Int(depDecode: &input)
     }
     
     public func testNestedDecodeTwoIntsTooSmallBufferShouldFail() {
         var input = BufferNestedDecodeInput(buffer: Buffer(data: Array("000003e8000000".hexadecimal)))
-        let result1 = Int(depDecode: &input)
-        let result2 = Int(depDecode: &input)
+        _ = Int(depDecode: &input)
+        _ = Int(depDecode: &input)
     }
 }
 
@@ -28,7 +27,12 @@ final class IntTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    IntTestsController.self
+                ]
+            )
         ]
     }
     
@@ -240,7 +244,10 @@ final class IntTests: ContractTestCase {
     
     func testTopDecodeIntTooLargeBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("contract").testTopDecodeIntTooLargeBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(IntTestsController.self, for: "contract")!
+            
+            try controller.testTopDecodeIntTooLargeBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -295,7 +302,10 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntEmptyBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("contract").testNestedDecodeIntEmptyBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(IntTestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeIntEmptyBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -305,7 +315,10 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeIntTooSmallBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("contract").testNestedDecodeIntTooSmallBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(IntTestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeIntTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {
@@ -336,7 +349,10 @@ final class IntTests: ContractTestCase {
     
     func testNestedDecodeTwoIntsTooSmallBufferShouldFail() throws {
         do {
-            try IntTestsContract.testable("contract").testNestedDecodeTwoIntsTooSmallBufferShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(IntTestsController.self, for: "contract")!
+            
+            try controller.testNestedDecodeTwoIntsTooSmallBufferShouldFail()
             
             XCTFail()
         } catch {

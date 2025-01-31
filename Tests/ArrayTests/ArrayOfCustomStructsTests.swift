@@ -1,19 +1,16 @@
-@testable import Space
-import XCTest
+@testable import SpaceKitTesting
 
-@Codable struct CustomCodableStruct: Equatable {
+@Codable public struct CustomCodableStruct: Equatable {
     let firstElement: Buffer
     let secondElement: UInt64
     let thirdElement: UInt64
     let fourthElement: Buffer
 }
 
-@Contract struct ArrayOfCustomStructsTestsContract {
+@Controller public struct ArrayOfCustomStructsTestsController {
     
     public func testGetOutOfRangeShouldFail() {
-        let array: Vector<Buffer> = ["Hello!", "Bonjour!", "¡Hola!"]
-        
-        let array2: Vector<CustomCodableStruct> = [
+        let array: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -58,7 +55,12 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    ArrayOfCustomStructsTestsController.self
+                ]
+            )
         ]
     }
     
@@ -140,7 +142,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testTwoElementsArrayThroughLiteralAssign() throws {
-        var array: Vector<CustomCodableStruct> = [
+        let array: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -180,7 +182,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     }
     
     func testAppendedContentsOf() throws {
-        var array1: Vector<CustomCodableStruct> = [
+        let array1: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "Hey!",
                 secondElement: 10,
@@ -195,7 +197,7 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
             )
         ]
         
-        var array2: Vector<CustomCodableStruct> = [
+        let array2: Vector<CustomCodableStruct> = [
             CustomCodableStruct(
                 firstElement: "test3",
                 secondElement: 1,
@@ -445,7 +447,10 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("contract").testGetOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfCustomStructsTestsController.self, for: "contract")!
+                
+            try controller.testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -925,7 +930,10 @@ final class ArrayOfCustomStructsTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("contract").testReplacedOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfCustomStructsTestsController.self, for: "contract")!
+                
+            try controller.testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

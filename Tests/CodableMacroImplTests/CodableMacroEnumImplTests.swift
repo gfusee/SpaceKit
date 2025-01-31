@@ -1,30 +1,29 @@
-import Space
-import XCTest
+import SpaceKitTesting
 
 // There was an issue with @Codable macro on enums that has only one case
 // The struct here is only here to check if it compiles
-@Codable enum TestEnumWithOnlyOneCase {
+@Codable public enum TestEnumWithOnlyOneCase {
     case firstCase
 }
 
 // There was an issue with @Codable macro on structs or enums that has comments on its fields
 // The struct here is only here to check if it compiles
-@Codable enum TestEnumWithComment {
+@Codable public enum TestEnumWithComment {
     case firstCase // Dummy comment
     case secondCase
 }
 
-@Codable enum PaymentType: Equatable {
+@Codable public enum PaymentType: Equatable {
     case egld
     case esdt, multiEsdts
 }
 
-@Codable enum SinglePayment: Equatable {
+@Codable public enum SinglePayment: Equatable {
     case egld(BigUint)
     case esdt(Buffer, UInt64, BigUint), none
 }
 
-@Contract struct CodableMacroEnumImplTestsContract {
+@Controller public struct CodableMacroEnumImplTestsController {
     public func testTopDecodeForEnumInputTooLargeError() {
         let input = Buffer(data: Array("010000000a5346542d61626364656600000000000000050000000203e800".hexadecimal))
         let _ = PaymentType(topDecode: input)
@@ -35,7 +34,12 @@ final class CodableMacroEnumImplTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    CodableMacroEnumImplTestsController.self
+                ]
+            )
         ]
     }
     
@@ -128,7 +132,10 @@ final class CodableMacroEnumImplTests: ContractTestCase {
     
     func testTopDecodeForEnumInputTooLargeError() throws {
         do {
-            try CodableMacroEnumImplTestsContract.testable("contract").testTopDecodeForEnumInputTooLargeError()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(CodableMacroEnumImplTestsController.self, for: "contract")!
+            
+            try controller.testTopDecodeForEnumInputTooLargeError()
             
             XCTFail()
         } catch {

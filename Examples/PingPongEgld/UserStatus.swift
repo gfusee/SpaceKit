@@ -1,6 +1,6 @@
-import Space
+import SpaceKit
 
-@Codable enum UserStatus {
+@Codable public enum UserStatus {
     case new
     case registered
     case withdrawn

@@ -1,7 +1,6 @@
-import XCTest
-import Space
+import SpaceKitTesting
 
-@Contract struct ErrorTestsContract {
+@Controller public struct ErrorTestsController {
     public func testUserErrorStopsTheExecution() {
         let bigUint1: BigUint = 1
         let bigUint2: BigUint = 2
@@ -15,13 +14,21 @@ final class ErrorTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    ErrorTestsController.self
+                ]
+            )
         ]
     }
     
     func testUserErrorStopsTheExecution() throws {
         do {
-            try ErrorTestsContract.testable("contract").testUserErrorStopsTheExecution()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ErrorTestsController.self, for: "contract")!
+            
+            try controller.testUserErrorStopsTheExecution()
             
             XCTFail()
         } catch {

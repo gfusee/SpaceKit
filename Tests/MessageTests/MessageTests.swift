@@ -1,13 +1,13 @@
-import XCTest
-import Space
+import SpaceKitTesting
 
-@Contract struct MessageContract {
+@Init func initialize() {
+    var controller = MessageController()
     
+    controller.address = Message.caller
+}
+
+@Controller public struct MessageController {
     @Storage(key: "address") var address: Address
-    
-    init() {
-        self.address = Message.caller
-    }
     
     public func getCallerAddress() -> Address {
         return Message.caller
@@ -30,7 +30,12 @@ final class MessageTests: ContractTestCase {
     
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "adder"),
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    MessageController.self
+                ]
+            ),
             WorldAccount(
                 address: "user",
                 balance: 1000,
@@ -48,36 +53,40 @@ final class MessageTests: ContractTestCase {
     }
     
     func testGetCallerInInitNotSet() throws {
-        let contract = try MessageContract.testable("adder")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(MessageController.self, for: "contract")!
         
-        let storedAddress = try contract.getStorageAddress()
+        let storedAddress = try controller.getStorageAddress()
         
-        XCTAssertEqual(storedAddress.hexDescription, "0000000000000000000061646465725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f")
+        XCTAssertEqual(storedAddress.hexDescription, "00000000000000000000636f6e74726163745f5f5f5f5f5f5f5f5f5f5f5f5f5f")
     }
     
     func testGetCallerInInit() throws {
-        let contract = try MessageContract.testable(
-            "adder",
+        try self.deployContract(
+            at: "contract",
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
+        let controller = self.instantiateController(MessageController.self, for: "contract")!
         
-        let storedAddress = try contract.getStorageAddress()
+        let storedAddress = try controller.getStorageAddress()
         
         XCTAssertEqual(storedAddress.hexDescription, "00000000000000000000757365725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f")
     }
     
     func testGetCallerNotSet() throws {
-        let contract = try MessageContract.testable("adder")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(MessageController.self, for: "contract")!
         
-        let contractAddress = try contract.getCallerAddress()
+        let contractAddress = try controller.getCallerAddress()
         
-        XCTAssertEqual(contractAddress.hexDescription, "0000000000000000000061646465725f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f")
+        XCTAssertEqual(contractAddress.hexDescription, "00000000000000000000636f6e74726163745f5f5f5f5f5f5f5f5f5f5f5f5f5f")
     }
     
     func testGetCaller() throws {
-        let contract = try MessageContract.testable("adder")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(MessageController.self, for: "contract")!
         
-        let contractAddress = try contract.getCallerAddress(
+        let contractAddress = try controller.getCallerAddress(
             transactionInput: ContractCallTransactionInput(callerAddress: "user")
         )
         
@@ -85,9 +94,10 @@ final class MessageTests: ContractTestCase {
     }
 
     func testGetEgldValueNoValue() throws {
-        let contract = try MessageContract.testable("adder")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(MessageController.self, for: "contract")!
         
-        let value = try contract.getEgldValue()
+        let value = try controller.getEgldValue()
         
         XCTAssertEqual(value, 0)
     }
@@ -95,67 +105,71 @@ final class MessageTests: ContractTestCase {
     // TODO: add a test that ensures it is impossible to provide both egldValue and esdtValue
 
     func testGetEgldValue() throws {
-        let contract = try MessageContract.testable("adder")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(MessageController.self, for: "contract")!
         
-        let value = try contract.getEgldValue(transactionInput: ContractCallTransactionInput(callerAddress: "user", egldValue: 100))
+        let value = try controller.getEgldValue(transactionInput: ContractCallTransactionInput(callerAddress: "user", egldValue: 100))
         
         XCTAssertEqual(value, 100)
-        XCTAssertEqual(self.getAccount(address: "adder")!.balance, 100)
+        XCTAssertEqual(self.getAccount(address: "contract")!.balance, 100)
         XCTAssertEqual(self.getAccount(address: "user")!.balance, 900)
     }
 
     func testGetAllEsdtTransfersNoTransfers() throws {
-        let contract = try MessageContract.testable("adder")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(MessageController.self, for: "contract")!
         
-        let value = try contract.getAllEsdtTransfers()
+        let value = try controller.getAllEsdtTransfers()
         
         XCTAssertEqual(value, [])
     }
 
     func testGetAllEsdtTransfersSingleTransfer() throws {
-        let contract = try MessageContract.testable("adder")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(MessageController.self, for: "contract")!
         
-        let value = try contract.getAllEsdtTransfers(
+        let value = try controller.getAllEsdtTransfers(
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "user",
-                esdtValue: [TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)]
+                esdtValue: [TokenPayment(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)]
             )
         )
         
-        XCTAssertEqual(value, [TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)])
-        XCTAssertEqual(self.getAccount(address: "adder")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 100)
+        XCTAssertEqual(value, [TokenPayment(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100)])
+        XCTAssertEqual(self.getAccount(address: "contract")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 100)
         XCTAssertEqual(self.getAccount(address: "user")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 900)
     }
 
     func testGetAllEsdtTransfersMultiTransfers() throws {
-        let contract = try MessageContract.testable("adder")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(MessageController.self, for: "contract")!
         
-        let value = try contract.getAllEsdtTransfers(
+        let value = try controller.getAllEsdtTransfers(
             transactionInput: ContractCallTransactionInput(
                 callerAddress: "user",
                 esdtValue: [
-                    TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
-                    TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
-                    TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
+                    TokenPayment(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
+                    TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
+                    TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
                 ]
             )
         )
 
         let expected: Vector<TokenPayment> = [
-            TokenPayment.new(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
-            TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
-            TokenPayment.new(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
+            TokenPayment(tokenIdentifier: "WEGLD-abcdef", nonce: 0, amount: 100),
+            TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 1, amount: 10),
+            TokenPayment(tokenIdentifier: "SFT-abcdef", nonce: 2, amount: 50)
         ]
         
         XCTAssertEqual(value, expected)
 
-        XCTAssertEqual(self.getAccount(address: "adder")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 100)
+        XCTAssertEqual(self.getAccount(address: "contract")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 100)
         XCTAssertEqual(self.getAccount(address: "user")!.getEsdtBalance(tokenIdentifier: "WEGLD-abcdef", nonce: 0), 900)
 
-        XCTAssertEqual(self.getAccount(address: "adder")!.getEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 1), 10)
+        XCTAssertEqual(self.getAccount(address: "contract")!.getEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 1), 10)
         XCTAssertEqual(self.getAccount(address: "user")!.getEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 1), 490)
 
-        XCTAssertEqual(self.getAccount(address: "adder")!.getEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 2), 50)
+        XCTAssertEqual(self.getAccount(address: "contract")!.getEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 2), 50)
         XCTAssertEqual(self.getAccount(address: "user")!.getEsdtBalance(tokenIdentifier: "SFT-abcdef", nonce: 2), 0)
     }
 }

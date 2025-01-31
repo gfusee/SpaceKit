@@ -1,18 +1,14 @@
-@testable import Space
-import XCTest
+@testable import SpaceKitTesting
 
-@Codable enum CustomCodableEnum: Equatable {
+@Codable public enum CustomCodableEnum: Equatable {
     case first(Buffer, UInt64, UInt64, Buffer)
     case second(UInt64)
     case third
 }
 
-@Contract struct ArrayOfCustomEnumsTestsContract {
-    
+@Controller public struct ArrayOfCustomEnumsTestsController {
     public func testGetOutOfRangeShouldFail() {
-        let array: Vector<Buffer> = ["Hello!", "Bonjour!", "¡Hola!"]
-        
-        let array2: Vector<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -57,7 +53,12 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    ArrayOfCustomEnumsTestsController.self
+                ]
+            )
         ]
     }
     
@@ -477,7 +478,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("contract").testGetOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfCustomEnumsTestsController.self, for: "contract")!
+                
+            try controller.testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -691,7 +695,7 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     }
     
     func testNestedEncodeThreeDifferentCases() throws {
-        var array: Vector<CustomCodableEnum> = [
+        let array: Vector<CustomCodableEnum> = [
             CustomCodableEnum.first(
                 "Hey!",
                 10,
@@ -1052,7 +1056,10 @@ final class ArrayOfCustomEnumsTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfBuffersTestsContract.testable("contract").testReplacedOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfCustomEnumsTestsController.self, for: "contract")!
+                
+            try controller.testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {

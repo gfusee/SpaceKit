@@ -1,14 +1,14 @@
-import Space
-import XCTest
+import SpaceKitTesting
 
-@Contract
-struct Adder {
+@Init func initialize(initialValue: BigUint) {
+    var controller = AdderController()
+    
+    controller.sum = initialValue
+}
+
+@Controller public struct AdderController {
     @Storage(key: "sum") var sum: BigUint
-
-    init(initialValue: BigUint) {
-        self.sum = initialValue
-    }
-
+    
     public mutating func add(value: BigUint) {
         self.sum += value
     }
@@ -22,44 +22,76 @@ final class AdderTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "adder")
+            WorldAccount(
+                address: "adder",
+                controllers: [
+                    AdderController.self
+                ]
+            )
         ]
     }
 
     func testDeployAdderInitialValueZero() throws {
-        let contract = try Adder.testable("adder", initialValue: 0)
+        try self.deployContract(
+            at: "adder",
+            arguments: [
+                0
+            ]
+        )
+        
+        let controller = self.instantiateController(AdderController.self, for: "adder")!
 
-        let result = try contract.getSum()
+        let result = try controller.getSum()
 
         XCTAssertEqual(result, 0)
     }
 
     func testDeployAdderInitialValueNonZero() throws {
-        let contract = try Adder.testable("adder", initialValue: 15)
+        try self.deployContract(
+            at: "adder",
+            arguments: [
+                15
+            ]
+        )
+        
+        let controller = self.instantiateController(AdderController.self, for: "adder")!
 
-        let result = try contract.getSum()
+        let result = try controller.getSum()
 
         XCTAssertEqual(result, 15)
     }
 
     func testAddZero() throws {
-        var contract = try Adder.testable("adder", initialValue: 15)
+        try self.deployContract(
+            at: "adder",
+            arguments: [
+                15
+            ]
+        )
+        
+        var controller = self.instantiateController(AdderController.self, for: "adder")!
 
-        try contract.add(value: 0)
+        try controller.add(value: 0)
 
-        let result = try contract.getSum()
+        let result = try controller.getSum()
 
         XCTAssertEqual(result, 15)
     }
 
     func testAddNonZero() throws {
-        var contract = try Adder.testable("adder", initialValue: 15)
+        try self.deployContract(
+            at: "adder",
+            arguments: [
+                15
+            ]
+        )
+        
+        var controller = self.instantiateController(AdderController.self, for: "adder")!
 
-        try contract.add(value: 5)
+        try controller.add(value: 5)
 
-        let result = try contract.getSum()
+        let result = try controller.getSum()
 
         XCTAssertEqual(result, 20)
     }
-
 }

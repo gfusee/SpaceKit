@@ -1,0 +1,131 @@
+{
+    "name": "send tokens",
+    "comment": "",
+    "gasSchedule": "v3",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "1",
+                    "balance": "0",
+                    "esdt": {
+                        "str:USDC-abcdef": "1000"
+                    }
+                }
+            },
+            "newAddresses": [
+                {
+                    "creatorAddress": "address:owner",
+                    "creatorNonce": "1",
+                    "newAddress": "sc:sender"
+                },
+                {
+                    "creatorAddress": "address:owner",
+                    "creatorNonce": "2",
+                    "newAddress": "sc:receiver"
+                }
+            ]
+        },
+        {
+            "step": "scDeploy",
+            "id": "1",
+            "tx": {
+                "from": "address:owner",
+                "contractCode": "file:../output/SendTestsExample.wasm",
+                "arguments": [],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": "*",
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "scDeploy",
+            "id": "2",
+            "tx": {
+                "from": "address:owner",
+                "contractCode": "file:../output/SendTestsExample.wasm",
+                "arguments": [],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": "*",
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "send one fungible esdt token",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:sender",
+                "function": "sendTokens",
+                "arguments": [
+                    "sc:receiver"
+                ],
+                "esdtValue": [
+                    {
+                        "tokenIdentifier": "str:USDC-abcdef",
+                        "nonce": "0",
+                        "value": "100"
+                    }
+                ],
+                "gasLimit": "15,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [],
+                "status": "",
+                "logs": "*",
+                "gas": "*",
+                "refund": "*"
+            }
+        },
+        {
+            "step": "checkState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "*",
+                    "balance": "0",
+                    "storage": {},
+                    "esdt": {
+                        "str:USDC-abcdef": "900"
+                    },
+                    "code": ""
+                },
+                "sc:sender": {
+                    "nonce": "0",
+                    "balance": "0",
+                    "storage": {},
+                    "code": "file:../output/SendTestsExample.wasm"
+                },
+                "sc:receiver": {
+                    "nonce": "0",
+                    "balance": "0",
+                    "esdt": {
+                        "str:USDC-abcdef": "100"
+                    },
+                    "storage": {
+                        "str:lastReceivedTokens": {
+                            "00-tokenIdentifier": "nested:str:USDC-abcdef",
+                            "01-nonce": "u64:0",
+                            "02-amount": "biguint:100"
+                        }
+                    },
+                    "code": "file:../output/SendTestsExample.wasm"
+                }
+            }
+        }
+    ]
+}
+

@@ -24,7 +24,7 @@ func generateEnumConformance(
     
     let discriminantsAndCases = getDiscriminantForCase(cases: cases)
     
-    return [
+    var results = [
         try generateTopEncodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
         try generateTopEncodeMultiExtension(enumName: enumName),
         try generateNestedEncodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
@@ -33,18 +33,47 @@ func generateEnumConformance(
         try generateNestedDecodeExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases),
         try generateArrayItemExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases)
     ]
+    
+    #if !WASM
+    results.append((try generateABITypeExtractorExtension(enumName: enumName, discriminantsAndCases: discriminantsAndCases)).as(ExtensionDeclSyntax.self)!)
+    #endif
+    
+    return results
 }
 
 fileprivate func generateTopEncodeExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> ExtensionDeclSyntax {
     let firstCase = discriminantsAndCases[0].1
+    let nestedEncodedInstantiationKeyword: String
+    let guardFirstCaseDefaultIfNeeded: String
+    let depEncodeLogicIfNeeded: String
+    
+    if discriminantsAndCases.count >= 2 {
+        nestedEncodedInstantiationKeyword = "var"
+        
+        guardFirstCaseDefaultIfNeeded = """
+        default:
+            break
+        """
+        
+        depEncodeLogicIfNeeded = """
+        self.depEncode(dest: &nestedEncoded)
+        nestedEncoded.topEncode(output: &output)
+        """
+    } else {
+        nestedEncodedInstantiationKeyword = "let"
+        
+        guardFirstCaseDefaultIfNeeded = ""
+        
+        depEncodeLogicIfNeeded = ""
+    }
+    
     let guardFirstCase = if shouldTopEncodeEmptyWhenFirstCase(firstCase: firstCase) {
         """
         switch self {
         case .\(firstCase.name.trimmed):
             nestedEncoded.topEncode(output: &output)
             return
-        default:
-            break
+        \(guardFirstCaseDefaultIfNeeded)
         }
         """
     } else {
@@ -57,10 +86,9 @@ fileprivate func generateTopEncodeExtension(enumName: TokenSyntax, discriminants
         : TopEncode {
             @inline(__always)
             public func topEncode<EncodeOutput>(output: inout EncodeOutput) where EncodeOutput: TopEncodeOutput {
-                var nestedEncoded = Buffer()
+                \(raw: nestedEncodedInstantiationKeyword) nestedEncoded = Buffer()
                 \(raw: guardFirstCase)
-                self.depEncode(dest: &nestedEncoded)
-                nestedEncoded.topEncode(output: &output)
+                \(raw: depEncodeLogicIfNeeded)
             }
         }
         """
@@ -217,7 +245,6 @@ fileprivate func generateNestedDecodeExtension(enumName: TokenSyntax, discrimina
 
 fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> ExtensionDeclSyntax {
     var payloadSizeSumList: [String] = []
-    var payloadInputsDeclarationsList: [String] = []
     var decodeArrayPayloadInitArgsList: [String] = []
     var intoArrayPayloadCasesList: [String] = []
     for discriminantAndCase in discriminantsAndCases {
@@ -291,7 +318,6 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
         "max(\(payloadSizeSum))"
     }
     
-    let payloadInputsDeclarations = payloadInputsDeclarationsList.joined(separator: "\n")
     let decodeArrayPayloadInitArgs = decodeArrayPayloadInitArgsList.joined(separator: "\n")
     let intoArrayPayloadCases = intoArrayPayloadCasesList.joined(separator: "\n")
     
@@ -328,7 +354,7 @@ fileprivate func generateArrayItemExtension(enumName: TokenSyntax, discriminants
                 let trailingZerosCount = \(enumName).payloadSize - currentCasePayloadSize
         
                 if trailingZerosCount > 0 {
-                    totalPayload = totalPayload + Space.getZeroedBuffer(count: trailingZerosCount)
+                    totalPayload = totalPayload + SpaceKit.getZeroedBuffer(count: trailingZerosCount)
                 }
         
                 return totalPayload
@@ -369,5 +395,87 @@ fileprivate func getTopDecodeWhenEmptyIfPossible(enumName: TokenSyntax, firstCas
     
     return """
     self = .\(firstCase.name.trimmed)
+    return
+    """
+}
+
+fileprivate func generateABITypeExtractorExtension(enumName: TokenSyntax, discriminantsAndCases: [(UInt8, EnumCaseElementSyntax)]) throws -> DeclSyntax {
+    var variantsInitsList: [String] = []
+    for discriminantAndCase in discriminantsAndCases {
+        let caseName = discriminantAndCase.1.name.trimmed
+        
+        var fieldsInitsList: [String] = []
+        
+        if let associatedValues = discriminantAndCase.1.parameterClause?.parameters {
+            var associatedValueName = 0
+            
+            for associatedValue in associatedValues {
+                guard associatedValue.firstName == nil && associatedValue.secondName == nil else {
+                    throw CodableMacroError.enumAssociatedValuesShouldNotBeNamed
+                }
+                
+                let typeName = associatedValue.type.trimmed
+                
+                fieldsInitsList.append(
+                    """
+                    ABITypeStructField(
+                        name: "\(associatedValueName)",
+                        type: \(typeName)._abiTypeName
+                    )
+                    """
+                )
+                
+                associatedValueName += 1
+            }
+        }
+        
+        var initParametersLists = [
+            """
+            name: "\(caseName)"
+            """,
+            """
+            discriminant: \(discriminantAndCase.0)
+            """
+        ]
+        
+        if !fieldsInitsList.isEmpty {
+            let fieldsInits = fieldsInitsList.joined(separator: ",\n")
+            
+            initParametersLists.append(
+                """
+                fields: [
+                    \(fieldsInits)
+                ]
+                """
+            )
+        }
+        
+        let initParameters = initParametersLists.joined(separator: ",\n")
+        
+        variantsInitsList.append(
+            """
+                            ABITypeEnumVariant(
+                                \(initParameters)
+                            )
+            """
+        )
+    }
+    
+    let variantsInits = variantsInitsList.joined(separator: ",\n")
+    
+    return """
+    extension \(enumName): ABITypeExtractor {
+        public static var _abiTypeName: String {
+            "\(enumName)"
+        }
+    
+        public static var _extractABIType: ABIType? {
+            ABIType.enum(
+                variants: [
+                    \(raw: variantsInits)
+                ]
+            )
+        }
+    }
     """
 }

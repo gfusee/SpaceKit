@@ -1,32 +1,31 @@
-import XCTest
-import Space
+import SpaceKitTesting
 
-@Event(dataType: Buffer) struct TestSingleIndexedFieldBufferDataEvent {
+@Event(dataType: Buffer) public struct TestSingleIndexedFieldBufferDataEvent {
     let address: Address
 }
 
-@Event(dataType: BigUint) struct TestSingleIndexedFieldBigUintDataEvent {
+@Event(dataType: BigUint) public struct TestSingleIndexedFieldBigUintDataEvent {
     let address: Address
 }
 
-@Event(dataType: Buffer) struct TestMultipleIndexedFieldEvent {
+@Event(dataType: Buffer) public struct TestMultipleIndexedFieldEvent {
     let address: Address
     let number: BigUint
     let buffer: Buffer
 }
 
-@Contract struct EventTestsContract {
-    init() {
-        let data: Buffer = "Hello World!"
-        TestSingleIndexedFieldBufferDataEvent(address: Message.caller).emit(data: data)
-        
-        TestMultipleIndexedFieldEvent(
-            address: Message.caller,
-            number: 100,
-            buffer: "Hello World!"
-        ).emit(data: "")
-    }
+@Init func initialize() {
+    let data: Buffer = "Hello World!"
+    TestSingleIndexedFieldBufferDataEvent(address: Message.caller).emit(data: data)
     
+    TestMultipleIndexedFieldEvent(
+        address: Message.caller,
+        number: 100,
+        buffer: "Hello World!"
+    ).emit(data: "")
+}
+
+@Controller public struct EventTestsController {
     public func emitNoEvent() {
         
     }
@@ -82,16 +81,23 @@ final class EventTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract"),
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    EventTestsController.self
+                ]
+            ),
             WorldAccount(address: "user")
         ]
     }
     
     func testNoEvent() throws {
-        let contract = try EventTestsContract.testable("contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EventTestsController.self, for: "contract")!
+        
         let transactionOutput = TransactionOutput()
         
-        try contract.emitNoEvent(
+        try controller.emitNoEvent(
             transactionInput: ContractCallTransactionInput(callerAddress: "user"),
             transactionOutput: transactionOutput
         )
@@ -103,10 +109,12 @@ final class EventTests: ContractTestCase {
     }
     
     func testSingleIndexedFieldEventNoData() throws {
-        let contract = try EventTestsContract.testable("contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EventTestsController.self, for: "contract")!
+        
         let transactionOutput = TransactionOutput()
         
-        try contract.emitSingleIndexedFieldEventNoData(
+        try controller.emitSingleIndexedFieldEventNoData(
             transactionInput: ContractCallTransactionInput(callerAddress: "user"),
             transactionOutput: transactionOutput
         )
@@ -126,10 +134,12 @@ final class EventTests: ContractTestCase {
     }
     
     func testSingleIndexedFieldEventWithBufferData() throws {
-        let contract = try EventTestsContract.testable("contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EventTestsController.self, for: "contract")!
+        
         let transactionOutput = TransactionOutput()
         
-        try contract.emitSingleIndexedFieldEventWithBufferData(
+        try controller.emitSingleIndexedFieldEventWithBufferData(
             transactionInput: ContractCallTransactionInput(callerAddress: "user"),
             transactionOutput: transactionOutput
         )
@@ -149,10 +159,12 @@ final class EventTests: ContractTestCase {
     }
     
     func testSingleIndexedFieldEventWithBigUintData() throws {
-        let contract = try EventTestsContract.testable("contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EventTestsController.self, for: "contract")!
+        
         let transactionOutput = TransactionOutput()
         
-        try contract.emitSingleIndexedFieldEventWithBigUintData(
+        try controller.emitSingleIndexedFieldEventWithBigUintData(
             transactionInput: ContractCallTransactionInput(callerAddress: "user"),
             transactionOutput: transactionOutput
         )
@@ -172,10 +184,12 @@ final class EventTests: ContractTestCase {
     }
     
     func testMultipleIndexedFieldEventNoData() throws {
-        let contract = try EventTestsContract.testable("contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EventTestsController.self, for: "contract")!
+        
         let transactionOutput = TransactionOutput()
         
-        try contract.emitMultipleIndexedFieldEventNoData(
+        try controller.emitMultipleIndexedFieldEventNoData(
             transactionInput: ContractCallTransactionInput(callerAddress: "user"),
             transactionOutput: transactionOutput
         )
@@ -197,10 +211,12 @@ final class EventTests: ContractTestCase {
     }
     
     func testMultipleEvents() throws {
-        let contract = try EventTestsContract.testable("contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EventTestsController.self, for: "contract")!
+        
         let transactionOutput = TransactionOutput()
         
-        try contract.emitMultipleEvents(
+        try controller.emitMultipleEvents(
             transactionInput: ContractCallTransactionInput(callerAddress: "user"),
             transactionOutput: transactionOutput
         )
@@ -229,10 +245,12 @@ final class EventTests: ContractTestCase {
     }
     
     func testEventFromArgs() throws {
-        let contract = try EventTestsContract.testable("contract")
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(EventTestsController.self, for: "contract")!
+        
         let transactionOutput = TransactionOutput()
         
-        try contract.emitEventFromArgs(
+        try controller.emitEventFromArgs(
             addressTopic: "user",
             numberTopic: 100,
             bufferTopic: "Hello World!",
@@ -258,8 +276,9 @@ final class EventTests: ContractTestCase {
     
     func testMultipleEventsInInit() throws {
         let transactionOutput = TransactionOutput()
-        let _ = try EventTestsContract.testable(
-            "contract",
+        
+        try self.deployContract(
+            at: "contract",
             transactionInput: ContractCallTransactionInput(callerAddress: "user"),
             transactionOutput: transactionOutput
         )

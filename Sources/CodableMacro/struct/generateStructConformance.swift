@@ -13,18 +13,9 @@ func generateStructConformance(
     try structDecl.isValidStruct()
     
     let structName = structDecl.name.trimmed
-    let fields: [VariableDeclSyntax] = structDecl.memberBlock.members.compactMap { member in
-        
-        guard var field = member.decl.as(VariableDeclSyntax.self) else {
-            return nil
-        }
-        
-        field.trailingTrivia = Trivia(pieces: [])
-        
-        return field
-    }
+    let fields = structDecl.getFields()
     
-    return [
+    var results = [
         try generateTopEncodeExtension(structName: structName),
         try generateTopEncodeMultiExtension(structName: structName),
         try generateNestedEncodeExtension(structName: structName, fields: fields),
@@ -33,6 +24,12 @@ func generateStructConformance(
         try generateNestedDecodeExtension(structName: structName, fields: fields),
         try generateArrayItemExtension(structName: structName, fields: fields)
     ]
+    
+    #if !WASM
+    results.append((try generateABITypeExtractorExtension(structName: structName, fields: fields)).as(ExtensionDeclSyntax.self)!)
+    #endif
+    
+    return results
 }
 
 fileprivate func generateTopEncodeExtension(structName: TokenSyntax) throws -> ExtensionDeclSyntax {
@@ -204,4 +201,41 @@ fileprivate func generateArrayItemExtension(structName: TokenSyntax, fields: [Va
         }
         """
     )
+}
+
+fileprivate func generateABITypeExtractorExtension(structName: TokenSyntax, fields: [VariableDeclSyntax]) throws -> DeclSyntax {
+    var fieldsInitsList: [String] = []
+    for field in fields {
+        guard let fieldType = field.bindings.first!.typeAnnotation?.type else {
+            throw CodableMacroError.allFieldsShouldHaveAType
+        }
+        
+        let fieldName = field.bindings.first!.pattern
+        fieldsInitsList.append(
+            """
+                            ABITypeStructField(
+                                name: "\(fieldName)",
+                                type: \(fieldType)._abiTypeName
+                            )
+            """
+        )
+    }
+    
+    let fieldsInits = fieldsInitsList.joined(separator: ",\n")
+    
+    return """
+    extension \(structName): ABITypeExtractor {
+        public static var _abiTypeName: String {
+            "\(structName)"
+        }
+    
+        public static var _extractABIType: ABIType? {
+            ABIType.struct(
+                fields: [
+                    \(raw: fieldsInits)
+                ]
+            )
+        }
+    }
+    """
 }

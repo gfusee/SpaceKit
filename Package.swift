@@ -23,17 +23,26 @@ let swiftSettings: [SwiftSetting] = isWasm ? [
     ])
 ] : []
 
+let macroSwiftSettings: [SwiftSetting] = isWasm ? [
+    .unsafeFlags([
+        "-D",
+        "WASM"
+    ])
+] : []
+
 let experimentalFeatures: [String] = []
 
 var packageDependencies: [Package.Dependency] = [
-    .package(url: "https://github.com/apple/swift-syntax", from: "510.0.1")
+    .package(url: "https://github.com/swiftlang/swift-syntax", from: "510.0.1"),
+    .package(url: "https://github.com/swiftlang/swift-docc-symbolkit.git", exact: "1.0.0"),
 ]
 
 var libraryDependencies: [Target.Dependency] = [
     "CallbackMacro",
-    "ContractMacro",
+    "ControllerMacro",
     "CodableMacro",
     "EventMacro",
+    "InitMacro",
     "ProxyMacro"
 ]
 
@@ -41,7 +50,9 @@ var testTargets: [Target] = []
 
 var products: [Product] = [
     // Products define the executables and libraries a package produces, making them visible to other packages.
-    .library(name: "Space", targets: ["Space"])
+    .library(name: "SpaceKit", targets: ["SpaceKit"]),
+    .library(name: "SpaceKitTesting", targets: ["SpaceKitTesting"]),
+    .library(name: "SpaceKitABI", targets: ["SpaceKitABI"])
 ]
 
 if !isWasm {
@@ -51,50 +62,58 @@ if !isWasm {
     ])
     
     libraryDependencies.append(contentsOf: [
+        "SpaceKitABI",
+        "ABIMetaMacro",
         .product(name: "BigInt", package: "BigInt")
     ])
     
     testTargets.append(contentsOf: [
         .testTarget(
+            name: "ABITests",
+            dependencies: [
+                "SpaceKitTesting"
+            ]
+        ),
+        .testTarget(
             name: "AsyncCallsTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BufferTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BigUintTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "IntTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ContractStorageTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "TestEngineTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
-            name: "ContractMacroTests",
+            name: "ControllerMacroTests",
             dependencies: [
-                "ContractMacro",
+                "ControllerMacro",
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
@@ -112,82 +131,86 @@ if !isWasm {
         .testTarget(
             name: "CodableMacroImplTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "CallbackMacroImplTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "AdderTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ArrayTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "EventTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "FactorialTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "BlockchainTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "MessageTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "MultiArgsTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ProxyTests",
             dependencies: [
-                "Space"
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "SendTests",
             dependencies: [
-                "Space",
-                "BigInt"
+                "SpaceKitTesting",
             ]
         ),
         .testTarget(
             name: "ErrorTests",
             dependencies: [
-                "Space",
-                "BigInt"
+                "SpaceKitTesting",
             ]
         ),
+        .testTarget(
+            name: "EsdtLocalRolesTests",
+            dependencies: [
+                "SpaceKitTesting",
+            ]
+        )
     ])
 }
 
 let package = Package(
-    name: "Space",
+    name: "SpaceKit",
     platforms: [
         .macOS(.v14)
     ],
@@ -199,63 +222,103 @@ let package = Package(
         .target(
             name: "Adder",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/Adder",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "BondingCurve",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/BondingCurve",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "CallbackNotExposed",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/FeatureTests/CallbackNotExposed",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "TokenOperations",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/FeatureTests/TokenOperations",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "CheckPause",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/CheckPause",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "CrowdfundingEsdt",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/CrowdfundingEsdt",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "CryptoBubbles",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/CryptoBubbles",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "CryptoKittiesAuction",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/CryptoKitties/Auction",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "CryptoKittiesCommon",
             dependencies: [
-                "Space",
+                "SpaceKit",
                 "CryptoKittiesRandom"
             ],
             path: "Examples/CryptoKitties/Common",
@@ -264,7 +327,7 @@ let package = Package(
         .target(
             name: "CryptoKittiesRandom",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/CryptoKitties/Random",
             swiftSettings: swiftSettings
@@ -272,114 +335,212 @@ let package = Package(
         .target(
             name: "CryptoKittiesGeneticAlg",
             dependencies: [
-                "Space",
+                "SpaceKit",
                 "CryptoKittiesCommon",
                 "CryptoKittiesRandom"
             ],
             path: "Examples/CryptoKitties/GeneticAlg",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "CryptoKittiesOwnership",
             dependencies: [
-                "Space",
+                "SpaceKit",
                 "CryptoKittiesCommon",
                 "CryptoKittiesRandom"
             ],
             path: "Examples/CryptoKitties/Ownership",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "DigitalCash",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/DigitalCash",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "Empty",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/Empty",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "EsdtTransferWithFee",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/EsdtTransferWithFee",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "Factorial",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/Factorial",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "LotteryEsdt",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/LotteryEsdt",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "PingPongEgld",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/PingPongEgld",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "ProxyPause",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/ProxyPause",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "MultiFile",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/MultiFile",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "Multisig",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/Multisig",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "NftMinter",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/NftMinter",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "OrderBookPair",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/OrderBookPair",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "SendTestsExample",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/SendTests",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
             name: "TokenRelease",
             dependencies: [
-                "Space"
+                "SpaceKit"
             ],
             path: "Examples/TokenRelease",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
             swiftSettings: swiftSettings
         ),
         .target(
-            name: "Space",
+            name: "SpaceKit",
             dependencies: libraryDependencies,
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "SpaceKitTesting",
+            dependencies: [
+                "SpaceKit"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "SpaceKitABI",
+            swiftSettings: swiftSettings
+        ),
+        .macro(
+            name: "ABIMetaMacro",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                "SpaceKitABI",
+                .product(name: "SymbolKit", package: "swift-docc-symbolkit")
+            ],
             swiftSettings: swiftSettings
         ),
         .macro(
@@ -388,15 +549,17 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
-            name: "ContractMacro",
+            name: "ControllerMacro",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "CodableMacro",
@@ -404,7 +567,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "EventMacro",
@@ -412,7 +576,17 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
+        ),
+        .macro(
+            name: "InitMacro",
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
+            ],
+            swiftSettings: macroSwiftSettings
         ),
         .macro(
             name: "ProxyMacro",
@@ -420,7 +594,8 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
-            ]
+            ],
+            swiftSettings: macroSwiftSettings
         )
     ] + testTargets
 )

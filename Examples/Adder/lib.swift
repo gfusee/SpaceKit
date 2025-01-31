@@ -1,11 +1,13 @@
-import Space
+import SpaceKit
 
-@Contract struct Adder {
-    @Storage(key: "sum") var sum: BigUint
+@Init func initialize(initialValue: BigUint) {
+    var controller = AdderController()
     
-    init(initialValue: BigUint) {
-        self.sum = initialValue
-    }
+    controller.sum = initialValue
+}
+
+@Controller public struct AdderController {
+    @Storage(key: "sum") var sum: BigUint
     
     public mutating func add(value: BigUint) {
         self.sum = self.sum + value

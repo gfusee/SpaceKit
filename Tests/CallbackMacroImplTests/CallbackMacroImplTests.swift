@@ -1,11 +1,10 @@
-import Space
-import XCTest
+import SpaceKitTesting
 
 @Proxy enum DummyProxy {
     case endpointWithoutParameter
 }
 
-@Contract struct CodableMacroEnumImplTestsContract {
+@Controller public struct CodableMacroEnumImplTestsController {
     // Temp test which has for sole goal to compile
     // TODO: add real tests once the SwiftVM supports async calls
     public func testRegisterPromise() {

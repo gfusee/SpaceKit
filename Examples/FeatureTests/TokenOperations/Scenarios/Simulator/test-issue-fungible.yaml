@@ -1,0 +1,45 @@
+allowed_networks:
+    - devnet
+    
+accounts:
+  - account_name: owner
+    pem_path: ./test.pem
+    
+allowed_scenario:
+    - spacekit_test_issue_fungible_token
+
+steps:
+  - type: ContractDeploy
+    sender: owner
+    wasm_path: "../../Output/TokenOperations.wasm"
+    contract_id: "token-operations"
+    gas_limit: 600000000
+    upgradeable: true
+    readable: false
+    payable: false
+    payable_by_sc: true
+    
+  - type: ContractCall
+    sender: owner
+    contract: "token-operations"
+    endpoint: issueToken
+    arguments:
+       - "SpaceKitTest"
+       - "SPACEKIT"
+       - 18
+       - 1
+       - 1
+       - 1
+       - 1
+       - 1
+       - 1
+       - 1
+       - 1
+    gas_limit: 300000000
+    value: 50000000000000000
+    
+  - type: ContractQuery
+    contract: token-operations
+    endpoint: assertLastIssuedTokenIdentifierIsValid
+    arguments: ["SPACEKIT"]
+    print_results: true

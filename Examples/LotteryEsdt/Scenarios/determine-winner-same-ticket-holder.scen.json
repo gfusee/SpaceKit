@@ -22,7 +22,7 @@
                 "arguments": [
                     "str:lottery_name"
                 ],
-                "gasLimit": "100,000,000",
+                "gasLimit": "600,000,000",
                 "gasPrice": "0"
             },
             "expect": {

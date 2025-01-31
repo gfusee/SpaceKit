@@ -1,6 +1,6 @@
-import Space
+import SpaceKit
 
-@Codable enum Status {
+@Codable public enum Status {
     case inactive
     case running
     case ended

@@ -1,0 +1,101 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Understand the ESDT Standard") {
+        Learn about the ESDT standard used in the Space framework, a token model that supports fungible tokens, non-fungible tokens (NFTs), semi-fungible tokens, and meta-esdt tokens.
+        The SpaceKit framework uses a token standard called ESDT. This standard defines four types of tokens: fungible, non-fungible (NFT), semi-fungible, and meta-esdt.
+
+        - **Fungible tokens** are interchangeable, like traditional currencies. For example, one USDC token has the same value as another.
+        - **Non-fungible tokens** represent unique assets. In a flight ticket collection, each ticket is distinct, with specific attributes like seat number and boarding options.
+        - **Semi-fungible tokens** combine aspects of fungibility and uniqueness. For example, state bonds with a unique year of issuance are fungible within their group but distinct between groups.
+        - **Meta-esdt tokens** expand semi-fungibility by enabling on-chain attributes, supporting complex operations with types like `Buffer`, `BigUint`, and even custom `@Codable` structs or enums.
+
+        The ESDT standard enables various token operations, such as minting, burning, and freezing, ensuring transparency by requiring all supported actions to be defined at issuance.
+        
+        Semi-fungible tokens operate similarly to NFTs, but for a given nonce, there can be multiple identical tokens. For example, state bonds labeled `$BOND` could have different nonces for the year they were issued. If `$BOND#1` represents bonds from 2010 and `$BOND#2` represents those from 2011, all tokens with the same nonce are fungible within their group, as they share the same maturity date.
+
+        Meta-esdt tokens enhance this concept by allowing attributes to be added on-chain for each nonce. These attributes can be of any SpaceKit-compatible type, such as `Buffer`, `BigUint`, or `UInt64`, or even complex structs and enums with the `@Codable` annotation. Meta-esdt is powerful because it enables contracts to process on-chain logic using these attributes.
+
+        The ESDT standard supports various token operations like minting, burning, freezing, and more. These actions must be explicitly declared at the time of token issuance, ensuring transparency. For example, a non-mintable ESDT cannot be minted or altered after issuance.
+    }
+
+    @Section(title: "Issuing a Fungible Token from Your Contract") {
+        @ContentAndMedia {
+            Issuing a fungible token involves invoking a built-in smart contract. On networks like MultiversX, the issuance fee is 0.5 EGLD. In this section, you’ll create a mintable and burnable token called `SPACE`, with essential properties tailored to your needs.
+        }
+
+        @Steps {
+            @Step {
+                Define the contract structure.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step1.swift")
+            }
+
+            @Step {
+                Declare storage to hold the token identifier.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step2.swift")
+            }
+
+            @Step {
+                Implement an endpoint for token issuance.
+
+                - Ensure the caller pays the issuance fee.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step3.swift")
+            }
+
+            @Step {
+                Restrict issuance to the contract owner and prevent duplicate token identifiers.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step4.swift")
+            }
+
+            @Step {
+                Retrieve the issuance fee from the caller.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step5.swift")
+            }
+
+            @Step {
+                Make an asynchronous call to the token issuance contract, defining properties such as `canMint`.
+
+                - Use a human-readable display name for the token.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step6.swift")
+            }
+
+            @Step {
+                Register a promise to handle the asynchronous call.
+
+                - Retain the caller’s payment to refund in case of failure.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step7.swift")
+            }
+
+            @Step {
+                Create a callback to process the result of the asynchronous call.
+
+                - On success, generate a token identifier like `SPACE-abcdef`.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step8.swift")
+            }
+
+            @Step {
+                Save the issued token identifier and initial supply in storage upon success.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step9.swift")
+            }
+
+            @Step {
+                Refund the caller in case of an issuance error.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step10.swift")
+            }
+
+            @Step {
+                Link the callback to the promise registration.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection1Step11.swift")
+            }
+        }
+    }
+}

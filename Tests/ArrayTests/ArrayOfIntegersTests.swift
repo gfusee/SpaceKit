@@ -1,7 +1,6 @@
-@testable import Space
-import XCTest
+@testable import SpaceKitTesting
 
-@Contract struct ArrayOfIntegersTestsContract {
+@Controller public struct ArrayOfIntegersTestsController {
     
     public func testGetOutOfRangeShouldFail() {
         let array: Vector<UInt64> = [10]
@@ -27,7 +26,12 @@ final class ArrayOfIntegersTests: ContractTestCase {
 
     override var initialAccounts: [WorldAccount] {
         [
-            WorldAccount(address: "contract")
+            WorldAccount(
+                address: "contract",
+                controllers: [
+                    ArrayOfIntegersTestsController.self
+                ]
+            )
         ]
     }
     
@@ -161,7 +165,10 @@ final class ArrayOfIntegersTests: ContractTestCase {
     
     func testGetOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfIntegersTestsContract.testable("contract").testGetOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfIntegersTestsController.self, for: "contract")!
+            
+            try controller.testGetOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
@@ -379,7 +386,10 @@ final class ArrayOfIntegersTests: ContractTestCase {
     
     func testReplacedOutOfRangeShouldFail() throws {
         do {
-            try ArrayOfIntegersTestsContract.testable("contract").testReplacedOutOfRangeShouldFail()
+            try self.deployContract(at: "contract")
+            let controller = self.instantiateController(ArrayOfIntegersTestsController.self, for: "contract")!
+            
+            try controller.testReplacedOutOfRangeShouldFail()
             
             XCTFail()
         } catch {
