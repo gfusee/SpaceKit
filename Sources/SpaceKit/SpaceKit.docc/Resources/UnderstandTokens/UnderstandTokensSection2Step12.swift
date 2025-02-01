@@ -39,6 +39,61 @@ import Space
             )
     }
     
+    public func setMintAndBurnRoles() {
+        assertOwner()
+        
+        if self.$issuedTokenIdentifier.isEmpty() {
+            smartContractError(message: "Token not issued")
+        }
+        
+        Blockchain
+            .setTokenRoles(
+                for: Blockchain.getSCAddress(),
+                tokenIdentifier: self.issuedTokenIdentifier,
+                roles: EsdtLocalRoles(
+                    canMint: true,
+                    canBurn: true
+                )
+            )
+            .registerPromise(
+                gas: 60_000_000,
+            )
+    }
+    
+    public func mintTokens(mintAmount: BigUint) {
+        assertOwner()
+        
+        let tokenRoles = Blockchain.getESDTLocalRoles(tokenIdentifier: self.issuedTokenIdentifier)
+        
+        guard tokenRoles.contains(flag: .mint) else {
+            smartContractError(message: "Cannot mint tokens")
+        }
+        
+        Blockchain
+            .mintTokens(
+                tokenIdentifier: self.issuedTokenIdentifier,
+                nonce: 0,
+                amount: mintAmount
+            )
+        
+        Message.caller
+            .send(
+                tokenIdentifier: self.issuedTokenIdentifier,
+                nonce: 0,
+                amount: mintAmount
+            )
+    }
+    
+    public func burnTokens(burnAmount: BigUint) {
+        assertOwner()
+        
+        let tokenRoles = Blockchain.getESDTLocalRoles(tokenIdentifier: self.issuedTokenIdentifier)
+        
+        guard tokenRoles.contains(flag: .burn) else {
+            smartContractError(message: "Cannot mint tokens")
+        }
+    }
+    
     @Callback public mutating func issueTokenCallback(sentValue: BigUint) {
         let result: AsyncCallResult<IgnoreValue> = Message.asyncCallResult()
         

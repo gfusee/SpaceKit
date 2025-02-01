@@ -32,8 +32,60 @@ import Space
             .registerPromise(
                 gas: 30_000_000,
                 value: payment,
-                callback: // We will fill this parameter later
+                callback: self.$issueTokenCallback(
+                    sentValue: payment,
+                    gasForCallback: 15_000_000
+                )
             )
+    }
+    
+    public func setMintAndBurnRoles() {
+        assertOwner()
+        
+        if self.$issuedTokenIdentifier.isEmpty() {
+            smartContractError(message: "Token not issued")
+        }
+        
+        Blockchain
+            .setTokenRoles(
+                for: Blockchain.getSCAddress(),
+                tokenIdentifier: self.issuedTokenIdentifier,
+                roles: EsdtLocalRoles(
+                    canMint: true,
+                    canBurn: true
+                )
+            )
+            .registerPromise(
+                gas: 60_000_000,
+            )
+    }
+    
+    public func mintTokens(mintAmount: BigUint) {
+        assertOwner()
+        
+        let tokenRoles = Blockchain.getESDTLocalRoles(tokenIdentifier: self.issuedTokenIdentifier)
+        
+        guard tokenRoles.contains(flag: .mint) else {
+            smartContractError(message: "Cannot mint tokens")
+        }
+        
+        Blockchain
+            .mintTokens(
+                tokenIdentifier: self.issuedTokenIdentifier,
+                nonce: 0,
+                amount: mintAmount
+            )
+        
+        Message.caller
+            .send(
+                tokenIdentifier: self.issuedTokenIdentifier,
+                nonce: 0,
+                amount: mintAmount
+            )
+    }
+    
+    public func burnTokens(burnAmount: BigUint) {
+        assertOwner()
     }
     
     @Callback public mutating func issueTokenCallback(sentValue: BigUint) {

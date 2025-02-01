@@ -17,7 +17,7 @@ import Space
                 tokenDisplayName: "SpaceKitToken",
                 tokenTicker: "SPACE",
                 initialSupply: 1,
-                properties: FungibleTokenProperties.new(
+                properties: FungibleTokenProperties(
                     numDecimals: 18,
                     canFreeze: false,
                     canWipe: false,
@@ -37,6 +37,12 @@ import Space
                     gasForCallback: 15_000_000
                 )
             )
+    }
+    
+    public func setMintAndBurnRoles() {
+        assertOwner()
+        
+        
     }
     
     @Callback public mutating func issueTokenCallback(sentValue: BigUint) {

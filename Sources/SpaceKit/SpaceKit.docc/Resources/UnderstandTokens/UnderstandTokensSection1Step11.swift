@@ -17,7 +17,7 @@ import Space
                 tokenDisplayName: "SpaceKitToken",
                 tokenTicker: "SPACE",
                 initialSupply: 1,
-                properties: FungibleTokenProperties.new(
+                properties: FungibleTokenProperties(
                     numDecimals: 18,
                     canFreeze: false,
                     canWipe: false,

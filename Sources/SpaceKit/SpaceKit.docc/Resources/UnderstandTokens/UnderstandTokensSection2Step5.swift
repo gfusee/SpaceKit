@@ -32,7 +32,31 @@ import Space
             .registerPromise(
                 gas: 30_000_000,
                 value: payment,
-                callback: // We will fill this parameter later
+                callback: self.$issueTokenCallback(
+                    sentValue: payment,
+                    gasForCallback: 15_000_000
+                )
+            )
+    }
+    
+    public func setMintAndBurnRoles() {
+        assertOwner()
+        
+        if self.$issuedTokenIdentifier.isEmpty() {
+            smartContractError(message: "Token not issued")
+        }
+        
+        Blockchain
+            .setTokenRoles(
+                for: Blockchain.getSCAddress(),
+                tokenIdentifier: self.issuedTokenIdentifier,
+                roles: EsdtLocalRoles(
+                    canMint: true,
+                    canBurn: true
+                )
+            )
+            .registerPromise(
+                gas: 60_000_000,
             )
     }
     
@@ -41,11 +65,13 @@ import Space
         
         switch result {
         case .success(_):
-            // We will fill the success case later
+            let receivedPayment = Message.singleFungibleEsdt
+            
+            self.issuedTokenIdentifier = receivedPayment.tokenIdentifier
         case .error(_):
-            // We will fill the error case later
+            Blockchain.getOwner()
+                .send(egldValue: sentValue)
         }
     }
-
 }
 
