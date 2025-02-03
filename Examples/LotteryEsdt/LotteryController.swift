@@ -205,11 +205,11 @@ let MAX_TICKETS: UInt32 = 800
             let esdtTokenId = info.tokenIdentifier
             let roles = Blockchain.getESDTLocalRoles(tokenIdentifier: esdtTokenId)
             if roles.contains(flag: .burn) {
-                TokenPayment(
+                Blockchain.burnTokens(
                     tokenIdentifier: esdtTokenId,
                     nonce: 0,
                     amount: burnAmount
-                ).burn()
+                )
             }
             
             info.prizePool = info.prizePool - burnAmount
