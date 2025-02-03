@@ -247,7 +247,12 @@ import SpaceKitTesting
     public func burnTokens() {
         Message.allEsdtTransfers
             .forEach { payment in
-                payment.burn()
+                Blockchain
+                    .burnTokens(
+                        tokenIdentifier: payment.tokenIdentifier,
+                        nonce: payment.nonce,
+                        amount: payment.amount
+                    )
             }
     }
     

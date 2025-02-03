@@ -227,11 +227,11 @@ import SpaceKit
         nonce: UInt64,
         amount: BigUint
     ) {
-        TokenPayment(
+        Blockchain.burnTokens(
             tokenIdentifier: tokenIdentifier,
             nonce: nonce,
             amount: amount
-        ).burn()
+        )
     }
     
     public func modifyTokenRoyalties(

@@ -206,6 +206,34 @@ public struct Blockchain {
         }
     }
     
+    public static func burnTokens(
+        tokenIdentifier: Buffer,
+        nonce: UInt64,
+        amount: BigUint
+    ) {
+        var arguments = ArgBuffer()
+        let endpoint: StaticString
+        
+        if nonce == 0 {
+            arguments.pushArg(arg: tokenIdentifier)
+            arguments.pushArg(arg: amount)
+            
+            endpoint = ESDT_LOCAL_BURN_FUNC_NAME
+        } else {
+            arguments.pushArg(arg: tokenIdentifier)
+            arguments.pushArg(arg: nonce)
+            arguments.pushArg(arg: amount)
+            
+            endpoint = ESDT_NFT_BURN_FUNC_NAME
+        }
+        
+        let _: IgnoreValue = ContractCall(
+            receiver: Blockchain.getSCAddress(),
+            endpointName: Buffer(stringLiteral: endpoint),
+            argBuffer: arguments
+        ).call()
+    }
+    
     public static func createNft<T: TopEncode>(
         tokenIdentifier: Buffer,
         amount: BigUint,
