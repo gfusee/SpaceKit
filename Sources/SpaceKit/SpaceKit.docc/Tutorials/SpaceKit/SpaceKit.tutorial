@@ -60,6 +60,33 @@
 
             @Image(source: "InstallingToolsSection1Step1.png", alt: "A terminal window displaying code examples.")
         }
+    }
+    
+    @Volume(name: "Create and Manage Tokens") {
+        Tokens are a core component of blockchain technology. With SpaceKit, you can easily create and manage tokens to suit your application's needs.
+
+        @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+        
+        @Chapter(name: "Creating and Understanding Tokens") {
+            @TutorialReference(tutorial: "doc:UnderstandTokens")
+            Explore the ESDT token standard and understand the differences between fungible, non-fungible, semi-fungible, and meta tokens. Follow step-by-step instructions to create each type.
+
+            @Image(source: "InstallingToolsSection1Step1.png", alt: "A terminal window displaying code snippets.")
+        }
+        
+        @Chapter(name: "Managing Fungible Tokens") {
+            @TutorialReference(tutorial: "doc:OperationsOnFungibleTokens")
+            Learn how to manage your issued fungible tokens by performing key operations such as minting and burning.
+
+            @Image(source: "InstallingToolsSection1Step1.png", alt: "A terminal window displaying code snippets.")
+        }
+        
+        @Chapter(name: "Managing Non-Fungible Tokens") {
+            @TutorialReference(tutorial: "doc:OperationsOnNonFungibleTokens")
+            Discover how to manage your issued non-fungible and semi-fungible tokens by executing essential operations, including creating new nonces, increasing supply, and burning tokens.
+
+            @Image(source: "InstallingToolsSection1Step1.png", alt: "A terminal window displaying code snippets.")
+        }
 
     }
 }

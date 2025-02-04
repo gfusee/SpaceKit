@@ -3,7 +3,7 @@ import Space
 @Contract struct MyContract {
     @Storage(key: "issuedTokenIdentifier") var issuedTokenIdentifier: Buffer
     
-    public func issueTokenIdentifier() {
+    public func issueSemiFungibleToken() {
         assertOwner()
 
         if !self.$issuedTokenIdentifier.isEmpty() {
@@ -13,19 +13,16 @@ import Space
         let payment = Message.egldValue
         
         Blockchain
-            .issueFungibleToken(
-                tokenDisplayName: "SpaceKitToken",
-                tokenTicker: "SPACE",
-                initialSupply: 1,
-                properties: FungibleTokenProperties(
-                    numDecimals: 18,
+            .issueSemiFungibleToken(
+                tokenDisplayName: "TestToken",
+                tokenTicker: "TEST",
+                properties: SemiFungibleTokenProperties(
                     canFreeze: false,
                     canWipe: false,
                     canPause: false,
-                    canMint: true,
-                    canBurn: true,
-                    canChangeOwner: true,
-                    canUpgrade: true,
+                    canTransferCreateRole: false,
+                    canChangeOwner: false,
+                    canUpgrade: false,
                     canAddSpecialRoles: true
                 )
             )
@@ -39,10 +36,10 @@ import Space
             )
     }
     
-    public func setMintAndBurnRoles() {
+    public func setAllRoles() {
         assertOwner()
         
-        if self.$issuedTokenIdentifier.isEmpty() {
+        guard !self.$issuedTokenIdentifier.isEmpty() else {
             smartContractError(message: "Token not issued")
         }
         
@@ -51,8 +48,9 @@ import Space
                 for: Blockchain.getSCAddress(),
                 tokenIdentifier: self.issuedTokenIdentifier,
                 roles: EsdtLocalRoles(
-                    canMint: true,
-                    canBurn: true
+                    canCreateNft: true,
+                    canAddNftQuantity: true,
+                    canBurnNft: true
                 )
             )
             .registerPromise(
@@ -60,42 +58,33 @@ import Space
             )
     }
     
-    public func mintTokens(mintAmount: BigUint) {
+    public func createNewNonce(initialQuantity: BigUint) -> UInt64 {
         assertOwner()
         
         let tokenRoles = Blockchain.getESDTLocalRoles(tokenIdentifier: self.issuedTokenIdentifier)
         
-        guard tokenRoles.contains(flag: .mint) else {
-            smartContractError(message: "Cannot mint tokens")
+        guard tokenRoles.contains(flag: .nftCreate) else {
+            smartContractError(message: "Cannot create new nonces")
         }
         
-        Blockchain
-            .mintTokens(
+        let newNonce = Blockchain
+            .createNft(
                 tokenIdentifier: self.issuedTokenIdentifier,
-                nonce: 0,
-                amount: mintAmount
+                amount: initialQuantity,
+                name: "MySemiFungibleToken",
+                royalties: 0,
+                hash: "",
+                attributes: Buffer(),
+                uris: Vector()
             )
-        
-        Message.caller
-            .send(
-                tokenIdentifier: self.issuedTokenIdentifier,
-                nonce: 0,
-                amount: mintAmount
-            )
-    }
-    
-    public func burnTokens(burnAmount: BigUint) {
-        assertOwner()
     }
     
     @Callback public mutating func issueTokenCallback(sentValue: BigUint) {
-        let result: AsyncCallResult<IgnoreValue> = Message.asyncCallResult()
+        let result: AsyncCallResult<Buffer> = Message.asyncCallResult()
         
         switch result {
-        case .success(_):
-            let receivedPayment = Message.singleFungibleEsdt
-            
-            self.issuedTokenIdentifier = receivedPayment.tokenIdentifier
+        case .success(let tokenIdentifier):
+            self.issuedTokenIdentifier = tokenIdentifier
         case .error(_):
             Blockchain.getOwner()
                 .send(egldValue: sentValue)

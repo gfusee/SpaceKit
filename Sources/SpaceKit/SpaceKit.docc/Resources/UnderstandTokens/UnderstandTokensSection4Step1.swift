@@ -13,10 +13,10 @@ import Space
         let payment = Message.egldValue
         
         Blockchain
-            .issueNonFungibleToken(
+            .issueSemiFungibleToken(
                 tokenDisplayName: "TestToken",
                 tokenTicker: "TEST",
-                properties: NonFungibleTokenProperties(
+                properties: SemiFungibleTokenProperties(
                     canFreeze: false,
                     canWipe: false,
                     canPause: false,

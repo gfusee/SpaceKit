@@ -42,7 +42,7 @@ import Space
     public func setMintAndBurnRoles() {
         assertOwner()
         
-        if self.$issuedTokenIdentifier.isEmpty() {
+        guard !self.$issuedTokenIdentifier.isEmpty() else {
             smartContractError(message: "Token not issued")
         }
         
@@ -63,6 +63,35 @@ import Space
     public func mintTokens(mintAmount: BigUint) {
         assertOwner()
         
+        let tokenRoles = Blockchain.getESDTLocalRoles(tokenIdentifier: self.issuedTokenIdentifier)
+        
+        guard tokenRoles.contains(flag: .mint) else {
+            smartContractError(message: "Cannot mint tokens")
+        }
+        
+        Blockchain
+            .mintTokens(
+                tokenIdentifier: self.issuedTokenIdentifier,
+                nonce: 0,
+                amount: mintAmount
+            )
+        
+        Message.caller
+            .send(
+                tokenIdentifier: self.issuedTokenIdentifier,
+                nonce: 0,
+                amount: mintAmount
+            )
+    }
+    
+    public func burnTokens(burnAmount: BigUint) {
+        assertOwner()
+        
+        let tokenRoles = Blockchain.getESDTLocalRoles(tokenIdentifier: self.issuedTokenIdentifier)
+        
+        guard tokenRoles.contains(flag: .burn) else {
+            smartContractError(message: "Cannot mint tokens")
+        }
     }
     
     @Callback public mutating func issueTokenCallback(sentValue: BigUint) {

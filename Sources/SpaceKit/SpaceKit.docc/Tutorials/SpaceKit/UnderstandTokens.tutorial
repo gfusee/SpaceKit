@@ -1,6 +1,6 @@
 @Tutorial(time: 15) {
     @Intro(title: "Understand the ESDT Standard") {
-        Learn about the ESDT standard used in the Space framework, a token model that supports fungible tokens, non-fungible tokens (NFTs), semi-fungible tokens, and meta-esdt tokens.
+        Learn about the ESDT standard used in the SpaceKit framework, a token model that supports fungible tokens, non-fungible tokens (NFTs), semi-fungible tokens, and meta-esdt tokens.
         The SpaceKit framework uses a token standard called ESDT. This standard defines four types of tokens: fungible, non-fungible (NFT), semi-fungible, and meta-esdt.
 
         - **Fungible tokens** are interchangeable, like traditional currencies. For example, one USDC token has the same value as another.
@@ -95,6 +95,52 @@
                 Link the callback to the promise registration.
 
                 @Code(name: "lib.swift", file: "UnderstandTokensSection1Step11.swift")
+            }
+        }
+    }
+        
+    @Section(title: "Issuing a Non-Fungible Token from Your Contract") {
+        @ContentAndMedia {
+            Once you've learned how to issue a fungible token, creating other types of tokens follows a similar process.
+        }
+
+        @Steps {
+            @Step {
+                Use the `Blockchain.issueNonFungibleToken` function to issue a non-fungible token.
+
+                Important: The result type of the asynchronous call in the callback differs from the one in the previous section.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection3Step1.swift")
+            }
+        }
+    }
+
+    @Section(title: "Issuing a Semi-Fungible Token from Your Contract") {
+        @ContentAndMedia {
+            Semi-fungible tokens share similarities with non-fungible tokens, but they allow multiple tokens per nonce. As a result, issuing a semi-fungible token closely follows the steps for issuing a non-fungible token.
+        }
+
+        @Steps {
+            @Step {
+                Use the `Blockchain.issueSemiFungibleToken` function to issue a semi-fungible token.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection4Step1.swift")
+            }
+        }
+    }
+
+    @Section(title: "Issuing a Meta ESDT from Your Contract") {
+        @ContentAndMedia {
+            Beyond NFTs and SFTs, the SpaceVM introduces Meta ESDTs, a specialized type of semi-fungible token. Meta ESDTs function like standard ESDT fungible tokens but include additional properties. For example, they can be used for locked tokens where their properties define the release schedule.
+        }
+
+        @Steps {
+            @Step {
+                Use the `Blockchain.issueSemiFungibleToken` function to issue a Meta ESDT.
+
+                Note: The only difference from issuing a semi-fungible token is the specification of the number of decimal places.
+
+                @Code(name: "lib.swift", file: "UnderstandTokensSection5Step1.swift")
             }
         }
     }

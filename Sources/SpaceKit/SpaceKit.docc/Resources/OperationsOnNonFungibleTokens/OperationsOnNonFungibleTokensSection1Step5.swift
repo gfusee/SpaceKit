@@ -3,7 +3,7 @@ import Space
 @Contract struct MyContract {
     @Storage(key: "issuedTokenIdentifier") var issuedTokenIdentifier: Buffer
     
-    public func issueNonFungibleToken() {
+    public func issueSemiFungibleToken() {
         assertOwner()
 
         if !self.$issuedTokenIdentifier.isEmpty() {
@@ -13,10 +13,10 @@ import Space
         let payment = Message.egldValue
         
         Blockchain
-            .issueNonFungibleToken(
+            .issueSemiFungibleToken(
                 tokenDisplayName: "TestToken",
                 tokenTicker: "TEST",
-                properties: NonFungibleTokenProperties(
+                properties: SemiFungibleTokenProperties(
                     canFreeze: false,
                     canWipe: false,
                     canPause: false,
@@ -33,6 +33,28 @@ import Space
                     sentValue: payment,
                     gasForCallback: 15_000_000
                 )
+            )
+    }
+    
+    public func setAllRoles() {
+        assertOwner()
+        
+        guard !self.$issuedTokenIdentifier.isEmpty() else {
+            smartContractError(message: "Token not issued")
+        }
+        
+        Blockchain
+            .setTokenRoles(
+                for: Blockchain.getSCAddress(),
+                tokenIdentifier: self.issuedTokenIdentifier,
+                roles: EsdtLocalRoles(
+                    canCreateNft: true,
+                    canAddNftQuantity: true,
+                    canBurnNft: true
+                )
+            )
+            .registerPromise(
+                gas: 60_000_000,
             )
     }
     

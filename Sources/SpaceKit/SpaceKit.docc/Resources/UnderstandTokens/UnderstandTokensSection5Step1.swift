@@ -3,7 +3,7 @@ import Space
 @Contract struct MyContract {
     @Storage(key: "issuedTokenIdentifier") var issuedTokenIdentifier: Buffer
     
-    public func issueTokenIdentifier() {
+    public func issueNonFungibleToken() {
         assertOwner()
 
         if !self.$issuedTokenIdentifier.isEmpty() {
@@ -13,19 +13,17 @@ import Space
         let payment = Message.egldValue
         
         Blockchain
-            .issueFungibleToken(
-                tokenDisplayName: "SpaceKitToken",
-                tokenTicker: "SPACE",
-                initialSupply: 1,
-                properties: FungibleTokenProperties(
+            .registerMetaEsdt(
+                tokenDisplayName: "TestToken",
+                tokenTicker: "TEST",
+                properties: MetaTokenProperties(
                     numDecimals: 18,
                     canFreeze: false,
                     canWipe: false,
                     canPause: false,
-                    canMint: true,
-                    canBurn: true,
-                    canChangeOwner: true,
-                    canUpgrade: true,
+                    canTransferCreateRole: false,
+                    canChangeOwner: false,
+                    canUpgrade: false,
                     canAddSpecialRoles: true
                 )
             )
@@ -39,20 +37,12 @@ import Space
             )
     }
     
-    public func setMintAndBurnRoles() {
-        assertOwner()
-        
-        
-    }
-    
     @Callback public mutating func issueTokenCallback(sentValue: BigUint) {
-        let result: AsyncCallResult<IgnoreValue> = Message.asyncCallResult()
+        let result: AsyncCallResult<Buffer> = Message.asyncCallResult()
         
         switch result {
-        case .success(_):
-            let receivedPayment = Message.singleFungibleEsdt
-            
-            self.issuedTokenIdentifier = receivedPayment.tokenIdentifier
+        case .success(let tokenIdentifier):
+            self.issuedTokenIdentifier = tokenIdentifier
         case .error(_):
             Blockchain.getOwner()
                 .send(egldValue: sentValue)
