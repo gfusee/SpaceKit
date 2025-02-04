@@ -139,6 +139,10 @@ func managedGetCallbackClosure(callbackClosureHandle: Int32)
 @_extern(c)
 func managedSCAddress(resultHandle: Int32)
 
+@_extern(wasm, module: "env", name: "getBlockNonce")
+@_extern(c)
+func getBlockNonce() -> Int64
+
 @_extern(wasm, module: "env", name: "getBlockTimestamp")
 @_extern(c)
 func getBlockTimestamp() -> Int64
@@ -482,6 +486,10 @@ extension VMApi: EndpointApiProtocol {
 extension VMApi: BlockchainApiProtocol {
     mutating func managedSCAddress(resultHandle: Int32) {
         return SpaceKit.managedSCAddress(resultHandle: resultHandle)
+    }
+    
+    mutating func getBlockNonce() -> Int64 {
+        return SpaceKit.getBlockNonce()
     }
     
     mutating func getBlockTimestamp() -> Int64 {

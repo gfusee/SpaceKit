@@ -18,6 +18,12 @@ open class ContractTestCase: XCTestCase {
         world.setAccounts(accounts: self.initialAccounts)
         
         API.worldState = world
+        API.setBlockInfos(
+            nonce: 0,
+            timestamp: 0,
+            round: 0,
+            epoch: 0
+        )
     }
     
     open override func tearDown() {
@@ -45,6 +51,20 @@ open class ContractTestCase: XCTestCase {
         )
         
         return T(topDecode: resultRaw)
+    }
+    
+    package func setBlockInfos(
+        nonce: UInt64? = nil,
+        timestamp: UInt64? = nil,
+        round: UInt64? = nil,
+        epoch: UInt64? = nil
+    ) {
+        API.setBlockInfos(
+            nonce: nonce,
+            timestamp: timestamp,
+            round: round,
+            epoch: epoch
+        )
     }
     
     final public func deployContract(

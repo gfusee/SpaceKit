@@ -7,6 +7,7 @@ declare -A TARGETS
 TARGETS=(
     ["Adder"]="$(pwd)/Examples/Adder"
     ["BondingCurve"]="$(pwd)/Examples/BondingCurve"
+    ["BlockInfo"]="$(pwd)/Examples/FeatureTests/BlockInfo"
     ["CallbackNotExposed"]="$(pwd)/Examples/FeatureTests/CallbackNotExposed"
     ["CheckPause"]="$(pwd)/Examples/CheckPause"
     ["CrowdfundingEsdt"]="$(pwd)/Examples/CrowdfundingEsdt"

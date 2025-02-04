@@ -1,6 +1,8 @@
 public protocol BlockchainApiProtocol {
     mutating func managedSCAddress(resultHandle: Int32)
     
+    mutating func getBlockNonce() -> Int64
+    
     mutating func getBlockTimestamp() -> Int64
     
     mutating func getBlockRound() -> Int64
