@@ -1,0 +1,154 @@
+{
+    "name": "BlockInfo",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "1",
+                    "balance": "0"
+                },
+                "sc:contract": {
+                    "code": "file:../output/BlockInfo.wasm"
+                }
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get block nonce zero",
+            "tx": {
+                "to": "sc:contract",
+                "function": "getCurrentBlockNonce",
+                "arguments": []
+            },
+            "expect": {
+                "out": [
+                    "0"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get block timestamp zero",
+            "tx": {
+                "to": "sc:contract",
+                "function": "getCurrentBlockTimestamp",
+                "arguments": []
+            },
+            "expect": {
+                "out": [
+                    "0"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get block round zero",
+            "tx": {
+                "to": "sc:contract",
+                "function": "getCurrentBlockRound",
+                "arguments": []
+            },
+            "expect": {
+                "out": [
+                    "0"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get block epoch zero",
+            "tx": {
+                "to": "sc:contract",
+                "function": "getCurrentBlockEpoch",
+                "arguments": []
+            },
+            "expect": {
+                "out": [
+                    "0"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "setState",
+            "currentBlockInfo": {
+                "blockNonce": "5",
+                "blockTimestamp": "10",
+                "blockRound": "15",
+                "blockEpoch": "20"
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get block nonce not zero",
+            "tx": {
+                "to": "sc:contract",
+                "function": "getCurrentBlockNonce",
+                "arguments": []
+            },
+            "expect": {
+                "out": [
+                    "5"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get block timestamp not zero",
+            "tx": {
+                "to": "sc:contract",
+                "function": "getCurrentBlockTimestamp",
+                "arguments": []
+            },
+            "expect": {
+                "out": [
+                    "10"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get block round not zero",
+            "tx": {
+                "to": "sc:contract",
+                "function": "getCurrentBlockRound",
+                "arguments": []
+            },
+            "expect": {
+                "out": [
+                    "15"
+                ],
+                "status": "",
+                "logs": []
+            }
+        },
+        {
+            "step": "scQuery",
+            "id": "get block epoch not zero",
+            "tx": {
+                "to": "sc:contract",
+                "function": "getCurrentBlockEpoch",
+                "arguments": []
+            },
+            "expect": {
+                "out": [
+                    "20"
+                ],
+                "status": "",
+                "logs": []
+            }
+        }
+    ]
+}

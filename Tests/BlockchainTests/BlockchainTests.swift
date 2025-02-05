@@ -42,6 +42,22 @@ import SpaceKitTesting
     public func getShard(address: Address) -> UInt32 {
         address.getShard()
     }
+    
+    public func getBlockNonce() -> UInt64 {
+        Blockchain.getBlockNonce()
+    }
+    
+    public func getBlockTimestamp() -> UInt64 {
+        Blockchain.getBlockTimestamp()
+    }
+    
+    public func getBlockRound() -> UInt64 {
+        Blockchain.getBlockRound()
+    }
+    
+    public func getBlockEpoch() -> UInt64 {
+        Blockchain.getBlockEpoch()
+    }
 }
 
 final class BlockchainTests: ContractTestCase {
@@ -192,7 +208,7 @@ final class BlockchainTests: ContractTestCase {
         XCTAssertEqual(balance, 20)
     }
     
-    func testGetSCBalanceWithUUnknownEsdt() throws {
+    func testGetSCBalanceWithUnknownEsdt() throws {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(BlockchainController.self, for: "contract")!
         
@@ -267,4 +283,83 @@ final class BlockchainTests: ContractTestCase {
         XCTAssertEqual(shard, 4294967295)
     }
     
+    func testGetBlockNonceZero() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(BlockchainController.self, for: "contract")!
+        
+        let nonce = try controller.getBlockNonce()
+        
+        XCTAssertEqual(nonce, 0)
+    }
+    
+    func testGetBlockNonceTen() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(BlockchainController.self, for: "contract")!
+        
+        self.setBlockInfos(nonce: 10)
+        
+        let nonce = try controller.getBlockNonce()
+        
+        XCTAssertEqual(nonce, 10)
+    }
+    
+    func testGetBlockTimestampZero() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(BlockchainController.self, for: "contract")!
+        
+        let timestamp = try controller.getBlockTimestamp()
+        
+        XCTAssertEqual(timestamp, 0)
+    }
+    
+    func testGetBlockTimestampTen() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(BlockchainController.self, for: "contract")!
+        
+        self.setBlockInfos(timestamp: 10)
+        
+        let timestamp = try controller.getBlockTimestamp()
+        
+        XCTAssertEqual(timestamp, 10)
+    }
+    
+    func testGetBlockRoundZero() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(BlockchainController.self, for: "contract")!
+        
+        let round = try controller.getBlockRound()
+        
+        XCTAssertEqual(round, 0)
+    }
+    
+    func testGetBlockRoundTen() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(BlockchainController.self, for: "contract")!
+        
+        self.setBlockInfos(round: 10)
+        
+        let round = try controller.getBlockRound()
+        
+        XCTAssertEqual(round, 10)
+    }
+    
+    func testGetBlockEpochZero() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(BlockchainController.self, for: "contract")!
+        
+        let epoch = try controller.getBlockEpoch()
+        
+        XCTAssertEqual(epoch, 0)
+    }
+    
+    func testGetBlockEpochTen() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(BlockchainController.self, for: "contract")!
+        
+        self.setBlockInfos(epoch: 10)
+        
+        let epoch = try controller.getBlockEpoch()
+        
+        XCTAssertEqual(epoch, 10)
+    }
 }
