@@ -20,6 +20,11 @@ public struct Blockchain {
         // TODO: super tricky, we should ensure it works
     }
     
+    public static func getBlockNonce() -> UInt64 {
+        // TODO: add tests
+        return toBigEndianUInt64(from: API.getBlockNonce().toBytes8()) // TODO: super tricky, we should ensure it works
+    }
+    
     public static func getBlockTimestamp() -> UInt64 {
         // TODO: add tests
         return toBigEndianUInt64(from: API.getBlockTimestamp().toBytes8()) // TODO: super tricky, we should ensure it works

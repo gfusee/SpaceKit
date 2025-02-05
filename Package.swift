@@ -256,6 +256,18 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .target(
+            name: "BlockInfo",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/FeatureTests/BlockInfo",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
             name: "TokenOperations",
             dependencies: [
                 "SpaceKit"

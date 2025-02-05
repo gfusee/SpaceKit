@@ -12,7 +12,10 @@ public class DummyApi {
     package var transactionContainer: TransactionContainer? = nil
     
     package var blockInfos = BlockInfos(
-        timestamp: 0
+        nonce: 0,
+        timestamp: 0,
+        round: 0,
+        epoch: 0
     )
     
     package var worldState = WorldState()
@@ -589,6 +592,29 @@ public class DummyApi {
         
         return balance ?? EsdtBalance(nonce: nonce, balance: 0)
     }
+    
+    package func setBlockInfos(
+        nonce: UInt64? = nil,
+        timestamp: UInt64? = nil,
+        round: UInt64? = nil,
+        epoch: UInt64? = nil
+    ) {
+        if let nonce = nonce {
+            self.blockInfos.nonce = nonce
+        }
+        
+        if let timestamp = timestamp {
+            self.blockInfos.timestamp = timestamp
+        }
+        
+        if let round = round {
+            self.blockInfos.round = round
+        }
+        
+        if let epoch = epoch {
+            self.blockInfos.epoch = epoch
+        }
+    }
 }
 
 extension DummyApi: BufferApiProtocol {
@@ -899,16 +925,20 @@ extension DummyApi: BlockchainApiProtocol {
         self.getCurrentContainer().managedBuffersData[resultHandle] = currentContractAccount.addressData
     }
     
+    public func getBlockNonce() -> Int64 {
+        return Int64(bitPattern: self.blockInfos.nonce)
+    }
+    
     public func getBlockTimestamp() -> Int64 {
-        return self.blockInfos.timestamp // TODO: turn timestamp into a UInt64 and use Int64(bitPattern:)
+        return Int64(bitPattern: self.blockInfos.timestamp)
     }
     
     public func getBlockRound() -> Int64 {
-        fatalError() // TODO: implement and test
+        return Int64(bitPattern: self.blockInfos.round)
     }
     
     public func getBlockEpoch() -> Int64 {
-        fatalError() // TODO: implement and test
+        return Int64(bitPattern: self.blockInfos.epoch)
     }
     
     public func managedGetBlockRandomSeed(resultHandle: Int32) {
