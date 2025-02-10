@@ -1,6 +1,6 @@
-import Space
+import SpaceKit
 
-@Contract struct MyContract {
+@Controller struct MyContract {
     
 }
 

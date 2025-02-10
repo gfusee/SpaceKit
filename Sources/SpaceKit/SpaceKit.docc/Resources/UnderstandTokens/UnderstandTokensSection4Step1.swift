@@ -1,6 +1,6 @@
-import Space
+import SpaceKit
 
-@Contract struct MyContract {
+@Controller struct MyContract {
     @Storage(key: "issuedTokenIdentifier") var issuedTokenIdentifier: Buffer
     
     public func issueNonFungibleToken() {
