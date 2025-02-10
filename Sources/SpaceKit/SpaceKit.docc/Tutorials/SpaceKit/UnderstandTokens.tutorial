@@ -38,7 +38,7 @@
             @Step {
                 Implement an endpoint for token issuance.
 
-                - Ensure the caller pays the issuance fee.
+                Ensure the caller pays the issuance fee.
 
                 @Code(name: "lib.swift", file: "UnderstandTokensSection1Step3.swift")
             }
@@ -58,7 +58,7 @@
             @Step {
                 Make an asynchronous call to the token issuance contract, defining properties such as `canMint`.
 
-                - Use a human-readable display name for the token.
+                Use a human-readable display name for the token.
 
                 @Code(name: "lib.swift", file: "UnderstandTokensSection1Step6.swift")
             }
