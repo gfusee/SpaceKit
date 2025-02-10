@@ -1,0 +1,217 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Enhance Your Contracts with Token Attributes") {
+        The ESDT standard enables embedding custom data within non-fungible tokens, allowing developers to extend the functionality of their smart contracts. This additional data, referred to as "attributes," is tied to the token and transfers along with it between wallets.
+
+        In this tutorial, you'll explore a practical use case for this feature by building a smart contract that locks funds inside an NFT for a specified duration. The NFT can be transferred freely, and once the lock period expires, the holder can reclaim the locked funds.
+
+        You'll implement the following contract endpoints:
+
+        - `lockFunds`: Accepts a single payment, locks the funds, mints an NFT with attributes, and transfers it to the caller. **Concept covered:** Creating a token with custom attributes.
+        - `unlockFunds`: Accepts an NFT payment, verifies the attributes to determine if the funds can be unlocked, and if so, burns the NFT and releases the locked funds. Fails otherwise. **Concept covered:** Reading token attributes.
+        - `changeTokenLockDuration`: Restricted to the contract owner, this endpoint accepts an NFT payment, updates the lock duration, and returns the modified NFT to the caller. **Concept covered:** Modifying NFT attributes.
+    }
+
+    @Section(title: "Implementing the lockFunds Endpoint") {
+        @ContentAndMedia {
+            In this section, you'll create an NFT representing the locked funds sent by the caller. You'll learn how to embed custom attributes in an NFT.
+
+            Before proceeding, ensure that the non-fungible collection is already issued and that the contract possesses the required roles (refer to previous chapters).
+        }
+
+        @Steps {
+            @Step {
+                Define the contract structure.
+
+                The contract stores the NFT token identifier and the lock duration, both specified by the owner during deployment.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection1Step1.swift")
+            }
+            
+            @Step {
+                Define the attributes structure.
+
+                You can use any SpaceKit types, as well as structs annotated with `@Codable`.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection1Step2.swift")
+            }
+            
+            @Step {
+                Implement the `lockFunds` endpoint, which returns the nonce of the minted NFT.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection1Step3.swift")
+            }
+            
+            @Step {
+                Ensure the contract has permission to create NFTs.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection1Step4.swift")
+            }
+            
+            @Step {
+                Retrieve and validate the payment to be locked, ensuring it's greater than zero.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection1Step5.swift")
+            }
+            
+            @Step {
+                Construct the attributes to be embedded in the NFT.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection1Step6.swift")
+            }
+            
+            @Step {
+                Mint the NFT and assign the attributes.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection1Step7.swift")
+            }
+            
+            @Step {
+                Transfer the created NFT to the caller.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection1Step8.swift")
+            }
+            
+            @Step {
+                Return the created nonce.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection1Step9.swift")
+            }
+        }
+    }
+        
+    @Section(title: "Implementing the unlockFunds Endpoint") {
+        @ContentAndMedia {
+            This section covers unlocking funds when the lock period expires. If the NFT meets the criteria, it is burned, and the funds are released.
+
+            Note: To access an NFT's attributes, the contract must temporarily own it. Directly reading attributes from an NFT held by another account is not possible.
+        }
+
+        @Steps {
+            @Step {
+                Reuse the contract structure from the previous section.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step1.swift")
+            }
+            
+            @Step {
+                Implement a helper function to retrieve NFT attributes.
+
+                **Note:** This function is not an endpoint and remains private.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step2.swift")
+            }
+            
+            @Step {
+                Use `Blockchain.getTokenAttributes` to retrieve attributes.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step3.swift")
+            }
+            
+            @Step {
+                Declare the `unlockFunds` endpoint, returning the unlocked amount.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step4.swift")
+            }
+            
+            @Step {
+                Verify that the contract has permission to burn tokens.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step5.swift")
+            }
+            
+            @Step {
+                Retrieve the NFT payment and validate its token identifier.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step6.swift")
+            }
+            
+            @Step {
+                Extract the attributes using the helper function.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step7.swift")
+            }
+            
+            @Step {
+                Determine whether funds can be unlocked based on attributes.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step8.swift")
+            }
+            
+            @Step {
+                Burn the NFT if conditions are met.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step9.swift")
+            }
+            
+            @Step {
+                Transfer the unlocked funds to the caller.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step10.swift")
+            }
+            
+            @Step {
+                Return the amount of funds unlocked.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection2Step11.swift")
+            }
+        }
+    }
+        
+    @Section(title: "Implementing the changeTokenLockDuration Endpoint") {
+        @ContentAndMedia {
+            This section covers modifying an NFT's lock duration, a feature restricted to the contract owner.
+
+            **Important:** NFT attributes can only be modified for non-fungible tokens. This operation is not supported for semi-fungible tokens or meta-ESDTs.
+        }
+
+        @Steps {
+            @Step {
+                Reuse the contract structure from the previous section.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection3Step1.swift")
+            }
+            
+            @Step {
+                Declare the `changeTokenLockDuration` endpoint, restricting access to the contract owner. It accepts the new lock duration as a parameter.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection3Step2.swift")
+            }
+            
+            @Step {
+                Verify that the contract has the permission to modify NFT attributes.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection3Step3.swift")
+            }
+            
+            @Step {
+                Retrieve and validate the NFT payment.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection3Step4.swift")
+            }
+            
+            @Step {
+                Extract the attributes as a mutable variable.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection3Step5.swift")
+            }
+            
+            @Step {
+                Update the lock duration with the new value.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection3Step6.swift")
+            }
+            
+            @Step {
+                Call `Blockchain.updateNftAttributes` to persist the new attributes.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection3Step7.swift")
+            }
+            
+            @Step {
+                Transfer the modified NFT back to the caller.
+
+                @Code(name: "lib.swift", file: "TokenAttributesSection3Step8.swift")
+            }
+        }
+    }
+}

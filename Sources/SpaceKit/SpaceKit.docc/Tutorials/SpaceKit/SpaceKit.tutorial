@@ -6,60 +6,93 @@
     @Volume(name: "Getting Started") {
         Start your journey as a blockchain developer.
 
-        @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+        @Image(source: "logo.png", alt: "A dummy image.")
 
         @Chapter(name: "Installing the Tools") {
             @TutorialReference(tutorial: "doc:InstallingTools")
 
-            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+            @Image(source: "logo.png", alt: "A dummy image.")
         }
 
         @Chapter(name: "Building Your First Smart Contract") {
             @TutorialReference(tutorial: "doc:CodingYourFirstContract")
 
-            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+            @Image(source: "logo.png", alt: "A dummy image.")
         }
     }
 
     @Volume(name: "Deep Dive into SpaceKit Concepts") {
         Gain a deeper understanding of SpaceKit's architecture, from core types to advanced usage scenarios.
 
-        @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+        @Image(source: "logo.png", alt: "A dummy image.")
 
         @Chapter(name: "Exploring SpaceKit's Types") {
             @TutorialReference(tutorial: "doc:FamiliarizeWithTypes")
             Learn about the core types that power smart contracts in SpaceKit, including WebAssembly integration and Swift interoperability.
 
-            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+            @Image(source: "logo.png", alt: "A dummy image.")
         }
 
         @Chapter(name: "Persisting Data Across Executions") {
             @TutorialReference(tutorial: "doc:StoreValues")
             Discover how to retain data across multiple contract executions using SpaceKit's storage features.
 
-            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window displaying command line tools.")
+            @Image(source: "logo.png", alt: "A dummy image.")
         }
 
         @Chapter(name: "Retrieving Information from the Blockchain") {
             @TutorialReference(tutorial: "doc:GetInfo")
             Learn how to access transaction and blockchain context data, such as caller information, payments, and timestamps, using the SpaceKit framework.
 
-            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window showing command line tools.")
+            @Image(source: "logo.png", alt: "A dummy image.")
         }
         
         @Chapter(name: "Interacting with Other Contracts") {
             @TutorialReference(tutorial: "doc:SyncCalls")
             Learn how to enable smart contracts to call other contracts in a synchronous manner, and explore contract-to-contract interaction using SpaceKit's proxy mechanisms.
 
-            @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window showing code examples.")
+            @Image(source: "logo.png", alt: "A dummy image.")
         }
         
         @Chapter(name: "Calling Contracts Across Shards") {
             @TutorialReference(tutorial: "doc:AsyncCalls")
             Asynchronous calls enable interaction with contracts across different shards. Let’s explore how to implement these cross-shard calls in SpaceKit.
 
-            @Image(source: "InstallingToolsSection1Step1.png", alt: "A terminal window displaying code examples.")
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
+    }
+    
+    @Volume(name: "Create and Manage Tokens") {
+        Tokens are a core component of blockchain technology. With SpaceKit, you can easily create and manage tokens to suit your application's needs.
+
+        @Image(source: "logo.png", alt: "A dummy image.")
+        
+        @Chapter(name: "Creating and Understanding Tokens") {
+            @TutorialReference(tutorial: "doc:UnderstandTokens")
+            Explore the ESDT token standard and understand the differences between fungible, non-fungible, semi-fungible, and meta tokens. Follow step-by-step instructions to create each type.
+
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
+        
+        @Chapter(name: "Managing Fungible Tokens") {
+            @TutorialReference(tutorial: "doc:OperationsOnFungibleTokens")
+            Learn how to manage your issued fungible tokens by performing key operations such as minting and burning.
+
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
+        
+        @Chapter(name: "Managing Non-Fungible Tokens") {
+            @TutorialReference(tutorial: "doc:OperationsOnNonFungibleTokens")
+            Discover how to manage your issued non-fungible and semi-fungible tokens by executing essential operations, including creating new nonces, increasing supply, and burning tokens.
+
+            @Image(source: "logo.png", alt: "A dummy image.")
         }
 
+        @Chapter(name: "Enhancing Contracts with Token Attributes") {
+            @TutorialReference(tutorial: "doc:TokenAttributes")
+            Discover how to embed custom attributes into your ESDT tokens, enabling more flexible and powerful smart contract logic.
+
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
     }
 }
