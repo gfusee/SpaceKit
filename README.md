@@ -44,6 +44,7 @@ The SwiftVM is a core part of SpaceKit, designed to reproduce the behavior of th
 For detailed guidance and examples, check out the following resources:
 
 - **[Interactive tutorial & getting started](https://gfusee.github.io/SpaceKit/tutorials/spacekit/)** – Step-by-step instructions on using SpaceKit.
+- **[GPT assistant](https://chatgpt.com/g/g-6793b3de291c8191b5dddb67b85b71db-spacekit)** – AI assistant trained to help you using SpaceKit.
 - **[Contract examples](https://github.com/gfusee/SpaceKit/tree/master/Examples)** – Ready-to-use contract implementations.
 - **[SwiftVM test examples](https://github.com/gfusee/SpaceKit/tree/master/Tests)** – Examples showcasing how to test contracts using SwiftVM.
 
