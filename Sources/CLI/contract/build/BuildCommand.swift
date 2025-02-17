@@ -163,7 +163,8 @@ func buildContract(
                 host: URL(fileURLWithPath: pwd, isDirectory: true),
                 dest: URL(fileURLWithPath: destVolumePath, isDirectory: true)
             ),
-            commands: allCommands
+            commands: allCommands,
+            dockerImageVersion: wasmPackageInfo.versionFound
         )
         
         var resultsInfo = """

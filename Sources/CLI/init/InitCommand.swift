@@ -6,6 +6,9 @@ import ArgumentParser
 struct InitCommandOptions: ParsableArguments {
     @Argument(help: "The name of the directory which will be created.")
     var name: String
+    
+    @Option(help: "The path to a local SpaceKit git repo.")
+    var localSpacekitPath: String? = nil
 }
 
 struct InitCommand: AsyncParsableCommand {
@@ -18,13 +21,15 @@ struct InitCommand: AsyncParsableCommand {
     
     mutating func run() async throws {
         try await initializeProject(
-            name: self.options.name
+            name: self.options.name,
+            localSpacekitPath: self.options.localSpacekitPath
         )
     }
 }
 
 func initializeProject(
-    name: String
+    name: String,
+    localSpacekitPath: String?
 ) async throws(CLIError) {
     let fileManager = FileManager.default
     let pwd = URL(fileURLWithPath: fileManager.currentDirectoryPath)
@@ -35,10 +40,16 @@ func initializeProject(
         throw .projectInit(.directoryAlreadyExists(path: pwd.path))
     }
     
+    let repoLocation: TemplateProjectRepoLocation = if let localSpacekitPath = localSpacekitPath {
+        .local(path: localSpacekitPath)
+    } else {
+        .remote(commitHash: "0919f9c8d0b5e8ec0ef7d8114fb4ffdaeccea923")
+    }
+    
     try await fetchTemplateProject(
         in: pwd,
         directoryName: name,
-        repoLocation: .remote(commitHash: "0919f9c8d0b5e8ec0ef7d8114fb4ffdaeccea923")
+        repoLocation: repoLocation
     )
     
     let counterTemplateContractPath = projectPath.appending(path: "Contracts/Counter")
@@ -59,13 +70,6 @@ func initializeProject(
     }
     catch {
         throw .fileManager(.cannotMoveFileOrDirectory(at: counterTestTemplateContractPath, to: namedTestTemplateContractPath))
-    }
-    
-    let gitDirectoryPath = projectPath.appending(path: ".git")
-    do {
-        try fileManager.removeItem(at: gitDirectoryPath)
-    } catch {
-        throw .fileManager(.cannotRemoveFileOrDirectory(path: gitDirectoryPath))
     }
     
     let templateFilesPaths = [

@@ -9,7 +9,7 @@ func fetchTemplateProject(
     in directory: URL,
     directoryName: String,
     repoLocation: TemplateProjectRepoLocation
-) async throws {
+) async throws(CLIError) {
     let spaceKitRepoUrl = "https://github.com/gfusee/SpaceKit.git"
     let tempDirCommand = "mktemp -d"
     

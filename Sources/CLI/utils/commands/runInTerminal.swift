@@ -70,7 +70,8 @@ func runInDocker(
     commands: [String],
     environment: [String : String] = [:],
     arguments: [String] = [],
-    showDockerLogs: Bool = true
+    showDockerLogs: Bool = true,
+    dockerImageVersion: String = defaultDockerImageVersion
 ) async throws(CLIError) -> String {
     var commandsWithInfo: [String] = []
     
@@ -109,8 +110,8 @@ func runInDocker(
         )
     }
     
-    let dockerImage = "ghcr.io/gfusee/spacekit-cli:0.0.14"
-    
+    let dockerImage = "ghcr.io/gfusee/spacekit-cli:\(dockerImageVersion)"
+
     // Try to pull the spacekit-cli docker image, but skip if:
     //
     // - The image already exists

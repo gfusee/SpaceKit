@@ -3,6 +3,9 @@ import Basics
 import Workspace
 import ArgumentParser
 
+@attached(member, names: arbitrary)
+macro DockerImage() = #externalMacro(module: "DockerImageMacro", type: "DockerImage")
+
 actor CurrentTerminalProcess {
     static var process: Process? = nil
 }
