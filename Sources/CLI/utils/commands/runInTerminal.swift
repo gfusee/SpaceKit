@@ -66,7 +66,7 @@ func runInTerminal(
 }
 
 func runInDocker(
-    volumeURLs: (host: URL, dest: URL)?,
+    volumeURLs: [(host: URL, dest: URL)],
     commands: [String],
     environment: [String : String] = [:],
     arguments: [String] = [],
@@ -101,13 +101,19 @@ func runInDocker(
         " 2>/dev/null"
     }
     
-    let (currentDirectoryURL, volumeArg) = if let volumeURLs = volumeURLs {
-        (volumeURLs.host, " -v .:\(volumeURLs.dest.path)")
-    } else {
-        (
-            URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true),
-            ""
-        )
+    var currentDirectoryURL: URL?
+    var volumeArgs = ""
+    
+    for volumeURL in volumeURLs {
+        if currentDirectoryURL == nil {
+            currentDirectoryURL = volumeURL.host
+        }
+        
+        volumeArgs.append(" -v \(volumeURL.host.path):\(volumeURL.dest.path)")
+    }
+    
+    if currentDirectoryURL == nil {
+        currentDirectoryURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
     }
     
     let dockerImage = "ghcr.io/gfusee/spacekit-cli:\(dockerImageVersion)"
@@ -117,7 +123,7 @@ func runInDocker(
     // - The image already exists
     // - There is no internet connection
     _ = try await runInTerminal(
-        currentDirectoryURL: currentDirectoryURL,
+        currentDirectoryURL: currentDirectoryURL!,
         command: """
             docker images --format "{{.Repository}}:{{.Tag}}" | grep -q '\(dockerImage)' || (ping -c 1 google.com >/dev/null 2>&1 && docker pull \(dockerImage))
             """,
@@ -126,9 +132,9 @@ func runInDocker(
     )
     
     return try await runInTerminal(
-        currentDirectoryURL: currentDirectoryURL,
+        currentDirectoryURL: currentDirectoryURL!,
         command: """
-                docker run --rm\(volumeArg) \(dockerImage) /bin/bash -c "echo '\(script.toBase64())'\(removeDockerLogsIfNeeded) | base64 -d | /bin/bash"
+                docker run --rm\(volumeArgs) \(dockerImage) /bin/bash -c "echo '\(script.toBase64())'\(removeDockerLogsIfNeeded) | base64 -d | /bin/bash"
                 """,
         environment: environment,
         logCommand: false

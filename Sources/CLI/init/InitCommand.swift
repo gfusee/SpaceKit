@@ -8,7 +8,7 @@ struct InitCommandOptions: ParsableArguments {
     var name: String
     
     @Option(help: "The path to a local SpaceKit git repo.")
-    var localSpacekitPath: String? = nil
+    var spacekitLocalPath: String? = nil
 }
 
 struct InitCommand: AsyncParsableCommand {
@@ -22,14 +22,14 @@ struct InitCommand: AsyncParsableCommand {
     mutating func run() async throws {
         try await initializeProject(
             name: self.options.name,
-            localSpacekitPath: self.options.localSpacekitPath
+            spacekitLocalPath: self.options.spacekitLocalPath
         )
     }
 }
 
 func initializeProject(
     name: String,
-    localSpacekitPath: String?
+    spacekitLocalPath: String?
 ) async throws(CLIError) {
     let fileManager = FileManager.default
     let pwd = URL(fileURLWithPath: fileManager.currentDirectoryPath)
@@ -40,8 +40,8 @@ func initializeProject(
         throw .projectInit(.directoryAlreadyExists(path: pwd.path))
     }
     
-    let repoLocation: TemplateProjectRepoLocation = if let localSpacekitPath = localSpacekitPath {
-        .local(path: localSpacekitPath)
+    let repoLocation: TemplateProjectRepoLocation = if let spacekitLocalPath = spacekitLocalPath {
+        .local(path: spacekitLocalPath)
     } else {
         .remote(commitHash: "0919f9c8d0b5e8ec0ef7d8114fb4ffdaeccea923")
     }

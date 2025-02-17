@@ -35,8 +35,9 @@ fileprivate func retrieveManifest(sourcePackagePath: String) throws(CLIError) ->
 func generateWASMPackage(
     sourcePackagePath: String,
     target: String,
-    overrideSpaceKitHash: String?
-) async throws(CLIError) -> (generatedPackage: String, spaceKitHash: String, versionFound: String) {
+    overrideSpaceKitHash: String?,
+    shouldUseLocalSpaceKit: Bool
+) async throws(CLIError) -> (generatedPackage: String, spaceKitDependencyDeclaration: String, versionFound: String?) {
     let manifestPath = "\(sourcePackagePath)/Package.swift"
     let manifest = try retrieveManifest(sourcePackagePath: sourcePackagePath)
     let packageDependencies = manifest.dependencies
@@ -64,12 +65,19 @@ func generateWASMPackage(
         throw .manifest(.cannotReadDependencyRequirement(manifestPath: manifestPath, dependency: "SpaceKit"))
     }
     
-    let hash: String
-    let versionFound: String
+    let versionFound: String?
+    let spaceKitDependencyDeclaration: String
     
     if let overrideSpaceKitHash = overrideSpaceKitHash {
-        hash = overrideSpaceKitHash
-        versionFound = "0.0.0"
+        versionFound = nil
+        spaceKitDependencyDeclaration = """
+            .package(url: "\(spaceKitUrl)", revision: "\(overrideSpaceKitHash)")
+            """
+    } else if shouldUseLocalSpaceKit {
+        versionFound = nil
+        spaceKitDependencyDeclaration = """
+            .package(path: "/SpaceKit")
+            """
     } else {
         guard case .versionSet(.exact(let version)) = spaceKitRequirements else {
             throw .manifest(.spaceKitDependencyShouldHaveExactVersion(manifestPath: manifestPath))
@@ -78,23 +86,28 @@ func generateWASMPackage(
         let versionString = "\(version.major).\(version.minor).\(version.patch)"
         
         let knownHash = (try await runInDocker(
-            volumeURLs: nil,
+            volumeURLs: [],
             commands: [
                 "./get_tag_hash.sh \(versionString)",
             ],
             showDockerLogs: false
         )).trimmingCharacters(in: .whitespacesAndNewlines)
         
-        hash = knownHash
         versionFound = versionString
+        
+        guard knownHash != "Tag not found" else {
+            throw .manifest(.invalidSpaceKitVersion(
+                manifestPath: manifestPath,
+                versionFound: versionFound ?? "nil"
+            ))
+        }
+        
+        spaceKitDependencyDeclaration = """
+            .package(url: "\(spaceKitUrl)", revision: "\(knownHash)")
+            """
     }
     
-    guard hash != "Tag not found" else {
-        throw .manifest(.invalidSpaceKitVersion(
-            manifestPath: manifestPath,
-            versionFound: versionFound
-        ))
-    }
+    
     
     guard let targetInfo = manifest.targetMap[target] else {
         throw .manifest(.targetNotFound(manifestPath: sourcePackagePath, target: target))
@@ -107,7 +120,7 @@ func generateWASMPackage(
     }
     
     let packageCode = """
-    // swift-tools-version: 5.10
+    // swift-tools-version: 6.0
     // The swift-tools-version declares the minimum version of Swift required to build this package.
 
     import PackageDescription
@@ -119,7 +132,7 @@ func generateWASMPackage(
         ],
         products: [],
         dependencies: [
-            .package(url: "\(spaceKitUrl)", revision: "\(hash)")
+            \(spaceKitDependencyDeclaration)
         ],
         targets: [
             // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -153,7 +166,7 @@ func generateWASMPackage(
     
     return (
         generatedPackage: packageCode,
-        spaceKitHash: hash,
+        spaceKitDependencyDeclaration: spaceKitDependencyDeclaration,
         versionFound: versionFound
     )
 }

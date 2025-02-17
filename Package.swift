@@ -46,17 +46,20 @@ var libraryDependencies: [Target.Dependency] = [
     "ProxyMacro"
 ]
 
-var testTargets: [Target] = []
+var nonWasmTargets: [Target] = []
 
 var products: [Product] = [
     // Products define the executables and libraries a package produces, making them visible to other packages.
     .library(name: "SpaceKit", targets: ["SpaceKit"]),
     .library(name: "SpaceKitTesting", targets: ["SpaceKitTesting"]),
-    .executable(name: "SpaceKitCLI", targets: ["SpaceKitCLI"]),
     .library(name: "SpaceKitABI", targets: ["SpaceKitABI"])
 ]
 
 if !isWasm {
+    products.append(
+        .executable(name: "SpaceKitCLI", targets: ["SpaceKitCLI"])
+    )
+    
     packageDependencies.append(contentsOf: [
         .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.1.0"),
@@ -70,7 +73,15 @@ if !isWasm {
         .product(name: "BigInt", package: "BigInt")
     ])
     
-    testTargets.append(contentsOf: [
+    nonWasmTargets.append(contentsOf: [
+        .executableTarget(
+            name: "SpaceKitCLI",
+            dependencies: [
+                .product(name: "SwiftPM-auto", package: "swift-package-manager"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
+            ],
+            path: "Sources/CLI"
+        ),
         .testTarget(
             name: "ABITests",
             dependencies: [
@@ -543,14 +554,6 @@ let package = Package(
             ],
             swiftSettings: swiftSettings
         ),
-        .executableTarget(
-            name: "SpaceKitCLI",
-            dependencies: [
-                .product(name: "SwiftPM-auto", package: "swift-package-manager"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
-            ],
-            path: "Sources/CLI"
-        ),
         .target(
             name: "SpaceKitABI",
             swiftSettings: swiftSettings
@@ -620,5 +623,5 @@ let package = Package(
             ],
             swiftSettings: macroSwiftSettings
         )
-    ] + testTargets
+    ] + nonWasmTargets
 )

@@ -13,7 +13,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../app"),
-        .package(url: "https://github.com/gfusee/SpaceKit.git", revision: "##SPACEKIT_HASH##")
+        ##SPACEKIT_PACKAGE_DECLARATION##
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

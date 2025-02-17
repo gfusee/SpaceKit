@@ -2,19 +2,19 @@
 
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 4 ]; then
-  echo "Usage: $0 <SPACEKIT_HASH> <PACKAGE_NAME> <TARGET_NAME> <SPACEKIT_VERSION>"
+  echo "Usage: $0 <SPACEKIT_PACKAGE_DECLARATION> <PACKAGE_NAME> <TARGET_NAME> <SPACEKIT_VERSION>"
   exit 1
 fi
 
 # Arguments from the terminal
-SPACEKIT_HASH=$1
+SPACEKIT_PACKAGE_DECLARATION=$1
 PACKAGE_NAME=$2
 TARGET_NAME=$3
 SPACEKIT_VERSION=$4
 
 # Folder names
 TEMPLATE_FOLDER="TemplateSpaceKitABIGenerator"
-TEMPLATE_SOURCES="${TEMPLATE_FOLDER}//Sources/SpaceKitABIGenerator"
+TEMPLATE_SOURCES="${TEMPLATE_FOLDER}/Sources/SpaceKitABIGenerator"
 TARGET_FOLDER="SpaceKitABIGenerator"
 TARGET_SOURCES="${TARGET_FOLDER}/Sources/SpaceKitABIGenerator"
 
@@ -41,12 +41,12 @@ replace_placeholders() {
   local input_file=$1
   local output_file=$2
 
-  sed \
-    -e "s/##SPACEKIT_HASH##/$SPACEKIT_HASH/g" \
-    -e "s/##PACKAGE_NAME##/$PACKAGE_NAME/g" \
-    -e "s/##TARGET_NAME##/$TARGET_NAME/g" \
-    -e "s/##SPACEKIT_VERSION##/$SPACEKIT_VERSION/g" \
-    "$input_file" > "$output_file"
+  perl -pe "
+    s|##SPACEKIT_PACKAGE_DECLARATION##|$SPACEKIT_PACKAGE_DECLARATION|g;
+    s|##PACKAGE_NAME##|$PACKAGE_NAME|g;
+    s|##TARGET_NAME##|$TARGET_NAME|g;
+    s|##SPACEKIT_VERSION##|$SPACEKIT_VERSION|g;
+  " "$input_file" > "$output_file"
 }
 
 # Copy and modify TemplateMain.swift

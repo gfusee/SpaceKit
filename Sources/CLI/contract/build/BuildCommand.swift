@@ -13,6 +13,9 @@ struct BuildCommandOptions: ParsableArguments {
     @Option(help: "Override the hash to use for the SpaceKit dependency in Swift Package Manager.")
     var overrideSpacekitHash: String? = nil
     
+    @Option(help: "Use a local SpaceKit version.")
+    var spacekitLocalPath: String? = nil
+    
     @Flag(help: "Skip ABI generation, resulting in much faster builds.")
     var skipABIGeneration: Bool = false
 }
@@ -20,7 +23,7 @@ struct BuildCommandOptions: ParsableArguments {
 struct BuildCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "build",
-        abstract: "Build a contract to a .wasm file"
+        abstract: "Build a contract to a .wasm file."
     )
     
     @OptionGroup var options: BuildCommandOptions
@@ -30,8 +33,15 @@ struct BuildCommand: AsyncParsableCommand {
             contractName: self.options.contract,
             customSwiftToolchain: self.options.customSwiftToolchain,
             overrideSpaceKitHash: self.options.overrideSpacekitHash,
+            spaceKitLocalPath: self.options.spacekitLocalPath?.getAbsolutePath(),
             skipABIGeneration: self.options.skipABIGeneration
         )
+    }
+}
+
+fileprivate func validateArguments(options: BuildCommandOptions) throws(CLIError) {
+    if options.overrideSpacekitHash != nil && options.spacekitLocalPath != nil {
+        throw .contractBuild(.cannotUseLocalSpaceKitAndOverrideHashAtTheSameTime)
     }
 }
 
@@ -39,6 +49,7 @@ func buildContract(
     contractName: String?,
     customSwiftToolchain: String?,
     overrideSpaceKitHash: String?,
+    spaceKitLocalPath: String?,
     skipABIGeneration: Bool = false
 ) async throws(CLIError) {
     guard try isValidProject() else {
@@ -65,7 +76,8 @@ func buildContract(
     let wasmPackageInfo = try await generateWASMPackage(
         sourcePackagePath: pwd,
         target: target,
-        overrideSpaceKitHash: overrideSpaceKitHash
+        overrideSpaceKitHash: overrideSpaceKitHash,
+        shouldUseLocalSpaceKit: spaceKitLocalPath != nil
     )
     
     let buildFolder = "\(destVolumePath)/.space/sc-build"
@@ -85,7 +97,23 @@ func buildContract(
     let abiHostFinalPath = abiDestFilePath.replacingOccurrences(of: destVolumePath, with: pwd)
 
     let swiftCommand = "/usr/bin/swift"
-
+    
+    var volumes = [
+        (
+            host: URL(fileURLWithPath: pwd, isDirectory: true),
+            dest: URL(fileURLWithPath: destVolumePath, isDirectory: true)
+        )
+    ]
+    
+    if let spaceKitLocalPath = spaceKitLocalPath {
+        volumes.append(
+            (
+                host: URL(fileURLWithPath: spaceKitLocalPath, isDirectory: true),
+                dest: URL(fileURLWithPath: "/SpaceKit", isDirectory: true)
+            )
+        )
+    }
+    
     do {
         // Explanations: we want to create a symbolic link of the source files before compiling them.
         // By doing so, we avoid generating *.o files in the user project root directory
@@ -132,7 +160,9 @@ func buildContract(
         
         let buildSymbolGraphCommand = "(cd /app && swift build -Xswiftc -emit-symbol-graph -Xswiftc -symbol-graph-minimum-access-level -Xswiftc private -Xswiftc -emit-symbol-graph-dir -Xswiftc .build/symbol-graphs)"
         
-        let generateABISwiftProjectCommand = "./generate_abi_generator.sh \(wasmPackageInfo.spaceKitHash) \(target) \(target) \(wasmPackageInfo.versionFound)"
+        let abiGeneratorSpaceKitVersion = wasmPackageInfo.versionFound ?? "0.0.0"
+        
+        let generateABISwiftProjectCommand = "./generate_abi_generator.sh '\(wasmPackageInfo.spaceKitDependencyDeclaration)' \(target) \(target) \(abiGeneratorSpaceKitVersion)"
         
         let generateABICommand = "(cd SpaceKitABIGenerator && swift run SpaceKitABIGenerator \(abiDestFilePath))"
         
@@ -159,12 +189,9 @@ func buildContract(
         }
         
         let _ = try await runInDocker(
-            volumeURLs: (
-                host: URL(fileURLWithPath: pwd, isDirectory: true),
-                dest: URL(fileURLWithPath: destVolumePath, isDirectory: true)
-            ),
+            volumeURLs: volumes,
             commands: allCommands,
-            dockerImageVersion: wasmPackageInfo.versionFound
+            dockerImageVersion: wasmPackageInfo.versionFound ?? "latest"
         )
         
         var resultsInfo = """
