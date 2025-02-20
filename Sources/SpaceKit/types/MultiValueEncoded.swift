@@ -16,8 +16,12 @@ public struct MultiValueEncoded<Item: SpaceCodable>: Equatable {
     }
     
     // unsafe
-    package init(rawBuffers: Vector<Buffer>) {
-        self.rawBuffers = rawBuffers
+    package init(unsafeRawBuffers: Vector<Buffer>) {
+        self.rawBuffers = unsafeRawBuffers
+    }
+    
+    public init(rawBuffers: Vector<Buffer>) {
+        self.init(unsafeRawBuffers: rawBuffers.clone())
     }
     
     public init(items: Vector<Item>) {

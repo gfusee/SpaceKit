@@ -1,0 +1,60 @@
+name: Release Build & Test
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from release title
+        id: extract_version
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          if [[ ! "$VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "Invalid version format: $VERSION"
+            exit 1
+          fi
+          echo "MAJOR=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+          echo "MINOR=${BASH_REMATCH[2]}" >> $GITHUB_ENV
+          echo "PATCH=${BASH_REMATCH[3]}" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Install Swift 6.0.2 OSS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang libcurl4-openssl-dev
+          wget https://download.swift.org/swift-6.0.2-release/ubuntu2204-aarch64/swift-6.0.2-RELEASE/swift-6.0.2-RELEASE-ubuntu22.04-aarch64.tar.gz
+          tar xzf swift-6.0.2-RELEASE-ubuntu22.04-aarch64.tar.gz
+          sudo mv swift-6.0.2-RELEASE-ubuntu22.04-aarch64 /usr/local/swift
+          echo "/usr/local/swift/usr/bin" >> $GITHUB_PATH
+
+      - name: Build with Swift
+        run: swift build
+
+      - name: Run Swift Tests
+        run: swift test
+
+      - name: Run Example Tests
+        run: ./test_all_examples.sh
+
+      - name: Build Docker Image for SpaceKitCLI
+        run: |
+          cd Utils
+          docker build . --no-cache -t ghcr.io/gfusee/spacekit-cli:$VERSION -f DockerfileCLI
+
+      - name: Build and Install SpaceKitCLI
+        run: |
+          DOCKER_IMAGE_VERSION=$VERSION swift build --product SpaceKitCLI
+          cp -f .build/debug/SpaceKitCLI ~/.local/bin/space
+          chmod +x ~/.local/bin/space
+          echo "~/.local/bin" >> $GITHUB_PATH
+
+      - name: Run CLI Example Tests
+        run: ./test_all_examples_through_cli.sh
+

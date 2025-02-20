@@ -111,7 +111,7 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode>: StorageMapper 
         return lastItemOptional
     }
     
-    package func isItemEmptyUnchecked(index: UInt32) -> Bool {
+    public func isItemEmptyUnchecked(index: UInt32) -> Bool {
         return self.getItemMapper(index: index).isEmpty()
     }
 }

@@ -3,6 +3,7 @@
 set -e
 
 SPACEKIT_FOLDER=$(pwd)
+SCENARIO_JSON_EXECUTABLE="$(pwd)/Utils/Scenarios/scenariostest"
 
 # Declare an associative array
 declare -A TARGETS
@@ -93,9 +94,12 @@ for TARGET in "${(k)TARGETS[@]}"; do
     
     TARGET_SCENARIOS_DIR=$TEMP_WASM_DIR/$TARGET/Scenarios
     mkdir -p $TARGET_SCENARIOS_DIR
-    cp -r "$TARGET_PACKAGE_PATH"/Scenarios/*
+    cp -r "$TARGET_PACKAGE_PATH/Scenarios/." "$TARGET_SCENARIOS_DIR"
     
-    SCENARIOS_JSON_DIR="$TARGET_OUTPUT_DIR/Scenarios" $TARGET_SCENARIOS_DIR
+    SCENARIOS_JSON_DIR="$TARGET_OUTPUT_DIR/Scenarios"
+    
+    echo "yeah"
+    echo "$SCENARIO_JSON_EXECUTABLE run $SCENARIOS_JSON_DIR"
 
     $SCENARIO_JSON_EXECUTABLE run $SCENARIOS_JSON_DIR
 done
