@@ -2,7 +2,7 @@ import Foundation
 
 enum TemplateProjectRepoLocation {
     case local(path: String)
-    case remote(commitHash: String)
+    case remote(version: String)
 }
 
 func fetchTemplateProject(
@@ -17,8 +17,8 @@ func fetchTemplateProject(
     switch repoLocation {
     case .local(let path):
         cloneCommand = "git clone --local \(path) $TEMP_DIR"
-    case .remote(let commitHash):
-        cloneCommand = "git clone \(spaceKitRepoUrl) $TEMP_DIR && cd $TEMP_DIR && git checkout \(commitHash)"
+    case .remote(let version):
+        cloneCommand = "git clone \(spaceKitRepoUrl) $TEMP_DIR && cd $TEMP_DIR && git checkout tags/\(version)"
     }
     
     let command = """

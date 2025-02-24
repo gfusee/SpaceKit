@@ -29,7 +29,8 @@ struct InitCommand: AsyncParsableCommand {
 
 func initializeProject(
     name: String,
-    spacekitLocalPath: String?
+    spacekitLocalPath: String?,
+    spaceKitVersion: String = spaceKitVersion
 ) async throws(CLIError) {
     let fileManager = FileManager.default
     let pwd = URL(fileURLWithPath: fileManager.currentDirectoryPath)
@@ -43,7 +44,7 @@ func initializeProject(
     let repoLocation: TemplateProjectRepoLocation = if let spacekitLocalPath = spacekitLocalPath {
         .local(path: spacekitLocalPath)
     } else {
-        .remote(commitHash: "0919f9c8d0b5e8ec0ef7d8114fb4ffdaeccea923")
+        .remote(version: spaceKitVersion)
     }
     
     try await fetchTemplateProject(
@@ -89,6 +90,7 @@ func initializeProject(
         templateFileContent = templateFileContent
             .replacingOccurrences(of: "##PACKAGE_NAME##", with: name)
             .replacingOccurrences(of: "##TARGET_NAME##", with: name)
+            .replacingOccurrences(of: "##SPACEKIT_VERSION##", with: spaceKitVersion)
         
         fileManager.createFile(atPath: templateFilePath.path, contents: templateFileContent.data(using: .utf8))
     }

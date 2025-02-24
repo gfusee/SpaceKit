@@ -50,10 +50,17 @@ jobs:
 
       - name: Build and Install SpaceKitCLI
         run: |
-          mkdir -p ~/.local/bin
           ./install_cli.sh $VERSION
-          chmod +x ~/.local/bin/space
-          echo "~/.local/bin" >> $GITHUB_PATH
+          echo "~/.space" >> $GITHUB_PATH
+
+      - name: Run CLI Template Tests
+        run: |
+          space init TestCLI
+          cd TestCLI
+          swift build
+          rm -rf .build
+          rm -rf .space
+          space contract build || space contract build
 
       - name: Run CLI Example Tests
         run: ./test_all_examples_through_cli.sh

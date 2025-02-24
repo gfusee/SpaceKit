@@ -7,6 +7,8 @@ INITIAL_DIR=$(pwd)
 
 # Define the installation paths
 INSTALL_PATH="$HOME/.space"
+mkdir -p $INSTALL_PATH
+
 INSTALL_BIN_PATH="$INSTALL_PATH/space"
 
 # Create a temporary directory
@@ -70,6 +72,7 @@ swift build --product SpaceKitCLI
 
 # Copy the built product to the installation bin path
 cp -f .build/debug/SpaceKitCLI "$INSTALL_BIN_PATH"
+chmod +x "$INSTALL_BIN_PATH"
 
 # Check if the installation path is already in the PATH environment variable
 if [[ ":$PATH:" != *":$INSTALL_PATH:"* ]]; then
