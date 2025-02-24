@@ -64,6 +64,8 @@ if [ "$SPACEKIT_VERSION" != "0.0.0" ]; then
     git checkout "tags/$SPACEKIT_VERSION" -b "release-$SPACEKIT_VERSION"
 fi
 
+echo "let spaceKitVersion = \"$SPACEKIT_VERSION\"" >> $TEMP_DIR/Sources/CLI/utils/spaceKitVersion.swift
+
 # Create the installation directory if it doesn't exist
 mkdir -p "$INSTALL_PATH"
 
