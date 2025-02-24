@@ -78,7 +78,7 @@
                         "str:genZeroKittyAuctionDuration": "100,000",
                         "str:auction|u32:1": "u8:1|u32:2|u16:1000|u32:2|u16:5000|u64:200000|address:bidder2|u32:0|u64:0|u64:0|u64:0|u64:0"
                     },
-                    "code": "file:../output/CryptoKittiesAuction.wasm"
+                    "code": "file:../Output/CryptoKittiesAuction.wasm"
                 }
             }
         }

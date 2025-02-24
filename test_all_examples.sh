@@ -6,29 +6,29 @@ set -e
 declare -A TARGETS
 TARGETS=(
     ["Adder"]="$(pwd)/Examples/Adder"
-    ["BondingCurve"]="$(pwd)/Examples/BondingCurve"
-    ["BlockInfo"]="$(pwd)/Examples/FeatureTests/BlockInfo"
-    ["CallbackNotExposed"]="$(pwd)/Examples/FeatureTests/CallbackNotExposed"
-    ["CheckPause"]="$(pwd)/Examples/CheckPause"
-    ["CrowdfundingEsdt"]="$(pwd)/Examples/CrowdfundingEsdt"
-    ["CryptoBubbles"]="$(pwd)/Examples/CryptoBubbles"
-    ["CryptoKittiesAuction"]="$(pwd)/Examples/CryptoKitties/Auction"
-    ["CryptoKittiesGeneticAlg"]="$(pwd)/Examples/CryptoKitties/GeneticAlg"
-    ["CryptoKittiesOwnership"]="$(pwd)/Examples/CryptoKitties/Ownership"
-    ["DigitalCash"]="$(pwd)/Examples/DigitalCash"
-    ["Empty"]="$(pwd)/Examples/Empty"
-    ["EsdtTransferWithFee"]="$(pwd)/Examples/EsdtTransferWithFee"
-    ["Factorial"]="$(pwd)/Examples/Factorial"
-    ["LotteryEsdt"]="$(pwd)/Examples/LotteryEsdt"
-    ["MultiFile"]="$(pwd)/Examples/MultiFile"
-    ["Multisig"]="$(pwd)/Examples/Multisig"
-    ["NftMinter"]="$(pwd)/Examples/NftMinter"
-    ["OrderBookPair"]="$(pwd)/Examples/OrderBookPair"
-    ["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
-    ["ProxyPause"]="$(pwd)/Examples/ProxyPause"
-    ["SendTestsExample"]="$(pwd)/Examples/SendTests"
-    ["TokenOperations"]="$(pwd)/Examples/FeatureTests/TokenOperations"
-    ["TokenRelease"]="$(pwd)/Examples/TokenRelease"
+    #["BondingCurve"]="$(pwd)/Examples/BondingCurve"
+    #["BlockInfo"]="$(pwd)/Examples/FeatureTests/BlockInfo"
+    #["CallbackNotExposed"]="$(pwd)/Examples/FeatureTests/CallbackNotExposed"
+    #["CheckPause"]="$(pwd)/Examples/CheckPause"
+    #["CrowdfundingEsdt"]="$(pwd)/Examples/CrowdfundingEsdt"
+    #["CryptoBubbles"]="$(pwd)/Examples/CryptoBubbles"
+    #["CryptoKittiesAuction"]="$(pwd)/Examples/CryptoKitties/Auction"
+    #["CryptoKittiesGeneticAlg"]="$(pwd)/Examples/CryptoKitties/GeneticAlg"
+    #["CryptoKittiesOwnership"]="$(pwd)/Examples/CryptoKitties/Ownership"
+    #["DigitalCash"]="$(pwd)/Examples/DigitalCash"
+    #["Empty"]="$(pwd)/Examples/Empty"
+    #["EsdtTransferWithFee"]="$(pwd)/Examples/EsdtTransferWithFee"
+    #["Factorial"]="$(pwd)/Examples/Factorial"
+    #["LotteryEsdt"]="$(pwd)/Examples/LotteryEsdt"
+    #["MultiFile"]="$(pwd)/Examples/MultiFile"
+    #["Multisig"]="$(pwd)/Examples/Multisig"
+    #["NftMinter"]="$(pwd)/Examples/NftMinter"
+    #["OrderBookPair"]="$(pwd)/Examples/OrderBookPair"
+    #["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
+    #["ProxyPause"]="$(pwd)/Examples/ProxyPause"
+    #["SendTestsExample"]="$(pwd)/Examples/SendTests"
+    #["TokenOperations"]="$(pwd)/Examples/FeatureTests/TokenOperations"
+    #["TokenRelease"]="$(pwd)/Examples/TokenRelease"
     # Add more targets as needed
 )
 
@@ -53,7 +53,8 @@ else
     exit 1
 fi
 
-SCENARIO_JSON_EXECUTABLE="$(pwd)/Utils/Scenarios/$EXECUTABLE"
+SCENARIO_FOLDER="$(pwd)/Utils/Scenarios"
+SCENARIO_JSON_EXECUTABLE="$SCENARIO_FOLDER/$EXECUTABLE"
 
 MEMCPY_C_FILE_PATH="$(pwd)/Utils/Memory/memcpy.c"
 MEMCPY_OBJECT_FILE_PATH="$(pwd)/Utils/Memory/memcpy.o"
@@ -90,5 +91,5 @@ for TARGET in "${!TARGETS[@]}"; do
     
     SCENARIOS_JSON_DIR="$TARGET_PACKAGE_PATH/Scenarios"
 
-    "$SCENARIO_JSON_EXECUTABLE" run "$SCENARIOS_JSON_DIR"
+    LD_LIBRARY_PATH=$SCENARIO_FOLDER "$SCENARIO_JSON_EXECUTABLE" run "$SCENARIOS_JSON_DIR"
 done

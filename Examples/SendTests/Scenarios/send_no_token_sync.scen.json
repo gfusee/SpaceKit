@@ -29,7 +29,7 @@
             "id": "1",
             "tx": {
                 "from": "address:owner",
-                "contractCode": "file:../output/SendTestsExample.wasm",
+                "contractCode": "file:../Output/SendTestsExample.wasm",
                 "arguments": [],
                 "gasLimit": "5,000,000",
                 "gasPrice": "0"
@@ -47,7 +47,7 @@
             "id": "2",
             "tx": {
                 "from": "address:owner",
-                "contractCode": "file:../output/SendTestsExample.wasm",
+                "contractCode": "file:../Output/SendTestsExample.wasm",
                 "arguments": [],
                 "gasLimit": "5,000,000",
                 "gasPrice": "0"
@@ -94,7 +94,7 @@
                     "nonce": "0",
                     "balance": "0",
                     "storage": {},
-                    "code": "file:../output/SendTestsExample.wasm"
+                    "code": "file:../Output/SendTestsExample.wasm"
                 },
                 "sc:receiver": {
                     "nonce": "0",
@@ -102,7 +102,7 @@
                     "storage": {
                         "str:lastReceivedTokens": ""
                     },
-                    "code": "file:../output/SendTestsExample.wasm"
+                    "code": "file:../Output/SendTestsExample.wasm"
                 }
             }
         }

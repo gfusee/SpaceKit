@@ -41,7 +41,7 @@
                         "str:nrOwnedKitties|address:acc1": "1",
                         "str:nrOwnedKitties|address:acc2": "1"
                     },
-                    "code": "file:../output/CryptoKittiesOwnership.wasm"
+                    "code": "file:../Output/CryptoKittiesOwnership.wasm"
                 }
             },
             "currentBlockInfo": {

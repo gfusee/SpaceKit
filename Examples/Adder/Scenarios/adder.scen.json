@@ -24,7 +24,7 @@
             "id": "1",
             "tx": {
                 "from": "address:owner",
-                "contractCode": "file:../output/Adder.wasm",
+                "contractCode": "file:../Output/Adder.wasm",
                 "arguments": [
                     "5"
                 ],
@@ -91,7 +91,7 @@
                     "storage": {
                         "str:sum": "8"
                     },
-                    "code": "file:../output/Adder.wasm"
+                    "code": "file:../Output/Adder.wasm"
                 }
             }
         }

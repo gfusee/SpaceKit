@@ -71,7 +71,7 @@ func runInDocker(
     environment: [String : String] = [:],
     arguments: [String] = [],
     showDockerLogs: Bool = true,
-    dockerImageVersion: String = defaultDockerImageVersion
+    dockerImageVersion: String = spaceKitVersion
 ) async throws(CLIError) -> String {
     var commandsWithInfo: [String] = []
     

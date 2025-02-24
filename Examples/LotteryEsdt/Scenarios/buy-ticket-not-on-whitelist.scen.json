@@ -86,7 +86,7 @@
                         },
                         "+": ""
                     },
-                    "code": "file:../output/LotteryEsdt.wasm"
+                    "code": "file:../Output/LotteryEsdt.wasm"
                 }
             }
         }

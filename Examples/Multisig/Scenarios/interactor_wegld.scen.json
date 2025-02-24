@@ -92,7 +92,7 @@
             "step": "scDeploy",
             "tx": {
                 "from": "0xe32afedc904fe1939746ad973beb383563cf63642ba669b3040f9b9428a5ed60",
-                "contractCode": "file:../output/Multisig.wasm",
+                "contractCode": "file:../Output/Multisig.wasm",
                 "arguments": [
                     "0x02",
                     "0xe32afedc904fe1939746ad973beb383563cf63642ba669b3040f9b9428a5ed60",

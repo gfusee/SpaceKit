@@ -5,7 +5,7 @@
             "id": "multisig-deploy",
             "tx": {
                 "from": "address:owner",
-                "contractCode": "file:../../output/Multisig.wasm",
+                "contractCode": "file:../../Output/Multisig.wasm",
                 "arguments": [
                     "0",
                     "address:alice"

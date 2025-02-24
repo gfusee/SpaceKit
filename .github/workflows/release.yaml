@@ -50,8 +50,8 @@ jobs:
 
       - name: Build and Install SpaceKitCLI
         run: |
-          DOCKER_IMAGE_VERSION=$VERSION swift build --product SpaceKitCLI
-          cp -f .build/debug/SpaceKitCLI ~/.local/bin/space
+          mkdir -p ~/.local/bin
+          ./install_cli.sh $VERSION
           chmod +x ~/.local/bin/space
           echo "~/.local/bin" >> $GITHUB_PATH
 

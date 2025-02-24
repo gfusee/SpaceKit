@@ -76,7 +76,7 @@
                             "5-arguments": "u32:0"
                         }
                     },
-                    "code": "file:../output/Multisig.wasm"
+                    "code": "file:../Output/Multisig.wasm"
                 },
                 "+": ""
             }
@@ -184,7 +184,7 @@
                         "str:quorum": "2",
                         "str:action_data.len": "3"
                     },
-                    "code": "file:../output/Multisig.wasm"
+                    "code": "file:../Output/Multisig.wasm"
                 },
                 "sc:factorial": {
                     "nonce": "0",

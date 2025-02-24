@@ -114,7 +114,7 @@
                         "str:quorum": "1",
                         "str:sum": "1234"
                     },
-                    "code": "file:../output/Multisig.wasm"
+                    "code": "file:../Output/Multisig.wasm"
                 },
                 "+": ""
             }

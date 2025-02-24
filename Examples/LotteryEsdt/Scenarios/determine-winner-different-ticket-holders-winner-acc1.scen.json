@@ -56,7 +56,7 @@
                     "nonce": "0",
                     "balance": "0",
                     "storage": {},
-                    "code": "file:../output/LotteryEsdt.wasm"
+                    "code": "file:../Output/LotteryEsdt.wasm"
                 }
             }
         }

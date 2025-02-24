@@ -8,6 +8,10 @@ SPACEKIT_FOLDER=$(pwd)
 OS="$(uname -s)"
 ARCH="$(uname -m)"
 
+if [[ "$ARCH" == "aarch64" ]]; then
+    ARCH="arm64"
+fi
+
 # Determine the correct executable
 if [[ "$OS" == "Darwin" && "$ARCH" == "arm64" ]]; then
     EXECUTABLE="scenariostest_darwin_arm64"

@@ -9,7 +9,7 @@
                     "balance": "0"
                 },
                 "sc:contract": {
-                    "code": "file:../output/CallbackNotExposed.wasm"
+                    "code": "file:../Output/CallbackNotExposed.wasm"
                 }
             }
         },

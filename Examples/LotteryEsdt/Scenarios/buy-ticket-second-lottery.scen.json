@@ -91,7 +91,7 @@
                         "str:ticketHolder|nested:str:lottery_$$$$|str:.item|u32:1": "address:acc1",
                         "str:numberOfEntriesForUser|u32:12|str:lottery_$$$$|address:acc1": "1"
                     },
-                    "code": "file:../output/LotteryEsdt.wasm"
+                    "code": "file:../Output/LotteryEsdt.wasm"
                 }
             }
         }
