@@ -61,6 +61,7 @@ func initializeProject(
         try fileManager.moveItem(at: counterTemplateContractPath, to: namedTemplateContractPath)
     }
     catch {
+        print(error.localizedDescription)
         throw .fileManager(.cannotMoveFileOrDirectory(at: counterTemplateContractPath, to: namedTemplateContractPath))
     }
     
