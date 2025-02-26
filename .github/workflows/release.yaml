@@ -56,6 +56,10 @@ jobs:
       - name: Run CLI Template Tests
         run: |
           space init TestCLI
+          echo "TEST 1"
+          pwd
+          ls TestCLI
+          echo "TEST 2"
           cd TestCLI
           swift build
           rm -rf .build

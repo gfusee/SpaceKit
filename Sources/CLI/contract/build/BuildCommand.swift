@@ -98,13 +98,6 @@ func buildContract(
         )
     ]
     
-    let wasmPackageInfo = try await generateWASMPackage(
-        volumeURLs: volumes,
-        target: target,
-        overrideSpaceKitHash: overrideSpaceKitHash,
-        shouldUseLocalSpaceKit: spaceKitLocalPath != nil
-    )
-    
     if let spaceKitLocalPath = spaceKitLocalPath {
         volumes.append(
             (
@@ -113,6 +106,13 @@ func buildContract(
             )
         )
     }
+    
+    let wasmPackageInfo = try await generateWASMPackage(
+        volumeURLs: volumes,
+        target: target,
+        overrideSpaceKitHash: overrideSpaceKitHash,
+        shouldUseLocalSpaceKit: spaceKitLocalPath != nil
+    )
     
     do {
         // Explanations: we want to create a symbolic link of the source files before compiling them.
