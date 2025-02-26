@@ -11,7 +11,6 @@ COPY DockerCLI/generate_tag_script.sh generate_tag_script.sh
 
 RUN apt update
 RUN apt install binaryen
-RUN apt install rsync -y
 
 RUN git config --global safe.directory '*'
 
