@@ -10,7 +10,7 @@ fileprivate func retrieveManifest(
     let resultJSONString = try await runInDocker(
         volumeURLs: volumeURLs,
         commands: [
-            "cd /app && ls",
+            "echo \"Test??\" && cd /app && ls && echo \"Test2??\"",
             command
         ],
         showDockerLogs: false
