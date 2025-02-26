@@ -15,7 +15,7 @@ SPACEKIT_VERSION=$4
 # Folder names
 TEMPLATE_FOLDER="TemplateSpaceKitABIGenerator"
 TEMPLATE_SOURCES="${TEMPLATE_FOLDER}/Sources/SpaceKitABIGenerator"
-TARGET_FOLDER="SpaceKitABIGenerator"
+TARGET_FOLDER="/SpaceKitABIGenerator"
 TARGET_SOURCES="${TARGET_FOLDER}/Sources/SpaceKitABIGenerator"
 
 # File names

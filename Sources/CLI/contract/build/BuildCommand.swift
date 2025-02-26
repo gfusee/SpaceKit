@@ -158,7 +158,7 @@ func buildContract(
         let oldWasmRmCommand = "rm -f \(wasmDestFilePath)"
         let copyWasmCommand = "cp \(wasmOptFilePath) \(wasmDestFilePath)"
         
-        let buildSymbolGraphCommand = "(cd /app && swift build -Xswiftc -emit-symbol-graph -Xswiftc -symbol-graph-minimum-access-level -Xswiftc private -Xswiftc -emit-symbol-graph-dir -Xswiftc .build/symbol-graphs)"
+        let buildSymbolGraphCommand = "(cd \(PROJECT_DOCKER_DEST_PATH) && swift build -Xswiftc -emit-symbol-graph -Xswiftc -symbol-graph-minimum-access-level -Xswiftc private -Xswiftc -emit-symbol-graph-dir -Xswiftc .build/symbol-graphs)"
         
         let abiGeneratorSpaceKitVersion = wasmPackageInfo.versionFound ?? "0.0.0"
         
