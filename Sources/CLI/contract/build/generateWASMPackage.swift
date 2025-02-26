@@ -8,7 +8,7 @@ fileprivate func retrieveManifest(
     let command = "cd \(PROJECT_DOCKER_DEST_PATH) && swift package dump-package"
     
     let resultJSONString = try await runInDocker(
-        volumeURLs: volumeURLs,ssss
+        volumeURLs: volumeURLs,
         commands: [
             "cd /app && ls",
             command
