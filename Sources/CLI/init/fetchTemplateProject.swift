@@ -26,7 +26,7 @@ func fetchTemplateProject(
     TEMP_DIR=$(\(tempDirCommand))
     trap 'rm -rf $TEMP_DIR' EXIT
     \(cloneCommand)
-    cp -r $TEMP_DIR/Utils/Template \(directory.appendingPathComponent(directoryName).path)
+    rsync -a $TEMP_DIR/Utils/Template \(directory.appendingPathComponent(directoryName).path)
     """
     
     _ = try await runInTerminal(
