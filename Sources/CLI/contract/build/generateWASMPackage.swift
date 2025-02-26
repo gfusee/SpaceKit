@@ -1,68 +1,79 @@
-import Workspace
-import Basics
-import PackageModel
-import PackageGraph
+import Foundation
 
 fileprivate struct DummyError: Error {}
 
-fileprivate func retrieveManifest(sourcePackagePath: String) throws(CLIError) -> Manifest {
-    let sourcePackageAbsolutePath: AbsolutePath
-    let workspace: Workspace
-    do {
-        sourcePackageAbsolutePath = try AbsolutePath(validating: sourcePackagePath)
-        workspace = try Workspace(forRootPackage: sourcePackageAbsolutePath)
-        
-        let observability = ObservabilitySystem({ print("\($0): \($1)") })
-        var result: Result<Manifest, any Error>? = nil
-        workspace.loadRootManifest(at: sourcePackageAbsolutePath, observabilityScope: observability.topScope) { result = $0 }
-        
-        while result == nil {}
-        
-        switch result! {
-        case .success(let manifest):
-            return manifest
-        case .failure(_):
-            throw DummyError()
-        }
-    } catch {
-        let manifestPath = "\(sourcePackagePath)/Package.swift"
-        print(error.localizedDescription) // TODO: temp, delete when --verbose is here
-        throw .manifest(.cannotReadManifest(path: manifestPath))
+fileprivate func retrieveManifest(
+    volumeURLs: [(host: URL, dest: URL)]
+) async throws(CLIError) -> Manifest {
+    let command = "cd \(PROJECT_DOCKER_DEST_PATH) && swift package dump-package"
+    
+    let resultJSONString = try await runInDocker(
+        volumeURLs: volumeURLs,
+        commands: [command],
+        showDockerLogs: false
+    )
+    
+    guard let resultJSONData = resultJSONString.data(using: .utf8) else {
+        throw .manifest(.cannotReadJSONManifestAsUTF8(json: resultJSONString))
     }
+    
+    guard let manifest = try? JSONDecoder().decode(Manifest.self, from: resultJSONData) else {
+        throw .manifest(.cannotDecodeManifest(json: resultJSONString))
+    }
+    
+    return manifest
 }
 
 /// Generates the code of a Package.swift containing the contract target, ready for WASM compilation
 func generateWASMPackage(
-    sourcePackagePath: String,
+    volumeURLs: [(host: URL, dest: URL)],
     target: String,
     overrideSpaceKitHash: String?,
     shouldUseLocalSpaceKit: Bool
 ) async throws(CLIError) -> (generatedPackage: String, spaceKitDependencyDeclaration: String, versionFound: String?) {
-    let manifestPath = "\(sourcePackagePath)/Package.swift"
-    let manifest = try retrieveManifest(sourcePackagePath: sourcePackagePath)
+    let manifest = try await retrieveManifest(volumeURLs: volumeURLs)
     let packageDependencies = manifest.dependencies
-    let spaceKitDependency = packageDependencies.first { print($0.nameForModuleDependencyResolutionOnly); return $0.nameForModuleDependencyResolutionOnly.lowercased(with: .current) == "spacekit" }
-    guard let spaceKitDependency = spaceKitDependency else {
-        throw .manifest(.spaceKitDependencyNotFound(manifestPath: manifestPath))
+    let spaceKitDependency = packageDependencies.first { dependency in
+        let dependencyName = switch dependency.kind {
+        case .sourceControl(let settings):
+            settings.first?.identity ?? ""
+        case .fileSystem(let settings):
+            settings.first?.identity ?? ""
+        case  .unknown:
+            ""
+        }
+        
+        return dependencyName.lowercased() == "spacekit"
     }
     
-    guard case .sourceControl(let spaceKitSourceControlInfo) = spaceKitDependency else {
-        throw .manifest(.spaceKitDependencyShouldBeAGitRepository(manifestPath: manifestPath))
+    guard let spaceKitDependency = spaceKitDependency else {
+        throw .manifest(.spaceKitDependencyNotFound)
+    }
+    
+    guard case .sourceControl(let spaceKitSourceControlInfoArray) = spaceKitDependency.kind else {
+        throw .manifest(.spaceKitDependencyShouldBeAGitRepository)
+    }
+    
+    guard let spaceKitSourceControlInfo = spaceKitSourceControlInfoArray.first else {
+        throw .manifest(.spaceKitDependencyShouldHaveAtLeastOneSourceControlInfo)
     }
     
     let spaceKitUrl: String
     switch spaceKitSourceControlInfo.location {
-    case .local(let setting):
-        spaceKitUrl = setting.pathString
+    case .local(let paths):
+        guard let path = paths.first else {
+            throw .manifest(.spaceKitDependencyLocalGitShouldHaveAtLeastOnePath)
+        }
+        
+        spaceKitUrl = path
     case .remote(let settings):
-        spaceKitUrl = settings.absoluteString
-    }
-    
-    let spaceKitRequirements: PackageRequirement
-    do {
-        spaceKitRequirements = try spaceKitDependency.toConstraintRequirement()
-    } catch {
-        throw .manifest(.cannotReadDependencyRequirement(manifestPath: manifestPath, dependency: "SpaceKit"))
+        guard let settings = settings.first else {
+            throw .manifest(.spaceKitDependencyRemoteGitShouldHaveAtLeastOneSettings)
+        }
+        
+        spaceKitUrl = settings.urlString
+    default:
+        throw .manifest(.spaceKitDependencyUnknownLocationType)
     }
     
     let versionFound: String?
@@ -79,25 +90,26 @@ func generateWASMPackage(
             .package(path: "/SpaceKit")
             """
     } else {
-        guard case .versionSet(.exact(let version)) = spaceKitRequirements else {
-            throw .manifest(.spaceKitDependencyShouldHaveExactVersion(manifestPath: manifestPath))
+        guard case .exact(let versions) = spaceKitSourceControlInfo.requirement else {
+            throw .manifest(.spaceKitDependencyShouldHaveExactVersion)
         }
         
-        let versionString = "\(version.major).\(version.minor).\(version.patch)"
+        guard let version = versions.first else {
+            throw .manifest(.spaceKitDependencyExactVersionShouldHaveAtLeastOneElement)
+        }
         
         let knownHash = (try await runInDocker(
             volumeURLs: [],
             commands: [
-                "./get_tag_hash.sh \(versionString)",
+                "./get_tag_hash.sh \(version)",
             ],
             showDockerLogs: false
         )).trimmingCharacters(in: .whitespacesAndNewlines)
         
-        versionFound = versionString
+        versionFound = version
         
         guard knownHash != "Tag not found" else {
             throw .manifest(.invalidSpaceKitVersion(
-                manifestPath: manifestPath,
                 versionFound: versionFound ?? "nil"
             ))
         }
@@ -107,17 +119,11 @@ func generateWASMPackage(
             """
     }
     
-    
-    
-    guard let targetInfo = manifest.targetMap[target] else {
-        throw .manifest(.targetNotFound(manifestPath: sourcePackagePath, target: target))
+    guard let targetInfo = manifest.targets.first(where: { $0.name == target }) else {
+        throw .manifest(.targetNotFound(target: target))
     }
     
-    let targetPath = if let targetPath = targetInfo.path {
-        "path: \"\(targetPath)\","
-    } else {
-        ""
-    }
+    let targetPath = "path: \"\(targetInfo.path)\","
     
     let packageCode = """
     // swift-tools-version: 6.0

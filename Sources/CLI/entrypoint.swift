@@ -1,6 +1,4 @@
 import Foundation
-import Basics
-import Workspace
 import ArgumentParser
 
 actor CurrentTerminalProcess {

@@ -1,7 +1,7 @@
 import Foundation
-import Workspace
-import Basics
 import ArgumentParser
+
+let PROJECT_DOCKER_DEST_PATH = "/app"
 
 struct BuildCommandOptions: ParsableArguments {
     @Option(help: "The contract's name to build.")
@@ -71,14 +71,7 @@ func buildContract(
     
     let fileManager = FileManager.default
     let pwd = fileManager.currentDirectoryPath
-    let destVolumePath = "/app"
-    
-    let wasmPackageInfo = try await generateWASMPackage(
-        sourcePackagePath: pwd,
-        target: target,
-        overrideSpaceKitHash: overrideSpaceKitHash,
-        shouldUseLocalSpaceKit: spaceKitLocalPath != nil
-    )
+    let destVolumePath = PROJECT_DOCKER_DEST_PATH
     
     let buildFolder = "\(destVolumePath)/.space/sc-build"
     let buildFolderUrl = URL(fileURLWithPath: buildFolder, isDirectory: true)
@@ -104,6 +97,13 @@ func buildContract(
             dest: URL(fileURLWithPath: destVolumePath, isDirectory: true)
         )
     ]
+    
+    let wasmPackageInfo = try await generateWASMPackage(
+        volumeURLs: volumes,
+        target: target,
+        overrideSpaceKitHash: overrideSpaceKitHash,
+        shouldUseLocalSpaceKit: spaceKitLocalPath != nil
+    )
     
     if let spaceKitLocalPath = spaceKitLocalPath {
         volumes.append(

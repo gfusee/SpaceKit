@@ -1,6 +1,4 @@
 import Foundation
-import Workspace
-import Basics
 import ArgumentParser
 
 struct InitCommandOptions: ParsableArguments {
