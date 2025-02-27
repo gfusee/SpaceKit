@@ -115,7 +115,7 @@
                             "5-release_ticks": "u64:4"
                         }
                     },
-                    "code": "file:../output/TokenRelease.wasm"
+                    "code": "file:../Output/TokenRelease.wasm"
                 }
             }
         }

@@ -42,7 +42,7 @@
             "id": "deploy",
             "tx": {
                 "from": "address:digital_cash_owner_address",
-                "contractCode": "file:../output/DigitalCash.wasm",
+                "contractCode": "file:../Output/DigitalCash.wasm",
                 "arguments": [
                     "10",
                     "str:EGLD"
@@ -72,7 +72,7 @@
                         "str:allTimeFeeTokens|str:.item|u32:1": "str:EGLD",
                         "str:allTimeFeeTokens|str:.index|nested:str:EGLD": "1"
                     },
-                    "code": "file:../output/DigitalCash.wasm"
+                    "code": "file:../Output/DigitalCash.wasm"
                 },
                 "address:acc1": {
                     "nonce": "0",

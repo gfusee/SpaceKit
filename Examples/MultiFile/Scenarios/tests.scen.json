@@ -24,7 +24,7 @@
             "id": "1",
             "tx": {
                 "from": "address:owner",
-                "contractCode": "file:../output/MultiFile.wasm",
+                "contractCode": "file:../Output/MultiFile.wasm",
                 "arguments": [
                     "str:first",
                     "str:second"
@@ -88,7 +88,7 @@
                         "str:firstControllerStoredValue": "str:first",
                         "str:secondControllerStoredValue": "str:second"
                     },
-                    "code": "file:../output/MultiFile.wasm"
+                    "code": "file:../Output/MultiFile.wasm"
                 }
             }
         }

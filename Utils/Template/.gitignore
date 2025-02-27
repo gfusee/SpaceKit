@@ -1,0 +1,10 @@
+.DS_Store
+.idea
+.vscode
+.build
+.fleet
+.swiftpm
+.space
+*.o
+*.wasm
+Package.resolved

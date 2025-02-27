@@ -22,7 +22,7 @@
             "id": "deploy",
             "tx": {
                 "from": "address:owner",
-                "contractCode": "file:../output/Empty.wasm",
+                "contractCode": "file:../Output/Empty.wasm",
                 "arguments": [],
                 "gasLimit": "5,000,000",
                 "gasPrice": "0"

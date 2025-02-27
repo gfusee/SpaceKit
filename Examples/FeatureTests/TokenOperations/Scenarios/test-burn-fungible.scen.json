@@ -17,7 +17,7 @@
                             ]
                         }
                     },
-                    "code": "file:../output/TokenOperations.wasm"
+                    "code": "file:../Output/TokenOperations.wasm"
                 }
             }
         },

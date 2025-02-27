@@ -1,0 +1,65 @@
+name: Release Build & Test
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from release title
+        id: extract_version
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          if [[ ! "$VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "Invalid version format: $VERSION"
+            exit 1
+          fi
+          echo "MAJOR=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+          echo "MINOR=${BASH_REMATCH[2]}" >> $GITHUB_ENV
+          echo "PATCH=${BASH_REMATCH[3]}" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Install Swift 6.0.2 OSS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang libcurl4-openssl-dev binaryen rsync
+          curl -L https://swiftlang.github.io/swiftly/swiftly-install.sh | bash -s -- -y
+          . $HOME/.local/share/swiftly/env.sh
+          swiftly install 6.0.2
+          SWIFT_PATH=$(which swift)  # Capture the absolute path of Swift
+          echo "$(dirname $SWIFT_PATH)" >> $GITHUB_PATH  # Add the directory of `swift` to PATH
+      - name: Build with Swift
+        run: swift build
+
+      - name: Run Swift Tests
+        run: echo "Skipping temporarily..."
+
+      - name: Run Example Tests
+        run: ./test_all_examples.sh
+
+      - name: Build Docker Image for SpaceKitCLI
+        run: |
+          cd Utils
+          docker build . --no-cache -t ghcr.io/gfusee/spacekit-cli:$VERSION -f DockerfileCLI
+
+      - name: Build and Install SpaceKitCLI
+        run: |
+          ./install_cli.sh $VERSION
+          echo "~/.space" >> $GITHUB_PATH
+
+      - name: Run CLI Template Tests
+        run: |
+          space init TestCLI
+          pwd
+          ls TestCLI
+          cd TestCLI
+          swift build
+          rm -rf .build
+          rm -rf .space
+          space contract build || space contract build

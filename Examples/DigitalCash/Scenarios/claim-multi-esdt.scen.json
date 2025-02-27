@@ -143,7 +143,7 @@
                         "str:allTimeFeeTokens|str:.index|nested:str:EGLD": "1",
                         "str:collectedFees|nested:str:EGLD": "30"
                     },
-                    "code": "file:../output/DigitalCash.wasm"
+                    "code": "file:../Output/DigitalCash.wasm"
                 },
                 "address:acc1": {
                     "nonce": "3",

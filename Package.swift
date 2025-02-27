@@ -34,7 +34,7 @@ let experimentalFeatures: [String] = []
 
 var packageDependencies: [Package.Dependency] = [
     .package(url: "https://github.com/swiftlang/swift-syntax", from: "510.0.1"),
-    .package(url: "https://github.com/swiftlang/swift-docc-symbolkit.git", exact: "1.0.0"),
+    .package(url: "https://github.com/swiftlang/swift-docc-symbolkit.git", exact: "1.0.0")
 ]
 
 var libraryDependencies: [Target.Dependency] = [
@@ -46,7 +46,7 @@ var libraryDependencies: [Target.Dependency] = [
     "ProxyMacro"
 ]
 
-var testTargets: [Target] = []
+var nonWasmTargets: [Target] = []
 
 var products: [Product] = [
     // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -56,9 +56,14 @@ var products: [Product] = [
 ]
 
 if !isWasm {
+    products.append(
+        .executable(name: "SpaceKitCLI", targets: ["SpaceKitCLI"])
+    )
+    
     packageDependencies.append(contentsOf: [
         .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.1.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0")
     ])
     
     libraryDependencies.append(contentsOf: [
@@ -67,7 +72,14 @@ if !isWasm {
         .product(name: "BigInt", package: "BigInt")
     ])
     
-    testTargets.append(contentsOf: [
+    nonWasmTargets.append(contentsOf: [
+        .executableTarget(
+            name: "SpaceKitCLI",
+            dependencies: [
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
+            ],
+            path: "Sources/CLI"
+        ),
         .testTarget(
             name: "ABITests",
             dependencies: [
@@ -108,6 +120,12 @@ if !isWasm {
             name: "TestEngineTests",
             dependencies: [
                 "SpaceKitTesting"
+            ]
+        ),
+        .testTarget(
+            name: "CLITests",
+            dependencies: [
+                "SpaceKitCLI"
             ]
         ),
         .testTarget(
@@ -191,19 +209,19 @@ if !isWasm {
         .testTarget(
             name: "SendTests",
             dependencies: [
-                "SpaceKitTesting",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "ErrorTests",
             dependencies: [
-                "SpaceKitTesting",
+                "SpaceKitTesting"
             ]
         ),
         .testTarget(
             name: "EsdtLocalRolesTests",
             dependencies: [
-                "SpaceKitTesting",
+                "SpaceKitTesting"
             ]
         )
     ])
@@ -609,5 +627,5 @@ let package = Package(
             ],
             swiftSettings: macroSwiftSettings
         )
-    ] + testTargets
+    ] + nonWasmTargets
 )

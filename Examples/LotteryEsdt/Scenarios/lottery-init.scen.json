@@ -31,7 +31,7 @@
             "id": "deploy",
             "tx": {
                 "from": "address:my_address",
-                "contractCode": "file:../output/LotteryEsdt.wasm",
+                "contractCode": "file:../Output/LotteryEsdt.wasm",
                 "arguments": [],
                 "gasLimit": "1,000,000",
                 "gasPrice": "0"
@@ -65,7 +65,7 @@
                     "nonce": "0",
                     "balance": "0",
                     "storage": {},
-                    "code": "file:../output/LotteryEsdt.wasm"
+                    "code": "file:../Output/LotteryEsdt.wasm"
                 }
             }
         }

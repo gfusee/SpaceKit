@@ -67,7 +67,7 @@
                         "str:userStatus|0x0000002": "1",
                         "str:user_count": "2"
                     },
-                    "code": "file:../output/PingPongEgld.wasm"
+                    "code": "file:../Output/PingPongEgld.wasm"
                 }
             }
         },
@@ -126,7 +126,7 @@
                         "str:userStatus|0x0000002": "2",
                         "str:user_count": "2"
                     },
-                    "code": "file:../output/PingPongEgld.wasm"
+                    "code": "file:../Output/PingPongEgld.wasm"
                 }
             }
         },

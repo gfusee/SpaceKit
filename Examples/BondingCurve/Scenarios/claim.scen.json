@@ -173,7 +173,7 @@
                     "nonce": "0",
                     "balance": "0",
                     "storage": {},
-                    "code": "file:../output/BondingCurve.wasm"
+                    "code": "file:../Output/BondingCurve.wasm"
                 }
             }
         }

@@ -80,7 +80,7 @@
                             ]
                         }
                     },
-                    "code": "file:../output/Multisig.wasm"
+                    "code": "file:../Output/Multisig.wasm"
                 },
                 "+": ""
             }

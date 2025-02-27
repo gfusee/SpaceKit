@@ -49,7 +49,7 @@
             "id": "deploy - kitty auction contract",
             "tx": {
                 "from": "address:my_address",
-                "contractCode": "file:../output/CryptoKittiesAuction.wasm",
+                "contractCode": "file:../Output/CryptoKittiesAuction.wasm",
                 "arguments": [
                     "100",
                     "500",
@@ -115,7 +115,7 @@
                         "str:genZeroKittyEndingPrice": "500",
                         "str:genZeroKittyAuctionDuration": "100,000"
                     },
-                    "code": "file:../output/CryptoKittiesAuction.wasm"
+                    "code": "file:../Output/CryptoKittiesAuction.wasm"
                 }
             }
         }

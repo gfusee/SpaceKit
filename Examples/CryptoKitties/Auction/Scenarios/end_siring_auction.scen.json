@@ -69,7 +69,7 @@
                         "str:genZeroKittyEndingPrice": "500",
                         "str:genZeroKittyAuctionDuration": "100,000"
                     },
-                    "code": "file:../output/CryptoKittiesAuction.wasm"
+                    "code": "file:../Output/CryptoKittiesAuction.wasm"
                 }
             }
         }
