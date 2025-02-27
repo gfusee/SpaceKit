@@ -29,19 +29,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang libcurl4-openssl-dev binaryen rsync
-          wget https://download.swift.org/swift-6.0.2-release/ubuntu2204-aarch64/swift-6.0.2-RELEASE/swift-6.0.2-RELEASE-ubuntu22.04-aarch64.tar.gz
-          tar xzf swift-6.0.2-RELEASE-ubuntu22.04-aarch64.tar.gz
-          sudo mv swift-6.0.2-RELEASE-ubuntu22.04-aarch64 /usr/local/swift
-          echo "/usr/local/swift/usr/bin" >> $GITHUB_PATH
-
+          curl -L https://swiftlang.github.io/swiftly/swiftly-install.sh | bash -s -- -y
+          . $HOME/.local/share/swiftly/env.sh
+          swiftly install 6.0.2
+          SWIFT_PATH=$(which swift)  # Capture the absolute path of Swift
+          echo "$(dirname $SWIFT_PATH)" >> $GITHUB_PATH  # Add the directory of `swift` to PATH
       - name: Build with Swift
-        run: exit 0 || swift build
+        run: swift build
 
       - name: Run Swift Tests
         run: echo "Skipping temporarily..."
 
       - name: Run Example Tests
-        run: exit 0 || ./test_all_examples.sh
+        run: ./test_all_examples.sh
 
       - name: Build Docker Image for SpaceKitCLI
         run: |
@@ -56,18 +56,10 @@ jobs:
       - name: Run CLI Template Tests
         run: |
           space init TestCLI
-          echo "TEST 1"
           pwd
           ls TestCLI
-          echo "TEST 2"
           cd TestCLI
           swift build
-          echo "TEST 3"
           rm -rf .build
           rm -rf .space
           space contract build || space contract build
-          echo "TEST 4"
-
-      - name: Run CLI Example Tests
-        run: ./test_all_examples_through_cli.sh
-

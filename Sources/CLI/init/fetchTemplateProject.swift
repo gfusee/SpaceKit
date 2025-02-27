@@ -27,13 +27,9 @@ func fetchTemplateProject(
     set -e
     TEMP_DIR=$(\(tempDirCommand))
     trap 'rm -rf $TEMP_DIR' EXIT
-    echo "TESTT1"
     \(cloneCommand)
-    echo "TESTT2"
     mkdir -p \(destProjectPath)
-    echo "TESTT3"
     rsync -a $TEMP_DIR/Utils/Template/ \(destProjectPath)
-    echo "TESTT4"
     """
     
     _ = try await runInTerminal(
