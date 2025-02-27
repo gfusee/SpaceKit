@@ -116,7 +116,7 @@ func runInDocker(
         currentDirectoryURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
     }
     
-    let dockerImage = "ghcr.io/gfusee/spacekit-cli:\(dockerImageVersion)"
+    let dockerImage = "ghcr.io/gfusee/spacekit/spacekit-cli:\(dockerImageVersion)"
 
     // Try to pull the spacekit-cli docker image, but skip if:
     //
