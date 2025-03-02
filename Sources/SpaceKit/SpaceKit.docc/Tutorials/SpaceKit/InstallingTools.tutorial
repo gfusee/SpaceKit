@@ -54,7 +54,7 @@
             }
 
             @Step {
-                Run the installation command: `curl -sSL https://raw.githubusercontent.com/gfusee/SpaceKitCLI/refs/heads/main/install.sh | bash`
+                Run the installation command: `curl -sSL https://raw.githubusercontent.com/gfusee/SpaceKit/refs/heads/master/install_cli.sh | bash`
                 
                 After the installation, please restart your terminal to reload your PATH environment variable.
                 

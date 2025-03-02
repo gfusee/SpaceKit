@@ -43,16 +43,22 @@ func runInTerminal(
         }
     }
     
-    CurrentTerminalProcess.process = task
+    await MainActor.run {
+        CurrentTerminalProcess.process = task
+    }
     
     do {
         if logCommand {
             print("INFO: Running \(command) in \(currentDirectoryURL.path)")
         }
         try task.run()
-        CurrentTerminalProcess.process = nil
+        await MainActor.run {
+            CurrentTerminalProcess.process = nil
+        }
     } catch {
-        CurrentTerminalProcess.process = nil
+        await MainActor.run {
+            CurrentTerminalProcess.process = nil
+        }
         throw .common(.cannotRunCommand(command: command, directory: currentDirectoryURL.path, errorMessage: error.localizedDescription))
     }
     
