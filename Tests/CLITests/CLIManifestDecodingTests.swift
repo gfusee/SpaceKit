@@ -1,5 +1,5 @@
 import XCTest
-@testable import SpaceKitCLI
+import SpaceKitCLILib
 
 final class CLIManifestDecodingTests: XCTestCase {
     func testDecodeManifestRemoteGitSpaceKitDependency() throws {

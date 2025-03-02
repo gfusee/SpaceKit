@@ -1,7 +1,9 @@
 import Foundation
 import ArgumentParser
 
-struct InitCommandOptions: ParsableArguments {
+public struct InitCommandOptions: ParsableArguments {
+    public init() {}
+    
     @Argument(help: "The name of the directory which will be created.")
     var name: String
     
@@ -9,15 +11,17 @@ struct InitCommandOptions: ParsableArguments {
     var spacekitLocalPath: String? = nil
 }
 
-struct InitCommand: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(
+public struct InitCommand: AsyncParsableCommand {
+    public init() {}
+    
+    public static let configuration = CommandConfiguration(
         commandName: "init",
         abstract: "Create a new SpaceKit project in a new directory."
     )
     
     @OptionGroup var options: InitCommandOptions
     
-    mutating func run() async throws {
+    mutating public func run() async throws {
         try await initializeProject(
             name: self.options.name,
             spacekitLocalPath: self.options.spacekitLocalPath

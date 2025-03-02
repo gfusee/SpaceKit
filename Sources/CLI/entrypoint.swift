@@ -1,9 +1,6 @@
 import Foundation
+import SpaceKitCLILib
 import ArgumentParser
-
-actor CurrentTerminalProcess {
-    static var process: Process? = nil
-}
 
 @main
 struct SpaceKitCLI: AsyncParsableCommand {

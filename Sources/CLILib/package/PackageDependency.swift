@@ -1,7 +1,7 @@
 import Foundation
 
-struct PackageDependency: Decodable {
-    enum Kind: Decodable {
+public struct PackageDependency: Decodable {
+    public enum Kind: Decodable {
         case sourceControl([SourceControl])
         case fileSystem([FileSystem])
         case unknown
@@ -11,7 +11,7 @@ struct PackageDependency: Decodable {
             case fileSystem
         }
 
-        init(from decoder: Decoder) throws {
+        public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
 
             if let sourceControl = try? container.decode([SourceControl].self, forKey: .sourceControl) {
@@ -24,19 +24,19 @@ struct PackageDependency: Decodable {
         }
     }
 
-    struct SourceControl: Decodable {
-        let identity: String
-        let location: Location
-        let productFilter: String?
-        let requirement: Requirement
+    public struct SourceControl: Decodable {
+        public let identity: String
+        public let location: Location
+        public let productFilter: String?
+        public let requirement: Requirement
     }
 
-    struct FileSystem: Decodable {
-        let identity: String
-        let path: String
+    public struct FileSystem: Decodable {
+        public let identity: String
+        public let path: String
     }
 
-    enum Requirement: Decodable {
+    public enum Requirement: Decodable {
         case range([Range])
         case exact([String])
         case unknown
@@ -46,12 +46,12 @@ struct PackageDependency: Decodable {
             case exact
         }
 
-        struct Range: Decodable {
+        public struct Range: Decodable {
             let lowerBound: String
             let upperBound: String
         }
 
-        init(from decoder: Decoder) throws {
+        public init(from decoder: Decoder) throws {
             let container = try? decoder.container(keyedBy: CodingKeys.self)
 
             if let container = container {
@@ -68,7 +68,7 @@ struct PackageDependency: Decodable {
         }
     }
 
-    enum Location: Decodable {
+    public enum Location: Decodable {
         case remote([Remote])
         case local([String])
         case unknown
@@ -78,11 +78,11 @@ struct PackageDependency: Decodable {
             case local
         }
 
-        struct Remote: Decodable {
-            let urlString: String
+        public struct Remote: Decodable {
+            public let urlString: String
         }
 
-        init(from decoder: Decoder) throws {
+        public init(from decoder: Decoder) throws {
             let container = try? decoder.container(keyedBy: CodingKeys.self)
 
             if let container = container {
@@ -99,9 +99,9 @@ struct PackageDependency: Decodable {
         }
     }
 
-    let kind: Kind
+    public let kind: Kind
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         self.kind = (try? container.decode(Kind.self)) ?? .unknown
     }

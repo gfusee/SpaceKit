@@ -76,9 +76,17 @@ if !isWasm {
         .executableTarget(
             name: "SpaceKitCLI",
             dependencies: [
+                "SpaceKitCLILib",
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
             ],
             path: "Sources/CLI"
+        ),
+        .target(
+            name: "SpaceKitCLILib",
+            dependencies: [
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
+            ],
+            path: "Sources/CLILib"
         ),
         .testTarget(
             name: "ABITests",
@@ -125,7 +133,7 @@ if !isWasm {
         .testTarget(
             name: "CLITests",
             dependencies: [
-                "SpaceKitCLI"
+                "SpaceKitCLILib"
             ]
         ),
         .testTarget(
