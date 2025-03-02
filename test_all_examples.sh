@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -6,29 +6,29 @@ set -e
 declare -A TARGETS
 TARGETS=(
     ["Adder"]="$(pwd)/Examples/Adder"
-    #["BondingCurve"]="$(pwd)/Examples/BondingCurve"
-    #["BlockInfo"]="$(pwd)/Examples/FeatureTests/BlockInfo"
-    #["CallbackNotExposed"]="$(pwd)/Examples/FeatureTests/CallbackNotExposed"
-    #["CheckPause"]="$(pwd)/Examples/CheckPause"
-    #["CrowdfundingEsdt"]="$(pwd)/Examples/CrowdfundingEsdt"
-    #["CryptoBubbles"]="$(pwd)/Examples/CryptoBubbles"
-    #["CryptoKittiesAuction"]="$(pwd)/Examples/CryptoKitties/Auction"
-    #["CryptoKittiesGeneticAlg"]="$(pwd)/Examples/CryptoKitties/GeneticAlg"
-    #["CryptoKittiesOwnership"]="$(pwd)/Examples/CryptoKitties/Ownership"
-    #["DigitalCash"]="$(pwd)/Examples/DigitalCash"
-    #["Empty"]="$(pwd)/Examples/Empty"
-    #["EsdtTransferWithFee"]="$(pwd)/Examples/EsdtTransferWithFee"
-    #["Factorial"]="$(pwd)/Examples/Factorial"
-    #["LotteryEsdt"]="$(pwd)/Examples/LotteryEsdt"
-    #["MultiFile"]="$(pwd)/Examples/MultiFile"
-    #["Multisig"]="$(pwd)/Examples/Multisig"
-    #["NftMinter"]="$(pwd)/Examples/NftMinter"
-    #["OrderBookPair"]="$(pwd)/Examples/OrderBookPair"
-    #["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
-    #["ProxyPause"]="$(pwd)/Examples/ProxyPause"
-    #["SendTestsExample"]="$(pwd)/Examples/SendTests"
-    #["TokenOperations"]="$(pwd)/Examples/FeatureTests/TokenOperations"
-    #["TokenRelease"]="$(pwd)/Examples/TokenRelease"
+    ["BondingCurve"]="$(pwd)/Examples/BondingCurve"
+    ["BlockInfo"]="$(pwd)/Examples/FeatureTests/BlockInfo"
+    ["CallbackNotExposed"]="$(pwd)/Examples/FeatureTests/CallbackNotExposed"
+    ["CheckPause"]="$(pwd)/Examples/CheckPause"
+    ["CrowdfundingEsdt"]="$(pwd)/Examples/CrowdfundingEsdt"
+    ["CryptoBubbles"]="$(pwd)/Examples/CryptoBubbles"
+    ["CryptoKittiesAuction"]="$(pwd)/Examples/CryptoKitties/Auction"
+    ["CryptoKittiesGeneticAlg"]="$(pwd)/Examples/CryptoKitties/GeneticAlg"
+    ["CryptoKittiesOwnership"]="$(pwd)/Examples/CryptoKitties/Ownership"
+    ["DigitalCash"]="$(pwd)/Examples/DigitalCash"
+    ["Empty"]="$(pwd)/Examples/Empty"
+    ["EsdtTransferWithFee"]="$(pwd)/Examples/EsdtTransferWithFee"
+    ["Factorial"]="$(pwd)/Examples/Factorial"
+    ["LotteryEsdt"]="$(pwd)/Examples/LotteryEsdt"
+    ["MultiFile"]="$(pwd)/Examples/MultiFile"
+    ["Multisig"]="$(pwd)/Examples/Multisig"
+    ["NftMinter"]="$(pwd)/Examples/NftMinter"
+    ["OrderBookPair"]="$(pwd)/Examples/OrderBookPair"
+    ["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
+    ["ProxyPause"]="$(pwd)/Examples/ProxyPause"
+    ["SendTestsExample"]="$(pwd)/Examples/SendTests"
+    ["TokenOperations"]="$(pwd)/Examples/FeatureTests/TokenOperations"
+    ["TokenRelease"]="$(pwd)/Examples/TokenRelease"
     # Add more targets as needed
 )
 

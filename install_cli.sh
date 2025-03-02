@@ -106,6 +106,8 @@ mkdir -p "$INSTALL_PATH"
 # Build the Swift product
 swift build --product SpaceKitCLI
 
+rm -f "$INSTALL_BIN_PATH"
+
 # Copy the built product to the installation bin path
 cp -f .build/debug/SpaceKitCLI "$INSTALL_BIN_PATH"
 chmod +x "$INSTALL_BIN_PATH"
