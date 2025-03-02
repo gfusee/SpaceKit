@@ -91,5 +91,9 @@ for TARGET in "${!TARGETS[@]}"; do
     
     SCENARIOS_JSON_DIR="$TARGET_PACKAGE_PATH/Scenarios"
 
-    LD_LIBRARY_PATH=$SCENARIO_FOLDER "$SCENARIO_JSON_EXECUTABLE" run "$SCENARIOS_JSON_DIR"
+    if [ -d "$SCENARIOS_JSON_DIR" ]; then
+        LD_LIBRARY_PATH=$SCENARIO_FOLDER "$SCENARIO_JSON_EXECUTABLE" run "$SCENARIOS_JSON_DIR"
+    else
+        echo "Skipping $TARGET: Scenarios folder not found at $SCENARIOS_JSON_DIR"
+    fi
 done
