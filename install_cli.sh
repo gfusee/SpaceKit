@@ -42,10 +42,44 @@ cd "$TEMP_DIR" || exit 1
 # Resolve version if not explicitly provided
 if [ -z "$SPACEKIT_VERSION" ]; then
     echo "Retrieving the latest version tag from the cloned repository..."
-    SPACEKIT_VERSION=$(git tag -l --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
 
-    if [ -z "$SPACEKIT_VERSION" ]; then
+    # Get the list of tags sorted by version
+    TAGS=$(git tag -l --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
+
+    if [ -z "$TAGS" ]; then
         echo "Error: No valid version tags found in the repository."
+        exit 1
+    fi
+
+    # Function to check if a tag exists on GHCR
+    check_docker_tag() {
+        local tag=$1
+        local token=$(curl -s "https://ghcr.io/token?scope=repository:gfusee/spacekit/spacekit-cli:pull" | jq -r '.token')
+        local status_code=$(curl -H "Authorization: Bearer $token" \
+                                -H "Accept: application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json" \
+                                -s -o /dev/null -w "%{http_code}" \
+                                "https://ghcr.io/v2/gfusee/spacekit/spacekit-cli/manifests/$tag")
+
+        if [ "$status_code" -eq 200 ]; then
+            return 0  # Exists
+        else
+            return 1  # Not found
+        fi
+    }
+
+    # Loop through tags and find the first one with an existing Docker image
+    for tag in $TAGS; do
+        echo "Checking if Docker image exists for tag: $tag..."
+        if check_docker_tag "$tag"; then
+            SPACEKIT_VERSION="$tag"
+            echo "Found existing Docker image for tag: $SPACEKIT_VERSION"
+            break
+        fi
+    done
+
+    # If no valid image tag was found, exit with an error
+    if [ -z "$SPACEKIT_VERSION" ]; then
+        echo "Error: No matching Docker image found for any version tag."
         exit 1
     fi
 fi
