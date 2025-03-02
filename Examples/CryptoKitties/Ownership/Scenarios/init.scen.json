@@ -31,7 +31,7 @@
             "id": "deploy - kitty genetic alg contract",
             "tx": {
                 "from": "address:my_address",
-                "contractCode": "file:../../GeneticAlg/output/CryptoKittiesGeneticAlg.wasm",
+                "contractCode": "file:../../GeneticAlg/Output/CryptoKittiesGeneticAlg.wasm",
                 "arguments": [],
                 "gasLimit": "1,000,000",
                 "gasPrice": "0"

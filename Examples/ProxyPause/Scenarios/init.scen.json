@@ -12,7 +12,7 @@
                 "sc:check-pause": {
                     "nonce": "1",
                     "balance": "0",
-                    "code": "file:../../CheckPause/output/CheckPause.wasm",
+                    "code": "file:../../CheckPause/Output/CheckPause.wasm",
                     "owner": "sc:proxy-pause"
                 }
             },

@@ -29,7 +29,7 @@
             "comment": "we don't care about autoBirthFee in this test, so we set it to 0",
             "tx": {
                 "from": "address:my_address",
-                "contractCode": "file:../../Ownership/output/CryptoKittiesOwnership.wasm",
+                "contractCode": "file:../../Ownership/Output/CryptoKittiesOwnership.wasm",
                 "arguments": [
                     "0"
                 ],
@@ -104,7 +104,7 @@
                         "str:totalKitties": "1",
                         "str:kitty|u32:0": "u8:0|u8:0|u8:0|u8:0|u8:0|u8:0|u8:0|u64:0|u64:0|u32:0|u32:0|u32:0|u16:0|u16:0"
                     },
-                    "code": "file:../../Ownership/output/CryptoKittiesOwnership.wasm"
+                    "code": "file:../../Ownership/Output/CryptoKittiesOwnership.wasm"
                 },
                 "sc:kitty_auction_contract": {
                     "nonce": "0",
