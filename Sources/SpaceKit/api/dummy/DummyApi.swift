@@ -743,6 +743,10 @@ extension DummyApi: BufferApiProtocol {
         fatalError() // TODO: implement and test
     }
     
+    public func validateTokenIdentifier(tokenIdHandle: Int32) -> Int32 {
+        fatalError() // TODO: implement and test
+    }
+    
     public func bufferToDebugString(handle: Int32) -> String {
         let data = self.getCurrentContainer().getBufferData(handle: handle)
         
