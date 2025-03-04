@@ -57,6 +57,27 @@
         },
         {
             "step": "scCall",
+            "id": "Check if EGLD buffer is valid",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "checkIfIsValid",
+                "arguments": [
+                    "str:EGLD"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [
+                    "false"
+                ],
+                "status": "0",
+                "logs": "*"
+            }
+        },
+        {
+            "step": "scCall",
             "id": "Check if invalid ESDT buffer is invalid",
             "tx": {
                 "from": "address:owner",

@@ -156,8 +156,8 @@ import SpaceKit
     private func freeOrder(
         orderId: UInt64,
         caller: Address,
-        firstTokenIdentifier: Buffer,
-        secondTokenIdentifier: Buffer,
+        firstTokenIdentifier: TokenIdentifier,
+        secondTokenIdentifier: TokenIdentifier,
         epoch: UInt64
     ) -> Order {
         let storageController = StorageController()
@@ -282,8 +282,8 @@ import SpaceKit
     private func cancelOrder(
         orderId: UInt64,
         caller: Address,
-        firstTokenIdentifier: Buffer,
-        secondTokenIdentifier: Buffer,
+        firstTokenIdentifier: TokenIdentifier,
+        secondTokenIdentifier: TokenIdentifier,
         epoch: UInt64
     ) -> Order {
         let storageController = StorageController()
@@ -427,7 +427,7 @@ import SpaceKit
     private func calculateTransfers(
         orders: Vector<Order>,
         totalPaid: BigUint,
-        tokenRequested: Buffer,
+        tokenRequested: TokenIdentifier,
         leftover: BigUint
     ) -> Vector<Transfer> {
         var transfers: Vector<Transfer> = Vector()

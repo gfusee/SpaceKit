@@ -1,11 +1,12 @@
 import SpaceKit
 
-// TODO: use TokenIdentifier type once implemented
-@Init func initialize(tokenIdentifier: Buffer) {
-    // TODO: add a require to check that the token identifier is valid (same as the Rust contract)
-    
+@Init func initialize(tokenIdentifier: TokenIdentifier) {
     var controller = TokenReleaseController()
     
+    require(
+        tokenIdentifier.isValidESDT,
+        "invalid token identifier"
+    )
     controller.tokenIdentifier = tokenIdentifier
     controller.setupPeriodStatus = true
 }

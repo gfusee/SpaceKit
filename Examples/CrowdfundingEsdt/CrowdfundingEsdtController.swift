@@ -4,14 +4,14 @@ import SpaceKit
     @Storage(key: "target") var target: BigUint
     @Storage(key: "deadline") var deadline: UInt64
     @Mapping(key: "deposit") var depositForDonor: StorageMap<Address, BigUint>
-    @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
+    @Storage(key: "tokenIdentifier") var tokenIdentifier: TokenIdentifier
 
     public mutating func fund() {
         let allEsdtTransfers = Message.allEsdtTransfers
         let payment: TokenPayment = switch allEsdtTransfers.count {
             case 0:
                 TokenPayment(
-                    tokenIdentifier: "EGLD", // TODO: no hardcoded EGLD
+                    tokenIdentifier: .egld,
                     nonce: 0,
                     amount: Message.egldValue
                 )
@@ -73,10 +73,10 @@ import SpaceKit
         let token = self.tokenIdentifier
 
         let scAddress = Blockchain.getSCAddress()
-        if token == "EGLD" { // TODO: no hardcoded EGLD
+        if token.isEGLD {
             return Blockchain.getBalance(address: scAddress)
         } else {
-            return Blockchain.getESDTBalance(address: scAddress, tokenIdentifier: tokenIdentifier, nonce: 0)
+            return Blockchain.getESDTBalance(address: scAddress, tokenIdentifier: token, nonce: 0)
         }
     }
 }

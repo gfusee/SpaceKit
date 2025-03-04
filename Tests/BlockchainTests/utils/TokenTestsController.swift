@@ -6,7 +6,7 @@ import SpaceKitTesting
 }
 
 @Controller public struct TokenTestsController {
-    @Storage(key: "lastIssuedTokenIdentifier") var lastIssuedTokenIdentifier: Buffer
+    @Storage(key: "lastIssuedTokenIdentifier") var lastIssuedTokenIdentifier: TokenIdentifier
     @Storage(key: "lastErrorMessage") var lastErrorMessage: Buffer
     
     public func issueToken(
@@ -134,7 +134,7 @@ import SpaceKitTesting
     }
 
     public func createAndSendNonFungibleToken(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         amount: BigUint,
         royalties: BigUint,
         attributes: Buffer,
@@ -158,7 +158,7 @@ import SpaceKitTesting
     }
     
     public func updateAttributesRaw(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         attributes: Buffer
     ) {
@@ -171,7 +171,7 @@ import SpaceKitTesting
     }
     
     public func updateAttributes(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         attributes: TestAttributes
     ) {
@@ -184,7 +184,7 @@ import SpaceKitTesting
     }
 
     public func retrieveAttributesRaw(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> Buffer {
         Blockchain
@@ -195,7 +195,7 @@ import SpaceKitTesting
     }
     
     public func retrieveAttributes(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> TestAttributes {
         Blockchain
@@ -206,7 +206,7 @@ import SpaceKitTesting
     }
     
     public func retrieveRoyalties(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> BigUint {
         Blockchain
@@ -217,13 +217,13 @@ import SpaceKitTesting
     }
     
     public func getSelfTokenRoles(
-        tokenIdentifier: Buffer
+        tokenIdentifier: TokenIdentifier
     ) -> UInt64 {
         Blockchain.getESDTLocalRoles(tokenIdentifier: tokenIdentifier).flags
     }
     
     public func mintAndSendTokens(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         amount: BigUint
     ) {
@@ -257,7 +257,7 @@ import SpaceKitTesting
     }
     
     public func setTokenRoles(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         address: Address,
         roles: UInt64
     ) {
@@ -273,7 +273,7 @@ import SpaceKitTesting
     }
     
     public func modifyRoyalties(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         royalties: UInt64
     ) {
@@ -284,7 +284,7 @@ import SpaceKitTesting
         )
     }
     
-    public func getLastIssuedTokenIdentifier() -> Buffer {
+    public func getLastIssuedTokenIdentifier() -> TokenIdentifier {
         self.lastIssuedTokenIdentifier
     }
 
@@ -296,11 +296,11 @@ import SpaceKitTesting
         caller: Address,
         mintedAmount: BigUint
     ) {
-        var tokenIdentifier: Buffer?
+        var tokenIdentifier: TokenIdentifier?
         var asyncCallError: AsyncCallError?
         
         if mintedAmount == 0 {
-            let asyncResult: AsyncCallResult<Buffer> = Message.asyncCallResult()
+            let asyncResult: AsyncCallResult<TokenIdentifier> = Message.asyncCallResult()
             
             switch asyncResult {
             case .success(let issuedTokenIdentifier):

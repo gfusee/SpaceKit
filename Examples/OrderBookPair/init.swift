@@ -1,9 +1,8 @@
 import SpaceKit
 
-// TODO: use TokenIdentifier when available
 @Init func initialize(
-    firstTokenIdentifier: Buffer,
-    secondTokenIdentifier: Buffer
+    firstTokenIdentifier: TokenIdentifier,
+    secondTokenIdentifier: TokenIdentifier
 ) {
     var storageController = StorageController()
     

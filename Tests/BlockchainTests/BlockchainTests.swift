@@ -18,14 +18,14 @@ import SpaceKitTesting
     
     public func getEsdtBalance(
         address: Address,
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> BigUint {
         return Blockchain.getESDTBalance(address: address, tokenIdentifier: tokenIdentifier, nonce: nonce)
     }
     
     public func getSCEsdtBalance(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> BigUint {
         Blockchain

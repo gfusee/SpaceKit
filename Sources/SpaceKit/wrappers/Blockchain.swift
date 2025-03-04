@@ -64,18 +64,18 @@ public struct Blockchain {
     
     public static func getESDTBalance(
         address: Address,
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> BigUint {
         var addressBytes = address.buffer.to32BytesStackArray()
-        var tokenIdentifierBytes = tokenIdentifier.to32BytesStackArray()
+        var tokenIdentifierBytes = tokenIdentifier.buffer.to32BytesStackArray()
         
         let destHandle = API.getNextHandle()
         
         API.bigIntGetESDTExternalBalance(
             addressPtr: &addressBytes,
             tokenIDOffset: &tokenIdentifierBytes,
-            tokenIDLen: tokenIdentifier.count,
+            tokenIDLen: tokenIdentifier.buffer.count,
             nonce: toBigEndianInt64(from: nonce.toBytes8()), // TODO: super tricky, we should ensure it works
             dest: destHandle
         )
@@ -89,7 +89,7 @@ public struct Blockchain {
     }
     
     public static func getSCBalance(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> BigUint {
         Blockchain
@@ -115,7 +115,7 @@ public struct Blockchain {
     
     private static func getEGLDOrESDTBalance(
         address: Address,
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> BigUint {
         switch tokenIdentifier {
@@ -126,8 +126,8 @@ public struct Blockchain {
         }
     }
     
-    public static func getESDTLocalRoles(tokenIdentifier: Buffer) -> EsdtLocalRoles { // TODO: use TokenIdentifier type
-        let flags = API.getESDTLocalRoles(tokenIdHandle: tokenIdentifier.handle)
+    public static func getESDTLocalRoles(tokenIdentifier: TokenIdentifier) -> EsdtLocalRoles {
+        let flags = API.getESDTLocalRoles(tokenIdHandle: tokenIdentifier.buffer.handle)
         
         return EsdtLocalRoles(flags: toBigEndianUInt64(from: flags.toBytes8()))
     }
@@ -183,7 +183,7 @@ public struct Blockchain {
     }
     
     public static func mintTokens(
-        tokenIdentifier: Buffer, // TODO: use TokenIdentifier type when implemented
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         amount: BigUint
     ) {
@@ -212,7 +212,7 @@ public struct Blockchain {
     }
     
     public static func burnTokens(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         amount: BigUint
     ) {
@@ -240,7 +240,7 @@ public struct Blockchain {
     }
     
     public static func createNft<T: TopEncode>(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         amount: BigUint,
         name: Buffer,
         royalties: BigUint,
@@ -498,7 +498,7 @@ public struct Blockchain {
 
     public static func setTokenRoles(
         for address: Address,
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         roles: EsdtLocalRoles
     ) -> AsyncContractCall {
         var argBuffer = ArgBuffer()
@@ -520,7 +520,7 @@ public struct Blockchain {
     }
     
     public static func updateNftAttributes<T: TopEncode>(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         attributes: T
     ) {
@@ -541,7 +541,7 @@ public struct Blockchain {
     
     public static func getTokenData(
         address: Address,
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> TokenData {
         let value = BigUint()
@@ -555,7 +555,7 @@ public struct Blockchain {
         
         API.managedGetESDTTokenData(
             addressHandle: address.buffer.handle,
-            tokenIDHandle: tokenIdentifier.handle,
+            tokenIDHandle: tokenIdentifier.buffer.handle,
             nonce: toBigEndianInt64(from: nonce.toBytes8()), // TODO: super tricky, we should ensure it works
             valueHandle: value.handle,
             propertiesHandle: properties.handle,
@@ -597,7 +597,7 @@ public struct Blockchain {
     }
     
     public static func getTokenAttributes<T: TopDecode>(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> T {
         let rawAttributes = Blockchain.getTokenData(
@@ -610,7 +610,7 @@ public struct Blockchain {
     }
     
     public static func getTokenRoyalties(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> BigUint {
         Blockchain.getTokenData(
@@ -621,7 +621,7 @@ public struct Blockchain {
     }
     
     public static func modifyTokenRoyalties(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         royalties: UInt64
     ) {

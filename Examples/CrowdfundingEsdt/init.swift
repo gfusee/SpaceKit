@@ -3,7 +3,7 @@ import SpaceKit
 @Init func initialize(
     target: BigUint,
     deadline: UInt64,
-    tokenIdentifier: Buffer
+    tokenIdentifier: TokenIdentifier
 ) {
     var controller = CrowdfundingEsdtController()
     
@@ -16,6 +16,9 @@ import SpaceKit
     )
     controller.deadline = deadline
 
-    // TODO: once the TokenIdentifier type is implemented, add a require to check if it is valid
+    require(
+        tokenIdentifier.isValidESDT || tokenIdentifier.isEGLD,
+        "invalid token identifier"
+    )
     controller.tokenIdentifier = tokenIdentifier
 }

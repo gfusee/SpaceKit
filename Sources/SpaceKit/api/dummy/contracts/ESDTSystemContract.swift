@@ -1,6 +1,6 @@
 #if !WASM
 @Controller public struct ESDTSystemContract {
-    @Storage(key: "lastIssuedTokenIdentifier") public var lastIssuedTokenIdentifier: Buffer
+    @Storage(key: "lastIssuedTokenIdentifier") public var lastIssuedTokenIdentifier: TokenIdentifier
     
     public mutating func issue(
         tokenDisplayName: Buffer,
@@ -8,7 +8,7 @@
         initialSupply: BigUint,
         numDecimals: UInt32,
         tokenProperties: MultiValueEncoded<Buffer>
-    ) -> OptionalArgument<Buffer> {
+    ) -> OptionalArgument<TokenIdentifier> {
         guard Message.egldValue == self.getIssuanceCost() else {
             smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
         }
@@ -26,7 +26,7 @@
         var encodedProperties = Buffer()
         tokenProperties.topEncode(output: &encodedProperties)
         
-        let newTokenIdentifier = Buffer()
+        let newTokenIdentifierBuffer = Buffer()
         
         var tokenTypeBuffer = Buffer()
         TokenType.fungible.topEncode(output: &tokenTypeBuffer)
@@ -37,8 +37,10 @@
             initialSupplyHandle: initialSupply.handle,
             tokenTypeHandle: tokenTypeBuffer.handle,
             propertiesHandle: encodedProperties.handle,
-            resultHandle: newTokenIdentifier.handle
+            resultHandle: newTokenIdentifierBuffer.handle
         )
+        
+        let newTokenIdentifier = TokenIdentifier(buffer: newTokenIdentifierBuffer)
         
         self.lastIssuedTokenIdentifier = newTokenIdentifier
         
@@ -60,7 +62,7 @@
         tokenDisplayName: Buffer,
         tokenTicker: Buffer,
         tokenProperties: MultiValueEncoded<Buffer>
-    ) -> Buffer {
+    ) -> TokenIdentifier {
         guard Message.egldValue == self.getIssuanceCost() else {
             smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
         }
@@ -81,9 +83,7 @@
         var tokenTypeBuffer = Buffer()
         TokenType.nonFungible.topEncode(output: &tokenTypeBuffer)
 
-        let newTokenIdentifier = Buffer()
-        
-        self.lastIssuedTokenIdentifier = newTokenIdentifier
+        let newTokenIdentifierBuffer = Buffer()
 
         API.registerToken(
             tickerHandle: tokenTicker.handle,
@@ -91,8 +91,11 @@
             initialSupplyHandle: BigUint(0).handle,
             tokenTypeHandle: tokenTypeBuffer.handle,
             propertiesHandle: encodedProperties.handle,
-            resultHandle: newTokenIdentifier.handle
+            resultHandle: newTokenIdentifierBuffer.handle
         )
+        
+        let newTokenIdentifier = TokenIdentifier(buffer: newTokenIdentifierBuffer)
+        self.lastIssuedTokenIdentifier = newTokenIdentifier
         
         return newTokenIdentifier
     }
@@ -101,7 +104,7 @@
         tokenDisplayName: Buffer,
         tokenTicker: Buffer,
         tokenProperties: MultiValueEncoded<Buffer>
-    ) -> Buffer {
+    ) -> TokenIdentifier {
         guard Message.egldValue == self.getIssuanceCost() else {
             smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
         }
@@ -122,9 +125,7 @@
         var tokenTypeBuffer = Buffer()
         TokenType.semiFungible.topEncode(output: &tokenTypeBuffer)
 
-        let newTokenIdentifier = Buffer()
-        
-        self.lastIssuedTokenIdentifier = newTokenIdentifier
+        let newTokenIdentifierBuffer = Buffer()
 
         API.registerToken(
             tickerHandle: tokenTicker.handle,
@@ -132,8 +133,11 @@
             initialSupplyHandle: BigUint(0).handle,
             tokenTypeHandle: tokenTypeBuffer.handle,
             propertiesHandle: encodedProperties.handle,
-            resultHandle: newTokenIdentifier.handle
+            resultHandle: newTokenIdentifierBuffer.handle
         )
+        
+        let newTokenIdentifier = TokenIdentifier(buffer: newTokenIdentifierBuffer)
+        self.lastIssuedTokenIdentifier = newTokenIdentifier
         
         return newTokenIdentifier
     }
@@ -143,7 +147,7 @@
         tokenTicker: Buffer,
         numDecimals: UInt32,
         tokenProperties: MultiValueEncoded<Buffer>
-    ) -> Buffer {
+    ) -> TokenIdentifier {
         guard Message.egldValue == self.getIssuanceCost() else {
             smartContractError(message: "Not enough payment.") // TODO: use the same error as the WASM VM
         }
@@ -164,9 +168,7 @@
         var tokenTypeBuffer = Buffer()
         TokenType.meta.topEncode(output: &tokenTypeBuffer)
 
-        let newTokenIdentifier = Buffer()
-        
-        self.lastIssuedTokenIdentifier = newTokenIdentifier
+        let newTokenIdentifierBuffer = Buffer()
 
         API.registerToken(
             tickerHandle: tokenTicker.handle,
@@ -174,8 +176,11 @@
             initialSupplyHandle: BigUint(0).handle,
             tokenTypeHandle: tokenTypeBuffer.handle,
             propertiesHandle: encodedProperties.handle,
-            resultHandle: newTokenIdentifier.handle
+            resultHandle: newTokenIdentifierBuffer.handle
         )
+        
+        let newTokenIdentifier = TokenIdentifier(buffer: newTokenIdentifierBuffer)
+        self.lastIssuedTokenIdentifier = newTokenIdentifier
         
         return newTokenIdentifier
     }
@@ -185,7 +190,7 @@
         tokenTicker: Buffer,
         tokenTypeName: Buffer,
         numDecimals: UInt32
-    ) -> Buffer {
+    ) -> TokenIdentifier {
         let tokenPropertiesArgs = TokenPropertiesArgument(
             canFreeze: true,
             canWipe: true,
@@ -263,7 +268,7 @@
     }
 
     public func ESDTLocalMint(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         amount: BigUint
     ) {
         let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
@@ -290,7 +295,7 @@
         }
         
         API.mintTokens(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             nonce: 0,
             amountHandle: amount.handle
         )
@@ -306,7 +311,7 @@
     }
     
     public func ESDTLocalBurn(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         amount: BigUint
     ) {
         let tokenType = self.getTokenType(tokenIdentifier: tokenIdentifier)
@@ -334,14 +339,14 @@
         
         API.burnTokens(
             addressHandle: caller.buffer.handle,
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             nonce: 0,
             amountHandle: amount.handle
         )
     }
     
     public func ESDTNFTBurn(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         amount: BigUint
     ) {
@@ -364,14 +369,14 @@
         
         API.burnTokens(
             addressHandle: caller.buffer.handle,
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             nonce: nonce,
             amountHandle: amount.handle
         )
     }
 
     public func ESDTNFTCreate(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         initialQuantity: BigUint,
         nftName: Buffer,
         royalties: BigUint,
@@ -405,7 +410,7 @@
         let urisVector = uris.toArray()
         
         let newNonce = API.createNonFungibleToken(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             initialQuantityHandle: initialQuantity.handle,
             hashHandle: hash.handle,
             nameHandle: nftName.handle,
@@ -427,7 +432,7 @@
     }
     
     public func ESDTNFTAddQuantity(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         amount: BigUint
     ) {
@@ -456,7 +461,7 @@
         }
         
         API.mintTokens(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             nonce: nonce,
             amountHandle: amount.handle
         )
@@ -472,7 +477,7 @@
     }
 
     public func setSpecialRole(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         address: Address,
         roles: MultiValueEncoded<Buffer>
     ) {
@@ -485,7 +490,7 @@
         let managerAddress = Address()
         
         API.getTokenManagerAddress(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             resultHandle: managerAddress.buffer.handle
         )
         
@@ -554,14 +559,14 @@
         }
         
         API.setAddressTokenRoles(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             addressHandle: address.buffer.handle,
             roles: parsedRoles.flags
         )
     }
     
     public func ESDTNFTUpdateAttributes(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         attributes: Buffer
     ) {
@@ -592,14 +597,14 @@
         // TODO: is it required for the caller to own the nonce?
         
         API.setTokenAttributes(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             nonce: nonce,
             attributesHandle: attributes.handle
         )
     }
     
     public func ESDTModifyRoyalties(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         royalties: UInt64
     ) {
@@ -630,7 +635,7 @@
         // TODO: is it required for the caller to own the nonce?
         
         API.setTokenRoyalties(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             nonce: nonce,
             royalties: royalties
         )
@@ -710,12 +715,12 @@
     }
     
     private func getTokenProperties(
-        tokenIdentifier: Buffer
+        tokenIdentifier: TokenIdentifier
     ) -> TokenProperties {
         let tokenPropertiesBuffer = Buffer()
         
         API.getTokenProperties(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             resultHandle: tokenPropertiesBuffer.handle
         )
         
@@ -723,12 +728,12 @@
     }
     
     private func getTokenType(
-        tokenIdentifier: Buffer
+        tokenIdentifier: TokenIdentifier
     ) -> TokenType {
         let tokenPropertiesBuffer = Buffer()
         
         API.getTokenType(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             resultHandle: tokenPropertiesBuffer.handle
         )
         
@@ -736,21 +741,21 @@
     }
     
     private func getNumberOfAddressesWithRoles(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         roles: EsdtLocalRoles
     ) -> UInt64 {
         API.getNumberOfAddressesWithRolesForToken(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             roles: roles.flags
         )
     }
     
     private func getAddressRoles(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         address: Address
     ) -> EsdtLocalRoles {
         let flags = API.getAddressTokenRoles(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             addressHandle: address.buffer.handle
         )
         
@@ -758,11 +763,11 @@
     }
     
     private func doesNonFungibleNonceExist(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> Bool {
         let result = API.doesNonFungibleNonceExist(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             nonce: nonce
         )
         

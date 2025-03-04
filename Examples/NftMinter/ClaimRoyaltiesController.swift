@@ -1,12 +1,9 @@
 import SpaceKit
 
 @Controller public struct ClaimRoyaltiesController {
-    // TODO: use TokenIdentifier type once implemented
-    
-    
     public func claimRoyaltiesFromMarketplace(
         marketplaceAddress: Address,
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         tokenNonce: UInt64
     ) {
         assertOwner()

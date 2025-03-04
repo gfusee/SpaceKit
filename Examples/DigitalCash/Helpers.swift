@@ -119,7 +119,7 @@ struct Helpers {
         depositMapper.set(newDeposit)
     }
     
-    func getFeeForToken(token: Buffer) -> BigUint {
+    func getFeeForToken(token: TokenIdentifier) -> BigUint {
         require(
             Storage().whitelistedFeeTokens.contains(value: token),
             "invalid fee token provided"

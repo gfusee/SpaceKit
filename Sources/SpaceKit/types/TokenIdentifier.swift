@@ -1,8 +1,14 @@
 public struct TokenIdentifier {
+    nonisolated(unsafe) public static let egld: TokenIdentifier = "EGLD"
+    
     public let buffer: Buffer
     
-    public var isValid: Bool {
+    public var isValidESDT: Bool {
         API.validateTokenIdentifier(tokenIdHandle: self.buffer.handle) != 0
+    }
+    
+    public var isEGLD: Bool {
+        self == .egld
     }
     
     public init(buffer: Buffer) {
@@ -81,6 +87,14 @@ extension TokenIdentifier: ExpressibleByStringLiteral {
 }
 
 extension TokenIdentifier: ExpressibleByStringInterpolation {}
+
+#if !WASM
+extension TokenIdentifier: ABITypeExtractor {
+    public static var _abiTypeName: String {
+        "TokenIdentifier"
+    }
+}
+#endif
 
 #if !WASM
 extension TokenIdentifier: CustomDebugStringConvertible {

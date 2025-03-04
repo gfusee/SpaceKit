@@ -4,7 +4,7 @@ let NFT_AMOUNT: UInt32 = 1
 let ROYALTIES_MAX: UInt32 = 10_000
 
 @Controller public struct NftController {
-    @Storage(key: "nftTokenId") var nftTokenId: Buffer // TODO: use TokenIdentifier type once implemented
+    @Storage(key: "nftTokenId") var nftTokenId: TokenIdentifier
     @Mapping<UInt64, PriceTag>(key: "priceTag") var priceTagForNftNonce
     
     public mutating func createNft(
@@ -12,20 +12,20 @@ let ROYALTIES_MAX: UInt32 = 10_000
         royalties: BigUint,
         uri: Buffer,
         sellingPrice: BigUint,
-        optTokenUsedAsPayment: OptionalArgument<Buffer>,
+        optTokenUsedAsPayment: OptionalArgument<TokenIdentifier>,
         optTokenUsedAsPaymentNonce: OptionalArgument<UInt64>
     ) {
         assertOwner()
         
-        let tokenUsedAsPayment: Buffer = if let tokenUsedAsPayment = optTokenUsedAsPayment.intoOptional() {
+        let tokenUsedAsPayment: TokenIdentifier = if let tokenUsedAsPayment = optTokenUsedAsPayment.intoOptional() {
             tokenUsedAsPayment
         } else {
-            "EGLD" // TODO: no hardcoded EGLD
+            .egld
         }
         
         // TODO: add a require that checks the token identifier is valid
         
-        let tokenUsedAsPaymentNonce: UInt64 = if tokenUsedAsPayment == "EGLD" { // TODO: no hardcoded EGLD
+        let tokenUsedAsPaymentNonce: UInt64 = if tokenUsedAsPayment == .egld {
             0
         } else {
             optTokenUsedAsPaymentNonce.intoOptional() ?? 0
@@ -146,7 +146,7 @@ let ROYALTIES_MAX: UInt32 = 10_000
         attributes: ExampleAttributes,
         uri: Buffer,
         sellingPrice: BigUint,
-        tokenUsedAsPayment: Buffer,
+        tokenUsedAsPayment: TokenIdentifier,
         tokenUsedAsPaymentNonce: UInt64
     ) -> UInt64 {
         self.requireTokenIssued()
@@ -190,7 +190,7 @@ let ROYALTIES_MAX: UInt32 = 10_000
     }
     
     @Callback public mutating func issueCallback() {
-        let result: AsyncCallResult<Buffer> = Message.asyncCallResult() // TODO: use TokenIdentifier type once available
+        let result: AsyncCallResult<TokenIdentifier> = Message.asyncCallResult()
         
         switch result {
         case .success(let tokenIdentifier):

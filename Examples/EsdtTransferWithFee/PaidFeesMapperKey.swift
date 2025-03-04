@@ -1,6 +1,6 @@
 import SpaceKit
 
 @Codable public struct PaidFeesMapperKey {
-    let tokenIdentifier: Buffer
+    let tokenIdentifier: TokenIdentifier
     let nonce: UInt64
 }
