@@ -27,6 +27,8 @@ public protocol BufferApiProtocol {
     
     mutating func mBufferSetRandom(destinationHandle: Int32, length: Int32) -> Int32
     
+    mutating func validateTokenIdentifier(tokenIdHandle: Int32) -> Int32
+    
     #if !WASM
     mutating func bufferToDebugString(handle: Int32) -> String
     mutating func bufferToUTF8String(handle: Int32) -> String?

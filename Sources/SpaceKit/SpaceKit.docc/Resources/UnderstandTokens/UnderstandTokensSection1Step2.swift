@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct MyContract {
-    @Storage(key: "issuedTokenIdentifier") var issuedTokenIdentifier: Buffer
+@Controller public struct MyContract {
+    @Storage(key: "issuedTokenIdentifier") var issuedTokenIdentifier: TokenIdentifier
 }
 

@@ -27,6 +27,7 @@ TARGETS=(
     ["PingPongEgld"]="$(pwd)/Examples/PingPongEgld"
     ["ProxyPause"]="$(pwd)/Examples/ProxyPause"
     ["SendTestsExample"]="$(pwd)/Examples/SendTests"
+    ["TokenIdentifier"]="$(pwd)/Examples/FeatureTests/TokenIdentifier"
     ["TokenOperations"]="$(pwd)/Examples/FeatureTests/TokenOperations"
     ["TokenRelease"]="$(pwd)/Examples/TokenRelease"
     # Add more targets as needed
@@ -65,8 +66,22 @@ WASM32_LIB_ARCHIVE_PATH="$(pwd)/Utils/Builtins/libclang_rt.builtins-wasm32.a"
 clang --target=wasm32 -O3 -c -o "$MEMCPY_OBJECT_FILE_PATH" "$MEMCPY_C_FILE_PATH"
 clang --target=wasm32 -O3 -c -o "$INIT_OBJECT_FILE_PATH" "$INIT_C_FILE_PATH"
 
-# Build all targets
-for TARGET in "${!TARGETS[@]}"; do
+# If arguments are provided, filter targets to only those specified
+if [[ $# -gt 0 ]]; then
+    DECLARED_TARGETS=()
+    for ARG in "$@"; do
+        if [[ -n "${TARGETS[$ARG]}" ]]; then
+            DECLARED_TARGETS+=("$ARG")
+        else
+            echo "⚠️ Warning: Target '$ARG' not found, skipping."
+        fi
+    done
+else
+    DECLARED_TARGETS=("${!TARGETS[@]}")
+fi
+
+# Build selected targets
+for TARGET in "${DECLARED_TARGETS[@]}"; do
     TARGET_PACKAGE_PATH="${TARGETS[$TARGET]}"
 
     # Do not edit the below variables
@@ -85,8 +100,8 @@ for TARGET in "${!TARGETS[@]}"; do
     cp "$WASM_OPT_FILE_PATH" "$WASM_DEST_FILE_PATH"
 done
 
-# Test all targets
-for TARGET in "${!TARGETS[@]}"; do
+# Test selected targets
+for TARGET in "${DECLARED_TARGETS[@]}"; do
     TARGET_PACKAGE_PATH="${TARGETS[$TARGET]}"
     
     SCENARIOS_JSON_DIR="$TARGET_PACKAGE_PATH/Scenarios"

@@ -231,6 +231,12 @@ if !isWasm {
             dependencies: [
                 "SpaceKitTesting"
             ]
+        ),
+        .testTarget(
+            name: "TokenIdentifierTests",
+            dependencies: [
+                "SpaceKitTesting"
+            ]
         )
     ])
 }
@@ -536,6 +542,18 @@ let package = Package(
                 "SpaceKit"
             ],
             path: "Examples/SendTests",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "TokenIdentifier",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/FeatureTests/TokenIdentifier",
             exclude: [
                 "Scenarios",
                 "Output"

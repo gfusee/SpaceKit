@@ -359,6 +359,10 @@ public struct BufferInterpolationMatcher: StringInterpolationProtocol {
         self.buffer = self.buffer + value
     }
     
+    public mutating func appendInterpolation(_ value: TokenIdentifier) {
+        self.buffer = self.buffer + value.buffer
+    }
+    
     #if !WASM
     public mutating func appendInterpolation(_ value: String) {
         self.buffer = self.buffer + Buffer(value)

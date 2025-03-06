@@ -743,6 +743,35 @@ extension DummyApi: BufferApiProtocol {
         fatalError() // TODO: implement and test
     }
     
+    public func validateTokenIdentifier(tokenIdHandle: Int32) -> Int32 {
+        let data = self.getCurrentContainer().getBufferData(handle: tokenIdHandle)
+        
+        guard let string = String(data: data, encoding: .utf8) else {
+            return 0
+        }
+        
+        let splitted = string.split(separator: "-")
+        
+        guard splitted.count == 2 else {
+            return 0
+        }
+        
+        let ticker = splitted[0]
+        let random = splitted[1]
+        
+        let tickerTestPattern = /^[A-Z0-9]{3,10}$/
+        guard ticker.firstMatch(of: tickerTestPattern) != nil else {
+            return 0
+        }
+        
+        let randomTestPattern = /^[0-9A-Fa-f]{6}$/
+        guard random.firstMatch(of: randomTestPattern) != nil else {
+            return 0
+        }
+        
+        return 1
+    }
+    
     public func bufferToDebugString(handle: Int32) -> String {
         let data = self.getCurrentContainer().getBufferData(handle: handle)
         
@@ -1099,7 +1128,7 @@ extension DummyApi: CallValueApiProtocol {
         for payment in payments {
             array = array.appended(
                 TokenPayment(
-                    tokenIdentifier: Buffer(data: Array(payment.tokenIdentifier)),
+                    tokenIdentifier: TokenIdentifier(buffer: Buffer(data: Array(payment.tokenIdentifier))),
                     nonce: payment.nonce,
                     amount: BigUint(bigInt: payment.amount)
                 )
@@ -1130,7 +1159,7 @@ extension DummyApi: SendApiProtocol {
         var tokenTransfersBufferInput = BufferNestedDecodeInput(buffer: tokenTransfersBuffer.clone())
         while tokenTransfersBufferInput.canDecodeMore() { // TODO: use managed vec once implemented
             let tokenPayment = TokenPayment(depDecode: &tokenTransfersBufferInput)
-            let tokenIdentifier = self.getCurrentContainer().getBufferData(handle: tokenPayment.tokenIdentifier.handle)
+            let tokenIdentifier = self.getCurrentContainer().getBufferData(handle: tokenPayment.tokenIdentifier.buffer.handle)
             let value = self.getCurrentContainer().getBigIntData(handle: tokenPayment.amount.handle)
             
             let senderBalanceForTokenIdentifier = (sender.esdtBalances[tokenIdentifier] ?? [])

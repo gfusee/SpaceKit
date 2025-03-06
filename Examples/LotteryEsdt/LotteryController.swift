@@ -10,7 +10,7 @@ let MAX_TICKETS: UInt32 = 800
     
     public mutating func start(
         lotteryName: Buffer,
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         ticketPrice: BigUint,
         optTotalTickets: UInt32?,
         optDeadline: UInt64?,
@@ -34,7 +34,7 @@ let MAX_TICKETS: UInt32 = 800
     
     mutating func startLottery(
         lotteryName: Buffer,
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         ticketPrice: BigUint,
         optTotalTickets: UInt32?,
         optDeadline: UInt64?,
@@ -133,7 +133,7 @@ let MAX_TICKETS: UInt32 = 800
     
     public mutating func createLotteryPool(
         lotteryName: Buffer,
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         ticketPrice: BigUint,
         optTotalTickets: UInt32?,
         optDeadline: UInt64?,
@@ -252,7 +252,7 @@ let MAX_TICKETS: UInt32 = 800
     
     func updateAfterBuyTicket(
         lotteryName: Buffer,
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         payment: BigUint
     ) {
         let infoMapper = self.$lotteryInfoForLotteryName[lotteryName]

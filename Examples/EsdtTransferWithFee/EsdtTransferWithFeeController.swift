@@ -1,13 +1,12 @@
 import SpaceKit
 
 @Controller public struct EsdtTransferWithFeeController {
-    @Mapping<Buffer, Fee>(key: "token_fee") var tokenFeeForToken
+    @Mapping<TokenIdentifier, Fee>(key: "token_fee") var tokenFeeForToken
     
-    // TODO: use TokenIdentifier type
     public mutating func setExactValueFee(
-        feeToken: Buffer,
+        feeToken: TokenIdentifier,
         feeAmount: BigUint,
-        token: Buffer
+        token: TokenIdentifier
     ) {
         assertOwner()
         
@@ -20,10 +19,9 @@ import SpaceKit
         )
     }
     
-    // TODO: use TokenIdentifier type
     public mutating func setPercentageFee(
         fee: UInt32,
-        token: Buffer
+        token: TokenIdentifier
     ) {
         assertOwner()
         

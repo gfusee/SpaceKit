@@ -37,7 +37,7 @@ public struct ContractCallTransactionInput {
         self.esdtValue.forEach { transfer in
             esdtValueArray.append(
                 TransactionInput.EsdtPayment(
-                    tokenIdentifier: Data(transfer.tokenIdentifier.toBytes()),
+                    tokenIdentifier: Data(transfer.tokenIdentifier.buffer.toBytes()),
                     nonce: transfer.nonce,
                     amount: BigInt(bigUint: transfer.amount)
                 )

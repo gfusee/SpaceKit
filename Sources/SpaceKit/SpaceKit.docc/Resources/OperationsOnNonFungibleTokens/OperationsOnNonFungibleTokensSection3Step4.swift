@@ -1,7 +1,7 @@
 import SpaceKit
 
-@Controller struct MyContract {
-    @Storage(key: "issuedTokenIdentifier") var issuedTokenIdentifier: Buffer
+@Controller public struct MyContract {
+    @Storage(key: "issuedTokenIdentifier") var issuedTokenIdentifier: TokenIdentifier
     
     public func issueSemiFungibleToken() {
         assertOwner()
@@ -54,7 +54,7 @@ import SpaceKit
                 )
             )
             .registerPromise(
-                gas: 60_000_000,
+                gas: 60_000_000
             )
     }
     
@@ -109,7 +109,7 @@ import SpaceKit
     }
     
     @Callback public mutating func issueTokenCallback(sentValue: BigUint) {
-        let result: AsyncCallResult<Buffer> = Message.asyncCallResult()
+        let result: AsyncCallResult<TokenIdentifier> = Message.asyncCallResult()
         
         switch result {
         case .success(let tokenIdentifier):

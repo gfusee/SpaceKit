@@ -1,14 +1,13 @@
 import SpaceKit
 
 @Controller public struct OwnerEndpointsController {
-    // TODO: use TokenIdentifier type once implemented
     public func deposit(
-        paymentToken: OptionalArgument<Buffer>
+        paymentToken: OptionalArgument<TokenIdentifier>
     ) {
         let payment = Message.egldOrSingleEsdtTransfer
         let caller = Message.caller
         
-        var setPayment: Buffer = "EGLD" // TODO: no hardcoded EGLD
+        var setPayment: TokenIdentifier = .egld
         
         let storage = Storage()
         if storage.$bondingCurveForTokenIdentifier[payment.tokenIdentifier].isEmpty() {
@@ -107,9 +106,8 @@ import SpaceKit
         }
     }
     
-    // TODO: use TokenIdentifier type once implemented
     public func setBondingCurve(
-        identifier: Buffer,
+        identifier: TokenIdentifier,
         function: FunctionSelector,
         sellAvailability: Bool
     ) {
@@ -144,11 +142,10 @@ import SpaceKit
             }
     }
     
-    // TODO: use TokenIdentifier type once implemented
     private func setCurveStorage(
-        identifier: Buffer,
+        identifier: TokenIdentifier,
         amount: BigUint,
-        paymentTokenIdentifier: Buffer
+        paymentTokenIdentifier: TokenIdentifier
     ) {
         var curve = FunctionSelector.none
         var arguments: CurveArguments

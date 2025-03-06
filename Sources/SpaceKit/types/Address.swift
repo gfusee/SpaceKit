@@ -46,7 +46,7 @@ public struct Address {
         return Blockchain.getBalance(address: self)
     }
     
-    public func getBalance(tokenIdentifier: Buffer, nonce: UInt64 = 0) -> BigUint {
+    public func getBalance(tokenIdentifier: TokenIdentifier, nonce: UInt64 = 0) -> BigUint {
         // TODO: add tests
         return Blockchain.getESDTBalance(address: self, tokenIdentifier: tokenIdentifier, nonce: nonce)
     }
@@ -64,7 +64,7 @@ public struct Address {
     }
 
     // TODO: use the TokenIdentifier type once implemented
-    public func send(tokenIdentifier: Buffer, nonce: UInt64, amount: BigUint) {
+    public func send(tokenIdentifier: TokenIdentifier, nonce: UInt64, amount: BigUint) {
         // TODO: add tests
         if tokenIdentifier == "EGLD" { // TODO: no hardcoded EGLD
             self.send(egldValue: amount)

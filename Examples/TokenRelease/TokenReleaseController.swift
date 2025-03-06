@@ -4,7 +4,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
 
 @Controller public struct TokenReleaseController {
     @Storage(key: "activationTimestamp") var activationTimestamp: UInt64
-    @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
+    @Storage(key: "tokenIdentifier") var tokenIdentifier: TokenIdentifier
     @Storage(key: "tokenTotalSupply") var tokenTotalSupply: BigUint
     @Storage(key: "setupPeriodStatus") var setupPeriodStatus: Bool
     @Mapping<Address, Address>(key: "addressChangeRequest") var addressChangeRequestForAddress
@@ -325,7 +325,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
     }
     
     func sendTokens(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         address: Address,
         amount: BigUint
     ) {
@@ -333,7 +333,7 @@ let PERCENTAGE_TOTAL: UInt64 = 100
     }
     
     func mintAllTokens(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         amount: BigUint
     ) {
         Blockchain.mintTokens(

@@ -1,8 +1,7 @@
 import SpaceKit
 
-// TODO: use TokenIdentifier type
 @Codable public struct LotteryInfo {
-    let tokenIdentifier: Buffer
+    let tokenIdentifier: TokenIdentifier
     let ticketPrice: BigUint
     var ticketsLeft: UInt32
     let deadline: UInt64

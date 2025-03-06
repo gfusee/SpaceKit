@@ -39,13 +39,13 @@ open class ContractTestCase: XCTestCase {
     }
     
     final public func getTokenAttributes<T: TopDecode>(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> T {
         let resultRaw = Buffer()
         
         API.getGlobalTokenAttributes(
-            tokenIdentifierHandle: tokenIdentifier.handle,
+            tokenIdentifierHandle: tokenIdentifier.buffer.handle,
             nonce: nonce,
             resultHandle: resultRaw.handle
         )

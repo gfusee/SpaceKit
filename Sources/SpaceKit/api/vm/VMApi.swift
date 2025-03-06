@@ -63,6 +63,10 @@ func managedBufferToHex(sourceHandle: Int32, destinationHandle: Int32)
 @_extern(c)
 func mBufferSetRandom(destinationHandle: Int32, length: Int32) -> Int32
 
+@_extern(wasm, module: "env", name: "validateTokenIdentifier")
+@_extern(c)
+func validateTokenIdentifier(tokenIdHandle: Int32) -> Int32
+
 // MARK: BigInt-related OPCODES
 
 @_extern(wasm, module: "env", name: "bigIntSetInt64")
@@ -406,6 +410,10 @@ extension VMApi: BufferApiProtocol {
     
     mutating func mBufferSetRandom(destinationHandle: Int32, length: Int32) -> Int32 {
         return SpaceKit.mBufferSetRandom(destinationHandle: destinationHandle, length: length)
+    }
+    
+    mutating func validateTokenIdentifier(tokenIdHandle: Int32) -> Int32 {
+        return SpaceKit.validateTokenIdentifier(tokenIdHandle: tokenIdHandle)
     }
 }
 

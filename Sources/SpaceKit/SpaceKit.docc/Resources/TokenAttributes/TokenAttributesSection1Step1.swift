@@ -1,16 +1,16 @@
 import SpaceKit
 
 @Init public func initialize(
-    tokenIdentifier: Buffer,
+    tokenIdentifier: TokenIdentifier,
     lockDuration: UInt64
 ) {
-    var controller = MyContract()
+    var controller = LockController()
     
     controller.tokenIdentifier = tokenIdentifier
     controller.lockDuration = lockDuration
 }
 
-@Controller struct LockController {
-    @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
+@Controller public struct LockController {
+    @Storage(key: "tokenIdentifier") var tokenIdentifier: TokenIdentifier
     @Storage(key: "lockDuration") var lockDuration: UInt64
 }

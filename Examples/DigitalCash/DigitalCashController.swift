@@ -3,7 +3,7 @@ import SpaceKit
 @Controller public struct DigitalCashController {
     public mutating func whitelistFeeToken(
         fee: BigUint,
-        token: Buffer
+        token: TokenIdentifier
     ) {
         assertOwner()
         
@@ -11,7 +11,7 @@ import SpaceKit
     }
     
     public mutating func blacklistFeeToken(
-        token: Buffer
+        token: TokenIdentifier
     ) {
         assertOwner()
         
@@ -60,7 +60,7 @@ import SpaceKit
 
     public func getAmount(
         address: Address,
-        token: Buffer,
+        token: TokenIdentifier,
         nonce: UInt64
     ) -> BigUint {
         let depositMapper = Storage().$depositForDonor[address]
@@ -89,7 +89,7 @@ import SpaceKit
     
     func whitelistFeeTokenLogic(
         fee: BigUint,
-        token: Buffer
+        token: TokenIdentifier
     ) {
         let feeForTokenMapper = Storage().$feeForToken[token]
         

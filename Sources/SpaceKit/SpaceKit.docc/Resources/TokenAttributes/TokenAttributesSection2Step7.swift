@@ -2,22 +2,22 @@ import SpaceKit
 
 @Codable public struct LockedTokenAttributes {
     let creationTimestamp: UInt64
-    let lockDuration: UInt64
+    var lockDuration: UInt64
     let lockedEgldAmount: BigUint
 }
 
 @Init public func initialize(
-    tokenIdentifier: Buffer,
+    tokenIdentifier: TokenIdentifier,
     lockDuration: UInt64
 ) {
-    var controller = MyContract()
+    var controller = LockController()
     
     controller.tokenIdentifier = tokenIdentifier
     controller.lockDuration = lockDuration
 }
 
-@Controller struct LockController {
-    @Storage(key: "tokenIdentifier") var tokenIdentifier: Buffer
+@Controller public struct LockController {
+    @Storage(key: "tokenIdentifier") var tokenIdentifier: TokenIdentifier
     @Storage(key: "lockDuration") var lockDuration: UInt64
     
     public func lockFunds() -> UInt64 {

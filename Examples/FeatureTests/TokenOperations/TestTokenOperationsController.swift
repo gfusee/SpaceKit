@@ -1,7 +1,7 @@
 import SpaceKit
 
 @Controller public struct TestTokenOperationsController {
-    @Storage(key: "lastIssuedTokenIdentifier") var lastIssuedTokenIdentifier: Buffer
+    @Storage(key: "lastIssuedTokenIdentifier") var lastIssuedTokenIdentifier: TokenIdentifier
     @Storage(key: "lastErrorMessage") var lastErrorMessage: Buffer
     
     public func issueToken(
@@ -160,7 +160,7 @@ import SpaceKit
     }
     
     public func setSpecialRoles(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         roleFlags: UInt64
     ) {
         Blockchain.setTokenRoles(
@@ -174,7 +174,7 @@ import SpaceKit
     }
     
     public func mintTokens(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         amount: BigUint,
         to: Address
@@ -195,7 +195,7 @@ import SpaceKit
     }
     
     public func createNFT(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         initialSupply: BigUint,
         royalties: BigUint,
         attributes: Buffer,
@@ -223,7 +223,7 @@ import SpaceKit
     }
     
     public func burnTokens(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         amount: BigUint
     ) {
@@ -235,7 +235,7 @@ import SpaceKit
     }
     
     public func modifyTokenRoyalties(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         royalties: UInt64
     ) {
@@ -247,7 +247,7 @@ import SpaceKit
     }
     
     public func getTokenRoyalties(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> BigUint {
         Blockchain.getTokenRoyalties(
@@ -257,7 +257,7 @@ import SpaceKit
     }
     
     public func updateNftAttributes(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64,
         attributes: Buffer
     ) {
@@ -269,7 +269,7 @@ import SpaceKit
     }
     
     public func getTokenAttributes(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         nonce: UInt64
     ) -> Buffer {
         Blockchain.getTokenAttributes(
@@ -279,7 +279,7 @@ import SpaceKit
     }
     
     public func assertSelfHaveSpecialRole(
-        tokenIdentifier: Buffer,
+        tokenIdentifier: TokenIdentifier,
         expectedFlags: UInt64
     ) {
         let roles = Blockchain.getESDTLocalRoles(tokenIdentifier: tokenIdentifier)
@@ -289,7 +289,7 @@ import SpaceKit
         }
     }
     
-    public func getLastIssuedTokenIdentifier() -> Buffer {
+    public func getLastIssuedTokenIdentifier() -> TokenIdentifier {
         self.lastIssuedTokenIdentifier
     }
     
@@ -298,17 +298,17 @@ import SpaceKit
     ) {
         let lastIssuedTokenIdentifier = self.lastIssuedTokenIdentifier
         
-        guard !lastIssuedTokenIdentifier.isEmpty else {
+        guard !lastIssuedTokenIdentifier.buffer.isEmpty else {
             smartContractError(message: "Empty last issued token identifier")
         }
         
         let expectedTickerCount = expectedTicker.count
         
-        guard lastIssuedTokenIdentifier.getSubBuffer(startIndex: 0, length: expectedTickerCount + 1) == "\(expectedTicker)-" else {
+        guard lastIssuedTokenIdentifier.buffer.getSubBuffer(startIndex: 0, length: expectedTickerCount + 1) == "\(expectedTicker)-" else {
             smartContractError(message: "Last issued token identifier (\(lastIssuedTokenIdentifier)) doesn't start with \(expectedTicker)-")
         }
         
-        guard lastIssuedTokenIdentifier.count >= expectedTickerCount + 7 else {
+        guard lastIssuedTokenIdentifier.buffer.count >= expectedTickerCount + 7 else {
             smartContractError(message: "Last issued token identifier too short")
         }
     }
@@ -316,7 +316,7 @@ import SpaceKit
     @Callback public mutating func issueCallback(
         caller: Address
     ) {
-        let asyncResult: AsyncCallResult<Buffer> = Message.asyncCallResult()
+        let asyncResult: AsyncCallResult<TokenIdentifier> = Message.asyncCallResult()
         
         switch asyncResult {
         case .success(let tokenIdentifier):

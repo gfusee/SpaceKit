@@ -70,7 +70,7 @@ import SpaceKit
     // Don't try this at home
     public func buyToken(
         requestedAmount: BigUint,
-        requestedToken: Buffer,
+        requestedToken: TokenIdentifier,
         requestedNonce: OptionalArgument<UInt64>
     ) {
         let offeredPayment = Message.singleEsdt
@@ -151,11 +151,10 @@ import SpaceKit
         ).emit()
     }
     
-    // TODO: use TokenIdentifier type once implemented
     private func checkOwnedReturnPaymentToken(
         bondingCurve: BondingCurve,
         amount: BigUint
-    ) -> Buffer {
+    ) -> TokenIdentifier {
         bondingCurve.requireIsSet()
         require(
             amount > 0,
@@ -165,8 +164,7 @@ import SpaceKit
         return bondingCurve.payment.tokenIdentifier
     }
     
-    // TODO: use TokenIdentifier type once implemented
-    private func checkTokenExists(issuedToken: Buffer) {
+    private func checkTokenExists(issuedToken: TokenIdentifier) {
         let storage = Storage()
         
         require(
@@ -175,7 +173,6 @@ import SpaceKit
         )
     }
     
-    // TODO: use TokenIdentifier type once implemented
     private func computeBuyPrice(
         bondingCurve: BondingCurve,
         amount: BigUint
@@ -192,7 +189,6 @@ import SpaceKit
         )
     }
     
-    // TODO: use TokenIdentifier type once implemented
     private func computeSellPrice(
         bondingCurve: BondingCurve,
         amount: BigUint
@@ -211,7 +207,7 @@ import SpaceKit
     
     private func sendNextAvailableTokens(
         caller: Address,
-        token: Buffer,
+        token: TokenIdentifier,
         amount: BigUint
     ) {
         let storage = Storage()
@@ -265,7 +261,7 @@ import SpaceKit
     }
     
     public func getTokenAvailability(
-        identifier: Buffer
+        identifier: TokenIdentifier
     ) -> MultiValueEncoded<Buffer> { // TODO: No MultiValue2 at the moment, so let's do it by hand
         let storage = Storage()
         let tokenNonces = storage.tokenDetailsForTokenIdentifier[identifier].tokenNonces
@@ -287,8 +283,8 @@ import SpaceKit
     }
     
     private func checkGivenToken(
-        acceptedToken: Buffer,
-        givenToken: Buffer
+        acceptedToken: TokenIdentifier,
+        givenToken: TokenIdentifier
     ) {
         require(
             givenToken == acceptedToken,
