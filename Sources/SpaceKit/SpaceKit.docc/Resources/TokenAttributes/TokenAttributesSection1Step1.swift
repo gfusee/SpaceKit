@@ -4,13 +4,13 @@ import SpaceKit
     tokenIdentifier: TokenIdentifier,
     lockDuration: UInt64
 ) {
-    var controller = MyContract()
+    var controller = LockController()
     
     controller.tokenIdentifier = tokenIdentifier
     controller.lockDuration = lockDuration
 }
 
-@Controller struct LockController {
-    TokenIdentifier:@Storage(key: "tokenIdentifier") var tokenIdentifier: TokenIdentifier
+@Controller public struct LockController {
+    @Storage(key: "tokenIdentifier") var tokenIdentifier: TokenIdentifier
     @Storage(key: "lockDuration") var lockDuration: UInt64
 }

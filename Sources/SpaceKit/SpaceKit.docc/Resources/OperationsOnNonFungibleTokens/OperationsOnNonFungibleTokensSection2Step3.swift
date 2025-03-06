@@ -1,6 +1,6 @@
 import SpaceKit
 
-@Controller struct MyContract {
+@Controller public struct MyContract {
     @Storage(key: "issuedTokenIdentifier") var issuedTokenIdentifier: TokenIdentifier
     
     public func issueSemiFungibleToken() {
@@ -54,7 +54,7 @@ import SpaceKit
                 )
             )
             .registerPromise(
-                gas: 60_000_000,
+                gas: 60_000_000
             )
     }
     

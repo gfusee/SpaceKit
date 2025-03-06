@@ -9,7 +9,7 @@ let secondsInADay: UInt64 = 86_400
 }
 
 @Controller public struct MyController {
-    TokenIdentifier:@Storage(key: "tokenIdentifier") var tokenIdentifier: TokenIdentifier
+    @Storage(key: "tokenIdentifier") var tokenIdentifier: TokenIdentifier
     @Mapping<Address, BigUint>(key: "depositedTokens") var depositedTokensForAddress
     
     public mutating func deposit() {
