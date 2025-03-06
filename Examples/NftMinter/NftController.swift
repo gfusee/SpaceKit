@@ -17,10 +17,16 @@ let ROYALTIES_MAX: UInt32 = 10_000
     ) {
         assertOwner()
         
-        let tokenUsedAsPayment: TokenIdentifier = if let tokenUsedAsPayment = optTokenUsedAsPayment.intoOptional() {
-            tokenUsedAsPayment
+        let tokenUsedAsPayment: TokenIdentifier
+        if let tokenUsedAsPaymentUnwrapped = optTokenUsedAsPayment.intoOptional() {
+            require(
+                tokenUsedAsPaymentUnwrapped.isValidESDT,
+                "invalid token identifier"
+            )
+            
+            tokenUsedAsPayment = tokenUsedAsPaymentUnwrapped
         } else {
-            .egld
+            tokenUsedAsPayment = .egld
         }
         
         // TODO: add a require that checks the token identifier is valid
