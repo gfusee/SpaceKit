@@ -264,12 +264,96 @@ final class BigUintTests: ContractTestCase {
         
         XCTAssertFalse(bigUint1 < bigUint2)
     }
-    
+
     func testCompareLessFalseWhenEqual() throws {
         let bigUint1: BigUint = 5
         let bigUint2: BigUint = 5
         
         XCTAssertFalse(bigUint1 < bigUint2)
+    }
+    
+    func testStaticMaxBigUintLhs() throws {
+        let lhs: BigUint = 100
+        let rhs: BigUint = 5
+        
+        XCTAssertEqual(BigUint.max(lhs: lhs, rhs: rhs), lhs)
+    }
+    
+    func testStaticMaxBigUintRhs() throws {
+        let lhs: BigUint = 5
+        let rhs: BigUint = 100
+        
+        XCTAssertEqual(BigUint.max(lhs: lhs, rhs: rhs), rhs)
+    }
+    
+    func testStaticMaxBigUintEqual() throws {
+        let lhs: BigUint = 100
+        let rhs: BigUint = 100
+        
+        XCTAssertEqual(BigUint.max(lhs: lhs, rhs: rhs), lhs)
+    }
+    
+    func testStaticMinBigUintLhs() throws {
+        let lhs: BigUint = 5
+        let rhs: BigUint = 100
+        
+        XCTAssertEqual(BigUint.min(lhs: lhs, rhs: rhs), lhs)
+    }
+    
+    func testStaticMinBigUintRhs() throws {
+        let lhs: BigUint = 100
+        let rhs: BigUint = 5
+        
+        XCTAssertEqual(BigUint.min(lhs: lhs, rhs: rhs), rhs)
+    }
+    
+    func testStaticMinBigUintEqual() throws {
+        let lhs: BigUint = 100
+        let rhs: BigUint = 100
+        
+        XCTAssertEqual(BigUint.min(lhs: lhs, rhs: rhs), lhs)
+    }
+    
+    func testMaxBigUintLhs() throws {
+        let lhs: BigUint = 100
+        let rhs: BigUint = 5
+        
+        XCTAssertEqual(lhs.max(other: rhs), lhs)
+    }
+    
+    func testMaxBigUintRhs() throws {
+        let lhs: BigUint = 5
+        let rhs: BigUint = 100
+        
+        XCTAssertEqual(lhs.max(other: rhs), rhs)
+    }
+    
+    func testMaxBigUintEqual() throws {
+        let lhs: BigUint = 100
+        let rhs: BigUint = 100
+        
+        XCTAssertEqual(lhs.max(other: rhs), lhs)
+    }
+    
+    func testMinBigUintLhs() throws {
+        let lhs: BigUint = 5
+        let rhs: BigUint = 100
+        
+        XCTAssertEqual(lhs.min(other: rhs), lhs)
+    }
+    
+    func testMinBigUintRhs() throws {
+        let lhs: BigUint = 100
+        let rhs: BigUint = 5
+        
+        XCTAssertEqual(lhs.min(other: rhs), rhs)
+    }
+    
+    func testMinBigUintEqual() throws {
+        let lhs: BigUint = 100
+        let rhs: BigUint = 100
+        
+        XCTAssertEqual(lhs.min(other: rhs), lhs)
     }
     
     func testZeroBigUintTopEncode() throws {
