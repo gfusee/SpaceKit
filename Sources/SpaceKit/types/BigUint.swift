@@ -5,6 +5,22 @@ import SpaceKitABI
 public struct BigUint {
     let handle: Int32
     
+    public static func max(lhs: BigUint, rhs: BigUint) -> BigUint {
+        if lhs >= rhs {
+            lhs
+        } else {
+            rhs
+        }
+    }
+    
+    public static func min(lhs: BigUint, rhs: BigUint) -> BigUint {
+        if lhs <= rhs {
+            lhs
+        } else {
+            rhs
+        }
+    }
+    
     public init() {
         self.init(value: getZeroedBytes8())
     }
@@ -76,6 +92,14 @@ public struct BigUint {
         let _ = API.bufferFromBigIntUnsigned(bufferHandle: handle, bigIntHandle: self.handle)
         
         return Buffer(handle: handle)
+    }
+    
+    public func max(other: BigUint) -> BigUint {
+        BigUint.max(lhs: self, rhs: other)
+    }
+    
+    public func min(other: BigUint) -> BigUint {
+        BigUint.min(lhs: self, rhs: other)
     }
 }
 
