@@ -92,6 +92,10 @@ public struct Address {
             argumentsHandle: emptyBuffer.handle
         )
     }
+    
+    public func isSmartContract() -> Bool {
+        Blockchain.isAddressASmartContract(address: self)
+    }
 }
 
 extension Address: Equatable {

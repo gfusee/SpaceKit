@@ -302,6 +302,10 @@ func managedUpgradeFromSourceContract(
 @_extern(c)
 func cleanReturnData()
 
+@_extern(wasm, module: "env", name: "isSmartContract")
+@_extern(c)
+func isSmartContract(addressPtr: UnsafeRawPointer) -> Int32
+
 // MARK: Error-related OPCODES
 
 @_extern(wasm, module: "env", name: "managedSignalError")
@@ -727,6 +731,10 @@ extension VMApi: SendApiProtocol {
     
     mutating func cleanReturnData() {
         return SpaceKit.cleanReturnData()
+    }
+    
+    mutating func isSmartContract(addressPtr: UnsafeRawPointer) -> Int32 {
+        return SpaceKit.isSmartContract(addressPtr: address_ptr)
     }
 }
 
