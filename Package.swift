@@ -453,6 +453,18 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .target(
+            name: "Flip",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/Flip",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
             name: "LotteryEsdt",
             dependencies: [
                 "SpaceKit"
