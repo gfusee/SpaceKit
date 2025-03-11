@@ -49,4 +49,6 @@ public protocol SendApiProtocol {
     ) -> Int32
     
     mutating func cleanReturnData()
+    
+    mutating func isSmartContract(addressPtr: UnsafeRawPointer) -> Int32
 }

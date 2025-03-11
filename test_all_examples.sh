@@ -6,6 +6,7 @@ set -e
 declare -A TARGETS
 TARGETS=(
     ["Adder"]="$(pwd)/Examples/Adder"
+    ["Address"]="$(pwd)/Examples/FeatureTests/Address"
     ["BondingCurve"]="$(pwd)/Examples/BondingCurve"
     ["BlockInfo"]="$(pwd)/Examples/FeatureTests/BlockInfo"
     ["CallbackNotExposed"]="$(pwd)/Examples/FeatureTests/CallbackNotExposed"
