@@ -1,0 +1,59 @@
+{
+    "name": "CallbackNotExposed",
+    "steps": [
+        {
+            "step": "setState",
+            "accounts": {
+                "address:owner": {
+                    "nonce": "1",
+                    "balance": "0"
+                },
+                "sc:contract": {
+                    "code": "file:../Output/Address.wasm"
+                }
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "Check if address is smart contract - not a smart contract",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "checkIfIsSmartContract",
+                "arguments": [
+                    "address:owner"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [
+                    "false"
+                ],
+                "status": "0",
+                "logs": "*"
+            }
+        },
+        {
+            "step": "scCall",
+            "id": "Check if address is smart contract - smart contract",
+            "tx": {
+                "from": "address:owner",
+                "to": "sc:contract",
+                "function": "checkIfIsSmartContract",
+                "arguments": [
+                    "address:owner"
+                ],
+                "gasLimit": "5,000,000",
+                "gasPrice": "0"
+            },
+            "expect": {
+                "out": [
+                    "false"
+                ],
+                "status": "0",
+                "logs": "*"
+            }
+        }
+    ]
+}

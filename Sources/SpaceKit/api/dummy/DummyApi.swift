@@ -1350,8 +1350,15 @@ extension DummyApi: SendApiProtocol {
     }
     
     public func isSmartContract(addressPtr: UnsafeRawPointer) -> Int32 {
-        // TODO: test and implement
-        fatalError()
+        let addressData: [UInt8] = Array(Data(bytes: addressPtr, count: 32))
+        
+        for i in 0..<SC_ADDRESS_NUM_LEADING_ZEROS {
+            if addressData[Int(i)] != 0 {
+                return 0
+            }
+        }
+        
+        return 1
     }
     
     private func parseContractCall(

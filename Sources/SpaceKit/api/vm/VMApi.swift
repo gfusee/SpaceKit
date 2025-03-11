@@ -734,7 +734,7 @@ extension VMApi: SendApiProtocol {
     }
     
     mutating func isSmartContract(addressPtr: UnsafeRawPointer) -> Int32 {
-        return SpaceKit.isSmartContract(addressPtr: address_ptr)
+        return SpaceKit.isSmartContract(addressPtr: addressPtr)
     }
 }
 
