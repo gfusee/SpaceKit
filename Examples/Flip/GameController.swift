@@ -61,7 +61,51 @@ let HUNDRED_PERCENT: UInt64 = 100_000
     public func bounty() {
         let caller = Message.caller
         
-        require(Blockchain.isS, <#T##errorMessage: Buffer##Buffer#>)
+        require(
+            !caller.isSmartContract,
+            "This endpoint cannot be called by a smart contract."
+        )
+        
+        var storageController = StorageController()
+        
+        let lastBountyFlipId = storageController.lastBountyFlipId
+        let lastFlipId = storageController.lastFlipId
+        
+        require(
+            lastBountyFlipId < lastFlipId,
+            "No flip to bounty."
+        )
+        
+        let currentBlockNonce = Blockchain.getBlockNonce()
+        var bountyFlipId = lastBountyFlipId
+        
+        while bountyFlipId < lastFlipId {
+            let flipId = bountyFlipId + 1
+            
+            if storageController.$flipForId[flipId].isEmpty() {
+                break
+            }
+            
+            let flip = storageController.flipForId[flipId]
+            
+            if currentBlockNonce < flip.blockNonce + flip.minimumBlockBounty {
+                break
+            }
+            
+            self.makeFlip(
+                bountyAddress: caller,
+                flip: flip
+            )
+            
+            bountyFlipId = flipId
+        }
+        
+        require(
+            bountyFlipId != lastBountyFlipId,
+            "No flip to bounty."
+        )
+        
+        storageController.lastBountyFlipId = bountyFlipId
     }
     
     private func makeFlip(

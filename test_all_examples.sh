@@ -20,6 +20,7 @@ TARGETS=(
     ["Empty"]="$(pwd)/Examples/Empty"
     ["EsdtTransferWithFee"]="$(pwd)/Examples/EsdtTransferWithFee"
     ["Factorial"]="$(pwd)/Examples/Factorial"
+    ["Flip"]="$(pwd)/Examples/Flip"
     ["LotteryEsdt"]="$(pwd)/Examples/LotteryEsdt"
     ["MultiFile"]="$(pwd)/Examples/MultiFile"
     ["Multisig"]="$(pwd)/Examples/Multisig"
