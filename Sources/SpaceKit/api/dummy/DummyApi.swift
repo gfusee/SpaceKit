@@ -1349,6 +1349,18 @@ extension DummyApi: SendApiProtocol {
         // TODO: this opcode seems to not be relevant in the current state of the SwiftVM. I have to investigate a bit more on it.
     }
     
+    public func isSmartContract(addressPtr: UnsafeRawPointer) -> Int32 {
+        let addressData: [UInt8] = Array(Data(bytes: addressPtr, count: 32))
+        
+        for i in 0..<SC_ADDRESS_NUM_LEADING_ZEROS {
+            if addressData[Int(i)] != 0 {
+                return 0
+            }
+        }
+        
+        return 1
+    }
+    
     private func parseContractCall(
         function: Data,
         sender: Data,

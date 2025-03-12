@@ -3,9 +3,14 @@ import SpaceKitABI
 #endif
 
 private let ADDRESS_LENGTH: Int32 = 32
+package let SC_ADDRESS_NUM_LEADING_ZEROS: UInt8 = 8
 
 public struct Address {
     public let buffer: Buffer
+    
+    public var isSmartContract: Bool {
+        Blockchain.isAddressASmartContract(address: self)
+    }
     
     public init() {
         // Literal arrays avoid the use of heap allocations

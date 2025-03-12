@@ -264,6 +264,18 @@ let package = Package(
             swiftSettings: swiftSettings
         ),
         .target(
+            name: "Address",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/FeatureTests/Address",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
             name: "BondingCurve",
             dependencies: [
                 "SpaceKit"

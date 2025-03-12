@@ -20,6 +20,12 @@ public struct Blockchain {
         // TODO: super tricky, we should ensure it works
     }
     
+    public static func isAddressASmartContract(address: Address) -> Bool {
+        var addressBytes = address.buffer.to32BytesStackArray()
+        
+        return API.isSmartContract(addressPtr: &addressBytes) > 0
+    }
+    
     public static func getBlockNonce() -> UInt64 {
         // TODO: add tests
         return toBigEndianUInt64(from: API.getBlockNonce().toBytes8()) // TODO: super tricky, we should ensure it works
