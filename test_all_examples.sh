@@ -11,6 +11,7 @@ TARGETS=(
     ["BlockInfo"]="$(pwd)/Examples/FeatureTests/BlockInfo"
     ["CallbackNotExposed"]="$(pwd)/Examples/FeatureTests/CallbackNotExposed"
     ["CheckPause"]="$(pwd)/Examples/CheckPause"
+    ["Codec"]="$(pwd)/Examples/FeatureTests/Codec"
     ["CrowdfundingEsdt"]="$(pwd)/Examples/CrowdfundingEsdt"
     ["CryptoBubbles"]="$(pwd)/Examples/CryptoBubbles"
     ["CryptoKittiesAuction"]="$(pwd)/Examples/CryptoKitties/Auction"
