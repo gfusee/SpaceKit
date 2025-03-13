@@ -40,7 +40,7 @@ import SpaceKit
                 return
             }
             
-            if token == "EGLD" { // TODO: no hardcoded EGLD
+            if token.isEGLD {
                 caller.send(egldValue: fee)
             } else {
                 let collectedFee = TokenPayment(
@@ -72,7 +72,7 @@ import SpaceKit
         
         let deposit = depositMapper.get()
         
-        if token == "EGLD" { // TODO: no hardcoded EGLD
+        if token.isEGLD {
             return deposit.egldFunds
         }
         
