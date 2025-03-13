@@ -32,13 +32,13 @@
             "txId": "deploy",
             "tx": {
                 "from": "address:owner",
-                "contractCode": "file:../build/release.wasm",
+                "contractCode": "file:../Output/Flip.wasm",
                 "arguments": [
                     "500",
                     "100",
                     "1"
                 ],
-                "gasLimit": "6,000,000",
+                "gasLimit": "8,000,000",
                 "gasPrice": "0"
             },
             "expect": {

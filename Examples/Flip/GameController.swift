@@ -4,7 +4,7 @@ let HUNDRED_PERCENT: UInt64 = 100_000
 
 @Controller public struct GameController {
     public func flip() {
-        let payment = Message.singleEsdt
+        let payment = Message.egldOrSingleEsdtTransfer
         
         let storageController = StorageController()
         

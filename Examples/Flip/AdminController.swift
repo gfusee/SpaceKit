@@ -58,7 +58,7 @@ import SpaceKit
     public func increaseReserve() {
         assertOwner()
         
-        let payment = Message.singleEsdt
+        let payment = Message.egldOrSingleEsdtTransfer
         
         require(
             payment.amount > 0,
@@ -66,7 +66,7 @@ import SpaceKit
         )
         
         _ = StorageController()
-            .getTokenReserveMapper(
+            .getTokenReserve(
                 tokenIdentifier: payment.tokenIdentifier,
                 tokenNonce: payment.nonce
             )
