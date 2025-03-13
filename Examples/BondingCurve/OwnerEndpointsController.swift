@@ -87,7 +87,7 @@ import SpaceKit
             let bondingCurveMapper = storage.$bondingCurveForTokenIdentifier[token]
             let bondingCurve = BondingCurve(topDecode: bondingCurveMapper.get())
             
-            if bondingCurve.payment.tokenIdentifier != "EGLD" { // TODO: no hardcoded EGLD
+            if bondingCurve.payment.tokenIdentifier != .egld {
                 tokensToClaim = tokensToClaim.appended(
                     bondingCurve.payment
                 )

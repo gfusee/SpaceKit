@@ -21,7 +21,7 @@ import SpaceKit
         var egldFunds = deposit.egldFunds
         var esdtFunds = deposit.esdtFunds
         
-        if paidFeeToken.tokenIdentifier == "EGLD" { // TODO: no hardcoded EGLD
+        if paidFeeToken.tokenIdentifier.isEGLD {
             egldFunds = egldFunds + paidFeeToken.amount
         } else {
             esdtFunds = esdtFunds.appended(

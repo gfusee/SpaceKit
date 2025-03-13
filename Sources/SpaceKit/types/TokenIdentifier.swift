@@ -1,5 +1,8 @@
 public struct TokenIdentifier {
-    nonisolated(unsafe) public static let egld: TokenIdentifier = "EGLD"
+    nonisolated(unsafe) public static var egld: TokenIdentifier {
+        // TODO: cache this, the issue if we use a let constant is that in the SwiftVM it will be registered in the static container, resulting when trying to access it in the transaction container
+        "EGLD"
+    }
     
     public let buffer: Buffer
     

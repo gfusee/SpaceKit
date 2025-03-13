@@ -25,7 +25,7 @@ import SpaceKit
         assertNoEsdtPayment()
         
         var fund = Message.egldValue
-        let feeValue = Storage().feeForToken["EGLD"] // TODO: no hardcoded EGLD
+        let feeValue = Storage().feeForToken[.egld]
         
         require(
             fund > feeValue,
@@ -35,7 +35,7 @@ import SpaceKit
         fund = fund - feeValue
         
         let fee = TokenPayment(
-            tokenIdentifier: "EGLD", // TODO: no hardcoded EGLD
+            tokenIdentifier: .egld,
             nonce: 0,
             amount: feeValue
         )
@@ -96,7 +96,7 @@ import SpaceKit
             callerAddress: caller,
             address: address,
             payment: TokenPayment(
-                tokenIdentifier: "EGLD", // TODO: no hardcoded EGLD
+                tokenIdentifier: .egld,
                 nonce: 0,
                 amount: payment
             )

@@ -31,7 +31,7 @@ let ROYALTIES_MAX: UInt32 = 10_000
         
         // TODO: add a require that checks the token identifier is valid
         
-        let tokenUsedAsPaymentNonce: UInt64 = if tokenUsedAsPayment == .egld {
+        let tokenUsedAsPaymentNonce: UInt64 = if tokenUsedAsPayment.isEGLD {
             0
         } else {
             optTokenUsedAsPaymentNonce.intoOptional() ?? 0
@@ -203,7 +203,7 @@ let ROYALTIES_MAX: UInt32 = 10_000
             self.nftTokenId = tokenIdentifier
         case .error(_):
             let returned = Message.egldOrSingleEsdtTransfer
-            if returned.tokenIdentifier == "EGLD" && returned.amount > 0 { // TODO: no hardcoded EGLD
+            if returned.tokenIdentifier.isEGLD && returned.amount > 0 {
                 Message.caller // TODO: Message.caller in a callback???
                     .send(egldValue: returned.amount)
             }

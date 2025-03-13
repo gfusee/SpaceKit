@@ -71,7 +71,7 @@ public struct Address {
     // TODO: use the TokenIdentifier type once implemented
     public func send(tokenIdentifier: TokenIdentifier, nonce: UInt64, amount: BigUint) {
         // TODO: add tests
-        if tokenIdentifier == "EGLD" { // TODO: no hardcoded EGLD
+        if tokenIdentifier.isEGLD {
             self.send(egldValue: amount)
         } else {
             // TODO: instantiating a Vector<TokenPayment> through a literal expression causes heap allocation, while instantiating some other types, such as Vector<UInt64> doesn't. I should investigate on this
