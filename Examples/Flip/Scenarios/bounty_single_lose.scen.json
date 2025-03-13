@@ -19,7 +19,7 @@
             "expect": {
                 "out": [],
                 "status": "4",
-                "message": "str:no bounty",
+                "message": "str:No flip can be bounty.",
                 "gas": "*",
                 "refund": "*"
             }

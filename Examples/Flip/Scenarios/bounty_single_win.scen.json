@@ -11,7 +11,7 @@
                 "sc:unknown_contract": {
                     "nonce": "1",
                     "balance": "0",
-                    "code": "file:../build/release.wasm"
+                    "code": "file:../Output/Flip.wasm"
                 }
             },
             "newAddresses": [
@@ -36,7 +36,7 @@
             "expect": {
                 "out": [],
                 "status": "4",
-                "message": "str:no bounty",
+                "message": "str:No flip can be bounty.",
                 "gas": "*",
                 "refund": "*"
             }
@@ -61,7 +61,7 @@
             "expect": {
                 "out": [],
                 "status": "4",
-                "message": "str:caller is a smart contract",
+                "message": "str:This endpoint cannot be called by a smart contract.",
                 "gas": "*",
                 "refund": "*"
             }

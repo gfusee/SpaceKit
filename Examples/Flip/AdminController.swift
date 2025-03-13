@@ -65,12 +65,12 @@ import SpaceKit
             "No payment received."
         )
         
-        _ = StorageController()
+        StorageController()
             .getTokenReserve(
                 tokenIdentifier: payment.tokenIdentifier,
                 tokenNonce: payment.nonce
             )
-            .update { $0 + payment.amount }
+            .update { $0 = $0 + payment.amount }
     }
     
     public func withdrawReserve(
@@ -80,7 +80,7 @@ import SpaceKit
     ) {
         assertOwner()
         
-        _ = StorageController()
+        StorageController()
             .getTokenReserve(
                 tokenIdentifier: tokenIdentifier,
                 tokenNonce: nonce
@@ -91,7 +91,7 @@ import SpaceKit
                     "Amount too high"
                 )
                 
-                return tokenReserve - amount
+                tokenReserve = tokenReserve - amount
             }
         
         Blockchain

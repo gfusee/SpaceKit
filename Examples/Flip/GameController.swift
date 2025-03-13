@@ -1,12 +1,12 @@
 import SpaceKit
 
-let HUNDRED_PERCENT: UInt64 = 100_000
+let HUNDRED_PERCENT: UInt64 = 10_000
 
 @Controller public struct GameController {
     public func flip() {
         let payment = Message.egldOrSingleEsdtTransfer
         
-        let storageController = StorageController()
+        var storageController = StorageController()
         
         let tokenReserve = storageController
             .getTokenReserve(
@@ -56,6 +56,27 @@ let HUNDRED_PERCENT: UInt64 = 100_000
             blockNonce: Blockchain.getBlockNonce(),
             minimumBlockBounty: storageController.minimumBlockBounty
         )
+        
+        storageController.getTokenReserve(
+            tokenIdentifier: payment.tokenIdentifier,
+            tokenNonce: payment.nonce
+        )
+        .set(tokenReserve - amount)
+        
+        if payment.tokenIdentifier.isEGLD {
+            Blockchain.getOwner()
+                .send(egldValue: ownerFees)
+        } else {
+            Blockchain.getOwner()
+                .send(
+                    tokenIdentifier: payment.tokenIdentifier,
+                    nonce: payment.nonce,
+                    amount: ownerFees
+                )
+        }
+        
+        storageController.flipForId[flipId] = flip
+        storageController.lastFlipId = flipId
     }
     
     public func bounty() {
@@ -102,7 +123,7 @@ let HUNDRED_PERCENT: UInt64 = 100_000
         
         require(
             bountyFlipId != lastBountyFlipId,
-            "No flip to bounty."
+            "No flip can be bounty."
         )
         
         storageController.lastBountyFlipId = bountyFlipId
@@ -118,7 +139,7 @@ let HUNDRED_PERCENT: UInt64 = 100_000
         bountyAddress.send(
             tokenIdentifier: flip.tokenIdentifier,
             nonce: flip.blockNonce,
-            amount: flip.amount
+            amount: flip.bounty
         )
         
         let profitIfWin = flip.amount * 2
@@ -133,11 +154,11 @@ let HUNDRED_PERCENT: UInt64 = 100_000
                     amount: profitIfWin
                 )
         } else {
-            _ = storageController.getTokenReserve(
+            storageController.getTokenReserve(
                 tokenIdentifier: flip.tokenIdentifier,
                 tokenNonce: flip.tokenNonce
             )
-            .update { $0 + profitIfWin }
+            .update { $0 = $0 + profitIfWin }
         }
         
         storageController.$flipForId[flip.id].clear()
