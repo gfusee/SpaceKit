@@ -197,6 +197,12 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "MappersTests",
+            dependencies: [
+                "SpaceKitTesting"
+            ]
+        ),
+        .testTarget(
             name: "MessageTests",
             dependencies: [
                 "SpaceKitTesting"
@@ -333,6 +339,14 @@ let package = Package(
                 "Scenarios",
                 "Output"
             ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "Codec",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/FeatureTests/Codec",
             swiftSettings: swiftSettings
         ),
         .target(
