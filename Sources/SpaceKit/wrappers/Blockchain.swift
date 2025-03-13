@@ -125,7 +125,7 @@ public struct Blockchain {
         nonce: UInt64
     ) -> BigUint {
         switch tokenIdentifier {
-        case "EGLD": // TODO: no hardcoded EGLD identifier
+        case .egld:
             Blockchain.getBalance(address: address)
         default:
             Blockchain.getEGLDOrESDTBalance(address: address, tokenIdentifier: tokenIdentifier, nonce: nonce)

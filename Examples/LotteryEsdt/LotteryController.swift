@@ -94,7 +94,7 @@ let MAX_TICKETS: UInt32 = 800
         
         if let burnPercentage = optBurnPercentage.intoOptional() {
             require(
-                tokenIdentifier != "EGLD", // TODO: no hardcoded EGLD
+                !tokenIdentifier.isEGLD,
                 "EGLD can't be burned!"
             )
             

@@ -5,7 +5,7 @@ struct Helpers {
         fee: TokenPayment,
         address: Address
     ) {
-        if fee.tokenIdentifier == "EGLD" { // TODO: no hardcoded EGLD
+        if fee.tokenIdentifier.isEGLD {
             address.send(egldValue: fee.amount)
         } else {
             address.send(

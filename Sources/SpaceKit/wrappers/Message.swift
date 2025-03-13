@@ -26,7 +26,7 @@ public struct Message {
         
         if allEsdtTransfersCount == 0 {
             return TokenPayment(
-                tokenIdentifier: "EGLD", // TODO: no hardcoded EGLD
+                tokenIdentifier: .egld,
                 nonce: 0,
                 amount: self.egldValue
             )
@@ -44,8 +44,7 @@ public struct Message {
         
         let egldOrSingleEsdtTransfer = Message.egldOrSingleEsdtTransfer
         
-        // TODO: no hardcoded EGLD
-        guard egldOrSingleEsdtTransfer.tokenIdentifier != "EGLD" else {
+        guard egldOrSingleEsdtTransfer.tokenIdentifier != .egld else {
             smartContractError(message: "incorrect number of ESDT transfers")
         }
         
