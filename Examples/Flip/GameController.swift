@@ -144,7 +144,7 @@ let HUNDRED_PERCENT: UInt64 = 10_000
 
         let profitIfWin = flip.amount * 2
         
-        var storageController = StorageController()
+        let storageController = StorageController()
         
         if isWin {
             if flip.tokenIdentifier.isEGLD {
