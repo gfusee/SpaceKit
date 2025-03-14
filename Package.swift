@@ -197,6 +197,13 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "FlipTests",
+            dependencies: [
+                "Flip",
+                "SpaceKitTesting"
+            ]
+        ),
+        .testTarget(
             name: "MappersTests",
             dependencies: [
                 "SpaceKitTesting"
