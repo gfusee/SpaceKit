@@ -135,24 +135,29 @@ let HUNDRED_PERCENT: UInt64 = 10_000
     ) {
         let randomNumber = Randomness.nextUInt8InRange(min: 0, max: 2)
         let isWin = randomNumber == 1
-        
+
         bountyAddress.send(
             tokenIdentifier: flip.tokenIdentifier,
-            nonce: flip.blockNonce,
+            nonce: flip.tokenNonce,
             amount: flip.bounty
         )
-        
+
         let profitIfWin = flip.amount * 2
         
         var storageController = StorageController()
         
         if isWin {
-            flip.playerAddress
-                .send(
-                    tokenIdentifier: flip.tokenIdentifier,
-                    nonce: flip.tokenNonce,
-                    amount: profitIfWin
-                )
+            if flip.tokenIdentifier.isEGLD {
+                flip.playerAddress
+                    .send(egldValue: profitIfWin)
+            } else {
+                flip.playerAddress
+                    .send(
+                        tokenIdentifier: flip.tokenIdentifier,
+                        nonce: flip.tokenNonce,
+                        amount: profitIfWin
+                    )
+            }
         } else {
             storageController.getTokenReserve(
                 tokenIdentifier: flip.tokenIdentifier,
