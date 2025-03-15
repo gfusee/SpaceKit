@@ -2,6 +2,7 @@ import SpaceKitTesting
 import Flip
 
 private let PLAYER_ADDRESS = "player"
+private let BOUNTY_ADDRESS = "bounty"
 private let OWNER_ADDRESS = "owner"
 private let CONTRACT_ADDRESS = "contract"
 private let ONLY_OWNER_ERROR: TransactionError = .userError(message: "Endpoint can only be called by owner")
@@ -24,6 +25,10 @@ final class FlipTests: ContractTestCase {
                         )
                     ]
                 ]
+            ),
+            WorldAccount(
+                address: BOUNTY_ADDRESS,
+                balance: 0
             ),
             WorldAccount(
                 address: OWNER_ADDRESS,
@@ -49,21 +54,20 @@ final class FlipTests: ContractTestCase {
         ]
     }
     
+    func testInitEgld() throws {
+        try self.initContract()
+        try self.setupEgld()
+    }
+    
+    func testInitUsdc() throws {
+        try self.initContract()
+        try self.setupEgld()
+    }
+    
     func testFlipSingleEgld() throws {
         try self.initContract()
         try self.setupEgld()
-        
-        let gameController = self.instantiateController(
-            GameController.self,
-            for: CONTRACT_ADDRESS
-        )!
-        
-        try gameController.flip(
-            transactionInput: ContractCallTransactionInput(
-                callerAddress: PLAYER_ADDRESS,
-                egldValue: 100_000
-            )
-        )
+        try self.flipSingleEgld(amount: 100_000)
         
         let storageController = self.instantiateController(
             StorageController.self,
@@ -82,24 +86,7 @@ final class FlipTests: ContractTestCase {
     func testFlipSingleUsdc() throws {
         try self.initContract()
         try self.setupUsdc()
-        
-        let gameController = self.instantiateController(
-            GameController.self,
-            for: CONTRACT_ADDRESS
-        )!
-        
-        try gameController.flip(
-            transactionInput: ContractCallTransactionInput(
-                callerAddress: PLAYER_ADDRESS,
-                esdtValue: [
-                    TokenPayment(
-                        tokenIdentifier: USDC_TOKEN_IDENTIFIER,
-                        nonce: 0,
-                        amount: 100_000
-                    )
-                ]
-            )
-        )
+        try self.flipSingleUsdc(amount: 100_000)
         
         let storageController = self.instantiateController(
             StorageController.self,
@@ -114,15 +101,10 @@ final class FlipTests: ContractTestCase {
         
         XCTAssertEqual(usdcTokenReserve, 99_906_000)
     }
-
-    func testInitEgld() throws {
-        try self.initContract()
-        try self.setupEgld()
-    }
     
-    func testInitUsdc() throws {
-        try self.initContract()
-        try self.setupEgld()
+    func testBountySingleLose() throws {
+        self.setBlockInfos(
+        )
     }
     
     func testSetMaximumBetNotOwner() throws {
@@ -233,6 +215,53 @@ final class FlipTests: ContractTestCase {
                         amount: 100_000_000
                     )
                 ]
+            )
+        )
+    }
+    
+    private func flipSingleEgld(amount: BigUint) throws {
+        let gameController = self.instantiateController(
+            GameController.self,
+            for: CONTRACT_ADDRESS
+        )!
+        
+        try gameController.flip(
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: PLAYER_ADDRESS,
+                egldValue: 100_000
+            )
+        )
+    }
+    
+    private func flipSingleUsdc(amount: BigUint) throws {
+        let gameController = self.instantiateController(
+            GameController.self,
+            for: CONTRACT_ADDRESS
+        )!
+        
+        try gameController.flip(
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: PLAYER_ADDRESS,
+                esdtValue: [
+                    TokenPayment(
+                        tokenIdentifier: USDC_TOKEN_IDENTIFIER,
+                        nonce: 0,
+                        amount: amount
+                    )
+                ]
+            )
+        )
+    }
+    
+    private func bounty() throws {
+        let gameController = self.instantiateController(
+            GameController.self,
+            for: CONTRACT_ADDRESS
+        )!
+        
+        try gameController.bounty(
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: BOUNTY_ADDRESS
             )
         )
     }
