@@ -22,7 +22,8 @@ open class ContractTestCase: XCTestCase {
             nonce: 0,
             timestamp: 0,
             round: 0,
-            epoch: 0
+            epoch: 0,
+            randomSeed: Data(Array(repeating: UInt8(0), count: RANDOM_SEED_LENGTH))
         )
     }
     
@@ -57,13 +58,15 @@ open class ContractTestCase: XCTestCase {
         nonce: UInt64? = nil,
         timestamp: UInt64? = nil,
         round: UInt64? = nil,
-        epoch: UInt64? = nil
+        epoch: UInt64? = nil,
+        randomSeed: Data? = nil
     ) {
         API.setBlockInfos(
             nonce: nonce,
             timestamp: timestamp,
             round: round,
-            epoch: epoch
+            epoch: epoch,
+            randomSeed: randomSeed
         )
     }
     
