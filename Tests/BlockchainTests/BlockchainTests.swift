@@ -62,6 +62,10 @@ import SpaceKitTesting
     public func getBlockEpoch() -> UInt64 {
         Blockchain.getBlockEpoch()
     }
+    
+    public func getBlockRandomSeed() -> Buffer {
+        Blockchain.getBlockRandomSeed()
+    }
 }
 
 final class BlockchainTests: ContractTestCase {
@@ -383,5 +387,28 @@ final class BlockchainTests: ContractTestCase {
         let epoch = try controller.getBlockEpoch()
         
         XCTAssertEqual(epoch, 10)
+    }
+    
+    func testGetBlockRandomSeedWithoutSettingIt() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(BlockchainController.self, for: "contract")!
+        
+        let randomSeed = try controller.getBlockRandomSeed()
+        let expectedBytes: Array<UInt8> = Array(repeating: 0, count: 48)
+        
+        XCTAssertEqual(randomSeed, Buffer(data: expectedBytes))
+    }
+    
+    func testGetBlockRandomSeedAfterSettingIt() throws {
+        try self.deployContract(at: "contract")
+        let controller = self.instantiateController(BlockchainController.self, for: "contract")!
+        
+        let newRandomSeed: Array<UInt8> = Array(repeating: UInt8(0), count: 47) + [3]
+        
+        self.setBlockInfos(randomSeed: Data(newRandomSeed))
+        
+        let randomSeed = try controller.getBlockRandomSeed()
+        
+        XCTAssertEqual(randomSeed, Buffer(data: newRandomSeed))
     }
 }
