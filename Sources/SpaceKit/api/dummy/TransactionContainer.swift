@@ -95,7 +95,7 @@ package final class TransactionContainer: @unchecked Sendable {
         return currentHandle
     }
     
-    private func getAccount(address: Data) -> WorldAccount {
+    package func getAccount(address: Data) -> WorldAccount {
         guard let account = self.state.getAccount(addressData: address) else {
             self.throwError(error: .worldError(message: "Account not found: \(address.hexEncodedString())"))
         }

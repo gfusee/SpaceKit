@@ -1360,14 +1360,13 @@ extension DummyApi: SendApiProtocol {
     
     public func isSmartContract(addressPtr: UnsafeRawPointer) -> Int32 {
         let addressData: [UInt8] = Array(Data(bytes: addressPtr, count: 32))
+        let account = self.getCurrentContainer().getAccount(address: Data(addressData))
         
-        for i in 0..<SC_ADDRESS_NUM_LEADING_ZEROS {
-            if addressData[Int(i)] != 0 {
-                return 0
-            }
+        return if account.owner != nil || account.controllers != nil {
+            1
+        } else {
+            0
         }
-        
-        return 1
     }
     
     private func parseContractCall(
