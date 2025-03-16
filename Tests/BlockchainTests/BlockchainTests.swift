@@ -295,7 +295,7 @@ final class BlockchainTests: ContractTestCase {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(BlockchainController.self, for: "contract")!
         
-        let result = try controller.isSmartContract(address: Address(buffer: Buffer(data: Array("b80df5db4ccedd88c45c42b567a383cc87188aeaa1c75cc8cfab2f500d01fecf".hexadecimal))))
+        let result = try controller.isSmartContract(address: "user")
         
         XCTAssertFalse(result)
     }
@@ -304,7 +304,7 @@ final class BlockchainTests: ContractTestCase {
         try self.deployContract(at: "contract")
         let controller = self.instantiateController(BlockchainController.self, for: "contract")!
         
-        let result = try controller.isSmartContract(address: Address(buffer: Buffer(data: Array("0000000000000000050035a97fb11670b33d01f6323bf92f9a0d155839d86509".hexadecimal))))
+        let result = try controller.isSmartContract(address: "contract")
         
         XCTAssertTrue(result)
     }
