@@ -123,9 +123,14 @@ final class FlipTests: ContractTestCase {
     }
     
     func testBountySingleLoseEgld() throws {
+        try self.initContract()
+        try self.setupEgld()
+        try self.flipSingleEgld(amount: 100_000)
+        
         let blockRandomSeed = Array(repeating: UInt8(0), count: 47) + [3]
         
         self.setBlockInfos(
+            nonce: 1,
             randomSeed: Data(blockRandomSeed)
         )
         
@@ -146,7 +151,7 @@ final class FlipTests: ContractTestCase {
         XCTAssertEqual(flipContractBalance, 100_094_000)
         XCTAssertEqual(ownerBalance, 5_000)
         XCTAssertEqual(playerBalance, 99_900_000)
-        XCTAssertEqual(playerBalance, 1_000)
+        XCTAssertEqual(bountyBalance, 1_000)
         
         XCTAssertEqual(tokenReserve, 100_094_000)
     }
