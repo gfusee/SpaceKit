@@ -102,9 +102,53 @@ final class FlipTests: ContractTestCase {
         XCTAssertEqual(usdcTokenReserve, 99_906_000)
     }
     
-    func testBountySingleLose() throws {
+    func testBountyTooEarly() throws {
+        try self.initContract()
+        try self.setupEgld()
+        try self.flipSingleEgld(amount: 100_000)
+        
+        let gameController = self.instantiateController(GameController.self, for: CONTRACT_ADDRESS)!
+        
+        do {
+            try gameController.bounty(
+                transactionInput: ContractCallTransactionInput(
+                    callerAddress: BOUNTY_ADDRESS
+                )
+            )
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, .userError(message: "No flip can be bounty."))
+        }
+    }
+    
+    func testBountySingleLoseEgld() throws {
+        let blockRandomSeed = Array(repeating: UInt8(0), count: 47) + [3]
+        
         self.setBlockInfos(
+            randomSeed: Data(blockRandomSeed)
         )
+        
+        try self.bounty()
+        
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        let flipContractBalance = self.getAccount(address: CONTRACT_ADDRESS)!.balance
+        let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!.balance
+        let playerBalance = self.getAccount(address: PLAYER_ADDRESS)!.balance
+        let bountyBalance = self.getAccount(address: BOUNTY_ADDRESS)!.balance
+        
+        let tokenReserve = try storageController.getTokenReserve(
+            tokenIdentifier: .egld,
+            tokenNonce: 0
+        )
+        
+        XCTAssertEqual(flipContractBalance, 100_094_000)
+        XCTAssertEqual(ownerBalance, 5_000)
+        XCTAssertEqual(playerBalance, 99_900_000)
+        XCTAssertEqual(playerBalance, 1_000)
+        
+        XCTAssertEqual(tokenReserve, 100_094_000)
     }
     
     func testSetMaximumBetNotOwner() throws {
