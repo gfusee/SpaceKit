@@ -597,7 +597,8 @@ public class DummyApi {
         nonce: UInt64? = nil,
         timestamp: UInt64? = nil,
         round: UInt64? = nil,
-        epoch: UInt64? = nil
+        epoch: UInt64? = nil,
+        randomSeed: Data? = nil
     ) {
         if let nonce = nonce {
             self.blockInfos.nonce = nonce
@@ -613,6 +614,14 @@ public class DummyApi {
         
         if let epoch = epoch {
             self.blockInfos.epoch = epoch
+        }
+        
+        if let randomSeed = randomSeed {
+            guard randomSeed.count == RANDOM_SEED_LENGTH else {
+                fatalError("Random seed should be of lentgh \(RANDOM_SEED_LENGTH), but received: \(randomSeed.count)")
+            }
+            
+            self.blockInfos.randomSeed = randomSeed
         }
     }
 }
@@ -971,7 +980,7 @@ extension DummyApi: BlockchainApiProtocol {
     }
     
     public func managedGetBlockRandomSeed(resultHandle: Int32) {
-        fatalError() // TODO: implement and test
+        self.getCurrentContainer().managedBuffersData[resultHandle] = self.blockInfos.randomSeed
     }
     
     public func managedGetOriginalTxHash(resultHandle: Int32) {
