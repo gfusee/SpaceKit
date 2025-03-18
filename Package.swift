@@ -221,6 +221,12 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "RandomTests",
+            dependencies: [
+                "SpaceKitTesting"
+            ]
+        ),
+        .testTarget(
             name: "SendTests",
             dependencies: [
                 "SpaceKitTesting"
