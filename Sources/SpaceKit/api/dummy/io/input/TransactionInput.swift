@@ -54,8 +54,6 @@ public struct ContractCallTransactionInput {
     }
 }
 
-import Foundation
-
 public struct TransactionInput: Sendable {
     public struct EsdtPayment: Sendable {
         let tokenIdentifier: Data

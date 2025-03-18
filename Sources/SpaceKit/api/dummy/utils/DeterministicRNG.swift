@@ -1,3 +1,6 @@
+#if !WASM
+import CryptoKit
+
 package struct DeterministicRNG {
     private var state: UInt64
 
@@ -6,13 +9,13 @@ package struct DeterministicRNG {
         txCachePrevSeed: Data,
         txCacheCurrSeed: Data
     ) {
-        var hasher = Hasher()
         
-        hasher.combine(txCachePrevSeed)
-        hasher.combine(txCacheCurrSeed)
-        hasher.combine(txHash)
+        let dataToHash = txHash + txCachePrevSeed + txCacheCurrSeed
+        let hashedData = Data(SHA256.hash(data: dataToHash))
         
-        self.state = UInt64(bitPattern: Int64(hasher.finalize()))
+        self.state = hashedData.prefix(8).reduce(0) { (result, byte) in
+            (result << 8) | UInt64(byte)
+        }
     }
 
     mutating func nextByte() -> UInt8 {
@@ -28,3 +31,4 @@ package struct DeterministicRNG {
         return randomData
     }
 }
+#endif
