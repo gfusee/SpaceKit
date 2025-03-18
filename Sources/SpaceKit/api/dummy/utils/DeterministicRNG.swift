@@ -26,7 +26,7 @@ package struct DeterministicRNG {
     mutating func nextData(length: Int) -> Data {
         var randomData = Data()
         for _ in 0..<length {
-            randomData.append(nextByte())
+            randomData.append(self.nextByte())
         }
         return randomData
     }
