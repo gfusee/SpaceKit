@@ -1,7 +1,12 @@
 import SpaceKitTesting
 import Flip
 
-private let PLAYER_ADDRESS = "player"
+private let PLAYER_ONE_ADDRESS = "player1"
+private let PLAYER_TWO_ADDRESS = "player2"
+private let PLAYER_THREE_ADDRESS = "player3"
+private let PLAYER_FOUR_ADDRESS = "player4"
+private let PLAYER_FIVE_ADDRESS = "player5"
+private let PLAYER_SIX_ADDRESS = "player6"
 private let BOUNTY_ADDRESS = "bounty"
 private let OWNER_ADDRESS = "owner"
 private let CONTRACT_ADDRESS = "contract"
@@ -15,7 +20,67 @@ final class FlipTests: ContractTestCase {
     override var initialAccounts: [WorldAccount] {
         [
             WorldAccount(
-                address: PLAYER_ADDRESS,
+                address: PLAYER_ONE_ADDRESS,
+                balance: 100_000_000,
+                esdtBalances: [
+                    USDC_TOKEN_IDENTIFIER_STRING: [
+                        EsdtBalance(
+                            nonce: 0,
+                            balance: 100_000_000
+                        )
+                    ]
+                ]
+            ),
+            WorldAccount(
+                address: PLAYER_TWO_ADDRESS,
+                balance: 100_000_000,
+                esdtBalances: [
+                    USDC_TOKEN_IDENTIFIER_STRING: [
+                        EsdtBalance(
+                            nonce: 0,
+                            balance: 100_000_000
+                        )
+                    ]
+                ]
+            ),
+            WorldAccount(
+                address: PLAYER_THREE_ADDRESS,
+                balance: 100_000_000,
+                esdtBalances: [
+                    USDC_TOKEN_IDENTIFIER_STRING: [
+                        EsdtBalance(
+                            nonce: 0,
+                            balance: 100_000_000
+                        )
+                    ]
+                ]
+            ),
+            WorldAccount(
+                address: PLAYER_FOUR_ADDRESS,
+                balance: 100_000_000,
+                esdtBalances: [
+                    USDC_TOKEN_IDENTIFIER_STRING: [
+                        EsdtBalance(
+                            nonce: 0,
+                            balance: 100_000_000
+                        )
+                    ]
+                ]
+            ),
+            WorldAccount(
+                address: PLAYER_FIVE_ADDRESS,
+                balance: 100_000_000,
+                esdtBalances: [
+                    USDC_TOKEN_IDENTIFIER_STRING: [
+                        EsdtBalance(
+                            nonce: 0,
+                            balance: 100_000_000
+                        )
+                    ]
+                ]
+            ),
+            WorldAccount(
+                address: PLAYER_SIX_ADDRESS,
                 balance: 100_000_000,
                 esdtBalances: [
                     USDC_TOKEN_IDENTIFIER_STRING: [
@@ -122,7 +187,7 @@ final class FlipTests: ContractTestCase {
         }
     }
     
-    func testBountySingleLoseEgld() throws {
+    func testBountySingleWinEgld() throws {
         try self.initContract()
         try self.setupEgld()
         try self.flipSingleEgld(amount: 100_000)
@@ -140,9 +205,90 @@ final class FlipTests: ContractTestCase {
         
         let flipContractBalance = self.getAccount(address: CONTRACT_ADDRESS)!.balance
         let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!.balance
-        let playerBalance = self.getAccount(address: PLAYER_ADDRESS)!.balance
+        let playerBalance = self.getAccount(address: PLAYER_ONE_ADDRESS)!.balance
         let bountyBalance = self.getAccount(address: BOUNTY_ADDRESS)!.balance
         
+        let tokenReserve = try storageController.getTokenReserve(
+            tokenIdentifier: .egld,
+            tokenNonce: 0
+        )
+        
+        XCTAssertEqual(flipContractBalance, 99_906_000)
+        XCTAssertEqual(ownerBalance, 5_000)
+        XCTAssertEqual(playerBalance, 100_088_000)
+        XCTAssertEqual(bountyBalance, 1_000)
+        XCTAssertEqual(tokenReserve, 99_906_000)
+    }
+    
+    func testBountySingleWinUsdc() throws {
+        try self.initContract()
+        try self.setupUsdc()
+        try self.flipSingleUsdc(amount: 100_000)
+        
+        let blockRandomSeed = Array(repeating: UInt8(0), count: 47) + [3]
+        
+        self.setBlockInfos(
+            nonce: 1,
+            randomSeed: Data(blockRandomSeed)
+        )
+        
+        try self.bounty()
+        
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        let flipContractBalance = self.getAccount(address: CONTRACT_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        let playerBalance = self.getAccount(address: PLAYER_ONE_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        let bountyBalance = self.getAccount(address: BOUNTY_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        
+        let tokenReserve = try storageController.getTokenReserve(
+            tokenIdentifier: USDC_TOKEN_IDENTIFIER,
+            tokenNonce: 0
+        )
+        
+        XCTAssertEqual(flipContractBalance, 99_906_000)
+        XCTAssertEqual(ownerBalance, 5_000)
+        XCTAssertEqual(playerBalance, 100_088_000)
+        XCTAssertEqual(bountyBalance, 1_000)
+        XCTAssertEqual(tokenReserve, 99_906_000)
+    }
+
+    func testBountySingleLoseEgld() throws {
+        try self.initContract()
+        try self.setupEgld()
+        try self.flipSingleEgld(amount: 100_000)
+        
+        let blockRandomSeed = Array(repeating: UInt8(0), count: 47) + [4]
+        
+        self.setBlockInfos(
+            nonce: 1,
+            randomSeed: Data(blockRandomSeed)
+        )
+        
+        try self.bounty()
+        
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        let flipContractBalance = self.getAccount(address: CONTRACT_ADDRESS)!.balance
+        let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!.balance
+        let playerBalance = self.getAccount(address: PLAYER_ONE_ADDRESS)!.balance
+        let bountyBalance = self.getAccount(address: BOUNTY_ADDRESS)!.balance
         let tokenReserve = try storageController.getTokenReserve(
             tokenIdentifier: .egld,
             tokenNonce: 0
@@ -152,10 +298,187 @@ final class FlipTests: ContractTestCase {
         XCTAssertEqual(ownerBalance, 5_000)
         XCTAssertEqual(playerBalance, 99_900_000)
         XCTAssertEqual(bountyBalance, 1_000)
-        
         XCTAssertEqual(tokenReserve, 100_094_000)
     }
     
+    func testBountySingleLoseUsdc() throws {
+        try self.initContract()
+        try self.setupUsdc()
+        try self.flipSingleUsdc(amount: 100_000)
+        
+        let blockRandomSeed = Array(repeating: UInt8(0), count: 47) + [4]
+        
+        self.setBlockInfos(
+            nonce: 1,
+            randomSeed: Data(blockRandomSeed)
+        )
+        
+        try self.bounty()
+        
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        let flipContractBalance = self.getAccount(address: CONTRACT_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        let playerBalance = self.getAccount(address: PLAYER_ONE_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        let bountyBalance = self.getAccount(address: BOUNTY_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        
+        let tokenReserve = try storageController.getTokenReserve(
+            tokenIdentifier: USDC_TOKEN_IDENTIFIER,
+            tokenNonce: 0
+        )
+        
+        XCTAssertEqual(flipContractBalance, 100_094_000)
+        XCTAssertEqual(ownerBalance, 5_000)
+        XCTAssertEqual(playerBalance, 99_900_000)
+        XCTAssertEqual(bountyBalance, 1_000)
+        XCTAssertEqual(tokenReserve, 100_094_000)
+    }
+    
+    func testFlipAndBountyMultiple() throws {
+        try self.initContract()
+        try self.setupEgld()
+        
+        try self.flipSingleEgld(
+            amount: 100_000,
+            address: PLAYER_ONE_ADDRESS
+        )
+        
+        let blockRandomSeed = Data(Array(repeating: UInt8(0), count: 47) + [3])
+        
+        self.setBlockInfos(
+            nonce: 1,
+            randomSeed: blockRandomSeed
+        )
+        
+        try self.bounty()
+        
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        do {
+            let flipContractBalance = self.getAccount(address: CONTRACT_ADDRESS)!.balance
+            let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!.balance
+            let playerOneBalance = self.getAccount(address: PLAYER_ONE_ADDRESS)!.balance
+            let bountyBalance = self.getAccount(address: BOUNTY_ADDRESS)!.balance
+            let tokenReserve = try storageController.getTokenReserve(
+                tokenIdentifier: .egld,
+                tokenNonce: 0
+            )
+            
+            XCTAssertEqual(flipContractBalance, 99_906_000)
+            XCTAssertEqual(ownerBalance, 5_000)
+            XCTAssertEqual(playerOneBalance, 100_088_000)
+            XCTAssertEqual(bountyBalance, 1_000)
+            XCTAssertEqual(tokenReserve, 99_906_000)
+        }
+        
+        self.setBlockInfos(
+            nonce: 2
+        )
+        
+        try self.flipSingleEgld(
+            amount: 100_000,
+            address: PLAYER_TWO_ADDRESS
+        )
+        
+        try self.bounty()
+        
+        try self.flipSingleEgld(
+            amount: 100_000,
+            address: PLAYER_THREE_ADDRESS
+        )
+        
+        do {
+            let flipContractBalance = self.getAccount(address: CONTRACT_ADDRESS)!.balance
+            let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!.balance
+            let playerOneBalance = self.getAccount(address: PLAYER_ONE_ADDRESS)!.balance
+            let playerTwoBalance = self.getAccount(address: PLAYER_TWO_ADDRESS)!.balance
+            let bountyBalance = self.getAccount(address: BOUNTY_ADDRESS)!.balance
+            let tokenReserve = try storageController.getTokenReserve(
+                tokenIdentifier: .egld,
+                tokenNonce: 0
+            )
+            
+            XCTAssertEqual(flipContractBalance, 99_906_000)
+            XCTAssertEqual(ownerBalance, 15_000)
+            XCTAssertEqual(playerOneBalance, 100_088_000)
+            XCTAssertEqual(playerTwoBalance, 99_900_000)
+            XCTAssertEqual(bountyBalance, 1_000)
+            XCTAssertEqual(tokenReserve, 99_906_000)
+        }
+        
+        self.setBlockInfos(
+            nonce: 3
+        )
+        
+        try self.flipSingleEgld(
+            amount: 100_000,
+            address: PLAYER_FOUR_ADDRESS
+        )
+        
+        self.setBlockInfos(
+            nonce: 4
+        )
+        
+        try self.flipSingleEgld(
+            amount: 100_000,
+            address: PLAYER_FIVE_ADDRESS
+        )
+        
+        try self.flipSingleEgld(
+            amount: 100_000,
+            address: PLAYER_SIX_ADDRESS
+        )
+        
+        self.setBlockInfos(
+            nonce: 5
+        )
+        
+        try self.bounty()
+        
+        do {
+            let flipContractBalance = self.getAccount(address: CONTRACT_ADDRESS)!.balance
+            let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!.balance
+            let playerOneBalance = self.getAccount(address: PLAYER_ONE_ADDRESS)!.balance
+            let playerTwoBalance = self.getAccount(address: PLAYER_TWO_ADDRESS)!.balance
+            let playerThreeBalance = self.getAccount(address: PLAYER_THREE_ADDRESS)!.balance
+            let playerFourBalance = self.getAccount(address: PLAYER_FOUR_ADDRESS)!.balance
+            let playerFiveBalance = self.getAccount(address: PLAYER_FIVE_ADDRESS)!.balance
+            let playerSixBalance = self.getAccount(address: PLAYER_SIX_ADDRESS)!.balance
+            let bountyBalance = self.getAccount(address: BOUNTY_ADDRESS)!.balance
+            let tokenReserve = try storageController.getTokenReserve(
+                tokenIdentifier: .egld,
+                tokenNonce: 0
+            )
+            
+            XCTAssertEqual(flipContractBalance, 99_906_000)
+            XCTAssertEqual(ownerBalance, 30_000)
+            XCTAssertEqual(playerOneBalance, 100_088_000)
+            XCTAssertEqual(playerTwoBalance, 99_900_000)
+            XCTAssertEqual(playerThreeBalance, 100_088_000)
+            XCTAssertEqual(playerFourBalance, 99_900_000)
+            XCTAssertEqual(playerFiveBalance, 99_900_000)
+            XCTAssertEqual(playerSixBalance, 99_900_000)
+            XCTAssertEqual(bountyBalance, 6_000)
+            XCTAssertEqual(tokenReserve, 100_188_000)
+        }
+    }
+
     func testSetMaximumBetNotOwner() throws {
         try self.initContract()
         let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
@@ -268,7 +591,10 @@ final class FlipTests: ContractTestCase {
         )
     }
     
-    private func flipSingleEgld(amount: BigUint) throws {
+    private func flipSingleEgld(
+        amount: BigUint,
+        address: String = PLAYER_ONE_ADDRESS
+    ) throws {
         let gameController = self.instantiateController(
             GameController.self,
             for: CONTRACT_ADDRESS
@@ -276,7 +602,7 @@ final class FlipTests: ContractTestCase {
         
         try gameController.flip(
             transactionInput: ContractCallTransactionInput(
-                callerAddress: PLAYER_ADDRESS,
+                callerAddress: address,
                 egldValue: 100_000
             )
         )
@@ -290,7 +616,7 @@ final class FlipTests: ContractTestCase {
         
         try gameController.flip(
             transactionInput: ContractCallTransactionInput(
-                callerAddress: PLAYER_ADDRESS,
+                callerAddress: PLAYER_ONE_ADDRESS,
                 esdtValue: [
                     TokenPayment(
                         tokenIdentifier: USDC_TOKEN_IDENTIFIER,
