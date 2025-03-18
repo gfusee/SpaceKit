@@ -54,6 +54,8 @@ public struct ContractCallTransactionInput {
     }
 }
 
+import Foundation
+
 public struct TransactionInput: Sendable {
     public struct EsdtPayment: Sendable {
         let tokenIdentifier: Data
@@ -83,10 +85,50 @@ public struct TransactionInput: Sendable {
     
     public mutating func withArguments(args: Vector<Buffer>) {
         var argumentsData: [Data] = []
-        
         args.forEach { argumentsData.append(Data($0.toBytes())) }
-        
         self.arguments = argumentsData
+    }
+
+    // MARK: - Convert to Data
+
+    public func toData() -> Data {
+        var data = Data()
+        
+        // Append contract and caller address
+        data.append(contractAddress)
+        data.append(callerAddress)
+        
+        // Append EGLD value
+        data.append(egldValue.serialize())
+
+        // Append ESDT payments
+        for esdt in esdtValue {
+            data.append(esdt.tokenIdentifier)
+            data.append(Data(from: esdt.nonce))
+            data.append(esdt.amount.serialize())
+        }
+        
+        // Append arguments
+        for argument in arguments {
+            data.append(argument)
+        }
+
+        return data
+    }
+}
+
+// MARK: - Helper Extensions
+
+extension BigInt {
+    func serialize() -> Data {
+        return Data(self.magnitude.serialize())
+    }
+}
+
+extension Data {
+    init(from value: UInt64) {
+        var val = value.bigEndian
+        self = Swift.withUnsafeBytes(of: &val) { Data($0) }
     }
 }
 #endif
