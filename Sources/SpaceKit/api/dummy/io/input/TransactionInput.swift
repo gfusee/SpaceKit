@@ -92,41 +92,24 @@ public struct TransactionInput: Sendable {
     public func toData() -> Data {
         var data = Data()
         
-        // Append contract and caller address
-        data.append(contractAddress)
-        data.append(callerAddress)
-        
-        // Append EGLD value
-        data.append(egldValue.serialize())
+        data.append(self.contractAddress)
+        data.append(self.callerAddress)
+        data.append(self.egldValue.serialize())
 
-        // Append ESDT payments
-        for esdt in esdtValue {
+        for esdt in self.esdtValue {
+            var nonce = esdt.nonce
+            let nonceData = Swift.withUnsafeBytes(of: &nonce) { Data($0) }
+            
             data.append(esdt.tokenIdentifier)
-            data.append(Data(from: esdt.nonce))
+            data.append(nonceData)
             data.append(esdt.amount.serialize())
         }
         
-        // Append arguments
-        for argument in arguments {
+        for argument in self.arguments {
             data.append(argument)
         }
 
         return data
-    }
-}
-
-// MARK: - Helper Extensions
-
-extension BigInt {
-    func serialize() -> Data {
-        return Data(self.magnitude.serialize())
-    }
-}
-
-extension Data {
-    init(from value: UInt64) {
-        var val = value.bigEndian
-        self = Swift.withUnsafeBytes(of: &val) { Data($0) }
     }
 }
 #endif
