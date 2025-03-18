@@ -749,7 +749,22 @@ extension DummyApi: BufferApiProtocol {
     }
     
     public func mBufferSetRandom(destinationHandle: Int32, length: Int32) -> Int32 {
-        fatalError() // TODO: implement and test
+        // TODO: this is a dummy function
+        let randomSeed = Buffer()
+        self.managedGetBlockRandomSeed(resultHandle: randomSeed.handle)
+        let randomSeedData = randomSeed.toBytes()
+        
+        if length > randomSeedData.count {
+            let numZerosToAppend = Int(length) - randomSeedData.count
+            let arrayOfZeros = Array(repeating: UInt8(0), count: numZerosToAppend)
+            let resultArray: [UInt8] = arrayOfZeros + randomSeedData
+            
+            self.getCurrentContainer().managedBuffersData[destinationHandle] = Data(resultArray)
+        } else {
+            self.getCurrentContainer().managedBuffersData[destinationHandle] = Data(randomSeedData.suffix(Int(length)))
+        }
+        
+        return 0
     }
     
     public func validateTokenIdentifier(tokenIdHandle: Int32) -> Int32 {
