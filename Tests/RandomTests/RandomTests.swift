@@ -5,6 +5,15 @@ import SpaceKitTesting
         Randomness.nextUInt8InRange(min: min, max: max)
     }
     
+    public func getTwoRandomUInt8(min: UInt8, max: UInt8) -> Vector<UInt8> {
+        var result: Vector<UInt8> = Vector()
+        
+        result = result.appended(Randomness.nextUInt8InRange(min: min, max: max))
+        result = result.appended(Randomness.nextUInt8InRange(min: min, max: max))
+        
+        return result
+    }
+    
     public func getRandomUInt32(min: UInt32, max: UInt32) -> UInt32 {
         Randomness.nextUInt32InRange(min: min, max: max)
     }
@@ -54,9 +63,20 @@ final class RandomTests: ContractTestCase {
         
         let result = try controller.getRandomUInt8(min: 0, max: UInt8.max)
         
-        XCTAssertEqual(result, 48)
+        XCTAssertEqual(result, 55)
     }
     
+    func testGetMultipleRandomUInt8ForZeroToMax() throws {
+        let controller = self.instantiateController(RandomController.self, for: "contract")!
+        
+        let randomSeed: [UInt8] = Array(1...48).map { UInt8($0) }
+        self.setBlockInfos(randomSeed: Data(randomSeed))
+        
+        let result = try controller.getTwoRandomUInt8(min: 0, max: UInt8.max)
+        
+        XCTAssertEqual(result, [55, 120])
+    }
+
     func testGetRandomUInt8ForZeroToMaxAnotherSeed() throws {
         let controller = self.instantiateController(RandomController.self, for: "contract")!
         
@@ -65,7 +85,7 @@ final class RandomTests: ContractTestCase {
         
         let result = try controller.getRandomUInt8(min: 0, max: UInt8.max)
         
-        XCTAssertEqual(result, 96)
+        XCTAssertEqual(result, 55)
     }
     
     func testGetRandomUInt32ForZeroToOne() throws {
@@ -84,7 +104,7 @@ final class RandomTests: ContractTestCase {
         
         let result = try controller.getRandomUInt32(min: 0, max: UInt32.max)
         
-        XCTAssertEqual(result, 758001456)
+        XCTAssertEqual(result, 2550967146)
     }
     
     func testGetRandomUInt32ForRange() throws {
@@ -115,7 +135,7 @@ final class RandomTests: ContractTestCase {
         
         let result = try controller.getRandomUInt64(min: 0, max: UInt64.max)
         
-        XCTAssertEqual(result, 2966230773313449776)
+        XCTAssertEqual(result, 16341954948065199133)
     }
     
     func testGetRandomUInt64ForRange() throws {

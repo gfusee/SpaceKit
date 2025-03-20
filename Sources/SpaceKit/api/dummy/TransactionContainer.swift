@@ -1,6 +1,7 @@
 #if !WASM
 import Foundation
 import BigInt
+import CryptoKit
 
 package enum TransactionContainerErrorBehavior {
     case blockThread
@@ -16,6 +17,7 @@ public enum TransactionContainerExecutionType: Equatable {
 package final class TransactionContainer: @unchecked Sendable {
     package var managedBuffersData: [Int32 : Data] = [:]
     package var managedBigIntData: [Int32 : BigInt] = [:]
+    package var rng: DeterministicRNG
     package var state: WorldState
     package private(set) var outputs: [Data] = []
     public package(set) var error: TransactionError? = nil
@@ -46,6 +48,14 @@ package final class TransactionContainer: @unchecked Sendable {
         self.executionType = executionType
         self.errorBehavior = errorBehavior
         
+        let txHash = Data(SHA256.hash(data: transactionInput.toData()))
+        
+        self.rng = DeterministicRNG(
+            txHash: txHash,
+            txCachePrevSeed: Data(), // TODO: use this once it is required to have the same behavior as the WASM VM
+            txCacheCurrSeed: Data() // TODO: same
+        )
+        
         if let container = container {
             self.managedBuffersData = container.managedBuffersData
             self.managedBigIntData = container.managedBigIntData
@@ -57,6 +67,7 @@ package final class TransactionContainer: @unchecked Sendable {
     package init(errorBehavior: TransactionContainerErrorBehavior) {
         self.errorBehavior = errorBehavior
         self.state = WorldState()
+        self.rng = DeterministicRNG(txHash: Data(Array(1...48)), txCachePrevSeed: Data(), txCacheCurrSeed: Data())
         self.executionType = .sync
         self.nextHandle = -100
     }
@@ -622,6 +633,10 @@ package final class TransactionContainer: @unchecked Sendable {
             tokenIdentifier: tokenIdentifier,
             address: address
         )
+    }
+    
+    package func getNextRandomData(length: Int) -> Data {
+        return self.rng.nextData(length: length)
     }
 }
 #endif
