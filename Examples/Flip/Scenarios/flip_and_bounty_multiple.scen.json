@@ -164,7 +164,7 @@
                 },
                 "sc:flip": {
                     "nonce": "*",
-                    "balance": "*",
+                    "balance": "100_095_000",
                     "storage": {
                         "str:tokenReserve|nested:str:EGLD|u64:0": "99,906,000",
                         "+": "*"
