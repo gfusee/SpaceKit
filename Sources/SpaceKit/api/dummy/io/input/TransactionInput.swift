@@ -83,10 +83,33 @@ public struct TransactionInput: Sendable {
     
     public mutating func withArguments(args: Vector<Buffer>) {
         var argumentsData: [Data] = []
-        
         args.forEach { argumentsData.append(Data($0.toBytes())) }
-        
         self.arguments = argumentsData
+    }
+
+    // MARK: - Convert to Data
+
+    public func toData() -> Data {
+        var data = Data()
+        
+        data.append(self.contractAddress)
+        data.append(self.callerAddress)
+        data.append(self.egldValue.serialize())
+
+        for esdt in self.esdtValue {
+            var nonce = esdt.nonce
+            let nonceData = Swift.withUnsafeBytes(of: &nonce) { Data($0) }
+            
+            data.append(esdt.tokenIdentifier)
+            data.append(nonceData)
+            data.append(esdt.amount.serialize())
+        }
+        
+        for argument in self.arguments {
+            data.append(argument)
+        }
+
+        return data
     }
 }
 #endif
