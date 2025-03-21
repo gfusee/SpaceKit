@@ -222,4 +222,56 @@
             }
         }
     }
+        
+    @Section(title: "Define the Contract Init") {
+        @ContentAndMedia {
+            Our storage is written, however we want to initialise some values at deploy time. This is done by the initilizer function: a public function annotated @Init on the global scope.
+        }
+
+        @Steps {
+            @Step {
+                Create a new file named `init.swift` in the `Contracts/Flip/Source` directory.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step1.swift")
+            }
+
+            @Step {
+                Import the `SpaceKit` framework.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step2.swift")
+            }
+
+            @Step {
+                Define a public function annotated with `@Init`.
+
+                This function accepts three arguments, which represent the initial values for the contract’s storage.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step3.swift")
+            }
+
+            @Step {
+                Create an instance of the `StorageController`.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step4.swift")
+            }
+
+            @Step {
+                Set the initial values for the owner fee and bounty fee percentages.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step5.swift")
+            }
+
+            @Step {
+                Add a safety check to ensure the minimum number of blocks required before bountying is greater than zero.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step6.swift")
+            }
+
+            @Step {
+                Store the validated block delay as the initial value for the bounty threshold.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step7.swift")
+            }
+        }
+    }
 }
