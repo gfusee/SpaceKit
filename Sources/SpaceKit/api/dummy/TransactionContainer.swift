@@ -17,12 +17,6 @@ public enum TransactionContainerExecutionType: Equatable {
 package final class TransactionContainer: @unchecked Sendable {
     package var managedBuffersData: [Int32 : Data] = [:]
     package var managedBigIntData: [Int32 : BigInt] = [:]
-    package private(set) var currentBlockInfo: BlockInfos = BlockInfos(
-        nonce: 0,
-        timestamp: 0,
-        round: 0,
-        epoch: 0
-    )
     package var rng: DeterministicRNG
     package var state: WorldState
     package private(set) var outputs: [Data] = []
@@ -43,14 +37,12 @@ package final class TransactionContainer: @unchecked Sendable {
     
     package init(
         worldState: WorldState,
-        currentBlockInfo: BlockInfos,
         transactionInput: TransactionInput,
         executionType: TransactionContainerExecutionType,
         errorBehavior: TransactionContainerErrorBehavior,
         byTransferringDataFrom container: TransactionContainer?
     ) {
         self.state = worldState
-        self.currentBlockInfo = currentBlockInfo
         self.transactionInput = transactionInput
         self.transactionOutput = TransactionOutput()
         self.executionType = executionType
@@ -61,7 +53,7 @@ package final class TransactionContainer: @unchecked Sendable {
         self.rng = DeterministicRNG(
             txHash: txHash,
             txCachePrevSeed: Data(), // TODO: use this once it is required to have the same behavior as the WASM VM
-            txCacheCurrSeed: currentBlockInfo.randomSeed
+            txCacheCurrSeed: Data() // TODO: same
         )
         
         if let container = container {
@@ -355,7 +347,6 @@ package final class TransactionContainer: @unchecked Sendable {
             
             let nestedCallTransactionContainer = TransactionContainer(
                 worldState: self.state,
-                currentBlockInfo: self.currentBlockInfo,
                 transactionInput: inputs,
                 executionType: executionType,
                 errorBehavior: self.errorBehavior,
