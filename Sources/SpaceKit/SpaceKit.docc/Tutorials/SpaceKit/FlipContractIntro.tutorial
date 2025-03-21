@@ -1,57 +1,66 @@
 @Tutorial(time: 20) {
-    @Intro(title: "Building A Coin Flip Contract") {
-        In this tutorial, we will build and test an entire smart contract which makes use of random numbers. The contract we will build is a coin flip smart contract. Players are going to bet a choosen amount of any token, and will have 50% chances of doubling the amount, 50% chances of losing it. The contract will take a small percent of the bet as fees, which will be send to the developer's wallet (which is us).
-        
-        The SpaceVM has a built-in way to generate random numbers, random numbers are based on the transaction hash and the current block random seed. Since the random generation is deterministic, knowing those value allows any malicious actor to predict if a flip will succeed or not. To avoid attack, a simple solution is to compute the random number in another block than the block where the player initiate the flip. The number of blocks to wait may depends of the blockchain you deploy your contract, therefore we'll set it as a parameter in our contract.
-        
-        We allow anyone to generate the random number which determines if a flip is a win or a lose, and we reward them by giving them a % of the flip's amount. We'll call the action of generating the random number "bounty".
-        
-        Let's look at an example. If the owner takes 5% of the bets' amounts and the bounty fee is 1% and we want to wait 1 block before bountying, then the flow is as follows:
-        
-        - Alice flips 1000 USDC. 50 USDC goes to the owner and 10 USDC are kept in the contract and will be given later to the one performing the bounty. It means that 940 USDC are taken in account and might be doubled or not.
-        - One block has passed, Bob bounty the Alice's flip. The contract generates the random numbers which can either be 0 or 1. If the number is 0 then Alice lost its bet, the 940 USDC will stay in the contract for future bets. Otherwise Alice wins and earns 940 \* 2 = 1880 USDC.
-        
-        To avoid the contract to run out of funds in case of bad luck, we are going to add a maximum allowed bet which can be either an absolute value (such as 1000 USDC) or a % of the contract's funds, such as 10%.
+    @Intro(title: "Build a Coin Flip Smart Contract") {
+        In this tutorial, you’ll write and test a complete smart contract that relies on random number generation to implement a coin flip mechanic. Players wager a chosen amount of any token and face a 50% chance of doubling their bet—or losing it. A small fee is deducted from each wager and sent to the developer’s wallet.
+
+        The SpaceVM provides built-in deterministic random number generation based on the transaction hash and block seed. Because these inputs are predictable within a single block, it’s possible for an attacker to anticipate the outcome. To mitigate this, you’ll delay the random number computation to a future block. This delay is configurable and should be adapted to the characteristics of the target blockchain.
+
+        Anyone can trigger the random number computation—an action referred to as “bountying.” The bounty executor receives a small share of the wagered amount as a reward.
+
+        For example, consider a setup with a 5% owner fee, 1% bounty reward, and a 1-block delay:
+        - Alice initiates a flip with a 1000 USDC bet.
+        - 50 USDC goes to the owner. 10 USDC is held as a bounty reward.
+        - The remaining 940 USDC is used for the flip.
+        - After one block passes, Bob performs the bounty.
+        - If the generated number is 0, Alice loses her bet.
+        - If it’s 1, she wins 1880 USDC (940 × 2).
+
+        To protect the contract’s funds from being drained due to a streak of bad luck, you’ll implement a maximum bet threshold. This cap can be either a fixed value or a percentage of the contract’s total balance.
     }
 
-    @Section(title: "Initializing the Project") {
+    @Section(title: "Set Up the Project") {
         @ContentAndMedia {
-            Before writing the contract, set up the project using the SpaceKit command-line tool.
+            Begin by creating a new project with the SpaceKit command-line tool.
         }
 
         @Steps {
             @Step {
-                Open a terminal.
+                Open a terminal window.
 
                 @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
             }
 
             @Step {
-                Navigate to your desired directory and execute the command `space init Flip`.
+                Navigate to your desired folder and run the following command:
 
-                This command generates a new folder named "Flip".
+                ```sh
+                space init Flip
+                ```
+
+                This creates a new folder named `Flip`.
 
                 @Image(source: "CodingFirstContractSection1Step2.png", alt: "Output of the `space init Flip` command.")
             }
 
             @Step {
-                Open the "Flip" directory in your preferred Swift IDE. Xcode or VSCode (with the official Swift extension) are recommended.
-                
-                In this tutorial, Xcode is used. If using other environments, consult their respective guides.
+                Open the `Flip` directory in your preferred Swift IDE.
+
+                This tutorial uses Xcode, but VSCode with the official Swift extension also works.
 
                 @Image(source: "CodingFirstContractSection1Step3.png", alt: "Xcode project selection screen with 'Flip' highlighted.")
             }
 
             @Step {
-                (Optional) Build the project for improved IDE performance and macro generation.
+                (Optional) Build the project to improve code completion and macro generation.
 
-                In Xcode, go to **Product > Build** or use the shortcut `⌘ + B`.
+                In Xcode, select **Product > Build**, or press `⌘ + B`.
 
                 @Image(source: "CodingFirstContractSection1Step4.png", alt: "Xcode's Product menu with 'Build' highlighted.")
             }
-            
+
             @Step {
-                Delete anything inside the `Contracts/Flip/Source` folder
+                Clean up the template.
+
+                Remove all existing files from the `Contracts/Flip/Source` folder.
 
                 @Image(source: "CodingFirstContractSection1Step5.png", alt: "Contracts/Flip/Source is empty.")
             }
