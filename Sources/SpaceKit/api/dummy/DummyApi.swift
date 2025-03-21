@@ -36,6 +36,7 @@ public class DummyApi {
         
         let transactionContainer = TransactionContainer(
             worldState: self.worldState,
+            currentBlockInfo: self.blockInfos,
             transactionInput: transactionInput,
             executionType: executionType,
             errorBehavior: .blockThread,
