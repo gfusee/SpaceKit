@@ -44,7 +44,7 @@ import SpaceKit
         
         require(
             percent > 0,
-            "Amount should be greater than zero."
+            "Percent should be greater than zero."
         )
         
         StorageController()
