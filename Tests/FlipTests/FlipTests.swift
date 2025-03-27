@@ -628,7 +628,7 @@ final class FlipTests: ContractTestCase {
         try adminController.setMaximumBetPercent(
             tokenIdentifier: .egld,
             nonce: 0,
-            percent: 10_000_000,
+            percent: 1_000,
             transactionInput: ContractCallTransactionInput(
                 callerAddress: OWNER_ADDRESS
             )
@@ -657,7 +657,7 @@ final class FlipTests: ContractTestCase {
         try adminController.setMaximumBetPercent(
             tokenIdentifier: USDC_TOKEN_IDENTIFIER,
             nonce: 0,
-            percent: 10_000_000,
+            percent: 1_000,
             transactionInput: ContractCallTransactionInput(
                 callerAddress: OWNER_ADDRESS
             )
