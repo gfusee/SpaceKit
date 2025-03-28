@@ -87,7 +87,7 @@ import SpaceKit
             )
             .update { tokenReserve in
                 require(
-                    tokenReserve <= amount,
+                    tokenReserve > amount,
                     "Amount too high"
                 )
                 

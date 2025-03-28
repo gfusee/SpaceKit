@@ -564,6 +564,168 @@ final class FlipTests: ContractTestCase {
             XCTAssertEqual(error, .userError(message: "Bet is too high. Maximum allowed bet: 100000"))
         }
     }
+    
+    func testSetMaximumBet() throws {
+        try self.initContract()
+        let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        try adminController.setMaximumBet(
+            tokenIdentifier: .egld,
+            nonce: 0,
+            amount: 100,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: OWNER_ADDRESS
+            )
+        )
+        
+        let maximumBet = try storageController.getMaximumBet(
+            tokenIdentifier: .egld,
+            tokenNonce: 0
+        )
+        
+        XCTAssertEqual(maximumBet, 100)
+    }
+    
+    func testSetMaximumBetPercent() throws {
+        try self.initContract()
+        let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        try adminController.setMaximumBetPercent(
+            tokenIdentifier: .egld,
+            nonce: 0,
+            percent: 100,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: OWNER_ADDRESS
+            )
+        )
+        
+        let maximumBetPercent = try storageController.getMaximumBetPercent(
+            tokenIdentifier: .egld,
+            tokenNonce: 0
+        )
+        
+        XCTAssertEqual(maximumBetPercent, 100)
+    }
+    
+    func testIncreaseEgldReserve() throws {
+        try self.initContract()
+        let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        try adminController.increaseReserve(
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: OWNER_ADDRESS,
+                egldValue: 1_000
+            )
+        )
+        
+        let tokenReserve = try storageController.getTokenReserve(
+            tokenIdentifier: .egld,
+            tokenNonce: 0
+        )
+        let contractBalance = self.getAccount(address: CONTRACT_ADDRESS)!.balance
+        
+        XCTAssertEqual(tokenReserve, 1_000)
+        XCTAssertEqual(contractBalance, 1_000)
+    }
+    
+    func testIncreaseUsdcReserve() throws {
+        try self.initContract()
+        let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        try adminController.increaseReserve(
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: OWNER_ADDRESS,
+                esdtValue: [
+                    TokenPayment(
+                        tokenIdentifier: USDC_TOKEN_IDENTIFIER,
+                        nonce: 0,
+                        amount: 1_000
+                    )
+                ]
+            )
+        )
+        
+        let tokenReserve = try storageController.getTokenReserve(
+            tokenIdentifier: USDC_TOKEN_IDENTIFIER,
+            tokenNonce: 0
+        )
+        let contractBalance = self.getAccount(address: CONTRACT_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        
+        XCTAssertEqual(tokenReserve, 1_000)
+        XCTAssertEqual(contractBalance, 1_000)
+    }
+    
+    func testWithdrawEgldReserve() throws {
+        try self.initContract()
+        try self.setupEgld()
+        
+        let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        try adminController.withdrawReserve(
+            tokenIdentifier: .egld,
+            nonce: 0,
+            amount: 10_000_000,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: OWNER_ADDRESS
+            )
+        )
+        
+        let tokenReserve = try storageController.getTokenReserve(
+            tokenIdentifier: .egld,
+            tokenNonce: 0
+        )
+        let contractBalance = self.getAccount(address: CONTRACT_ADDRESS)!.balance
+        let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!.balance
+        
+        XCTAssertEqual(tokenReserve, 90_000_000)
+        XCTAssertEqual(contractBalance, 90_000_000)
+        XCTAssertEqual(ownerBalance, 10_000_000)
+    }
+    
+    func testWithdrawUsdcReserve() throws {
+        try self.initContract()
+        try self.setupUsdc()
+        
+        let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
+        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
+        
+        try adminController.withdrawReserve(
+            tokenIdentifier: USDC_TOKEN_IDENTIFIER,
+            nonce: 0,
+            amount: 10_000_000,
+            transactionInput: ContractCallTransactionInput(
+                callerAddress: OWNER_ADDRESS
+            )
+        )
+        
+        let tokenReserve = try storageController.getTokenReserve(
+            tokenIdentifier: USDC_TOKEN_IDENTIFIER,
+            tokenNonce: 0
+        )
+        let contractBalance = self.getAccount(address: CONTRACT_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!
+            .getEsdtBalance(
+                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
+                nonce: 0
+            )
+        
+        XCTAssertEqual(tokenReserve, 90_000_000)
+        XCTAssertEqual(contractBalance, 90_000_000)
+        XCTAssertEqual(ownerBalance, 10_000_000)
+    }
 
     func testSetMaximumBetNotOwner() throws {
         try self.initContract()
@@ -591,6 +753,36 @@ final class FlipTests: ContractTestCase {
                 tokenIdentifier: .egld,
                 nonce: 0,
                 percent: 10_000_000
+            )
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, ONLY_OWNER_ERROR)
+        }
+    }
+    
+    func testIncreaseReserveNotOwner() throws {
+        try self.initContract()
+        let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
+        
+        do {
+            try adminController.increaseReserve()
+            
+            XCTFail()
+        } catch {
+            XCTAssertEqual(error, ONLY_OWNER_ERROR)
+        }
+    }
+    
+    func testWithdrawReserveNotOwner() throws {
+        try self.initContract()
+        let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
+        
+        do {
+            try adminController.withdrawReserve(
+                tokenIdentifier: .egld,
+                nonce: 0,
+                amount: 100
             )
             
             XCTFail()

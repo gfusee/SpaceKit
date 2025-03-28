@@ -1,257 +1,315 @@
 @Tutorial(time: 20) {
-    @Intro(title: "Initialize Tests in the SwiftVM") {
-        Smart contracts, as permisionless applications, are critical pieces of software handle valuable assets. Writing tests for both success and failures cases are mandatory.
-        
-        SpaceKit brings the SwiftVM, a copy of the SpaceVM in the Swift environment. This allows you to test your contract seamlessly, while having access to Swift's tools such as the debugger. Note that instead of in the contract code, you can make use of all the types in the Swift tests, even those allocating on the heap such as `String`.
-        
-        In this tutorial we'll see how to setup the test environment.
+    @Intro(title: "Set Up Testing in the SwiftVM") {
+        Smart contracts are permissionless programs that often manage valuable assets. Because of this, writing comprehensive tests for both successful and failure scenarios is essential.
+
+        SpaceKit provides the SwiftVM, a native Swift-based replica of the SpaceVM. This lets you run and debug your smart contracts directly in Swift, using familiar tools like breakpoints and the debugger. Unlike contract code, your Swift tests can take advantage of the full Swift language—including heap-allocated types like `String`.
+
+        In this tutorial, you’ll configure the test environment and get ready to write your first tests.
     }
 
-    @Section(title: "Initialize the test project") {
+    @Section(title: "Set Up the Test Project") {
         @ContentAndMedia {
-            Tests 
+            Before writing tests, prepare the project by cleaning up the test directory and creating a new test file.
         }
 
         @Steps {
             @Step {
-                Clean up the template.
+                Remove the default template files.
 
-                Remove all existing files from the `Contracts/Flip/Tests` folder.
+                Delete any existing files inside the `Contracts/Flip/Tests` folder.
 
                 @Image(source: "CodingFirstContractSection1Step5.png", alt: "Contracts/Flip/Tests is empty.")
             }
-            
+
             @Step {
-                Create a new file named `FlipTests.swift` inside the `Contracts/Flip/Test` folder.
+                Create a new file named `FlipTests.swift` inside the `Contracts/Flip/Tests` directory.
 
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection1Step2.swift")
             }
         }
     }
-
-    @Section(title: "Initialize the Constants") {
-        @ContentAndMedia {
-            The SwiftVM allows you to set the initial state of the simulated blockchain before executing the transactions. The state includes:
-            
-            - The user wallets: their addresses and EGLD & ESDT balances.
-            - The smart contracts: their addresses, their EGLD & ESDT balances and their code (by specifying all the controllers)
-            
-            Smart-contracts must be declared before running the tests, because the SwiftVM needs to know all the `@Controller` forming the contract. While in the real blockchain environment, smart-contracts's addresses are determined at deployment, in a testing environment it won't be practical as we want our contracts to have the same address between tests. Therefore, the SwiftVM requires to define the contract addresses before deployment.  
-        }
         
+    @Section(title: "Declare Constants for the Test Environment") {
+        @ContentAndMedia {
+            The SwiftVM allows you to configure the initial state of the simulated blockchain before executing any transactions. This state includes:
+
+            - Wallets: predefined addresses with specified EGLD and ESDT balances.
+            - Smart contracts: their addresses, token balances, and logic (declared by listing all associated `@Controller`s).
+
+            In contrast to a real blockchain, where contract addresses are assigned at deployment, SwiftVM tests require that contract addresses be explicitly defined ahead of time. This ensures consistency and makes it easier to reference the same contract across multiple test cases.
+
+            Because the SwiftVM needs to understand the full structure of a contract at runtime, all relevant `@Controller` definitions must be available before any test is executed.
+        }
+
         @Steps {
             @Step {
-                Import `SpaceKitTesting`.
-                
-                It automatically imports `SpaceKit`, `XCTest` and `Foundation`.
+                Import the `SpaceKitTesting` module.
+
+                This also imports `SpaceKit`, `XCTest`, and `Foundation`.
 
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection2Step1.swift")
             }
-            
+
             @Step {
-                Import the contract code.
+                Import the Flip contract code.
 
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection2Step2.swift")
             }
-            
+
             @Step {
-                Define a constant representing the player's address.
-                
-                This is the address that will call the `flip` endpoint in the tests. 
+                Define a constant for the player's address.
+
+                This address will be used to invoke the `flip` endpoint during tests.
 
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection2Step3.swift")
             }
-            
+
             @Step {
-                Define a constant representing the bounty's address.
-                
-                This is the address that will call the `bounty` endpoint in the tests. 
+                Define a constant for the bounty executor’s address.
+
+                This will be used to call the `bounty` endpoint in tests.
 
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection2Step4.swift")
             }
-            
+
             @Step {
-                Define a constant representing the contract owner's address.
-                
-                This is the address that will be able to call admin endpoints, and receive the owner fees.
+                Define a constant for the contract owner's address.
+
+                This account will access admin endpoints and receive owner fees.
 
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection2Step5.swift")
             }
-            
+
             @Step {
-                Define the contract's address.
+                Define the address of the contract.
 
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection2Step6.swift")
             }
-            
+
             @Step {
-                Define the ticker of the USDC token.
-                
-                A valid ticker is of the form of a name, a dash and 6 caracters which can be from 0 to 9, or a to b.
+                Define the ticker string for the USDC token.
+
+                A valid ticker includes a name, a dash, and six characters (letters `a`–`f` and digits `0`–`9`).
 
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection2Step7.swift")
             }
-            
+
             @Step {
-                Define a computed variable, acting as a helper, turning the `String` USDC ticker into a `TokenIdentifier`.
-                
-                Avoid using SpaceKit's type constants in the global scope, as the SwiftVM might reset the data between tests, corrupting the datas. 
+                Add a computed variable to convert the USDC ticker string into a `TokenIdentifier`.
+
+                **Note:** Avoid declaring `SpaceKit` value types in the global scope, as test resets in SwiftVM could invalidate them between runs.
 
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection2Step8.swift")
             }
         }
-    }
+    }        
         
-    @Section(title: "Initialize the Initial State") {
+    @Section(title: "Configure the Initial Blockchain State") {
         @ContentAndMedia {
-             The constants we defined above will help us to define the blockchain's state that will be used for each test.
-             
-             Note that the state is resetted between each test.
+            With the constants now defined, you can use them to describe the initial blockchain state for each test case.
+            
+            This state includes all user accounts and smart contracts, along with their balances and behavior.  
+            
+            Keep in mind: the SwiftVM resets the state before each test, ensuring test isolation and repeatability.
         }
-        
+            
         @Steps {
             @Step {
-                Start with the code from the previous section.
-
+                Begin with the code you wrote in the previous section.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection2Step8.swift")
             }
             
             @Step {
-                Declare `FlipTests`, the class containing the tests.
+                Define the `FlipTests` class, which will contain all test methods.
                 
-                **Note:** `FlipTests` extends from `ContractTestCase`, which itself extends from `XCTestCase`.
-
+                **Note:** `FlipTests` inherits from `ContractTestCase`, which itself extends `XCTestCase`.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection3Step2.swift")
             }
             
             @Step {
-                Override the computed variable `initialAccounts`.
+                Override the `initialAccounts` computed property.
                 
-                This is an array `WorldAccount` which will contain all the initial blockchain's state.
-
+                This property returns an array of `WorldAccount` objects, representing the state of the blockchain at the beginning of each test.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection3Step3.swift")
             }
             
             @Step {
-                Define the player account, set it an EGLD balance of `100_000_000`, as well as an USDC balance of `100_000_000`.
-
+                Define the player account.
+                
+                Give it an EGLD balance of `100_000_000`, and a USDC balance of `100_000_000`.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection3Step4.swift")
             }
             
             @Step {
-                Define the bounty account, with no balance.
-
+                Define the bounty account.
+                
+                This account will start with no balance.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection3Step5.swift")
             }
             
             @Step {
-                Define the owner account, set it an EGLD balance of `100_000_000`, as well as an USDC balance of `100_000_000`.
-
+                Define the contract owner account.
+                
+                Like the player, it should have both `100_000_000` EGLD and `100_000_000` USDC.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection3Step6.swift")
             }
             
             @Step {
-                Define the flip contract account, declare all the controllers to make the SwiftVM aware of them.
-
+                Define the smart contract account for the Flip contract.
+                
+                Be sure to declare all associated controllers so the SwiftVM knows how to simulate its behavior.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection3Step7.swift")
             }
         }
     }
         
-    @Section(title: "Declare some helper functions to deploy and setup the flip contract") {
+    @Section(title: "Create Helper Functions to Deploy and Configure the Contract") {
         @ContentAndMedia {
-             A common step of each test is to deploy and configure the flip contract. Therefore, it's a good practice to write this logic as a separate helper function.
-             
-             We'll write three functions:
-             
-             - initContract: this function role is to deploy the contract in the SwiftVM.
-             - setupEgld: called after initContract, this function setups the deployed flip contract by adding `EGLD` to its reserve, as well as setting the maximum bet cap.
-             - setupUsdc: called after initContract, this function setups the deployed flip contract by adding `USDC-abcdef` to its reserve, as well as setting the maximum bet cap.
+            Since deploying and configuring the Flip contract is a common setup step across multiple tests, it's helpful to extract this logic into reusable helper functions.
+            
+            You’ll define three such functions:
+            
+            - `initContract`: Deploys the Flip contract into the SwiftVM.
+            - `setupEgld`: Adds EGLD to the contract’s reserve and sets the max bet cap.
+            - `setupUsdc`: Adds `USDC-abcdef` to the contract’s reserve and sets the max bet cap.
         }
         
         @Steps {
             @Step {
                 Start with the code from the previous section.
-
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection3Step7.swift")
             }
             
             @Step {
-                Declare the private function `initContract`.
+                Declare a private function named `initContract`.
                 
-                All the function will be marked `throws`, because the SwiftVM allows us to catch any error occuring in the transactions.
-
+                All helper functions will be marked `throws` to allow SwiftVM to catch transaction errors during execution.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step2.swift")
             }
             
             @Step {
-                Call the `self.deployContract` method to perform a contract deployment.
+                Use the `self.deployContract` method to deploy the Flip contract.
                 
-                Mark this function as `try`, as it might fail if the deployment transaction fails.
-
+                Prefix the call with `try`, as deployment may fail if the transaction is invalid.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step3.swift")
             }
             
             @Step {
-                Pass the contract address, to let the SwiftVM know on which account the contract should be deployed.
-
+                Pass the contract’s address to the deployment call.
+                
+                This tells the SwiftVM where the contract should be deployed.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step4.swift")
             }
             
             @Step {
-                Pass the initialization's arguments, in the same order as the declared `@Init` function.
+                Supply the initialization arguments in the same order as defined in the `@Init` function.
                 
-                **Note:** Deployment is the only transaction where the arguments are not typed, so be careful on the types and the order.
-
+                **Note:** Deployment is the only context where arguments are untyped, so ensure the types and order are correct.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step5.swift")
             }
             
             @Step {
-                Set the owner as the address deploying the contract. So the SwiftVM registers it as the contract's owner.
-
+                Set the contract owner as the sender of the deployment transaction.
+                
+                This allows the SwiftVM to register the owner for permissioned actions.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step6.swift")
             }
             
             @Step {
-                Declare the private function `setupEgld`.
-
+                Define a private helper function named `setupEgld`.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step7.swift")
             }
             
             @Step {
-                Instantiate the `AdminController` by using the `self.instantiateController` method.
+                Use `self.instantiateController` to initialize the `AdminController`.
                 
-                The SwiftVM will automatically binds the contract's address and the storage to the instantiated controller. 
-
+                The SwiftVM will automatically bind the controller to the contract’s address and internal storage.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step8.swift")
             }
             
             @Step {
-                Call the `setMaximumBet` endpoint, make sure the wallet calling it is the owner.
+                Call the `setMaximumBet` endpoint from the owner account.
                 
-                The `transactionInput` parameter is added by the SwiftVM to all the endpoints. This is where you can set the caller's address, as well as any EGLD or ESDT value sent. 
-
+                The `transactionInput` parameter lets you specify the caller and any EGLD or ESDT sent.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step9.swift")
             }
             
             @Step {
-                Call the `setMaximumBetPercent` endpoint, make sure the wallet calling it is the owner.
+                Call the `setMaximumBetPercent` endpoint from the owner account.
                 
-                **Reminder:** We defined in a earlier tutorial that `10_000` represents 100%, therefore, `1_000` is 10%.
-
+                **Reminder:** As defined earlier, `10_000` equals 100%, so `1_000` represents 10%.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step10.swift")
             }
             
             @Step {
-                Call the `increaseReserve` endpoint to increase the EGLD reserve to `100_000_000`, make sure the wallet calling it is the owner.
-
+                Call `increaseReserve` to fund the EGLD reserve with `100_000_000`.
+                
+                Ensure the call is made from the owner address.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step11.swift")
             }
             
             @Step {
-                Define the `setupUsdc` function in a similar way.
-
+                Create the `setupUsdc` function using the same structure.
+                
                 @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step12.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Write Tests for the Setup Helpers") {
+        @ContentAndMedia {
+            Now that you’ve created the helper functions, it’s time to verify that they work as expected.
+            
+            You’ll write two tests—one for the EGLD setup and one for the USDC setup.
+        }
+            
+        @Steps {
+            @Step {
+                Continue from where you left off in the previous section.
+                
+                @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection4Step12.swift")
+            }
+            
+            @Step {
+                Write a test method that verifies the `setupEgld` helper.
+                
+                @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection5Step2.swift")
+            }
+            
+            @Step {
+                Inside the test, call the `initContract` function to deploy the contract.
+                
+                @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection5Step3.swift")
+            }
+            
+            @Step {
+                Call the `setupEgld` function to configure the contract with EGLD values.
+                
+                @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection5Step4.swift")
+            }
+            
+            @Step {
+                Then, create another test to verify the `setupUsdc` helper, following a similar pattern.
+                
+                @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection5Step5.swift")
             }
         }
     }
