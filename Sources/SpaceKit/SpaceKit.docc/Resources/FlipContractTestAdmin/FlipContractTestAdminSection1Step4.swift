@@ -66,8 +66,6 @@ final class FlipTests: ContractTestCase {
     func testSetMaximumBetNotOwner() throws {
         try self.initContract()
         let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
-        
-        
     }
     
     private func initContract() throws {

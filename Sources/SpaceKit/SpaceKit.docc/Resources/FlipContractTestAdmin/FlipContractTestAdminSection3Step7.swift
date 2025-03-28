@@ -129,38 +129,6 @@ final class FlipTests: ContractTestCase {
         XCTAssertEqual(contractBalance, 1_000)
     }
     
-    func testIncreaseUsdcReserve() throws {
-        try self.initContract()
-        let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!
-        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
-        
-        try adminController.increaseReserve(
-            transactionInput: ContractCallTransactionInput(
-                callerAddress: OWNER_ADDRESS,
-                esdtValue: [
-                    TokenPayment(
-                        tokenIdentifier: USDC_TOKEN_IDENTIFIER,
-                        nonce: 0,
-                        amount: 1_000
-                    )
-                ]
-            )
-        )
-        
-        let tokenReserve = try storageController.getTokenReserve(
-            tokenIdentifier: USDC_TOKEN_IDENTIFIER,
-            tokenNonce: 0
-        )
-        let contractBalance = self.getAccount(address: CONTRACT_ADDRESS)!
-            .getEsdtBalance(
-                tokenIdentifier: USDC_TOKEN_IDENTIFIER_STRING,
-                nonce: 0
-            )
-        
-        XCTAssertEqual(tokenReserve, 1_000)
-        XCTAssertEqual(contractBalance, 1_000)
-    }
-    
     func testSetMaximumBetNotOwner() throws {
         try self.initContract()
         let adminController = self.instantiateController(AdminController.self, for: CONTRACT_ADDRESS)!

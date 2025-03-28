@@ -65,8 +65,6 @@ final class FlipTests: ContractTestCase {
     
     func testSetMaximumBetNotOwner() throws {
         try self.initContract()
-        
-        
     }
     
     private func initContract() throws {

@@ -1,0 +1,271 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Testing the admin endpoints") {
+        Admin endpoints are sensitive, they not only allows to change the contract's setting, but they also allow to withdraw the flip contract's token reserve.
+        
+        We need to ensure they work as expected.
+    }
+
+    @Section(title: "Ensure only the owner can call the admin endpoints") {
+        @ContentAndMedia {
+            An admin endpoint by definition should only be called by the owner of the smart contract. In the contract's code we called the `assertOwner()` function.
+            
+            In this section we'll write the test ensuring those endpoints fail if called by another address than the owner.
+            
+            You'll see how to catch a transaction failure in the SwiftVM, and performing checks on the error. 
+        }
+
+        @Steps {
+            @Step {
+                Start with the code from the previous chapter.
+                
+                @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection5Step5.swift")
+            }
+
+            @Step {
+                Declare the test function that ensures the `setMaximumBet` endpoint can only be called by the owner.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step2.swift")
+            }
+            
+            @Step {
+                Call our helper function `initContract` to deploy the flip contract.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step3.swift")
+            }
+            
+            @Step {
+                Instantiate an instance of `AdminController`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step4.swift")
+            }
+            
+            @Step {
+                Declare a `do`...`catch` block.
+                
+                We expect the error to be thrown in the `do`, we will catch it in the `catch`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step5.swift")
+            }
+            
+            @Step {
+                Call the `setMaximumBet` endpoint, without setting any caller address.
+                
+                When you don't provide a caller address, the SwiftVM considers the contract's address as its own caller.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step6.swift")
+            }
+            
+            @Step {
+                Call `XCTFail()`, this line should never be executed because of `setMaximumBet` failing.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step7.swift")
+            }
+            
+            @Step {
+                In the `catch` block, ensure `error` is the one thrown when the caller is not the owner.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step8.swift")
+            }
+            
+            @Step {
+                Write a similar test for the `setMaximumBetPercent` endpoint.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step9.swift")
+            }
+            
+            @Step {
+                Write a similar test for the `increaseReserve` endpoint.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step10.swift")
+            }
+            
+            @Step {
+                Write a similar test for the `withdrawReserve` endpoint.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step11.swift")
+            }
+        }
+    }
+        
+    @Section(title: "Test the maximum bet endpoints") {
+        @ContentAndMedia {
+            In this section we will ensure the `maximumBet` and `maximumBetPercent` endpoints are working.
+            
+            The tests are basic, we'll call the endpoints and ensure the value in the storage changed.
+        }
+
+        @Steps {
+            @Step {
+                Start with the code from the previous section.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection1Step11.swift")
+            }
+            
+            @Step {
+                Declare the test that ensures the `maximumBet` endpoint works.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection2Step2.swift")
+            }
+            
+            @Step {
+                Init the contract and instantiate `AdminController` and `StorageController`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection2Step3.swift")
+            }
+            
+            @Step {
+                Call the `setMaximumBetAmount` to set the amount to `100`.
+                
+                **Reminder:** make sure to set the owner as the endpoint caller.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection2Step4.swift")
+            }
+            
+            @Step {
+                Retrieve the maximum bet amount from the storage.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection2Step5.swift")
+            }
+            
+            @Step {
+                Ensure the maximum bet amount is `100`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection2Step6.swift")
+            }
+            
+            @Step {
+                Write a similar test for the `setMaximumBetPercent` endpoint.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection2Step7.swift")
+            }
+        }
+    }
+        
+    @Section(title: "Test the increase reserve endpoint") {
+        @ContentAndMedia {
+            In this section we will ensure the `increaseReserve` is working.
+            
+            We'll ensure that after calling the endpoint, the token reserve stored value has increased as well as the contract's balance.
+            
+            We'll test the endpoint for both EGLD and USDC.
+        }
+
+        @Steps {
+            @Step {
+                Start with the code from the previous section.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection2Step7.swift")
+            }
+            
+            @Step {
+                Declare the test that ensures the `increaseReserve` endpoint works for EGLD.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection3Step2.swift")
+            }
+            
+            @Step {
+                Init the contract, and instantiate `AdminController` and `StorageController`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection3Step3.swift")
+            }
+            
+            @Step {
+                Call the increase reserve, add a transfer of `1_000` EGLD.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection3Step4.swift")
+            }
+            
+            @Step {
+                Retrieve the stored value of the token reserve.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection3Step5.swift")
+            }
+            
+            @Step {
+                Retrieve the current flip contract's EGLD balance by calling the `self.getAccount` method.
+                
+                **Important:** The `self.getAccount` method gives you the state of an account at the time when the method is called. You have to call it again after any blockchain state changes to have up-to-date information.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection3Step6.swift")
+            }
+            
+            @Step {
+                Ensure both the stored token reserve and the contract balance are `1_000`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection3Step7.swift")
+            }
+            
+            @Step {
+                Write the test for the `increaseReserve` for USDC in a similar way.
+                
+                The differences you should focus on are how the USDC transfer is done and how the contract's USDC balance is retrieved.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection3Step8.swift")
+            }
+        }
+    }
+        
+    @Section(title: "Test the withdraw reserve endpoint") {
+        @ContentAndMedia {
+            In this section we will ensure the `withdrawReserve` is working.
+            
+            We'll ensure that after calling the endpoint, the token reserve stored value has decreased as well as the contract's balance.
+            
+            We'll test the endpoint for both EGLD and USDC.
+        }
+
+        @Steps {
+            @Step {
+                Start with the code from the previous section.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection3Step8.swift")
+            }
+            
+            @Step {
+                Declare the test that ensures the `withdrawReserve` endpoint works for EGLD.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection4Step2.swift")
+            }
+            
+            @Step {
+                Init the contract by calling `initContract` and `setupEgld`.
+                
+                **Reminder:** the `setupEgld` helper method we defined in the previous chapter increase the EGLD reserve by `100_000_000`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection4Step3.swift")
+            }
+            
+            @Step {
+                Instantiate `AdminController` and `StorageController`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection4Step4.swift")
+            }
+            
+            @Step {
+                Call the `withdrawReserve` endpoint to withdraw `10_000_000` EGLD from the token reserve.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection4Step5.swift")
+            }
+            
+            @Step {
+                Retrieve the stored token reserve for EGLD, as well as the flip contract and owner EGLD balances. 
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection4Step6.swift")
+            }
+            
+            @Step {
+                Ensure the EGLD token reserve and contract EGLD balance are `90_000_000`, and owner EGLD balance is `10_000_000`.
+                
+                Explanation for the owner balance: we initialized the owner account with a balance of `100_000_000` EGLD. The `setupEgld` makes the owner to send all the EGLD to the contract, it means his balance is `0` afterwards. The `withdrawReserve` call give it back `10_000_000`
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection4Step7.swift")
+            }
+            
+            @Step {
+                Write the test for the `withdrawReserve` for USDC in a similar way.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection4Step8.swift")
+            }
+        }
+    }
+}
