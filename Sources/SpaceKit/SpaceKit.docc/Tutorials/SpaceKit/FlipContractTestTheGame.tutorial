@@ -1,0 +1,146 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Test the Game Logic for the Flip Contract") {
+        This chapter concludes the testing part of our contract, we'll test the entire game logic we wrote in the `GameController` controller.
+        
+        You'll see how to manipulate the time in the SwiftVM, as well as manipulating random numbers in a deterministic way.
+    }
+
+    @Section(title: "Write the flip and bounty utility functions.") {
+        @ContentAndMedia {
+            Before writing the tests, let's write the following utility function:
+            
+            - `flipSingleEgld`: calls the `flip` endpoint with `PLAYER_ADDRESS` as caller. Accepts a parameter `amount` telling how much we want to flip.
+            - `flipSingleUsdc`: same behavior as `flipSingleEgld`, but for USDC.
+            - `bounty`: calls the `bounty` endpoint with `BOUNTY_ADDRESS` as caller.
+        }
+
+        @Steps {
+            @Step {
+                Start with the code from the previous chapter.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestAdminSection4Step8.swift")
+            }
+
+            @Step {
+                Declare the `flipSingleEgld` utility function.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection1Step2.swift")
+            }
+            
+            @Step {
+                Instantiate the `GameController`.
+                
+                **Note:** we assume the contract already deployed and initialized here.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection1Step3.swift")
+            }
+            
+            @Step {
+                Call the `flip` endpoint with `BOUNTY_ADDRESS` as caller.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection1Step4.swift")
+            }
+            
+            @Step {
+                Define the `flipSingleUsdc` in a similar way.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection1Step5.swift")
+            }
+            
+            @Step {
+                Declare the `bounty` utility function.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection1Step6.swift")
+            }
+            
+            @Step {
+                Instantiate the `GameController`.
+                
+                **Note:** we assume the contract already deployed and initialized here.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection1Step7.swift")
+            }
+            
+            @Step {
+                Call the `bounty` endpoint with `BOUNTY_ADDRESS` as caller.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection1Step8.swift")
+            }
+        }
+    }
+    
+    @Section(title: "Test the fail cases of the flip endpoint.") {
+        @ContentAndMedia {
+            In this section, we'll write some tests to ensure the `flip` endpoint fails when expected:
+            
+            - The amount bet is too high regarding the maximul bet absolute value.
+            - The amount bet is too high regarding the maximum bet in percentage of the token reserve.
+            
+            **Important:** to keep this tutorial simple, we'll skip some tests such as testing if the endpoint fails by sending an unknown token. When writing your decentralized production make sure to be as exhaustive as possible in your tests! 
+        }
+
+        @Steps {
+            @Step {
+                Start with the code from the previous section.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection1Step8.swift")
+            }
+
+            @Step {
+                Declare the test that will ensure the `flip` endpoint fails if the player bets a too high amount regarding the maximum bet as absiolute value.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step2.swift")
+            }
+            
+            @Step {
+                Initialise the contract and instantiate `AdminController`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step3.swift")
+            }
+            
+            @Step {
+                Set the `maximumBet` storage value to `1_000`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step4.swift")
+            }
+            
+            @Step {
+                Set the `maximumBetPercent` storage value to `100_000`.
+                
+                This percentage exceeds `100%` (defined as `10_000`), therefore it makes this limit to never be reached.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step5.swift")
+            }
+            
+            @Step {
+                Instantiate `GameController`.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step6.swift")
+            }
+            
+            @Step {
+                Create a `do`...`catch` block to catch the `flip` call failure.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step7.swift")
+            }
+            
+            @Step {
+                In the do block, call the `flip` endpoint with an amount exceeded the maximum set earlier. 
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step8.swift")
+            }
+            
+            @Step {
+                Call `XCTFail()` to make sure the preivous endpoint call fails.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step9.swift")
+            }
+            
+            @Step {
+                In the `catch` block, ensure the error is the one expected.
+
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step10.swift")
+            }
+        }
+    }
+}
