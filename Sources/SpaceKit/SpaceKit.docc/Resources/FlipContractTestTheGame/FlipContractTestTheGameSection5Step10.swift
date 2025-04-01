@@ -73,13 +73,13 @@ final class FlipTests: ContractTestCase {
             for: CONTRACT_ADDRESS
         )!
         
-        let usdcTokenReserve = try storageController
+        let egldTokenReserve = try storageController
             .getTokenReserve(
                 tokenIdentifier: .egld,
                 tokenNonce: 0
             )
         
-        XCTAssertEqual(usdcTokenReserve, 99_906_000)
+        XCTAssertEqual(egldTokenReserve, 99_906_000)
     }
     
     func testFlipSingleUsdc() throws {
@@ -201,38 +201,6 @@ final class FlipTests: ContractTestCase {
         XCTAssertEqual(playerBalance, 100_088_000)
         XCTAssertEqual(bountyBalance, 1_000)
         XCTAssertEqual(tokenReserve, 99_906_000)
-    }
-    
-    func testBountySingleLoseEgld() throws {
-        try self.initContract()
-        try self.setupEgld()
-        try self.flipSingleEgld(amount: 100_000)
-        
-        let blockRandomSeed = Array(repeating: UInt8(0), count: 47) + [4]
-        
-        self.setBlockInfos(
-            nonce: 1,
-            randomSeed: Data(blockRandomSeed)
-        )
-        
-        try self.bounty()
-        
-        let storageController = self.instantiateController(StorageController.self, for: CONTRACT_ADDRESS)!
-        
-        let flipContractBalance = self.getAccount(address: CONTRACT_ADDRESS)!.balance
-        let ownerBalance = self.getAccount(address: OWNER_ADDRESS)!.balance
-        let playerBalance = self.getAccount(address: PLAYER_ADDRESS)!.balance
-        let bountyBalance = self.getAccount(address: BOUNTY_ADDRESS)!.balance
-        let tokenReserve = try storageController.getTokenReserve(
-            tokenIdentifier: .egld,
-            tokenNonce: 0
-        )
-        
-        XCTAssertEqual(flipContractBalance, 100_094_000)
-        XCTAssertEqual(ownerBalance, 5_000)
-        XCTAssertEqual(playerBalance, 99_900_000)
-        XCTAssertEqual(bountyBalance, 1_000)
-        XCTAssertEqual(tokenReserve, 100_094_000)
     }
 
     func testFlipTooHighBetAbsoluteValue() throws {

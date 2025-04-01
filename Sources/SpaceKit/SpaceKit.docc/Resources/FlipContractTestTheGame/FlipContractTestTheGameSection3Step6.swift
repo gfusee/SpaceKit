@@ -73,7 +73,7 @@ final class FlipTests: ContractTestCase {
             for: CONTRACT_ADDRESS
         )!
         
-        let usdcTokenReserve = try storageController
+        let egldTokenReserve = try storageController
             .getTokenReserve(
                 tokenIdentifier: .egld,
                 tokenNonce: 0

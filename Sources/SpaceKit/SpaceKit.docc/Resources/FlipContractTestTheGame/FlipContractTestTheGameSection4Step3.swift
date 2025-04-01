@@ -73,13 +73,13 @@ final class FlipTests: ContractTestCase {
             for: CONTRACT_ADDRESS
         )!
         
-        let usdcTokenReserve = try storageController
+        let egldTokenReserve = try storageController
             .getTokenReserve(
                 tokenIdentifier: .egld,
                 tokenNonce: 0
             )
         
-        XCTAssertEqual(usdcTokenReserve, 99_906_000)
+        XCTAssertEqual(egldTokenReserve, 99_906_000)
     }
     
     func testFlipSingleUsdc() throws {
