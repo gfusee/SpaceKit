@@ -42,6 +42,8 @@ cd "$TEMP_DIR" || exit 1
 # Resolve version if not explicitly provided
 if [ -z "$SPACEKIT_VERSION" ]; then
     echo "Retrieving the latest version tag from the cloned repository..."
+    
+    git fetch --tags
 
     # Get the list of tags sorted by version
     TAGS=$(git tag -l --sort=-v:refname | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$')
