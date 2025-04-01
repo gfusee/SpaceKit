@@ -1,5 +1,5 @@
 #if !WASM
-import CryptoKit
+import Crypto
 
 package struct DeterministicRNG {
     private var state: UInt64
