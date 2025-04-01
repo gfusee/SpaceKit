@@ -1,7 +1,7 @@
 #if !WASM
 import Foundation
 import BigInt
-import CryptoKit
+import Crypto
 
 package enum TransactionContainerErrorBehavior {
     case blockThread

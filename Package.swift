@@ -63,13 +63,15 @@ if !isWasm {
     packageDependencies.append(contentsOf: [
         .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.1.0"),
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0")
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
+        .package(url: "https://github.com/apple/swift-crypto.git", exact: "3.12.2")
     ])
     
     libraryDependencies.append(contentsOf: [
         "SpaceKitABI",
         "ABIMetaMacro",
-        .product(name: "BigInt", package: "BigInt")
+        .product(name: "BigInt", package: "BigInt"),
+        .product(name: "Crypto", package: "swift-crypto")
     ])
     
     nonWasmTargets.append(contentsOf: [
