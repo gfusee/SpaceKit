@@ -197,6 +197,13 @@ if !isWasm {
             ]
         ),
         .testTarget(
+            name: "FlipTests",
+            dependencies: [
+                "Flip",
+                "SpaceKitTesting"
+            ]
+        ),
+        .testTarget(
             name: "MappersTests",
             dependencies: [
                 "SpaceKitTesting"
@@ -478,6 +485,18 @@ let package = Package(
                 "SpaceKit"
             ],
             path: "Examples/Factorial",
+            exclude: [
+                "Scenarios",
+                "Output"
+            ],
+            swiftSettings: swiftSettings
+        ),
+        .target(
+            name: "Flip",
+            dependencies: [
+                "SpaceKit"
+            ],
+            path: "Examples/Flip",
             exclude: [
                 "Scenarios",
                 "Output"

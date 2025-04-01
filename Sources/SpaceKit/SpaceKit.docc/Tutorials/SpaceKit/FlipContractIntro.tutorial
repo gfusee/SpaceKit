@@ -1,0 +1,67 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Build a Coin Flip Smart Contract") {
+        In this tutorial, you’ll write and test a complete smart contract that relies on random number generation to implement a coin flip mechanic. Players wager a chosen amount of any token and face a 50% chance of doubling their bet—or losing it. A small fee is deducted from each wager and sent to the developer’s wallet.
+
+        The SpaceVM provides built-in deterministic random number generation based on the transaction hash and block seed. Because these inputs are predictable within a single block, it’s possible for an attacker to anticipate the outcome. To mitigate this, you’ll delay the random number computation to a future block. This delay is configurable and should be adapted to the characteristics of the target blockchain.
+
+        Anyone can trigger the random number computation—an action referred to as “bountying.” The bounty executor receives a small share of the wagered amount as a reward.
+
+        For example, consider a setup with a 5% owner fee, 1% bounty reward, and a 1-block delay:
+        - Alice initiates a flip with a 1000 USDC bet.
+        - 50 USDC goes to the owner. 10 USDC is held as a bounty reward.
+        - The remaining 940 USDC is used for the flip.
+        - After one block passes, Bob performs the bounty.
+        - If the generated number is 0, Alice loses her bet.
+        - If it’s 1, she wins 1880 USDC (940 × 2).
+
+        To protect the contract’s funds from being drained due to a streak of bad luck, you’ll implement a maximum bet threshold. This cap can be either a fixed value or a percentage of the contract’s total balance.
+        
+        This tutorial is intended for learning purposes only. The approach to random number generation shown here is not secure enough for production environments. For real-world deployments, consider using asynchronous randomness sources to strengthen the integrity of your contract.
+    }
+
+    @Section(title: "Set Up the Project") {
+        @ContentAndMedia {
+            Begin by creating a new project with the SpaceKit command-line tool.
+        }
+
+        @Steps {
+            @Step {
+                Open a terminal window.
+
+                @Image(source: "InstallingToolsSection1Step1.png", alt: "An empty terminal window.")
+            }
+
+            @Step {
+                Navigate to your desired folder and run the following command: `space init Flip`
+
+                This creates a new folder named `Flip`.
+
+                @Image(source: "FlipContractIntroSection1Step2.png", alt: "Output of the `space init Flip` command.")
+            }
+
+            @Step {
+                Open the `Flip` directory in your preferred Swift IDE.
+
+                This tutorial uses Xcode, but VSCode with the official Swift extension also works.
+
+                @Image(source: "FlipContractIntroSection1Step3.png", alt: "Xcode project selection screen with 'Flip' highlighted.")
+            }
+
+            @Step {
+                (Optional) Build the project to improve code completion and macro generation.
+
+                In Xcode, select **Product > Build**, or press `⌘ + B`.
+
+                @Image(source: "FlipContractIntroSection1Step4.png", alt: "Xcode's Product menu with 'Build' highlighted.")
+            }
+
+            @Step {
+                Clean up the template.
+
+                Remove all existing files from the `Contracts/Flip/Source` folder.
+
+                @Image(source: "FlipContractIntroSection1Step5.png", alt: "Contracts/Flip/Source is empty.")
+            }
+        }
+    }
+}

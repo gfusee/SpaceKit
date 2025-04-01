@@ -1,0 +1,339 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Implement the Game Logic for the Flip Contract") {
+        With the storage and administrative endpoints complete, it's time to build the core gameplay mechanics.
+
+        In this tutorial, you’ll implement a `GameController` containing two endpoints and one utility function:
+
+        - `flip`: The function players call to place a bet. It processes the payment, verifies that the bet does not exceed the maximum limit, deducts and transfers the owner’s fee, and calculates (but does not immediately distribute) the bounty reward.
+        - `bounty`: A function that allows anyone to process all pending flips in a single call. This process, referred to as "bountying a flip," involves generating a random number—either 0 or 1—to determine whether the player wins or loses.
+        - `makeFlip`: A private function responsible for resolving a single flip. Since `bounty` needs to process multiple flips, it iterates over all pending flips and calls `makeFlip` for each one.
+    }
+
+    @Section(title: "Implement the flip Endpoint") {
+        @ContentAndMedia {
+            Start by defining the `GameController` and implementing the `flip` endpoint.
+
+            You'll also declare a constant named `HUNDRED_PERCENT`, set to `10_000`. Since integer division truncates results (`10/3 = 3`), fractional percentages cannot be directly represented. To work around this, consider `10_000` as the full percentage scale (100%). For instance, to represent `0.1%`, use `100`, which is `0.1%` of `10_000`.
+        }
+
+        @Steps {
+            @Step {
+                Create a new file named `GameController.swift` inside `Contracts/Flip/Source`.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step1.swift")
+            }
+
+            @Step {
+                Import the `SpaceKit` framework.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step2.swift")
+            }
+
+            @Step {
+                Define `HUNDRED_PERCENT` as a `UInt64` constant.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step3.swift")
+            }
+
+            @Step {
+                Declare the `GameController` controller.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step4.swift")
+            }
+
+            @Step {
+                Define the `flip` endpoint.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step5.swift")
+            }
+
+            @Step {
+                Retrieve the payment made by the player.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step6.swift")
+            }
+
+            @Step {
+                Create a mutable instance of `StorageController`.
+
+                Since storage values will be modified, the controller needs to be mutable.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step7.swift")
+            }
+
+            @Step {
+                Retrieve the token reserve, absolute maximum bet, and percentage-based maximum bet.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step8.swift")
+            }
+
+            @Step {
+                Compute the actual maximum bet percentage value as a fraction of the token reserve.
+
+                **Important:** Always multiply before dividing when handling integers. `100 * 300 / 1000 = 30` is correct but `100 * (300 / 1000) = 100 * 0 = 0` is incorrect.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step9.swift")
+            }
+
+            @Step {
+                Determine the overall maximum bet by selecting the lower value between the absolute and percentage-based limits.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step10.swift")
+            }
+
+            @Step {
+                Calculate the owner’s fee.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step11.swift")
+            }
+
+            @Step {
+                Calculate the bounty incentive.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step12.swift")
+            }
+
+            @Step {
+                Determine the final amount representing the flip.
+
+                This is the amount that will be doubled if the player wins.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step13.swift")
+            }
+
+            @Step {
+                Ensure the bet does not exceed the maximum allowed amount.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step14.swift")
+            }
+
+            @Step {
+                Generate a new flip ID by incrementing the previous one.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step15.swift")
+            }
+
+            @Step {
+                Create a `Flip` instance containing all necessary details.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step16.swift")
+            }
+
+            @Step {
+                Reduce the token reserve by the flip amount.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step17.swift")
+            }
+
+            @Step {
+                Transfer the owner’s fee.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step18.swift")
+            }
+
+            @Step {
+                Store the new flip ID and its details.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step19.swift")
+            }
+        }
+    }
+        
+    @Section(title: "Implement the makeFlip Function") {
+        @ContentAndMedia {
+            Now that the contract can register flips, the next step is to define the `makeFlip` utility function before implementing the `bounty` endpoint.  
+        }
+
+        @Steps {
+            @Step {
+                Start with the code from the previous section.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step19.swift")
+            }
+
+            @Step {
+                Declare the `makeFlip` function and mark it as `private` to prevent external access.  
+
+                It takes two arguments: the address receiving the bounty reward and the flip’s details.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step2.swift")
+            }
+
+            @Step {
+                Generate a random number between 0 and 1.  
+
+                **Tip:** Use `Randomness.nextUInt8InRange`, which returns a random `UInt8` in the specified range (`min` inclusive, `max` exclusive).  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step3.swift")
+            }
+
+            @Step {
+                Check if the random number equals 1 to determine whether the flip is a win.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step4.swift")
+            }
+
+            @Step {
+                Transfer the bounty reward to the specified address.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step5.swift")
+            }
+
+            @Step {
+                Calculate the payout amount in case of a win.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step6.swift")
+            }
+
+            @Step {
+                Instantiate a `StorageController` instance.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step7.swift")
+            }
+
+            @Step {
+                Define conditional logic to handle winning and losing scenarios.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step8.swift")
+            }
+
+            @Step {
+                If the flip is a win, transfer the winnings to the player.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step9.swift")
+            }
+
+            @Step {
+                If the flip is a loss, update the token reserve accordingly.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step10.swift")
+            }
+
+            @Step {
+                Remove the flip entry from storage after processing.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step11.swift")
+            }
+        }
+    }
+        
+    @Section(title: "Define the bounty Endpoint") {
+        @ContentAndMedia {
+            We touch to the end of our contract, let's write the last endpoint: `bounty`.
+        }
+
+        @Steps {
+            @Step {
+                Start with the code from the previous section.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection2Step11.swift")
+            }
+            
+            @Step {
+                Declare the `bounty` endpoint.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step2.swift")
+            }
+            
+            @Step {
+                Retrieve the caller.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step3.swift")
+            }
+            
+            @Step {
+                Ensure the caller is not a smart contract.
+                
+                Smart contracts can revert the transaction if the random number doesn't suit them.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step4.swift")
+            }
+            
+            @Step {
+                Retrieve the last flip's id in the storage, and the last bountied flip id.
+                
+                The difference allows us to know which flips are pending.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step5.swift")
+            }
+            
+            @Step {
+                Ensure there is at least one flip to bounty.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step6.swift")
+            }
+            
+            @Step {
+                Retrieve the current block nonce.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step7.swift")
+            }
+            
+            @Step {
+                Create a variable that will act as a counter in the `while` loop. 
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step8.swift")
+            }
+            
+            @Step {
+                Create the `while` loop that will loop over all the pending flips.
+                
+                Each iteration of the loop will try to `makeFlip` for a single flip.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step9.swift")
+            }
+            
+            @Step {
+                Get the loop's flip id we will call `makeFlip` with.  
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step10.swift")
+            }
+            
+            @Step {
+                Check if flip exists in the storage.
+                
+                If the storage is empty, it means there is no pending flip anymore, we can `break` the loop. 
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step11.swift")
+            }
+            
+            @Step {
+                Retrieve the flip from the storage.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step12.swift")
+            }
+            
+            @Step {
+                Ensure enough blocks passed to bounty the flip. `break` the loop otherwise.
+                
+                If one pending flips cannot be bountied yet, then all the next flips cannot be too.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step13.swift")
+            }
+            
+            @Step {
+                Call `makeFlip` for this flip. The bounty address is the caller of the endpoint.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step14.swift")
+            }
+            
+            @Step {
+                Set the variable acting as a counter to the bountied flip id. 
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step15.swift")
+            }
+            
+            @Step {
+                After the loop, ensure at least one flip has been bountied.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step16.swift")
+            }
+            
+            @Step {
+                Set the last bountied flip id into the storage.
+
+                @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection3Step17.swift")
+            }
+        }
+    }
+}

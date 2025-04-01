@@ -1,0 +1,277 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Define the Storage for the Flip Contract") {
+        With your Flip project initialized, you're ready to begin implementing the smart contract. The contract is composed of the following components:
+
+        - `Flip`: A structure that stores individual flip information such as the player's address and the bet amount.
+        - `StorageController`: A controller that manages the contract’s stored values.
+        - `init`: The initializer function called during contract deployment, used to configure initial storage.
+        - `AdminController`: A controller restricted to the contract owner, used to perform administrative operations like setting bet limits or managing funds.
+        - `GameController`: A controller that defines the game logic and player interactions, including flipping and bountying.
+
+        In this tutorial, you’ll define the `Flip` structure and implement the storage logic.
+    }
+
+    @Section(title: "Define the Flip Structure") {
+        @ContentAndMedia {
+            The `Flip` structure contains all relevant data for a single coin flip. This model will be reused throughout the contract, so start by defining it.
+        }
+
+        @Steps {
+            @Step {
+                Create a new file named `Flip.swift` inside `Contracts/Flip/Source`.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step1.swift")
+            }
+
+            @Step {
+                Import the SpaceKit framework.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step2.swift")
+            }
+
+            @Step {
+                Declare a structure named `Flip`, and annotate it with `@Codable` to enable encoding and decoding.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step3.swift")
+            }
+
+            @Step {
+                Add a `UInt64` property named `id`.
+
+                This identifier is used to track individual flips.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step4.swift")
+            }
+
+            @Step {
+                Add a property named `playerAddress` of type `Address`.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step5.swift")
+            }
+
+            @Step {
+                Add a property named `tokenIdentifier` of type `TokenIdentifier`.
+
+                This identifies the token the player used for the bet.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step6.swift")
+            }
+
+            @Step {
+                Add a `UInt64` property named `tokenNonce`.
+
+                This distinguishes between tokens sharing the same identifier.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step7.swift")
+            }
+
+            @Step {
+                Add a `BigUint` property named `amount`.
+
+                This stores the amount bet by the player.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step8.swift")
+            }
+
+            @Step {
+                Add a `BigUint` property named `bounty`.
+
+                This defines the reward for the account that bounties the flip.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step9.swift")
+            }
+
+            @Step {
+                Add a `UInt64` property named `blockNonce`.
+
+                This is the block number at which the flip was initiated.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step10.swift")
+            }
+
+            @Step {
+                Add a `UInt64` property named `minimumBlockBounty`.
+
+                This is the minimum number of blocks to wait before the flip can be bountied.
+
+                @Code(name: "Flip.swift", file: "FlipContractWriteTheStorageSection1Step11.swift")
+            }
+        }
+    }
+
+    @Section(title: "Implement Contract Storage") {
+        @ContentAndMedia {
+            Smart contracts must persist data between calls. In this section, you'll define all necessary storage for the Flip contract.
+        }
+
+        @Steps {
+            @Step {
+                Create a new file named `StorageController.swift` inside `Contracts/Flip/Source`.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step1.swift")
+            }
+
+            @Step {
+                Import the SpaceKit framework.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step2.swift")
+            }
+
+            @Step {
+                Declare a controller named `StorageController`.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step3.swift")
+            }
+
+            @Step {
+                Store the percentage of the bet taken as owner fees.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step4.swift")
+            }
+
+            @Step {
+                Store the percentage awarded to the bounty performer.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step5.swift")
+            }
+
+            @Step {
+                Store the minimum number of blocks required before bountying.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step6.swift")
+            }
+
+            @Step {
+                Track the ID of the most recent flip.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step7.swift")
+            }
+
+            @Step {
+                Track the ID of the last bountied flip.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step8.swift")
+            }
+
+            @Step {
+                Declare a mapping from flip ID to `Flip` structures.
+
+                **Tip**: Avoid using arrays for large-scale storage due to performance concerns.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step9.swift")
+            }
+
+            @Step {
+                Define a mapper for absolute maximum bets per token and nonce.
+
+                **Note**: This is functionally equivalent to `@Mapping` with multiple keys.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step10.swift")
+            }
+
+            @Step {
+                Similarly, store the maximum allowed bet as a percentage of the contract’s reserves.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step11.swift")
+            }
+
+            @Step {
+                Maintain the token reserves per identifier and nonce.
+
+                **Important**: These balances differ from the contract’s on-chain balance as they include locked bounties.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step12.swift")
+            }
+
+            @Step {
+                (Optional) Add a view function to expose the stored owner fee percentage.
+
+                **Note**: Use manual view declarations for stored values that don’t expose accessors by default.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step13.swift")
+            }
+
+            @Step {
+                (Optional) Add a view for the bounty fee percentage.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step14.swift")
+            }
+
+            @Step {
+                (Optional) Add a view for the minimum block delay before bountying.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step15.swift")
+            }
+
+            @Step {
+                (Optional) Add a view for retrieving the latest registered flip ID.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step16.swift")
+            }
+
+            @Step {
+                (Optional) Add a view for retrieving the latest bountied flip ID.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step17.swift")
+            }
+
+            @Step {
+                (Optional) Add a view for retrieving a flip by its ID.
+
+                @Code(name: "StorageController.swift", file: "FlipContractWriteTheStorageSection2Step18.swift")
+            }
+        }
+    }
+        
+    @Section(title: "Define the Contract Init") {
+        @ContentAndMedia {
+            Our storage is written, however we want to initialise some values at deploy time. This is done by the initilizer function: a public function annotated @Init on the global scope.
+        }
+
+        @Steps {
+            @Step {
+                Create a new file named `init.swift` in the `Contracts/Flip/Source` directory.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step1.swift")
+            }
+
+            @Step {
+                Import the `SpaceKit` framework.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step2.swift")
+            }
+
+            @Step {
+                Define a public function annotated with `@Init`.
+
+                This function accepts three arguments, which represent the initial values for the contract’s storage.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step3.swift")
+            }
+
+            @Step {
+                Create an instance of the `StorageController`.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step4.swift")
+            }
+
+            @Step {
+                Set the initial values for the owner fee and bounty fee percentages.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step5.swift")
+            }
+
+            @Step {
+                Add a safety check to ensure the minimum number of blocks required before bountying is greater than zero.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step6.swift")
+            }
+
+            @Step {
+                Store the validated block delay as the initial value for the bounty threshold.
+
+                @Code(name: "init.swift", file: "FlipContractWriteTheStorageSection3Step7.swift")
+            }
+        }
+    }
+}

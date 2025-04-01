@@ -95,4 +95,59 @@
             @Image(source: "logo.png", alt: "A dummy image.")
         }
     }
+    
+    @Volume(name: "Build a Coin Flip Contract") {
+        Follow a full walkthrough to build, and test a complete contract with random logic, fees, and admin access.
+
+        @Image(source: "logo.png", alt: "A dummy image.")
+
+        @Chapter(name: "Build a Coin Flip Smart Contract") {
+            @TutorialReference(tutorial: "doc:FlipContractIntro")
+            Learn how to design the rules of your flip-based game, configure its economics, and protect it against random number manipulation.
+            
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
+
+        @Chapter(name: "Define the Storage for the Flip Contract") {
+            @TutorialReference(tutorial: "doc:FlipContractWriteTheStorage")
+            Define the structures and values your contract will store—including flips, reserves, fees, and configuration parameters.
+            
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
+
+        @Chapter(name: "Add Administrative Endpoints to the Flip Contract") {
+            @TutorialReference(tutorial: "doc:FlipContractWriteAdmin")
+            Implement the logic needed to let contract owners configure fees, set limits, and manage reserves.
+            
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
+
+        @Chapter(name: "Implement the Game Logic for the Flip Contract") {
+            @TutorialReference(tutorial: "doc:FlipContractWriteTheGame")
+            Build the core mechanics that power the game: accepting bets, resolving outcomes, and managing bounty rewards.
+            
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
+
+        @Chapter(name: "Set Up Testing in the SwiftVM") {
+            @TutorialReference(tutorial: "doc:FlipContractInitTests")
+            Prepare your project for unit testing using SwiftVM. Learn how to simulate blockchain state and transactions in Swift.
+            
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
+
+        @Chapter(name: "Test the Admin Endpoints") {
+            @TutorialReference(tutorial: "doc:FlipContractTestAdmin")
+            Write tests to ensure admin-only access is enforced and configuration changes behave as expected.
+            
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
+
+        @Chapter(name: "Test the Game Logic for the Flip Contract") {
+            @TutorialReference(tutorial: "doc:FlipContractTestTheGame")
+            Validate end-to-end gameplay scenarios, simulate randomness, and test both winning and losing outcomes.
+            
+            @Image(source: "logo.png", alt: "A dummy image.")
+        }
+    }
 }

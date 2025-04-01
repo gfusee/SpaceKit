@@ -1,0 +1,204 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Add Administrative Endpoints to the Flip Contract") {
+        Now that your storage is fully set up, it’s time to define the administrative endpoints that allow the contract owner to manage critical values and assets.
+
+        In this section, you’ll implement endpoints to:
+
+        - Set the required number of blocks before a flip can be bountied.
+        - Update the owner and bounty fee percentages.
+        - Increase the contract’s reserve with new funds.
+        - Withdraw reserve funds back to the owner.
+    }
+
+    @Section(title: "Set the Minimum Block Bounty Delay") {
+        @ContentAndMedia {
+            This endpoint allows the contract owner to update the minimum number of blocks that must pass before a flip is eligible to be bountied. Adjusting this value enables adaptation to the characteristics of different blockchains.
+        }
+
+        @Steps {
+            @Step {
+                Create a new file named `AdminController.swift` inside the `Contracts/Flip/Source` folder.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection1Step1.swift")
+            }
+
+            @Step {
+                Import the `SpaceKit` framework.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection1Step2.swift")
+            }
+
+            @Step {
+                Declare a controller named `AdminController`.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection1Step3.swift")
+            }
+
+            @Step {
+                Define the `setMinimumBlockBounty` endpoint, accepting a single parameter called `value`.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection1Step4.swift")
+            }
+
+            @Step {
+                Restrict access to the contract owner only.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection1Step5.swift")
+            }
+
+            @Step {
+                Validate that the value is strictly greater than zero.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection1Step6.swift")
+            }
+
+            @Step {
+                Instantiate a mutable instance of `StorageController`.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection1Step7.swift")
+            }
+
+            @Step {
+                Update the `minimumBlockBounty` storage with the new value.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection1Step8.swift")
+            }
+        }
+    }
+
+    @Section(title: "Set Maximum Bet Limits") {
+        @ContentAndMedia {
+            These endpoints allow the owner to define bet limits in absolute value and as a percentage of the contract’s reserve for a given token and nonce. This ensures controlled risk exposure for the contract.
+        }
+
+        @Steps {
+            @Step {
+                Continue working in `AdminController.swift`.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection1Step8.swift")
+            }
+
+            @Step {
+                Declare the `setMaximumBet` endpoint.
+
+                It accepts three parameters: the token identifier, the token nonce, and the maximum amount allowed per bet.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection2Step2.swift")
+            }
+
+            @Step {
+                Limit this endpoint to calls from the contract owner.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection2Step3.swift")
+            }
+
+            @Step {
+                Check that the provided amount is strictly greater than zero.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection2Step4.swift")
+            }
+
+            @Step {
+                Store the maximum bet amount in the contract’s storage.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection2Step5.swift")
+            }
+
+            @Step {
+                Create a `setMaximumBetPercent` endpoint using a similar structure.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection2Step6.swift")
+            }
+        }
+    }
+
+    @Section(title: "Increase Contract Reserves") {
+        @ContentAndMedia {
+            This endpoint allows the owner to deposit tokens into the contract’s internal reserve. These tokens will be used to pay out successful flips. The reserve must be manually tracked to account for locked bounties.
+        }
+
+        @Steps {
+            @Step {
+                Continue building on the previous code.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection2Step6.swift")
+            }
+
+            @Step {
+                Declare the `increaseReserve` endpoint.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection3Step2.swift")
+            }
+
+            @Step {
+                Restrict the endpoint to the contract’s owner.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection3Step3.swift")
+            }
+
+            @Step {
+                Retrieve the single payment sent with the call.
+
+                **Note:** `Message.egldOrSingleEsdtTransfer` automatically validates that exactly one payment was made.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection3Step4.swift")
+            }
+
+            @Step {
+                Ensure the payment amount is greater than zero.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection3Step5.swift")
+            }
+
+            @Step {
+                Increase the reserve storage by the received amount.
+
+                **Important:** Be sure to reassign the closure’s parameter to apply changes.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection3Step6.swift")
+            }
+        }
+    }
+
+    @Section(title: "Withdraw Contract Reserves") {
+        @ContentAndMedia {
+            This endpoint allows the owner to withdraw part of the reserve for a given token and nonce. Before sending tokens out, it checks that the reserve holds enough funds to fulfill the request.
+        }
+
+        @Steps {
+            @Step {
+                Continue working in the same file.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection3Step6.swift")
+            }
+
+            @Step {
+                Declare the `withdrawReserve` endpoint.
+
+                It accepts the token identifier, token nonce, and the amount to withdraw.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection4Step2.swift")
+            }
+
+            @Step {
+                Make this endpoint owner-only.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection4Step3.swift")
+            }
+
+            @Step {
+                Decrease the reserve by the specified amount and ensure sufficient balance exists.
+
+                **Important:** The reserve must be reassigned for the mutation to persist.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection4Step4.swift")
+            }
+
+            @Step {
+                Transfer the tokens to the contract owner.
+
+                @Code(name: "AdminController.swift", file: "FlipContractWriteAdminSection4Step5.swift")
+            }
+        }
+    }
+}
