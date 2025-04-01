@@ -16,15 +16,15 @@
             @Step {
                 Remove the default template files.
 
-                Delete any existing files inside the `Contracts/Flip/Tests` folder.
+                Delete any existing files inside the `Contracts/Flip/Tests/FlipTests` folder.
 
-                @Image(source: "CodingFirstContractSection1Step5.png", alt: "Contracts/Flip/Tests is empty.")
+                @Image(source: "FlipContractInitTestsSection1Step1.png", alt: "Contracts/Flip/Tests/FlipTests is empty.")
             }
 
             @Step {
-                Create a new file named `FlipTests.swift` inside the `Contracts/Flip/Tests` directory.
+                Create a new file named `FlipTests.swift` inside the `Contracts/Flip/Tests/FlipTests` directory.
 
-                @Code(name: "FlipTest.swift", file: "FlipContractInitTestsSection1Step2.swift")
+                @Image(source: "FlipContractInitTestsSection1Step2.png", alt: "Contracts/Flip/Tests/FlipTests with a file named FlipTests.swift.")
             }
         }
     }

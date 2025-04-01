@@ -32,11 +32,7 @@
             }
 
             @Step {
-                Navigate to your desired folder and run the following command:
-
-                ```sh
-                space init Flip
-                ```
+                Navigate to your desired folder and run the following command: `space init Flip`
 
                 This creates a new folder named `Flip`.
 
