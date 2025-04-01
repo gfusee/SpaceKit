@@ -70,10 +70,7 @@
             @Step {
                 Compute the actual maximum bet percentage value as a fraction of the token reserve.
 
-                **Important:** Always multiply before dividing when handling integers. Example:
-                
-                - Correct: `100 * 300 / 1000 = 30`
-                - Incorrect: `100 * (300 / 1000) = 100 * 0 = 0`
+                **Important:** Always multiply before dividing when handling integers. `100 * 300 / 1000 = 30` is correct but `100 * (300 / 1000) = 100 * 0 = 0` is incorrect.
 
                 @Code(name: "GameController.swift", file: "FlipContractWriteTheGameSection1Step9.swift")
             }

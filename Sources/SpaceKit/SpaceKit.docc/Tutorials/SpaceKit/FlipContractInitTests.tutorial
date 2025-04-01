@@ -36,7 +36,7 @@
             - Wallets: predefined addresses with specified EGLD and ESDT balances.
             - Smart contracts: their addresses, token balances, and logic (declared by listing all associated `@Controller`s).
 
-            In contrast to a real blockchain, where contract addresses are assigned at deployment, SwiftVM tests require that contract addresses be explicitly defined ahead of time. This ensures consistency and makes it easier to reference the same contract across multiple test cases.
+            In contrast to a real blockchain, where contract addresses are assigned at deployment, SwiftVM tests require that contract addresses be explicitly defined ahead of time. This ensures consistency and makes it easier to reference the same contract across multiple test runs.
 
             Because the SwiftVM needs to understand the full structure of a contract at runtime, all relevant `@Controller` definitions must be available before any test is executed.
         }

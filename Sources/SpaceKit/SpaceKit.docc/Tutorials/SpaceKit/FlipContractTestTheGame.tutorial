@@ -151,15 +151,13 @@
             In this section, you'll write tests to confirm that the `flip` endpoint behaves correctly when provided with valid input.
 
             You'll test the behavior when flipping with both EGLD and USDC tokens.
-
-            **Note:** To keep things focused, we won’t cover every edge case—such as sending unsupported tokens. For production-ready contracts, be sure to include thorough test coverage.
         }
 
         @Steps {
             @Step {
                 Start with the code from the previous section.
 
-                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step10.swift")
+                @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection2Step11.swift")
             }
 
             @Step {
@@ -195,10 +193,7 @@
             @Step {
                 Confirm that the EGLD reserve has decreased by the expected amount.
 
-                From the `100_000` EGLD bet:
-                - `5_000` go to the owner (5% fee)
-                - `1_000` are reserved as a bounty reward (1% fee)
-                - `94_000` are the effective bet amount, deducted from the reserve
+                From the `100_000` EGLD bet, `5_000` go to the owner (5% fee). `1_000` are reserved as a bounty reward (1% fee). `94_000` are the effective bet amount, deducted from the reserve.
 
                 @Code(name: "FlipTest.swift", file: "FlipContractTestTheGameSection3Step7.swift")
             }
