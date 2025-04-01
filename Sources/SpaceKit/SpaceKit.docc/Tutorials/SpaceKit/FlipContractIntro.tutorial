@@ -15,6 +15,8 @@
         - If it’s 1, she wins 1880 USDC (940 × 2).
 
         To protect the contract’s funds from being drained due to a streak of bad luck, you’ll implement a maximum bet threshold. This cap can be either a fixed value or a percentage of the contract’s total balance.
+        
+        This tutorial is intended for learning purposes only. The approach to random number generation shown here is not secure enough for production environments. For real-world deployments, consider using asynchronous randomness sources to strengthen the integrity of your contract.
     }
 
     @Section(title: "Set Up the Project") {
@@ -38,7 +40,7 @@
 
                 This creates a new folder named `Flip`.
 
-                @Image(source: "CodingFirstContractSection1Step2.png", alt: "Output of the `space init Flip` command.")
+                @Image(source: "FlipContractIntroSection1Step2.png", alt: "Output of the `space init Flip` command.")
             }
 
             @Step {
@@ -46,7 +48,7 @@
 
                 This tutorial uses Xcode, but VSCode with the official Swift extension also works.
 
-                @Image(source: "CodingFirstContractSection1Step3.png", alt: "Xcode project selection screen with 'Flip' highlighted.")
+                @Image(source: "FlipContractIntroSection1Step3.png", alt: "Xcode project selection screen with 'Flip' highlighted.")
             }
 
             @Step {
@@ -54,7 +56,7 @@
 
                 In Xcode, select **Product > Build**, or press `⌘ + B`.
 
-                @Image(source: "CodingFirstContractSection1Step4.png", alt: "Xcode's Product menu with 'Build' highlighted.")
+                @Image(source: "FlipContractIntroSection1Step4.png", alt: "Xcode's Product menu with 'Build' highlighted.")
             }
 
             @Step {
@@ -62,7 +64,7 @@
 
                 Remove all existing files from the `Contracts/Flip/Source` folder.
 
-                @Image(source: "CodingFirstContractSection1Step5.png", alt: "Contracts/Flip/Source is empty.")
+                @Image(source: "FlipContractIntroSection1Step5.png", alt: "Contracts/Flip/Source is empty.")
             }
         }
     }
