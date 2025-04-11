@@ -52,6 +52,8 @@ func buildContract(
     spaceKitLocalPath: String?,
     skipABIGeneration: Bool = false
 ) async throws(CLIError) {
+    try await checkIfDockerIsRunning()
+    
     guard try isValidProject() else {
         throw .common(.invalidProject)
     }
