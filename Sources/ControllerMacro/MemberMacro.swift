@@ -48,7 +48,7 @@ extension Controller: MemberMacro {
         ]
         
         results.append(contentsOf:
-            getStaticEndpointDeclarations(
+            try getStaticEndpointDeclarations(
                 structDecl: structDecl,
                 functions: functionDecls
             ).map({ DeclSyntax($0) })
@@ -211,7 +211,7 @@ fileprivate func getTestableStructDeclaration(
 fileprivate func getStaticEndpointDeclarations(
     structDecl: StructDeclSyntax,
     functions: [FunctionDeclSyntax]
-) -> [FunctionDeclSyntax] {
+) throws(ControllerMacroError) -> [FunctionDeclSyntax] {
     let structName = structDecl.name.trimmed
     var results: [FunctionDeclSyntax] = []
     
@@ -219,6 +219,8 @@ fileprivate func getStaticEndpointDeclarations(
         guard function.isEndpoint() else {
             continue
         }
+        
+        try function.assertOptionalArgsCorrectness()
         
         let endpointParams = getEndpointVariablesDeclarations(
             isCallback: function.isCallback(),
