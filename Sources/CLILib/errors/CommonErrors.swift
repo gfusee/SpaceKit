@@ -2,6 +2,7 @@ enum CommonErrors: Error, CustomStringConvertible {
     case invalidProject
     case requirementNotSatisfied(requirement: String)
     case cannotRunCommand(command: String, directory: String, errorMessage: String)
+    case dockerIsNotRunning
     
     var description: String {
         switch self {
@@ -16,6 +17,13 @@ enum CommonErrors: Error, CustomStringConvertible {
             \(errorMessage)
             
             Note : Command ran in \(directory).
+            """
+        case .dockerIsNotRunning:
+            """
+            Docker is not installed or running.
+
+            If you’re on macOS, make sure Docker Desktop is installed and running.
+            If you’re on Linux or using Windows WSL, check the official Docker website for installation instructions.
             """
         }
     }

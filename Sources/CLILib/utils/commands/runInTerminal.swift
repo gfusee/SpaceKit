@@ -124,18 +124,20 @@ func runInDocker(
     
     let dockerImage = "ghcr.io/gfusee/spacekit/spacekit-cli:\(dockerImageVersion)"
 
-    // Try to pull the spacekit-cli docker image, but skip if:
+    // Try to pull the spacekit-cli docker image if not using local SpaceKit version (0.0.0), but skip if:
     //
     // - The image already exists
     // - There is no internet connection
-    _ = try await runInTerminal(
-        currentDirectoryURL: currentDirectoryURL!,
-        command: """
-            docker images --format "{{.Repository}}:{{.Tag}}" | grep -q '\(dockerImage)' || (ping -c 1 google.com >/dev/null 2>&1 && docker pull \(dockerImage))
-            """,
-        environment: environment,
-        logCommand: false
-    )
+    if dockerImageVersion != "0.0.0" {
+        _ = try await runInTerminal(
+            currentDirectoryURL: currentDirectoryURL!,
+            command: """
+                docker images --format "{{.Repository}}:{{.Tag}}" | grep -q '\(dockerImage)' || (ping -c 1 google.com >/dev/null 2>&1 && docker pull \(dockerImage))
+                """,
+            environment: environment,
+            logCommand: false
+        )
+    }
     
     return try await runInTerminal(
         currentDirectoryURL: currentDirectoryURL!,
