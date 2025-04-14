@@ -57,10 +57,33 @@ public struct MapMapper<K: SpaceCodable, V: SpaceCodable> {
     }
     
     public func forEach(_ operations: (K, V) throws -> Void) rethrows {
-        try self.keysSetMapper.forEach { key in
-            let value = self.getMappedValueMapper(key: key).get()
-            
+        for (key, value) in self {
             try operations(key, value)
         }
+    }
+}
+
+extension MapMapper: Sequence {
+    public struct Iterator: IteratorProtocol {
+        var keysIterator: SetMapper<K>.Iterator
+        let mapper: MapMapper<K, V>
+        
+        init(mapper: MapMapper<K, V>) {
+            self.keysIterator = mapper.keysSetMapper.makeIterator()
+            self.mapper = mapper
+        }
+
+        public mutating func next() -> (K, V)? {
+            if let key = self.keysIterator.next(),
+               let value = self.mapper.get(key) {
+                (key, value)
+            } else {
+                nil
+            }
+        }
+    }
+    
+    public func makeIterator() -> Iterator {
+        Iterator(mapper: self)
     }
 }
