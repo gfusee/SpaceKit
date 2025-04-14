@@ -267,7 +267,7 @@ import SpaceKit
         let tokenNonces = storage.tokenDetailsForTokenIdentifier[identifier].tokenNonces
         var availability: MultiValueEncoded<Buffer> = MultiValueEncoded()
         
-        tokenNonces.forEach { currentCheckNonce in
+        for currentCheckNonce in tokenNonces {
             var currentCheckNonceTopEncoded = Buffer()
             currentCheckNonce.topEncode(output: &currentCheckNonceTopEncoded)
             

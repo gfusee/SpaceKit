@@ -67,10 +67,10 @@ import SpaceKit
         var tokensToClaim: Vector<TokenPayment> = Vector()
         var egldToClaim: BigUint = 0
         
-        ownedTokensMapper.forEach { token in
+        for token in ownedTokensMapper {
             let tokenDetailsMapper = storage.$tokenDetailsForTokenIdentifier[token]
             let nonces = tokenDetailsMapper.get().tokenNonces
-            nonces.forEach { nonce in
+            for nonce in nonces {
                 let nonceAmountMapper = storage.$nonceAmountForTokenIdentifierAndNonce[NonceAmountMappingKey(identifier: token, nonce: nonce)]
                 
                 tokensToClaim = tokensToClaim.appended(

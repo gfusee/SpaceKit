@@ -117,14 +117,15 @@ import SpaceKit
         let epoch = Blockchain.getBlockEpoch()
         
         var orderIdsNotEmpty: Vector<UInt64> = Vector()
-        orderIds.forEach { orderId in
+        
+        for orderId in orderIds {
             if !storageController.$orderForId[orderId].isEmpty() {
                 orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
             }
         }
         
         var orders: Vector<Order> = Vector()
-        orderIdsNotEmpty.forEach { orderId in
+        for orderId in orderIdsNotEmpty {
             let order = self.freeOrder(
                 orderId: orderId,
                 caller: caller,
@@ -144,7 +145,7 @@ import SpaceKit
         
         var orderIdsNotEmpty: Vector<UInt64> = Vector()
         let storageController = StorageController()
-        addressOrderIds.forEach { orderId in
+        for orderId in addressOrderIds {
             if !storageController.$orderForId[orderId].isEmpty() {
                 orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
             }
@@ -223,7 +224,7 @@ import SpaceKit
         let epoch = Blockchain.getBlockEpoch()
         
         var orderIdsNotEmpty: Vector<UInt64> = Vector()
-        orderIds.forEach { orderId in
+        for orderId in orderIds {
             if !storageController.$orderForId[orderId].isEmpty() {
                 orderIdsNotEmpty = orderIdsNotEmpty.appended(orderId)
             }
@@ -234,7 +235,7 @@ import SpaceKit
         
         let addressOrderIdsCount = addressOrderIds.count
         
-        orderIdsNotEmpty.forEach { orderId in
+        for orderId in orderIdsNotEmpty {
             let order = self.cancelOrder(
                 orderId: orderId,
                 caller: caller,
@@ -268,7 +269,7 @@ import SpaceKit
         var ordersArray: Vector<Order> = Vector()
         let storageController = StorageController()
         
-        orderIds.forEach { orderId in
+        for orderId in orderIds {
             let orderMapper = storageController.$orderForId[orderId]
             
             if !orderMapper.isEmpty() {
@@ -384,7 +385,7 @@ import SpaceKit
         var ordersArray: Vector<UInt64> = Vector()
         let storageController = StorageController()
         
-        storageController.orderIdsForAddress[address].forEach { order in
+        for order in storageController.orderIdsForAddress[address] {
             if !storageController.$orderForId[order].isEmpty() {
                 ordersArray = ordersArray.appended(order)
             }
@@ -399,7 +400,7 @@ import SpaceKit
     ) -> Vector<Order> {
         var result: Vector<Order> = Vector()
         
-        orders.forEach { order in
+        for order in orders {
             if order.orderType == orderType {
                 result = result.appended(order)
             }
@@ -414,7 +415,7 @@ import SpaceKit
         var amountPaid: BigUint = 0
         var amountRequest: BigUint = 0
         
-        orders.forEach { order in
+        for order in orders {
             amountPaid = amountPaid + order.inputAmount
             amountRequest = amountRequest + order.outputAmount
         }
@@ -442,7 +443,7 @@ import SpaceKit
         
         let commonController = CommonHelpers()
         
-        orders.forEach { order in
+        for order in orders {
             let matchProviderAmount = commonController.calculateFeeAmount(
                 amount: order.outputAmount,
                 feeConfig: order.feeConfig
@@ -480,7 +481,7 @@ import SpaceKit
     }
     
     private func executeTransfers(transfers: Vector<Transfer>) {
-        transfers.forEach { transfer in
+        for transfer in transfers {
             if transfer.payment.amount > 0 {
                 transfer.to.send(
                     tokenIdentifier: transfer.payment.tokenIdentifier,
@@ -493,7 +494,7 @@ import SpaceKit
     
     private func clearOrders(orderIds: Vector<UInt64>) {
         let storageController = StorageController()
-        orderIds.forEach { orderId in
+        for orderId in orderIds {
             storageController.$orderForId[orderId].clear()
         }
     }

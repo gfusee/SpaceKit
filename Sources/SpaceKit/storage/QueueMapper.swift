@@ -202,16 +202,42 @@ public struct QueueMapper<V: TopEncode & TopDecode>: StorageMapper {
     }
 }
 
+extension QueueMapper: Sequence {
+    public struct Iterator: IteratorProtocol {
+        var currentNodeId: UInt32
+        let mapper: QueueMapper<V>
+        let info: QueueMapperInfo
+        
+        
+        init(mapper: QueueMapper<V>) {
+            self.mapper = mapper
+            self.info = mapper.getInfoMapper().get()
+            self.currentNodeId = self.info.front
+        }
+
+        public mutating func next() -> V? {
+            let currentNodeId = self.currentNodeId
+            
+            if currentNodeId == NULL_ENTRY {
+                return nil
+            } else {
+                let element = self.mapper.getValueMapper(nodeId: currentNodeId).get()
+                self.currentNodeId = self.mapper.getNodeMapper(nodeId: currentNodeId).get().next
+                
+                return element
+            }
+        }
+    }
+    
+    public func makeIterator() -> Iterator {
+        Iterator(mapper: self)
+    }
+}
+
 extension QueueMapper: SpaceSequence {
     public func forEach(_ operations: (V) throws -> Void) rethrows {
-        let infoMapper = self.getInfoMapper()
-        let info = infoMapper.isEmpty() ? getDefaultInfo() : infoMapper.get()
-        
-        var currentNodeId = info.front
-        
-        while currentNodeId != NULL_ENTRY {
-            try operations(self.getValueMapper(nodeId: currentNodeId).get())
-            currentNodeId = self.getNodeMapper(nodeId: currentNodeId).get().next
+        for element in self {
+            try operations(element)
         }
     }
 }

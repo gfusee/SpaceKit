@@ -42,7 +42,7 @@ struct EventsHelpers {
         let caller = Message.caller
         let epoch = Blockchain.getBlockEpoch()
         
-        orders.forEach { order in
+        for order in orders {
             MatchOrderEvent(
                 caller: caller,
                 epoch: epoch,
@@ -57,7 +57,7 @@ struct EventsHelpers {
         let caller = Message.caller
         let epoch = Blockchain.getBlockEpoch()
         
-        orders.forEach { order in
+        for order in orders {
             FreeOrderEvent(
                 caller: caller,
                 epoch: epoch,
@@ -72,7 +72,7 @@ struct EventsHelpers {
         let caller = Message.caller
         let epoch = Blockchain.getBlockEpoch()
         
-        orders.forEach { order in
+        for order in orders {
             CancelOrderEvent(
                 caller: caller,
                 epoch: epoch,

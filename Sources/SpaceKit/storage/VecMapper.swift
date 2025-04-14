@@ -116,17 +116,39 @@ public struct VecMapper<V: TopEncode & NestedEncode & TopDecode>: StorageMapper 
     }
 }
 
+extension VecMapper: Sequence {
+    public struct Iterator: IteratorProtocol {
+        let count: UInt32
+        var nextIndex: UInt32 = 1
+        let mapper: VecMapper<V>
+        
+        
+        init(mapper: VecMapper<V>) {
+            self.mapper = mapper
+            self.count = UInt32(mapper.count)
+        }
+
+        public mutating func next() -> V? {
+            if self.nextIndex > self.count {
+                return nil
+            } else {
+                let element = self.mapper.get(index: self.nextIndex)
+                self.nextIndex += 1
+                
+                return element
+            }
+        }
+    }
+    
+    public func makeIterator() -> Iterator {
+        Iterator(mapper: self)
+    }
+}
 
 extension VecMapper: SpaceSequence {
     public func forEach(_ operations: (V) throws -> Void) rethrows {
-        let count = self.count
-        var index: UInt32 = 1
-        
-        while index <= count {
-            let element = self.getUnchecked(index: index)
+        for element in self {
             try operations(element)
-            
-            index += 1
         }
     }
 }

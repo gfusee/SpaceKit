@@ -115,7 +115,9 @@ let MAX_TICKETS: UInt32 = 800
         if let whitelist = optWhitelist {
             let mapper = self.getLotteryWhitelistMapper(lotteryName: lotteryName)
             
-            whitelist.forEach { let _ = mapper.insert(value: $0) }
+            for address in whitelist {
+                let _ = mapper.insert(value: address)
+            }
         }
         
         let info = LotteryInfo(
@@ -311,7 +313,7 @@ let MAX_TICKETS: UInt32 = 800
     func sumArray(array: Vector<UInt8>) -> UInt32 {
         var sum: UInt32 = 0
         
-        array.forEach { item in
+        for item in array {
             sum += UInt32(item)
         }
         

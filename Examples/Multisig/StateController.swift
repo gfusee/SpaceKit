@@ -51,7 +51,7 @@ import SpaceKit
         let userMapper = storageController.userMapper
         var signers: Vector<Address> = Vector()
         
-        signerIdsMapper.forEach { signerId in
+        for signerId in signerIdsMapper {
             signers = signers.appended(userMapper.getUserAddressUnchecked(id: signerId))
         }
         
@@ -103,7 +103,7 @@ import SpaceKit
         
         var result: UInt32 = 0
         
-        signerIds.forEach { signerId in
+        for signerId in signerIds {
             let signerRole = storageController.userIdToRole[signerId]
             
             if signerRole.canSign() {
@@ -119,7 +119,7 @@ import SpaceKit
         
         let userMapper = storageController.userMapper
         
-        newBoardMembers.forEach { newBoardMember in
+        for newBoardMember in newBoardMembers {
             require(
                 userMapper.getUserId(address: newBoardMember) == 0,
                 "duplicate board member"
