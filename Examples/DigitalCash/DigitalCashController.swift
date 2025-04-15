@@ -33,7 +33,7 @@ import SpaceKit
         let caller = Message.caller
         var collectedEsdtFees: Vector<TokenPayment> = Vector()
         
-        feeTokensMapper.forEach { token in
+        for token in feeTokensMapper {
             let fee = Storage().$collectedFeesForToken[token].take()
             
             guard fee > 0 else {

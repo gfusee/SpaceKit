@@ -91,8 +91,16 @@ public struct UnorderedSetMapper<V: TopEncode & NestedEncode & TopDecode>: Stora
     }
 }
 
+extension UnorderedSetMapper: Sequence {
+    public func makeIterator() -> VecMapper<V>.Iterator {
+        Iterator(mapper: self.vecMapper)
+    }
+}
+
 extension UnorderedSetMapper: SpaceSequence {
     public func forEach(_ operations: (V) throws -> Void) rethrows {
-        try self.vecMapper.forEach(operations)
+        for element in self {
+            try operations(element)
+        }
     }
 }

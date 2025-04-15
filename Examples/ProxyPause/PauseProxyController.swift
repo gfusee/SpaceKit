@@ -27,7 +27,7 @@ import SpaceKit
     public func pause() {
         self.requireOwner()
         
-        self.allContracts.forEach { contract in
+        for contract in self.allContracts {
             PausableProxy.pause.callAndIgnoreResult(receiver: contract)
         }
     }
@@ -35,7 +35,7 @@ import SpaceKit
     public func unpause() {
         self.requireOwner()
         
-        self.allContracts.forEach { contract in
+        for contract in self.allContracts {
             PausableProxy.unpause.callAndIgnoreResult(receiver: contract)
         }
     }

@@ -209,16 +209,39 @@ extension Vector {
     }
 }
 
+extension Vector: Sequence {
+    public struct Iterator: IteratorProtocol {
+        let count: Int32
+        var nextIndex: Int32 = 0
+        let vector: Vector<T>
+        
+        
+        init(vector: Vector<T>) {
+            self.vector = vector
+            self.count = vector.count
+        }
+
+        public mutating func next() -> T? {
+            if self.nextIndex >= self.count {
+                return nil
+            } else {
+                let element = self.vector.get(self.nextIndex)
+                self.nextIndex += 1
+                
+                return element
+            }
+        }
+    }
+    
+    public func makeIterator() -> Iterator {
+        Iterator(vector: self)
+    }
+}
+
 extension Vector: SpaceSequence {
     public func forEach(_ operations: (T) throws -> Void) rethrows {
-        let count = self.count
-        var index: Int32 = 0
-        
-        while index < count {
-            let element = self.get(index)
+        for element in self {
             try operations(element)
-            
-            index += 1
         }
     }
 }

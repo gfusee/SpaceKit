@@ -104,9 +104,17 @@ public struct SetMapper<V: SpaceCodable>: StorageMapper {
     }
 }
 
+extension SetMapper: Sequence {
+    public func makeIterator() -> QueueMapper<V>.Iterator {
+        Iterator(mapper: self.queueMapper)
+    }
+}
+
 extension SetMapper: SpaceSequence {
     public func forEach(_ operations: (V) throws -> Void) rethrows {
-        try self.queueMapper.forEach(operations)
+        for element in self {
+            try operations(element)
+        }
     }
 }
 

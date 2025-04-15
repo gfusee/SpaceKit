@@ -108,7 +108,7 @@ struct ValidationHelpers {
     func requireMatchProviderEmptyOrCaller(orders: Vector<Order>) {
         let caller = Message.caller
         
-        orders.forEach { order in
+        for order in orders {
             if !order.matchProvider.isZero() {
                 require(
                     order.matchProvider == caller,
