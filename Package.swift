@@ -64,7 +64,8 @@ if !isWasm {
         .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.1.0"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
-        .package(url: "https://github.com/apple/swift-crypto.git", exact: "3.12.2")
+        .package(url: "https://github.com/apple/swift-crypto.git", exact: "3.12.2"),
+        .package(url: "https://github.com/swiftwasm/WasmKit.git", from: "0.1.0"),
     ])
     
     libraryDependencies.append(contentsOf: [
@@ -86,7 +87,8 @@ if !isWasm {
         .target(
             name: "SpaceKitCLILib",
             dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "WasmKit", package: "WasmKit")
             ],
             path: "Sources/CLILib"
         ),

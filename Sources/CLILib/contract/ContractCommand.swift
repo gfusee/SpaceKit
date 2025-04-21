@@ -6,6 +6,9 @@ public struct ContractCommand: AsyncParsableCommand {
     public static let configuration = CommandConfiguration(
         commandName: "contract",
         abstract: "Contract-related commands",
-        subcommands: [BuildCommand.self]
+        subcommands: [
+            BuildCommand.self,
+            ReportCommand.self
+        ]
     )
 }

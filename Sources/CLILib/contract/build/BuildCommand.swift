@@ -116,101 +116,99 @@ func buildContract(
         shouldUseLocalSpaceKit: spaceKitLocalPath != nil
     )
     
-    do {
-        // Explanations: we want to create a symbolic link of the source files before compiling them.
-        // By doing so, we avoid generating *.o files in the user project root directory
-        
-        let newPackagePath = "\(buildFolder)/Package.swift"
-        
-        let newPackageBase64String = wasmPackageInfo.generatedPackage.toBase64()
-        
-        let rmContractsCommand = "rm -rf \(contractsUrl.path)"
-        let createContractsCommand = "mkdir -p \(contractsUrl.path)"
-        let rmOldGeneratedPackage = "rm -f \(newPackagePath)"
-        let echoNewPackageCommand = """
-            echo "\(newPackageBase64String)" | base64 --decode > \(newPackagePath)
-        """
-        let createOutputDirectoryCommand = "mkdir -p \(targetPackageOutputPath)"
-        
-        // Create the Contracts/TARGET symbolic link
-        let symbolicTargetLinkCommand = "ln -sf \(sourceTargetPath) \(linkedTargetUrl.path)"
-        
-        let swiftBuildArguments: [String] = [
-            "--package-path", buildFolder,
-            "--target", target,
-            "--triple", "wasm32-unknown-none-wasm",
-            "--disable-index-store",
-            "-Xswiftc", "-Osize",
-            "-Xswiftc", "-gnone"
-        ]
-        let swiftBuildCommand = "SWIFT_WASM=true \(swiftCommand) build \(swiftBuildArguments.joined(separator: " "))"
-        
-        let wasmLdArguments = [
-            "--no-entry", "--allow-undefined",
-            "-o", wasmBuiltFilePath,
-            objectFilePath,
-            "objects/memcpy.o",
-            "objects/init.o",
-            "objects/libclang_rt.builtins-wasm32.a"
-        ]
-        let wasmLdCommand = "wasm-ld \(wasmLdArguments.joined(separator: " "))"
-        
-        let wasmOptCommand = "wasm-opt -Os -o \(wasmOptFilePath) \(wasmBuiltFilePath)"
-        
-        let oldWasmRmCommand = "rm -f \(wasmDestFilePath)"
-        let copyWasmCommand = "cp \(wasmOptFilePath) \(wasmDestFilePath)"
-        
-        let buildSymbolGraphCommand = "(cd \(PROJECT_DOCKER_DEST_PATH) && swift build -Xswiftc -emit-symbol-graph -Xswiftc -symbol-graph-minimum-access-level -Xswiftc private -Xswiftc -emit-symbol-graph-dir -Xswiftc .build/symbol-graphs)"
-        
-        let abiGeneratorSpaceKitVersion = wasmPackageInfo.versionFound ?? "0.0.0"
-        
-        let generateABISwiftProjectCommand = "./generate_abi_generator.sh '\(wasmPackageInfo.spaceKitDependencyDeclaration)' \(target) \(target) \(abiGeneratorSpaceKitVersion)"
-        
-        let generateABICommand = "(cd SpaceKitABIGenerator && swift run SpaceKitABIGenerator \(abiDestFilePath))"
-        
-        var allCommands = [
-            rmContractsCommand,
-            createContractsCommand,
-            rmOldGeneratedPackage,
-            echoNewPackageCommand,
-            createOutputDirectoryCommand,
-            symbolicTargetLinkCommand,
-            swiftBuildCommand,
-            wasmLdCommand,
-            wasmOptCommand,
-            oldWasmRmCommand,
-            copyWasmCommand
-        ]
-        
-        if !skipABIGeneration {
-            allCommands.append(contentsOf: [
-                buildSymbolGraphCommand,
-                generateABISwiftProjectCommand,
-                generateABICommand
-            ])
-        }
-        
-        let _ = try await runInDocker(
-            volumeURLs: volumes,
-            commands: allCommands,
-            dockerImageVersion: wasmPackageInfo.versionFound ?? "latest"
-        )
-        
-        var resultsInfo = """
-            \(target) built successfully!
-            WASM output: \(wasmHostFinalPath)
-            """
-        
-        if skipABIGeneration {
-            resultsInfo += "\nNo ABI has been generated because --skip-abi-generation is specified"
-        } else {
-            resultsInfo += "\nABI output: \(abiHostFinalPath)"
-        }
-        
-        print(
-            resultsInfo
-        )
-    } catch {
-        print("error: \(error)")
+    // Explanations: we want to create a symbolic link of the source files before compiling them.
+    // By doing so, we avoid generating *.o files in the user project root directory
+    
+    let newPackagePath = "\(buildFolder)/Package.swift"
+    
+    let newPackageBase64String = wasmPackageInfo.generatedPackage.toBase64()
+    
+    let rmContractsCommand = "rm -rf \(contractsUrl.path)"
+    let createContractsCommand = "mkdir -p \(contractsUrl.path)"
+    let rmOldGeneratedPackage = "rm -f \(newPackagePath)"
+    let echoNewPackageCommand = """
+        echo "\(newPackageBase64String)" | base64 --decode > \(newPackagePath)
+    """
+    let createOutputDirectoryCommand = "mkdir -p \(targetPackageOutputPath)"
+    
+    // Create the Contracts/TARGET symbolic link
+    let symbolicTargetLinkCommand = "ln -sf \(sourceTargetPath) \(linkedTargetUrl.path)"
+    
+    let swiftBuildArguments: [String] = [
+        "--package-path", buildFolder,
+        "--target", target,
+        "--triple", "wasm32-unknown-none-wasm",
+        "--disable-index-store",
+        "-Xswiftc", "-Osize",
+        "-Xswiftc", "-gnone"
+    ]
+    let swiftBuildCommand = "SWIFT_WASM=true \(swiftCommand) build \(swiftBuildArguments.joined(separator: " "))"
+    
+    let wasmLdArguments = [
+        "--no-entry", "--allow-undefined",
+        "-o", wasmBuiltFilePath,
+        objectFilePath,
+        "objects/memcpy.o",
+        "objects/init.o",
+        "objects/libclang_rt.builtins-wasm32.a"
+    ]
+    let wasmLdCommand = "wasm-ld \(wasmLdArguments.joined(separator: " "))"
+    
+    let wasmOptCommand = "wasm-opt -Os -o \(wasmOptFilePath) \(wasmBuiltFilePath)"
+    
+    let oldWasmRmCommand = "rm -f \(wasmDestFilePath)"
+    let copyWasmCommand = "cp \(wasmOptFilePath) \(wasmDestFilePath)"
+    
+    let buildSymbolGraphCommand = "(cd \(PROJECT_DOCKER_DEST_PATH) && swift build -Xswiftc -emit-symbol-graph -Xswiftc -symbol-graph-minimum-access-level -Xswiftc private -Xswiftc -emit-symbol-graph-dir -Xswiftc .build/symbol-graphs)"
+    
+    let abiGeneratorSpaceKitVersion = wasmPackageInfo.versionFound ?? "0.0.0"
+    
+    let generateABISwiftProjectCommand = "./generate_abi_generator.sh '\(wasmPackageInfo.spaceKitDependencyDeclaration)' \(target) \(target) \(abiGeneratorSpaceKitVersion)"
+    
+    let generateABICommand = "(cd SpaceKitABIGenerator && swift run SpaceKitABIGenerator \(abiDestFilePath))"
+    
+    var allCommands = [
+        rmContractsCommand,
+        createContractsCommand,
+        rmOldGeneratedPackage,
+        echoNewPackageCommand,
+        createOutputDirectoryCommand,
+        symbolicTargetLinkCommand,
+        swiftBuildCommand,
+        wasmLdCommand,
+        wasmOptCommand,
+        oldWasmRmCommand,
+        copyWasmCommand
+    ]
+    
+    if !skipABIGeneration {
+        allCommands.append(contentsOf: [
+            buildSymbolGraphCommand,
+            generateABISwiftProjectCommand,
+            generateABICommand
+        ])
     }
+    
+    let _ = try await runInDocker(
+        volumeURLs: volumes,
+        commands: allCommands,
+        dockerImageVersion: wasmPackageInfo.versionFound ?? "latest"
+    )
+    
+    try reportContract(wasmPath: wasmHostFinalPath)
+    
+    var resultsInfo = """
+        \(target) built successfully!
+        WASM output: \(wasmHostFinalPath)
+        """
+    
+    if skipABIGeneration {
+        resultsInfo += "\nNo ABI has been generated because --skip-abi-generation is specified"
+    } else {
+        resultsInfo += "\nABI output: \(abiHostFinalPath)"
+    }
+    
+    print(
+        resultsInfo
+    )
 }
